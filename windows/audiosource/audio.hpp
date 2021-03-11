@@ -13,12 +13,13 @@ public:
 	std::string type;
 	std::string resource;
 	std::string location;
+	std::map<std::string, std::string> metas;
 
 	static Audio* file(std::string path) {
 		Audio* audio = new Audio();
 		audio->resource = path;
 		audio->location = "file:///" + path;
-		audio->type = "File";
+		audio->type = "file";
 		return audio;
 	}
 
@@ -26,7 +27,7 @@ public:
 		Audio* audio = new Audio();
 		audio->resource = url;
 		audio->location = url;
-		audio->type = "Network";
+		audio->type = "network";
 		return audio;
 	}
 
@@ -34,7 +35,7 @@ public:
 		Audio* audio = new Audio();
 		audio->resource = path;
 		audio->location = "file:///" + std::filesystem::temp_directory_path().u8string() + path;
-		audio->type = "Asset";
+		audio->type = "asset";
 		return audio;
 	}
 
@@ -43,9 +44,9 @@ public:
 		audio["type"] = this->type;
 		audio["resource"] = this->resource;
 	}
-
+	
 	std::string what() {
-		return "Audio";
+		return "audio";
 	}
 };
 

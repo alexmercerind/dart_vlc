@@ -31,7 +31,7 @@ public:
 	}
 
 	std::string what() {
-		return "Playlist";
+		return "playlist";
 	}
 };
 
