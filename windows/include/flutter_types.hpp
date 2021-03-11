@@ -96,3 +96,31 @@ public:
 
     void returnResult() {}
 };
+
+
+namespace FlutterTypes {
+    template<class T>
+    flutter::EncodableValue getValue(T value);
+
+    template <>
+    flutter::EncodableValue getValue<std::map<std::string, std::string>>(std::map<std::string, std::string> value) {
+        auto flutterMap = flutter::EncodableMap();
+        for (std::pair pair : value) {
+            flutterMap[flutter::EncodableValue(pair.first)] = flutter::EncodableValue(pair.second);
+        }
+        return flutter::EncodableValue(flutterMap);
+    }
+
+    template <>
+    flutter::EncodableValue getValue<std::vector<std::map<std::string, std::string>>>(std::vector<std::map<std::string, std::string>> value) {
+        flutter::EncodableList flutterVector = flutter::EncodableList();
+        for (std::map<std::string, std::string> map : value) {
+            flutter::EncodableMap flutterMap = flutter::EncodableMap();
+            for (std::pair pair: map) {
+                flutterMap[flutter::EncodableValue(pair.first)] = flutter::EncodableValue(pair.second);
+            }
+            flutterVector.emplace_back(flutterMap);
+        }
+        return flutter::EncodableValue(flutterVector);
+    }
+}
