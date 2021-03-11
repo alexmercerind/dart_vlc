@@ -9,6 +9,133 @@
 
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
 
+void event(AudioPlayerState* &state) {
+    /*
+     * Method to notify Dart about playback events.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'event',
+     *      'index': 1,
+     *      'playlist': [
+     *          {
+     *              'type': 'network',
+     *              'resource': 'https://alexmercerind.com/music.MP3'
+     *          },
+     *          {
+     *              'type': 'file',
+     *              'resource': 'C:/alexmercerind/music.MP3'
+     *          }
+     *      ],
+     *      'isPlaying': true,
+     *      'isValid': true,
+     *      'isSeekable': false,
+     *      'isCompleted': false,
+     *      'position': 56783,
+     *      'duration': 370278,
+     *      'volume': 1.0,
+     *      'rate': 1.25,
+     *      'isPlaylist': true
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "audioPlayerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("event")
+                        },
+                        {
+                            flutter::EncodableValue("index"),
+                            flutter::EncodableValue(state->index)
+                        },
+                        {
+                            flutter::EncodableValue("audios"),
+                            FlutterTypes::getValue<std::vector<std::map<std::string, std::string>>>(
+                                state->audios->get()
+                            )
+                        },
+                        {
+                            flutter::EncodableValue("isPlaying"),
+                            flutter::EncodableValue(state->isPlaying)
+                        },
+                        {
+                            flutter::EncodableValue("isValid"),
+                            flutter::EncodableValue(state->isValid)
+                        },
+                        {
+                            flutter::EncodableValue("isSeekable"),
+                            flutter::EncodableValue(state->isSeekable)
+                        },
+                        {
+                            flutter::EncodableValue("isCompleted"),
+                            flutter::EncodableValue(state->isCompleted)
+                        },
+                        {
+                            flutter::EncodableValue("position"),
+                            flutter::EncodableValue(state->position)
+                        },
+                        {
+                            flutter::EncodableValue("duration"),
+                            flutter::EncodableValue(state->duration)
+                        },
+                        {
+                            flutter::EncodableValue("volume"),
+                            flutter::EncodableValue(state->volume)
+                        },
+                        {
+                            flutter::EncodableValue("rate"),
+                            flutter::EncodableValue(state->rate)
+                        },
+                        {
+                            flutter::EncodableValue("isPlaylist"),
+                            flutter::EncodableValue(state->isPlaylist)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
+void exception(AudioPlayerState* &state) {
+    /*
+     * Method to notify Dart about exception events.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'exception',
+     *      'index': 1
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "audioPlayerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("exception")
+                        },
+                        {
+                            flutter::EncodableValue("index"),
+                            flutter::EncodableValue(state->index)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
 
 namespace {
 
@@ -105,15 +232,17 @@ namespace {
             std::string type = method->getArgument<std::string>("type");
             if (type == "audio") {
                 std::map<std::string,std::string> audioMap = method->getArgument<std::map<std::string,std::string>>("audio");
-                Audio* audio;
+                Audio* audio = nullptr;
                 if (audioMap["type"] == "file")
                     audio = Audio::file(audioMap["resource"]);
-                if (audioMap["type"] == "network")
+                else if (audioMap["type"] == "network")
                     audio = Audio::network(audioMap["resource"]);
-                if (audioMap["type"] == "asset")
+                else
                     audio = Audio::asset(audioMap["resource"]);
-                AudioPlayer* audioPlayer = audioPlayers->get(id);
-                audioPlayer->open(audio);
+                if (audio != nullptr) {
+                    AudioPlayer* audioPlayer = audioPlayers->get(id);
+                    audioPlayer->open(audio);
+                }
             }
             if (type == "playlist") {
                 std::vector<Audio*> audios;
@@ -123,11 +252,13 @@ namespace {
                     Audio* audio;
                     if (audioMap["type"] == "file")
                         audio = Audio::file(audioMap["resource"]);
-                    if (audioMap["type"] == "network")
+                    else if (audioMap["type"] == "network")
                         audio = Audio::network(audioMap["resource"]);
-                    if (audioMap["type"] == "asset")
+                    else
                         audio = Audio::asset(audioMap["resource"]);
-                    audios.emplace_back(audio);
+                    if (audio != nullptr) {
+                        audios.emplace_back(audio);
+                    }
                 }
                 AudioPlayer* audioPlayer = audioPlayers->get(id);
                 audioPlayer->open(
@@ -268,7 +399,7 @@ namespace {
          */
         else if (method->name == "setVolume") {
             int id = method->getArgument<int>("id");
-            double volume = method->getArgument<double>("volume");
+            float volume = method->getArgument<float>("volume");
             AudioPlayer* audioPlayer = audioPlayers->get(id);
             audioPlayer->setVolume(volume);
             method->returnNull();
@@ -286,7 +417,7 @@ namespace {
          */
         else if (method->name == "setRate") {
             int id = method->getArgument<int>("id");
-            double rate = method->getArgument<double>("rate");
+            float rate = method->getArgument<float>("rate");
             AudioPlayer* audioPlayer = audioPlayers->get(id);
             audioPlayer->setRate(rate);
             method->returnNull();
@@ -296,134 +427,6 @@ namespace {
         }
         method->returnResult();
     }
-}
-
-
-void event(AudioPlayerState* &state) {
-    /*
-     * Method to notify Dart about playback events.
-     *
-     * Argument:
-     * 
-     * {
-     *      'type': 'event',
-     *      'index': 1,
-     *      'playlist': [
-     *          {
-     *              'type': 'network',
-     *              'resource': 'https://alexmercerind.com/music.MP3'
-     *          },
-     *          {
-     *              'type': 'file',
-     *              'resource': 'C:/alexmercerind/music.MP3'
-     *          }
-     *      ],
-     *      'isPlaying': true,
-     *      'isValid': true,
-     *      'isSeekable': false,
-     *      'isCompleted': false,
-     *      'position': 56783,
-     *      'duration': 370278,
-     *      'volume': 1.0,
-     *      'rate': 1.25,
-     *      'isPlaylist': true
-     * }
-     * 
-     */
-    channel->InvokeMethod(
-        "audioPlayerState",
-        std::unique_ptr<flutter::EncodableValue>(
-            new flutter::EncodableValue(
-                flutter::EncodableMap(
-                    {
-                        {
-                            flutter::EncodableValue("type"),
-                            flutter::EncodableValue("event")
-                        },
-                        {
-                            flutter::EncodableValue("index"),
-                            flutter::EncodableValue(state->index)
-                        },
-                        {
-                            flutter::EncodableValue("audios"),
-                            FlutterTypes::getValue<std::vector<std::map<std::string, std::string>>>(
-                                state->audios->get()
-                            )
-                        },
-                        {
-                            flutter::EncodableValue("isPlaying"),
-                            flutter::EncodableValue(state->isPlaying)
-                        },
-                        {
-                            flutter::EncodableValue("isValid"),
-                            flutter::EncodableValue(state->isValid)
-                        },
-                        {
-                            flutter::EncodableValue("isSeekable"),
-                            flutter::EncodableValue(state->isSeekable)
-                        },
-                        {
-                            flutter::EncodableValue("isCompleted"),
-                            flutter::EncodableValue(state->isCompleted)
-                        },
-                        {
-                            flutter::EncodableValue("position"),
-                            flutter::EncodableValue(state->position)
-                        },
-                        {
-                            flutter::EncodableValue("duration"),
-                            flutter::EncodableValue(state->duration)
-                        },
-                        {
-                            flutter::EncodableValue("volume"),
-                            flutter::EncodableValue(state->volume)
-                        },
-                        {
-                            flutter::EncodableValue("rate"),
-                            flutter::EncodableValue(state->rate)
-                        },
-                        {
-                            flutter::EncodableValue("isPlaylist"),
-                            flutter::EncodableValue(state->isPlaylist)
-                        }
-                    }
-                )
-            )
-        )
-    );
-}
-
-void exception(AudioPlayerState* &state) {
-    /*
-     * Method to notify Dart about exception events.
-     *
-     * Argument:
-     * 
-     * {
-     *      'type': 'exception',
-     *      'index': 1
-     * }
-     * 
-     */
-    channel->InvokeMethod(
-        "audioPlayerState",
-        std::unique_ptr<flutter::EncodableValue>(
-            new flutter::EncodableValue(
-                flutter::EncodableMap(
-                    {
-                        {
-                            flutter::EncodableValue("type"),
-                            flutter::EncodableValue("exception")
-                        },
-                        {
-                            flutter::EncodableValue("index"),
-                            flutter::EncodableValue(state->index)
-                        }
-                    }
-                )
-            )
-        )
-    );
 }
 
 void FlutterVlcPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {

@@ -80,8 +80,18 @@ public:
     }
 
     template <>
+    std::map<std::string, std::string> getArgument<std::map<std::string, std::string>>(const char* argument) {
+        std::map<std::string, std::string> map;
+        flutter::EncodableMap value = std::get<flutter::EncodableMap>(this->arguments[flutter::EncodableValue(argument)]);
+        for (const auto &pair: value) {
+            map[std::get<std::string>(pair.first)] = std::get<std::string>(pair.second);
+        }
+        return map;
+    }
+
+    template <>
     std::vector<std::map<std::string, std::string>> getArgument<std::vector<std::map<std::string, std::string>>>(const char* argument) {
-        std::vector<std::map<std::string, std::string>> result;
+        std::vector<std::map<std::string, std::string>> vector;
         std::vector<flutter::EncodableValue> value = std::get<flutter::EncodableList>(this->arguments[flutter::EncodableValue(argument)]);
         for (flutter::EncodableValue element: value) {
             std::map<flutter::EncodableValue, flutter::EncodableValue> flutterMap = std::get<flutter::EncodableMap>(element);
@@ -89,9 +99,9 @@ public:
             for (std::pair pair : flutterMap) {
                 standardMap[std::get<std::string>(pair.first)] = std::get<std::string>(pair.second);
             }
-            result.emplace_back(standardMap);
+            vector.emplace_back(standardMap);
         }
-        return result;
+        return vector;
     }
 
     void returnResult() {}

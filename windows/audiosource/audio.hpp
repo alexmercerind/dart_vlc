@@ -43,6 +43,7 @@ public:
 		std::map<std::string, std::string> audio;
 		audio["type"] = this->type;
 		audio["resource"] = this->resource;
+		return audio;
 	}
 	
 	std::string what() {
