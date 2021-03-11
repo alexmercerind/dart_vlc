@@ -1,14 +1,9 @@
-#include <windows.h>
-
-#include <map>
-#include <memory>
-#include <sstream>
-
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
+#include "include/flutter_vlc/flutter_vlc_plugin.h"
 
-#include "include/FlutterVLC.h"
+#include "audioplayer.hpp"
 
 
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
@@ -45,6 +40,10 @@ namespace {
 
     void FlutterVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &method_call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
     if (method_call.method_name() == "getPlatformVersion") {
+        AudioPlayer audioPlayer;
+        audioPlayer.open(
+            Audio::file("C:/music.mp3")
+        );
         result->Success(flutter::EncodableValue("Hello World!"));
     } else {
         result->NotImplemented();
