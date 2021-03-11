@@ -10,7 +10,7 @@ public:
 		this->stop();
 		this->state->audios = new Playlist({});
 		this->mediaList = VLC::MediaList(this->instance);
-		if (audioSource->what() == "Audio") {
+		if (audioSource->what() == "audio") {
 			Audio* audio = dynamic_cast<Audio*>(audioSource);
 			VLC::Media media = VLC::Media(this->instance, audio->location, VLC::Media::FromLocation);
 			this->mediaList.addMedia(media);
@@ -23,7 +23,7 @@ public:
 			this->state->isPlaylist = false;
 
 		}
-		else if (audioSource->what() == "Playlist") {
+		else if (audioSource->what() == "playlist") {
 			Playlist* playlist = dynamic_cast<Playlist*>(audioSource);
 			for (Audio* audio : playlist->audios) {
 				VLC::Media media = VLC::Media(this->instance, audio->location, VLC::Media::FromLocation);

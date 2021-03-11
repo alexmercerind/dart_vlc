@@ -59,13 +59,6 @@ public:
 		);
 	}
 
-	void onNext(std::function<void(void)> callback) {
-		this->_nextCallback = callback;
-		this->mediaListPlayer.eventManager().onNextItemSet(
-			std::bind(&AudioPlayerEvents::_onNextCallback, this)
-		);
-	}
-
 private:
 	std::function<void(VLC::Media)> _loadCallback;
 
@@ -165,19 +158,6 @@ private:
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
 			this->_completeCallback();
-		}
-	}
-
-	std::function<void(void)> _nextCallback;
-
-	void _onNextCallback() {
-		if (this->getDuration() > 0) {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
-			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->isCompleted = false;
-			this->state->position = this->getPosition();
-			this->state->duration = this->getDuration();
-			this->_nextCallback();
 		}
 	}
 };
