@@ -12,6 +12,7 @@ std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
 
 namespace {
 
+
     class FlutterVlcPlugin : public flutter::Plugin {
     public:
         static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
@@ -23,6 +24,7 @@ namespace {
     private:
         void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &method_call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
     };
+
 
     void FlutterVlcPlugin::RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar) {
         channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(registrar->messenger(), "flutter_vlc", &flutter::StandardMethodCodec::GetInstance());
@@ -41,39 +43,64 @@ namespace {
 
     void FlutterVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
         Method* method = new Method(&methodCall, std::move(result));
-        if (method->name == "open") {
-            /*
-             * Opens an [AudioSource] i.e [Audio] or [Playlist] into the [AudioPlayer].
-             * 
-             * Argument for loading an [Audio]:
-             * 
-             * {
-             *      'id': 0,
-             *      'type': 'audio',
-             *      'audio': {
-             *          'type': 'file',
-             *          'resource': 'C:/alexmercerind/music.MP3'
-             *      }
-             * }
-             * 
-             * Argument for loading a [Playlist]:
-             * 
-             * {
-             *      'id': 1,
-             *      'type': 'playlist',
-             *      'start': 0,
-             *      'playlist': [
-             *          {
-             *              'type': 'network',
-             *              'resource': 'https://alexmercerind.com/music.MP3'
-             *          },
-             *          {
-             *              'type': 'file',
-             *              'resource': 'C:/alexmercerind/music.MP3'
-             *          }
-             *      ]
-             * }
-             */
+        /*
+         * Creates a new [AudioPlayer] instance & setups event & exception callbacks.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+         */
+        if (method->name == "init") {
+            int id = method->getArgument<int>("id");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->onEvent(
+                [audioPlayer] () -> void {
+                    event(audioPlayer->state);
+                }
+            );
+            audioPlayer->onException(
+                [audioPlayer] () -> void {
+                    exception(audioPlayer->state);
+                }
+            );
+            method->returnNull();
+        }
+        /*
+         * Opens an [AudioSource] i.e [Audio] or [Playlist] into the [AudioPlayer].
+         * 
+         * Argument for loading an [Audio]:
+         * 
+         * {
+         *      'id': 0,
+         *      'type': 'audio',
+         *      'audio': {
+         *          'type': 'file',
+         *          'resource': 'C:/alexmercerind/music.MP3'
+         *      }
+         * }
+         * 
+         * Argument for loading a [Playlist]:
+         * 
+         * {
+         *      'id': 1,
+         *      'type': 'playlist',
+         *      'start': 0,
+         *      'playlist': [
+         *          {
+         *              'type': 'network',
+         *              'resource': 'https://alexmercerind.com/music.MP3'
+         *          },
+         *          {
+         *              'type': 'file',
+         *              'resource': 'C:/alexmercerind/music.MP3'
+         *          }
+         *      ]
+         * }
+         */
+        else if (method->name == "open") {
             int id = method->getArgument<int>("id");
             std::string type = method->getArgument<std::string>("type");
             if (type == "audio") {
@@ -269,7 +296,134 @@ namespace {
         }
         method->returnResult();
     }
+}
 
+
+void event(AudioPlayerState* &state) {
+    /*
+     * Method to notify Dart about playback events.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'event',
+     *      'index': 1,
+     *      'playlist': [
+     *          {
+     *              'type': 'network',
+     *              'resource': 'https://alexmercerind.com/music.MP3'
+     *          },
+     *          {
+     *              'type': 'file',
+     *              'resource': 'C:/alexmercerind/music.MP3'
+     *          }
+     *      ],
+     *      'isPlaying': true,
+     *      'isValid': true,
+     *      'isSeekable': false,
+     *      'isCompleted': false,
+     *      'position': 56783,
+     *      'duration': 370278,
+     *      'volume': 1.0,
+     *      'rate': 1.25,
+     *      'isPlaylist': true
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "audioPlayerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("event")
+                        },
+                        {
+                            flutter::EncodableValue("index"),
+                            flutter::EncodableValue(state->index)
+                        },
+                        {
+                            flutter::EncodableValue("audios"),
+                            FlutterTypes::getValue<std::vector<std::map<std::string, std::string>>>(
+                                state->audios->get()
+                            )
+                        },
+                        {
+                            flutter::EncodableValue("isPlaying"),
+                            flutter::EncodableValue(state->isPlaying)
+                        },
+                        {
+                            flutter::EncodableValue("isValid"),
+                            flutter::EncodableValue(state->isValid)
+                        },
+                        {
+                            flutter::EncodableValue("isSeekable"),
+                            flutter::EncodableValue(state->isSeekable)
+                        },
+                        {
+                            flutter::EncodableValue("isCompleted"),
+                            flutter::EncodableValue(state->isCompleted)
+                        },
+                        {
+                            flutter::EncodableValue("position"),
+                            flutter::EncodableValue(state->position)
+                        },
+                        {
+                            flutter::EncodableValue("duration"),
+                            flutter::EncodableValue(state->duration)
+                        },
+                        {
+                            flutter::EncodableValue("volume"),
+                            flutter::EncodableValue(state->volume)
+                        },
+                        {
+                            flutter::EncodableValue("rate"),
+                            flutter::EncodableValue(state->rate)
+                        },
+                        {
+                            flutter::EncodableValue("isPlaylist"),
+                            flutter::EncodableValue(state->isPlaylist)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
+void exception(AudioPlayerState* &state) {
+    /*
+     * Method to notify Dart about exception events.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'exception',
+     *      'index': 1
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "audioPlayerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("exception")
+                        },
+                        {
+                            flutter::EncodableValue("index"),
+                            flutter::EncodableValue(state->index)
+                        }
+                    }
+                )
+            )
+        )
+    );
 }
 
 void FlutterVlcPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {
