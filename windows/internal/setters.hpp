@@ -20,6 +20,7 @@ public:
 			this->state->index = 0;
 			this->state->isPlaying = this->mediaListPlayer.isPlaying();
 			this->state->isValid = this->mediaListPlayer.isValid();
+			this->state->isPlaylist = false;
 
 		}
 		else if (audioSource->what() == "Playlist") {
@@ -34,6 +35,7 @@ public:
 			this->state->index = playlist->start;
 			this->state->isPlaying = this->mediaListPlayer.isPlaying();
 			this->state->isValid = this->mediaListPlayer.isValid();
+			this->state->isPlaylist = true;
 		}
 	}
 

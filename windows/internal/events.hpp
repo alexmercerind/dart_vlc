@@ -45,6 +45,13 @@ public:
 		);
 	}
 
+	void onSeekable(std::function<void(bool)> callback) {
+		this->_seekableCallback = callback;
+		this->mediaPlayer.eventManager().onSeekableChanged(
+			std::bind(&AudioPlayerEvents::_onSeekableCallback, this, std::placeholders::_1)
+		);
+	}
+
 	void onComplete(std::function<void(void)> callback) {
 		this->_completeCallback = callback;
 		this->mediaPlayer.eventManager().onEndReached(
@@ -60,63 +67,75 @@ public:
 	}
 
 private:
-	void _updateAudioPlayerState(bool isCompleted = false) {
-		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		this->state->isValid = this->mediaPlayer.isValid();
-		this->state->isCompleted = isCompleted;
-		this->state->position = this->getPosition();
-		this->state->duration = this->getDuration();
-	}
-
 	std::function<void(VLC::Media)> _loadCallback;
 
 	void _onLoadCallback(VLC::MediaPtr media) {
 		if (this->getDuration() > 0) {
-			this->_updateAudioPlayerState();
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
+			this->state->position = this->getPosition();
+			this->state->duration = this->getDuration();
 			this->_loadCallback(*media.get());
 		}
 		else {
 			this->state->index = this->mediaList.indexOfItem(*media.get());
 		}
-	};
+	}
 
 	std::function<void(void)> _playCallback;
 
 	void _onPlayCallback() {
 		if (this->getDuration() > 0) {
-			this->_updateAudioPlayerState();
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
+			this->state->position = this->getPosition();
+			this->state->duration = this->getDuration();
 			this->_playCallback();
 		}
-	};
+	}
 
 	std::function<void(void)> _pauseCallback;
 
 	void _onPauseCallback() {
 		if (this->getDuration() > 0) {
-			this->_updateAudioPlayerState();
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
+			this->state->position = this->getPosition();
+			this->state->duration = this->getDuration();
 			this->_pauseCallback();
 		}
-	};
+	}
 
 	std::function<void(void)> _stopCallback;
 
 	void _onStopCallback() {
 		if (this->getDuration() > 0) {
-			this->_updateAudioPlayerState();
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
+			this->state->position = this->getPosition();
+			this->state->duration = this->getDuration();
 			this->_stopCallback();
 		}
-	};
+	}
 
 	std::function<void(int)> _positionCallback;
 
 	void _onPositionCallback(float relativePosition) {
 		if (this->getDuration() > 0) {
-			this->_updateAudioPlayerState();
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
+			this->state->position = this->getPosition();
+			this->state->duration = this->getDuration();
 			this->_positionCallback(
 				static_cast<int>(relativePosition * this->mediaPlayer.length())
 			);
 		}
-	};
+	}
 
 	std::function<void(double)> _volumeCallback;
 
@@ -125,23 +144,40 @@ private:
 			this->state->volume = static_cast<double>(volume) / 100.0f;
 			this->_volumeCallback(this->state->volume);
 		}
-	};
+	}
+
+	std::function<void(bool)> _seekableCallback;
+
+	void _onSeekableCallback(bool isSeekable) {
+		if (this->getDuration() > 0) {
+			this->state->isSeekable = isSeekable;
+			this->_seekableCallback(isSeekable);
+		}
+	}
 
 	std::function<void(void)> _completeCallback;
 
 	void _onCompleteCallback() {
 		if (this->getDuration() > 0) {
-			this->_updateAudioPlayerState(true);
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = true;
+			this->state->position = this->getPosition();
+			this->state->duration = this->getDuration();
 			this->_completeCallback();
 		}
-	};
+	}
 
 	std::function<void(void)> _nextCallback;
 
 	void _onNextCallback() {
 		if (this->getDuration() > 0) {
-			this->_updateAudioPlayerState();
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
+			this->state->position = this->getPosition();
+			this->state->duration = this->getDuration();
 			this->_nextCallback();
 		}
-	};
+	}
 };

@@ -7,8 +7,10 @@ public:
 	Playlist* audios = new Playlist({});
 	bool isPlaying = false;
 	bool isValid = true;
+	bool isSeekable = true;
 	bool isCompleted = false;
 	int position = 0;
 	int duration = 0;
 	double volume = 1.0;
+	bool isPlaylist = false;
 };
