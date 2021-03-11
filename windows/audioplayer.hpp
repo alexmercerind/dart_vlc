@@ -12,16 +12,23 @@ public:
 		this->state = new AudioPlayerState();
 	}
 
-	void on(std::function<void(void)> callback) {
+	void onEvent(std::function<void(void)> callback) {
 		this->onPlay(callback);
 		this->onPause(callback);
 		this->onStop(callback);
 		this->onComplete(callback);
+		this->onSeekable(
+			[callback](bool _) -> void { callback(); }
+		);
 		this->onLoad(
 			[callback](VLC::Media _) -> void { callback(); }
 		);
 		this->onPosition(
 			[callback](int _) -> void { callback(); }
 		);
+	}
+
+	void onException(std::function<void(void)> callback) {
+		this->mediaPlayer.eventManager().onEncounteredError(callback);
 	}
 };
