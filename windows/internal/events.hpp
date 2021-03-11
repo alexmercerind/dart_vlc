@@ -130,11 +130,11 @@ private:
 		}
 	}
 
-	std::function<void(double)> _volumeCallback;
+	std::function<void(float)> _volumeCallback;
 
 	void _onVolumeCallback(int volume) {
 		if (this->getDuration() > 0) {
-			this->state->volume = static_cast<double>(volume) / 100.0f;
+			this->state->volume = static_cast<float>(volume) / 100.0f;
 			this->_volumeCallback(this->state->volume);
 		}
 	}

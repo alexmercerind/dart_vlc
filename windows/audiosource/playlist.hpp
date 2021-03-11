@@ -22,10 +22,7 @@ public:
 	std::vector<std::map<std::string, std::string>> get() {
 		std::vector<std::map<std::string, std::string>> _audios;
 		for (Audio* audio : this->audios) {
-			std::map<std::string, std::string> audioMap;
-			audioMap["type"] = audio->type;
-			audioMap["resource"] = audio->resource;
-			_audios.emplace_back(audioMap);
+			_audios.emplace_back(audio->get());
 		}
 		return _audios;
 	}

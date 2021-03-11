@@ -76,5 +76,6 @@ public:
 
 	void setRate(float rate) {
 		this->mediaPlayer.setRate(rate);
+		this->state->rate = rate;
 	}
 };
