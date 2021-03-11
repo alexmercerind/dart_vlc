@@ -161,7 +161,7 @@ namespace {
             method->returnNull();
         }
         /*
-         * Jumps to next track in the [Playlist] loaded in [AudioPlayer] instance.
+         * Jumps to next audio in the [Playlist] loaded in [AudioPlayer] instance.
          * 
          * Argument:
          * 
@@ -177,7 +177,7 @@ namespace {
             method->returnNull();
         }
         /*
-         * Jumps to previous track in the [Playlist] loaded in [AudioPlayer] instance.
+         * Jumps to previous audio in the [Playlist] loaded in [AudioPlayer] instance.
          * 
          * Argument:
          * 
@@ -190,6 +190,78 @@ namespace {
             int id = method->getArgument<int>("id");
             AudioPlayer* audioPlayer = audioPlayers->get(id);
             audioPlayer->back();
+            method->returnNull();
+        }
+        /*
+         * Jumps to specific index in the [Playlist] loaded in [AudioPlayer] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'index': 5
+         * }
+         * 
+         */
+        else if (method->name == "jump") {
+            int id = method->getArgument<int>("id");
+            int index = method->getArgument<int>("index");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->jump(index);
+            method->returnNull();
+        }
+        /*
+         * Seeks [AudioPlayer] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'duration': 50000
+         * }
+         * 
+         */
+        else if (method->name == "seek") {
+            int id = method->getArgument<int>("id");
+            int duration = method->getArgument<int>("duration");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->seek(duration);
+            method->returnNull();
+        }
+        /*
+         * Sets volume of [AudioPlayer] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'volume': 0.5
+         * }
+         * 
+         */
+        else if (method->name == "setVolume") {
+            int id = method->getArgument<int>("id");
+            double volume = method->getArgument<double>("volume");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->setVolume(volume);
+            method->returnNull();
+        }
+        /*
+         * Sets playback rate of [AudioPlayer] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'rate': 1.2
+         * }
+         * 
+         */
+        else if (method->name == "setRate") {
+            int id = method->getArgument<int>("id");
+            double rate = method->getArgument<double>("rate");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->setRate(rate);
             method->returnNull();
         }
         else {
