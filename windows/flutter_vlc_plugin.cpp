@@ -204,6 +204,7 @@ namespace {
          * 
          * {
          *      'id': 0,
+         *      'autoStart': true,
          *      'source': {
          *          'audioSourceType': 'AudioSourceType.audio',
          *          'audioType': 'AudioType.file',
@@ -215,6 +216,7 @@ namespace {
          * 
          * {
          *      'id': 1,
+         *      'autoStart': true,
          *      'source': {
          *          'audioSourceType': 'AudioSourceType.playlist',
          *          'start': 0,
@@ -235,6 +237,7 @@ namespace {
          */
         else if (method->name == "open") {
             int id = method->getArgument<int>("id");
+            bool autoStart = method->getArgument<bool>("autoStart");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
             std::string audioSourceType = std::get<std::string>(source[flutter::EncodableValue("audioSourceType")]);
             if (audioSourceType == "AudioSourceType.audio") {
@@ -248,10 +251,9 @@ namespace {
                 else
                     audio = Audio::asset(resource);
                 AudioPlayer* audioPlayer = audioPlayers->get(id);
-                audioPlayer->open(audio);
+                audioPlayer->open(audio, autoStart);
             }
             if (audioSourceType == "AudioSourceType.playlist") {
-                int start = std::get<int>(source[flutter::EncodableValue("start")]);
                 std::vector<Audio*> audios;
                 std::vector<std::map<std::string, std::string>> audiosMap = MethodCallHandler::getValue<std::vector<std::map<std::string, std::string>>>(source[flutter::EncodableValue("audios")]);
                 for (std::map<std::string,std::string> audioMap: audiosMap) {
@@ -266,10 +268,8 @@ namespace {
                 }
                 AudioPlayer* audioPlayer = audioPlayers->get(id);
                 audioPlayer->open(
-                    new Playlist(
-                        audios,
-                        start
-                    )
+                    new Playlist(audios),
+                    autoStart
                 );
             }
             method->returnNull();

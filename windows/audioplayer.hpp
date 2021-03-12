@@ -1,4 +1,4 @@
-#include "internal/events.hpp"
+#include "internal/setters.hpp"
 
 
 const std::string __title__   = "flutter_vlc";
@@ -9,7 +9,7 @@ const std::string __email__   = "saini123hitesh@gmail.com";
 const std::string __license__ = "LGPL v2.1";
 
 
-class AudioPlayer: public AudioPlayerEvents {
+class AudioPlayer: public AudioPlayerSetters {
 public:
 	AudioPlayer() {
 		this->instance = VLC::Instance(0, nullptr);
