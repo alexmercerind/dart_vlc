@@ -17,6 +17,7 @@ void event(AudioPlayerState* &state) {
      * 
      * {
      *      'type': 'event',
+     *      'id': 0,
      *      'index': 1,
      *      'audios': [
      *          {
@@ -113,6 +114,7 @@ void exception(AudioPlayerState* &state) {
      * 
      * {
      *      'type': 'exception',
+     *      'id': 0,
      *      'index': 1
      * }
      * 

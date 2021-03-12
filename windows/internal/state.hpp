@@ -3,6 +3,7 @@
 
 class AudioPlayerState {
 public:
+	int id;
 	int index = 0;
 	Playlist* audios = new Playlist({});
 	bool isPlaying = false;

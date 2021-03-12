@@ -8,7 +8,7 @@ class AudioPlayers {
 public:
 	AudioPlayer* get(int id) {
 		if (this->audioPlayers.find(id) == this->audioPlayers.end()) {
-			this->audioPlayers[id] = new AudioPlayer();
+			this->audioPlayers[id] = new AudioPlayer(id);
 		}
 		return this->audioPlayers[id];
 	}
@@ -20,7 +20,7 @@ private:
 AudioPlayers* audioPlayers = new AudioPlayers();
 
 int main(int argc, char** argv) {
-	AudioPlayer* audioPlayer = new AudioPlayer();
+	AudioPlayer* audioPlayer = new AudioPlayer(0);
 	audioPlayer->onEvent([audioPlayer] () -> void {
 		std::cout << std::boolalpha;
 		std::cout << "index       : " << audioPlayer->state->index << std::endl;

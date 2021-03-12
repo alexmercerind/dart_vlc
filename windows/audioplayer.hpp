@@ -11,13 +11,14 @@ const std::string __license__ = "LGPL v2.1";
 
 class AudioPlayer: public AudioPlayerSetters {
 public:
-	AudioPlayer() {
+	AudioPlayer(int id) {
 		this->instance = VLC::Instance(0, nullptr);
 		this->mediaPlayer = VLC::MediaPlayer(this->instance);
 		this->mediaListPlayer = VLC::MediaListPlayer(this->instance);
 		this->mediaList = VLC::MediaList(this->instance);
 		this->mediaListPlayer.setMediaPlayer(this->mediaPlayer);
 		this->state = new AudioPlayerState();
+		this->state->id = id;
 	}
 
 	void onEvent(std::function<void(void)> callback) {
