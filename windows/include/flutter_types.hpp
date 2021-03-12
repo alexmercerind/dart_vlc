@@ -74,6 +74,12 @@ public:
     }
 
     template <>
+    bool getArgument<bool>(const char* argument) {
+        flutter::EncodableValue value = this->arguments[flutter::EncodableValue(argument)];
+        return std::get<bool>(value);
+    }
+
+    template <>
     float getArgument<float>(const char* argument) {
         flutter::EncodableValue value = this->arguments[flutter::EncodableValue(argument)];
         return static_cast<float>(std::get<double>(value));
