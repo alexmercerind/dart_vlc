@@ -1,7 +1,7 @@
-#include "setters.hpp"
+#include "getters.hpp"
 
 
-class AudioPlayerEvents : public AudioPlayerSetters {
+class AudioPlayerEvents : public AudioPlayerGetters {
 public:
 	void onLoad(std::function<void(VLC::Media)> callback) {
 		this->_loadCallback = callback;
@@ -59,7 +59,7 @@ public:
 		);
 	}
 
-private:
+protected:
 	std::function<void(VLC::Media)> _loadCallback;
 
 	void _onLoadCallback(VLC::MediaPtr media) {
@@ -82,7 +82,6 @@ private:
 		if (this->getDuration() > 0) {
 			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
 			this->_playCallback();
@@ -95,7 +94,6 @@ private:
 		if (this->getDuration() > 0) {
 			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
 			this->_pauseCallback();
@@ -108,7 +106,6 @@ private:
 		if (this->getDuration() > 0) {
 			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
 			this->_stopCallback();
@@ -121,7 +118,6 @@ private:
 		if (this->getDuration() > 0) {
 			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
 			this->_positionCallback(

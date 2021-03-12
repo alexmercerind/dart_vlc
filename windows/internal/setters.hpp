@@ -1,12 +1,12 @@
-#include "getters.hpp"
+#include "events.hpp"
 #include "../audiosource/audiosource.hpp"
 #include "../audiosource/audio.hpp"
 #include "../audiosource/playlist.hpp"
 
 
-class AudioPlayerSetters: public AudioPlayerGetters {
+class AudioPlayerSetters: public AudioPlayerEvents {
 public:
-	void open(AudioSource* audioSource) {
+	void open(AudioSource* audioSource, bool autoStart = true) {
 		this->stop();
 		this->state->audios = new Playlist({});
 		this->mediaList = VLC::MediaList(this->instance);
@@ -15,11 +15,7 @@ public:
 			VLC::Media media = VLC::Media(this->instance, audio->location, VLC::Media::FromLocation);
 			this->mediaList.addMedia(media);
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->mediaListPlayer.playItemAtIndex(0);
 			this->state->audios = new Playlist({ audio });
-			this->state->index = 0;
-			this->state->isPlaying = this->mediaListPlayer.isPlaying();
-			this->state->isValid = this->mediaListPlayer.isValid();
 			this->state->isPlaylist = false;
 
 		}
@@ -30,12 +26,15 @@ public:
 				this->mediaList.addMedia(media);
 			}
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->mediaListPlayer.playItemAtIndex(playlist->start);
 			this->state->audios = playlist;
-			this->state->index = playlist->start;
+			this->state->isPlaylist = true;
+		}
+		this->_loadCallback(*this->mediaList.itemAtIndex(0).get());
+		if (autoStart) {
+			this->mediaListPlayer.playItemAtIndex(0);
+			this->state->index = 0;
 			this->state->isPlaying = this->mediaListPlayer.isPlaying();
 			this->state->isValid = this->mediaListPlayer.isValid();
-			this->state->isPlaylist = true;
 		}
 	}
 
