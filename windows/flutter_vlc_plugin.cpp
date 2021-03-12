@@ -54,6 +54,10 @@ void event(AudioPlayerState* &state) {
                             flutter::EncodableValue("event")
                         },
                         {
+                            flutter::EncodableValue("id"),
+                            flutter::EncodableValue(state->id)
+                        },
+                        {
                             flutter::EncodableValue("index"),
                             flutter::EncodableValue(state->index)
                         },
@@ -128,6 +132,10 @@ void exception(AudioPlayerState* &state) {
                         {
                             flutter::EncodableValue("type"),
                             flutter::EncodableValue("exception")
+                        },
+                        {
+                            flutter::EncodableValue("id"),
+                            flutter::EncodableValue(state->id)
                         },
                         {
                             flutter::EncodableValue("index"),
