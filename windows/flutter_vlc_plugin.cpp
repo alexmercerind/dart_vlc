@@ -18,13 +18,15 @@ void event(AudioPlayerState* &state) {
      * {
      *      'type': 'event',
      *      'index': 1,
-     *      'playlist': [
+     *      'audios': [
      *          {
-     *              'type': 'network',
+     *              'audioSourceType': 'AudioSourceType.audio',
+     *              'audioType': 'AudioType.network',
      *              'resource': 'https://alexmercerind.com/music.MP3'
      *          },
      *          {
-     *              'type': 'file',
+     *              'audioSourceType': 'AudioSourceType.audio',
+     *              'audioType': AudioType.'file',
      *              'resource': 'C:/alexmercerind/music.MP3'
      *          }
      *      ],
@@ -56,7 +58,7 @@ void event(AudioPlayerState* &state) {
                         },
                         {
                             flutter::EncodableValue("audios"),
-                            FlutterTypes::getValue<std::vector<std::map<std::string, std::string>>>(
+                            InvokeMethodHandler::getValue<std::vector<std::map<std::string, std::string>>>(
                                 state->audios->get()
                             )
                         },
@@ -169,7 +171,7 @@ namespace {
     FlutterVlcPlugin::~FlutterVlcPlugin() {}
 
     void FlutterVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-        Method* method = new Method(&methodCall, std::move(result));
+        MethodCallHandler* method = new MethodCallHandler(&methodCall, std::move(result));
         /*
          * Creates a new [AudioPlayer] instance & setups event & exception callbacks.
          * 
@@ -180,7 +182,7 @@ namespace {
          * }
          * 
          */
-        if (method->name == "init") {
+        if (method->name == "create") {
             int id = method->getArgument<int>("id");
             AudioPlayer* audioPlayer = audioPlayers->get(id);
             audioPlayer->onEvent(
@@ -202,9 +204,9 @@ namespace {
          * 
          * {
          *      'id': 0,
-         *      'type': 'audio',
-         *      'audio': {
-         *          'type': 'file',
+         *      'source': {
+         *          'audioSourceType': 'AudioSourceType.audio',
+         *          'audioType': 'AudioType.file',
          *          'resource': 'C:/alexmercerind/music.MP3'
          *      }
          * }
@@ -213,52 +215,54 @@ namespace {
          * 
          * {
          *      'id': 1,
-         *      'type': 'playlist',
-         *      'start': 0,
-         *      'playlist': [
-         *          {
-         *              'type': 'network',
-         *              'resource': 'https://alexmercerind.com/music.MP3'
-         *          },
-         *          {
-         *              'type': 'file',
-         *              'resource': 'C:/alexmercerind/music.MP3'
-         *          }
-         *      ]
+         *      'source': {
+         *          'audioSourceType': 'AudioSourceType.playlist',
+         *          'start': 0,
+         *          'audios': [
+         *              {
+         *                  'audioSourceType': 'AudioSourceType.audio',
+         *                  'audioType': 'AudioType.file',
+         *                  'resource': 'C:/alexmercerind/music.MP3'
+         *              },
+         *              {
+         *                  'audioSourceType': 'AudioSourceType.audio',
+         *                  'type': 'AudioType.network',
+         *                  'resource': 'C:/alexmercerind/music.MP3'
+         *              }
+         *          ]
+         *      }
          * }
          */
         else if (method->name == "open") {
             int id = method->getArgument<int>("id");
-            std::string type = method->getArgument<std::string>("type");
-            if (type == "audio") {
-                std::map<std::string,std::string> audioMap = method->getArgument<std::map<std::string,std::string>>("audio");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
+            std::string audioSourceType = std::get<std::string>(source[flutter::EncodableValue("audioSourceType")]);
+            if (audioSourceType == "AudioSourceType.audio") {
+                std::string audioType = std::get<std::string>(source[flutter::EncodableValue("audioType")]);
+                std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
                 Audio* audio = nullptr;
-                if (audioMap["type"] == "file")
-                    audio = Audio::file(audioMap["resource"]);
-                else if (audioMap["type"] == "network")
-                    audio = Audio::network(audioMap["resource"]);
+                if (audioType == "AudioType.file")
+                    audio = Audio::file(resource);
+                else if (audioType == "AudioType.network")
+                    audio = Audio::network(resource);
                 else
-                    audio = Audio::asset(audioMap["resource"]);
-                if (audio != nullptr) {
-                    AudioPlayer* audioPlayer = audioPlayers->get(id);
-                    audioPlayer->open(audio);
-                }
+                    audio = Audio::asset(resource);
+                AudioPlayer* audioPlayer = audioPlayers->get(id);
+                audioPlayer->open(audio);
             }
-            if (type == "playlist") {
+            if (audioSourceType == "AudioSourceType.playlist") {
+                int start = std::get<int>(source[flutter::EncodableValue("start")]);
                 std::vector<Audio*> audios;
-                int start = method->getArgument<int>("start");
-                std::vector<std::map<std::string,std::string>> playlistMap = method->getArgument<std::vector<std::map<std::string,std::string>>>("playlist");
-                for (std::map<std::string,std::string> audioMap: playlistMap) {
+                std::vector<std::map<std::string, std::string>> audiosMap = MethodCallHandler::getValue<std::vector<std::map<std::string, std::string>>>(source[flutter::EncodableValue("audios")]);
+                for (std::map<std::string,std::string> audioMap: audiosMap) {
                     Audio* audio;
-                    if (audioMap["type"] == "file")
+                    if (audioMap["audioType"] == "AudioType.file")
                         audio = Audio::file(audioMap["resource"]);
-                    else if (audioMap["type"] == "network")
+                    else if (audioMap["audioType"] == "AudioType.network")
                         audio = Audio::network(audioMap["resource"]);
                     else
                         audio = Audio::asset(audioMap["resource"]);
-                    if (audio != nullptr) {
-                        audios.emplace_back(audio);
-                    }
+                    audios.emplace_back(audio);
                 }
                 AudioPlayer* audioPlayer = audioPlayers->get(id);
                 audioPlayer->open(
