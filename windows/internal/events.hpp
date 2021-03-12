@@ -72,7 +72,12 @@ protected:
 			this->_loadCallback(*media.get());
 		}
 		else {
-			this->state->index = this->mediaList.indexOfItem(*media.get());
+			this->state->isPlaying = this->mediaPlayer.isPlaying();
+			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
+			this->state->position = 0;
+			this->state->duration = 0;
+			this->_loadCallback(*media.get());
 		}
 	}
 
@@ -82,6 +87,7 @@ protected:
 		if (this->getDuration() > 0) {
 			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
+			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
 			this->_playCallback();

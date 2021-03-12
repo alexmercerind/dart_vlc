@@ -29,7 +29,7 @@ public:
 			this->state->audios = playlist;
 			this->state->isPlaylist = true;
 		}
-		this->_loadCallback(*this->mediaList.itemAtIndex(0).get());
+		this->_onLoadCallback(this->mediaList.itemAtIndex(0));
 		if (autoStart) {
 			this->mediaListPlayer.playItemAtIndex(0);
 			this->state->index = 0;
