@@ -7,14 +7,14 @@
 #include <flutter/standard_method_codec.h>
 
 
-class Method {
+class MethodCallHandler {
 public:
     const flutter::MethodCall<flutter::EncodableValue>* methodCall;
     std::string name;
     std::map<flutter::EncodableValue, flutter::EncodableValue> arguments;
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result;
 
-    Method(const flutter::MethodCall<flutter::EncodableValue>* methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+    MethodCallHandler(const flutter::MethodCall<flutter::EncodableValue>* methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
         this->methodCall = methodCall;
         this->name = std::string(this->methodCall->method_name());
         this->arguments = std::get<flutter::EncodableMap>(*methodCall->arguments());
@@ -104,16 +104,60 @@ public:
         return vector;
     }
 
+    template<class T>
+    static T getValue(flutter::EncodableValue value);
+
+    template <>
+    static int getValue<int>(flutter::EncodableValue value) {
+        return std::get<int>(value);
+    }
+
+    template <>
+    static std::string getValue<std::string>(flutter::EncodableValue value) {
+        return std::get<std::string>(value);
+    }
+
+    template <>
+    static float getValue<float>(flutter::EncodableValue value) {
+        return static_cast<float>(std::get<double>(value));
+    }
+
+    template <>
+    static std::map<std::string, std::string> getValue<std::map<std::string, std::string>>(flutter::EncodableValue value) {
+        std::map<std::string, std::string> map;
+        flutter::EncodableMap flutterMap = std::get<flutter::EncodableMap>(value);
+        for (const auto &pair: flutterMap) {
+            map[std::get<std::string>(pair.first)] = std::get<std::string>(pair.second);
+        }
+        return map;
+    }
+
+    template <>
+    static std::vector<std::map<std::string, std::string>> getValue<std::vector<std::map<std::string, std::string>>>(flutter::EncodableValue value) {
+        std::vector<std::map<std::string, std::string>> vector;
+        std::vector<flutter::EncodableValue> flutterVector = std::get<flutter::EncodableList>(value);
+        for (flutter::EncodableValue element: flutterVector) {
+            std::map<flutter::EncodableValue, flutter::EncodableValue> flutterMap = std::get<flutter::EncodableMap>(element);
+            std::map<std::string, std::string> standardMap;
+            for (std::pair pair : flutterMap) {
+                standardMap[std::get<std::string>(pair.first)] = std::get<std::string>(pair.second);
+            }
+            vector.emplace_back(standardMap);
+        }
+        return vector;
+    }
+
     void returnResult() {}
 };
 
 
-namespace FlutterTypes {
+class InvokeMethodHandler {
+public:
     template<class T>
-    flutter::EncodableValue getValue(T value);
+    static flutter::EncodableValue getValue(T value);
 
     template <>
-    flutter::EncodableValue getValue<std::map<std::string, std::string>>(std::map<std::string, std::string> value) {
+    static flutter::EncodableValue getValue<std::map<std::string, std::string>>(std::map<std::string, std::string> value) {
         auto flutterMap = flutter::EncodableMap();
         for (std::pair pair : value) {
             flutterMap[flutter::EncodableValue(pair.first)] = flutter::EncodableValue(pair.second);
@@ -122,7 +166,7 @@ namespace FlutterTypes {
     }
 
     template <>
-    flutter::EncodableValue getValue<std::vector<std::map<std::string, std::string>>>(std::vector<std::map<std::string, std::string>> value) {
+    static flutter::EncodableValue getValue<std::vector<std::map<std::string, std::string>>>(std::vector<std::map<std::string, std::string>> value) {
         flutter::EncodableList flutterVector = flutter::EncodableList();
         for (std::map<std::string, std::string> map : value) {
             flutter::EncodableMap flutterMap = flutter::EncodableMap();
@@ -133,4 +177,4 @@ namespace FlutterTypes {
         }
         return flutter::EncodableValue(flutterVector);
     }
-}
+};
