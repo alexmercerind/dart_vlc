@@ -1,6 +1,14 @@
 #include "internal/events.hpp"
 
 
+const std::string __title__   = "flutter_vlc";
+const std::string __version__ = "v0.0.1";
+const std::string __author__  = "Hitesh Kumar Saini";
+const std::string __github__  = "https://github.com/alexmercerind";
+const std::string __email__   = "saini123hitesh@gmail.com";
+const std::string __license__ = "LGPL v2.1";
+
+
 class AudioPlayer: public AudioPlayerEvents {
 public:
 	AudioPlayer() {

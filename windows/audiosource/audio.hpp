@@ -10,7 +10,7 @@
 
 class Audio: public AudioSource {
 public:
-	std::string type;
+	std::string audioType;
 	std::string resource;
 	std::string location;
 	std::map<std::string, std::string> metas;
@@ -19,7 +19,7 @@ public:
 		Audio* audio = new Audio();
 		audio->resource = path;
 		audio->location = "file:///" + path;
-		audio->type = "file";
+		audio->audioType = "AudioType.file";
 		return audio;
 	}
 
@@ -27,7 +27,7 @@ public:
 		Audio* audio = new Audio();
 		audio->resource = url;
 		audio->location = url;
-		audio->type = "network";
+		audio->audioType = "AudioType.network";
 		return audio;
 	}
 
@@ -35,19 +35,19 @@ public:
 		Audio* audio = new Audio();
 		audio->resource = path;
 		audio->location = "file:///" + std::filesystem::temp_directory_path().u8string() + path;
-		audio->type = "asset";
+		audio->audioType = "AudioType.asset";
 		return audio;
 	}
 
 	std::map<std::string, std::string> get() {
 		std::map<std::string, std::string> audio;
-		audio["type"] = this->type;
+		audio["audioType"] = this->audioType;
 		audio["resource"] = this->resource;
 		return audio;
 	}
 	
-	std::string what() {
-		return "audio";
+	std::string audioSourceType() {
+		return "AudioSourceType.audio";
 	}
 };
 

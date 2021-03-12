@@ -27,8 +27,8 @@ public:
 		return _audios;
 	}
 
-	std::string what() {
-		return "playlist";
+	std::string audioSourceType() {
+		return "AudioSourceType.playlist";
 	}
 };
 

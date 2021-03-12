@@ -7,7 +7,7 @@
 class AudioSource {
 public:
 	int _;
-	virtual std::string what() = 0;
+	virtual std::string audioSourceType() = 0;
 };
 
 

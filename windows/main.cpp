@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 		std::cout << "playlist    : " << "[ " << std::endl;
 		int index = 0;
 		for (Audio* audio : audioPlayer->state->audios->audios) {
-			std::cout << "    " << index << ". " << audio->type << ", " << audio->resource << ", " << std::endl;
+			std::cout << "    " << index << ". " << audio->audioType << ", " << audio->resource << ", " << std::endl;
 			index++;
 		}
 		std::cout << "]" << std::endl << std::endl;
