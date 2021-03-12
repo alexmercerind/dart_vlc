@@ -11,12 +11,10 @@
 
 class Playlist : public AudioSource {
 public:
-	int start;
 	std::vector<Audio*> audios;
 
-	Playlist(std::vector<Audio*> audios, int start = 0) {
+	Playlist(std::vector<Audio*> audios) {
 		this->audios = audios;
-		this->start = start;
 	};
 
 	std::vector<std::map<std::string, std::string>> get() {
