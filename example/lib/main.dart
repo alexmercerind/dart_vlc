@@ -115,7 +115,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                         Padding(
                           padding: EdgeInsets.only(left: 16.0),
                           child: ElevatedButton(
-                            onPressed: () => this.setState(() {
+                            onPressed: () async {
                               if (this.audioType == AudioType.file) {
                                 this.audios.add(
                                   Audio.file(
@@ -132,12 +132,13 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                               }
                               else if (this.audioType == AudioType.asset) {
                                 this.audios.add(
-                                  Audio.asset(
+                                  await Audio.asset(
                                     controller.text
                                   ),
                                 );
                               }
-                            }),
+                              this.setState(() {});
+                            },
                             child: Text(
                               'Add',
                               style: TextStyle(
