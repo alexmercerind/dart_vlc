@@ -79,6 +79,7 @@ protected:
 			this->state->duration = 0;
 			this->_loadCallback(*media.get());
 		}
+		this->state->index = this->mediaList.indexOfItem(*media.get());
 	}
 
 	std::function<void(void)> _playCallback;

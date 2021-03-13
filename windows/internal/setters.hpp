@@ -46,6 +46,13 @@ public:
         this->mediaListPlayer.pause();
     }
 
+	void playOrPause() {
+		if (this->mediaListPlayer.isPlaying())
+			this->mediaListPlayer.pause();
+		else
+			this->mediaListPlayer.play();
+	}
+
     void stop() {
         this->mediaListPlayer.stop();
     }
@@ -71,6 +78,7 @@ public:
 		this->mediaPlayer.setVolume(
 				static_cast<int>(volume * 100)
 		);
+		this->state->volume = volume;
 	}
 
 	void setRate(float rate) {

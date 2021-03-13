@@ -317,6 +317,22 @@ namespace {
             method->returnNull();
         }
         /*
+         * Switches between play & pause states of the [AudioPlayer] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+         */
+        else if (method->name == "playOrPause") {
+            int id = method->getArgument<int>("id");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->playOrPause();
+            method->returnNull();
+        }
+        /*
          * Stops the [AudioPlayer] instance.
          * 
          * Argument:
