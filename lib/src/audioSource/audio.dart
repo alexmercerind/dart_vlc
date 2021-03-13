@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart' as _path;
+import 'package:path_provider/path_provider.dart' as _path;
 import 'package:flutter_vlc/src/audioSource/audioSource.dart';
 import 'package:flutter_vlc/src/enums/audioSourceType.dart';
 import 'package:flutter_vlc/src/enums/audioType.dart';
@@ -49,10 +53,20 @@ class Audio extends AudioSource {
   }
 
   /// Makes [Audio] object from an asset.
-  static Audio asset( String path ) {
+  static Future<Audio> asset( String path ) async {
     Audio audio = new Audio();
-    audio.audioType = AudioType.file;
+    audio.audioType = AudioType.asset;
     audio.resource = path;
+    ByteData audioByteData = await rootBundle.load(path);
+    Uint8List audioBytes = audioByteData.buffer.asUint8List();
+    File audioFile = new File(
+      _path.join(
+        (await _path.getTemporaryDirectory()).path,
+        path,
+      )
+    );
+    await audioFile.create(recursive: true);
+    await audioFile.writeAsBytes(audioBytes);
     return audio;
   }
 
