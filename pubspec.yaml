@@ -1,5 +1,5 @@
 name: flutter_vlc
-description: A powerful audio playback library for Flutter Desktop. Based on libVLC.
+description: A media playback library for Flutter. Based on libVLC.
 version: 0.0.1
 homepage: https://github.com/alexmercerind/flutter_vlc
 repository: https://github.com/alexmercerind/flutter_vlc
@@ -13,6 +13,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  path_provider: ^2.0.1
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:
