@@ -24,14 +24,29 @@ abstract class Player {
   /// ID associated with the [Player] instance.
   int id;
 
-  /// Playback state of the [Player] instance.
-  PlayerState state = new PlayerState();
+  /// State of the current & opened [MediaSource] in [Player] instance.
+  CurrentState current = new CurrentState();
 
-  /// Internally used [StreamController],
-  StreamController<PlayerState> streamController;
+  /// Stream to listen to current & opened [MediaSource] state of the [Player] instance.
+  Stream<CurrentState> currentStream;
+
+  /// Position & duration state of the [Player] instance.
+  PositionState position = new PositionState();
+
+  /// Stream to listen to position & duration state of the [Player] instance.
+  Stream<PositionState> positionStream;
+
+  /// Playback state of the [Player] instance.
+  PlaybackState playback = new PlaybackState();
 
   /// Stream to listen to playback state of the [Player] instance.
-  Stream<PlayerState> stream;
+  Stream<PlaybackState> playbackStream;
+
+  /// Volume & Rate state of the [Player] instance.
+  GeneralState general = new GeneralState();
+
+  /// Stream to listen to volume & rate state of the [Player] instance.
+  Stream<GeneralState> generateStream;
 
   /// Creates a new [Player] instance.
   ///
@@ -49,8 +64,16 @@ abstract class Player {
       },
     );
     players[id] = new _Player()..id = id;
-    players[id].streamController = StreamController<PlayerState>.broadcast();
-    players[id].stream = players[id].streamController.stream;
+    players[id].currentController = StreamController<CurrentState>.broadcast();
+    players[id].currentStream = players[id].currentController.stream;
+    players[id].positionController =
+        StreamController<PositionState>.broadcast();
+    players[id].positionStream = players[id].positionController.stream;
+    players[id].playbackController =
+        StreamController<PlaybackState>.broadcast();
+    players[id].playbackStream = players[id].playbackController.stream;
+    players[id].generalController = StreamController<GeneralState>.broadcast();
+    players[id].generateStream = players[id].generalController.stream;
     return players[id];
   }
 
@@ -90,8 +113,23 @@ abstract class Player {
   /// ```
   ///
   Future<void> open(MediaSource source, {bool autoStart: true}) async {
-    if (this.streamController.isClosed) {
-      this.streamController = StreamController<PlayerState>.broadcast();
+    if (this.currentController.isClosed) {
+      players[this.id].currentController =
+          StreamController<CurrentState>.broadcast();
+      players[this.id].currentStream =
+          players[this.id].currentController.stream;
+      players[this.id].positionController =
+          StreamController<PositionState>.broadcast();
+      players[this.id].positionStream =
+          players[this.id].positionController.stream;
+      players[this.id].playbackController =
+          StreamController<PlaybackState>.broadcast();
+      players[this.id].playbackStream =
+          players[this.id].playbackController.stream;
+      players[this.id].generalController =
+          StreamController<GeneralState>.broadcast();
+      players[this.id].generateStream =
+          players[this.id].generalController.stream;
     }
     await channel.invokeMethod(
       'open',
@@ -141,7 +179,10 @@ abstract class Player {
         'id': this.id,
       },
     );
-    await this.streamController.close();
+    await this.currentController.close();
+    await this.positionController.close();
+    await this.playbackController.close();
+    await this.generalController.close();
   }
 
   /// Jumps to the next [Media] in the [Playlist] opened.
@@ -208,4 +249,10 @@ abstract class Player {
       },
     );
   }
+
+  /// Internally used [StreamController]s,
+  StreamController<CurrentState> currentController;
+  StreamController<PositionState> positionController;
+  StreamController<PlaybackState> playbackController;
+  StreamController<GeneralState> generalController;
 }
