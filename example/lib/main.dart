@@ -3,17 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 
-
 void main() {
   runApp(DartVLC());
 }
-
 
 class DartVLC extends StatefulWidget {
   @override
   _DartVLCState createState() => _DartVLCState();
 }
-
 
 class _DartVLCState extends State<DartVLC> {
   Player player;
@@ -52,163 +49,163 @@ class _DartVLCState extends State<DartVLC> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('Add to playlist.'),
-                    Divider(
-                      height: 8.0,
-                      color: Colors.transparent,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: this.controller,
-                            cursorWidth: 1.0,
-                            autofocus: true,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                            ),
-                            decoration: InputDecoration.collapsed(
-                              hintStyle: TextStyle(
-                                fontSize: 14.0,
-                              ),
-                              hintText: 'Media resource location.',
-                            ),
-                          ),
+                        Text('Add to playlist.'),
+                        Divider(
+                          height: 8.0,
+                          color: Colors.transparent,
                         ),
-                        Container(
-                          width: 148.0,
-                          child: DropdownButton<MediaType>(
-                            value: this.mediaType,
-                            onChanged: (mediaType) => this.setState(() => this.mediaType = mediaType),
-                            items: [
-                              DropdownMenuItem<MediaType>(
-                                value: MediaType.file,
-                                child: Text(
-                                  MediaType.file.toString(),
-                                  style: TextStyle(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: this.controller,
+                                cursorWidth: 1.0,
+                                autofocus: true,
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                ),
+                                decoration: InputDecoration.collapsed(
+                                  hintStyle: TextStyle(
                                     fontSize: 14.0,
                                   ),
+                                  hintText: 'Media resource location.',
                                 ),
-                              ),
-                              DropdownMenuItem<MediaType>(
-                                value: MediaType.network,
-                                child: Text(
-                                  MediaType.network.toString(),
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                              ),
-                              DropdownMenuItem<MediaType>(
-                                value: MediaType.asset,
-                                child: Text(
-                                  MediaType.asset.toString(),
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 16.0),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (this.mediaType == MediaType.file) {
-                                this.medias.add(
-                                  Media.file(
-                                    new File(controller.text)
-                                  ),
-                                );
-                              }
-                              else if (this.mediaType == MediaType.network) {
-                                this.medias.add(
-                                  Media.network(
-                                    controller.text
-                                  ),
-                                );
-                              }
-                              else if (this.mediaType == MediaType.asset) {
-                                this.medias.add(
-                                  await Media.asset(
-                                    controller.text
-                                  ),
-                                );
-                              }
-                              this.setState(() {});
-                            },
-                            child: Text(
-                              'Add',
-                              style: TextStyle(
-                                fontSize: 14.0,
                               ),
                             ),
-                          ),
+                            Container(
+                              width: 148.0,
+                              child: DropdownButton<MediaType>(
+                                value: this.mediaType,
+                                onChanged: (mediaType) => this
+                                    .setState(() => this.mediaType = mediaType),
+                                items: [
+                                  DropdownMenuItem<MediaType>(
+                                    value: MediaType.file,
+                                    child: Text(
+                                      MediaType.file.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem<MediaType>(
+                                    value: MediaType.network,
+                                    child: Text(
+                                      MediaType.network.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem<MediaType>(
+                                    value: MediaType.asset,
+                                    child: Text(
+                                      MediaType.asset.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 16.0),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  if (this.mediaType == MediaType.file) {
+                                    this.medias.add(
+                                          Media.file(new File(controller.text)),
+                                        );
+                                  } else if (this.mediaType ==
+                                      MediaType.network) {
+                                    this.medias.add(
+                                          Media.network(controller.text),
+                                        );
+                                  } else if (this.mediaType ==
+                                      MediaType.asset) {
+                                    this.medias.add(
+                                          await Media.asset(controller.text),
+                                        );
+                                  }
+                                  this.setState(() {});
+                                },
+                                child: Text(
+                                  'Add',
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          height: 12.0,
+                        ),
+                        Divider(
+                          height: 8.0,
+                          color: Colors.transparent,
+                        ),
+                        Text('Playlist'),
+                      ] +
+                      this
+                          .medias
+                          .map(
+                            (media) => ListTile(
+                              title: Text(
+                                media.resource,
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                              subtitle: Text(
+                                media.mediaType.toString(),
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList() +
+                      <Widget>[
+                        Divider(
+                          height: 8.0,
+                          color: Colors.transparent,
+                        ),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => this.setState(() {
+                                this.player.open(
+                                      new Playlist(
+                                        medias: this.medias,
+                                      ),
+                                    );
+                              }),
+                              child: Text(
+                                'Open',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12.0),
+                            ElevatedButton(
+                              onPressed: () => this.setState(() {
+                                this.medias.clear();
+                              }),
+                              child: Text(
+                                'Clear',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                    Divider(
-                      height: 12.0,
-                    ),
-                    Divider(
-                      height: 8.0,
-                      color: Colors.transparent,
-                    ),
-                    Text('Playlist'),
-                  ] + this.medias.map(
-                    (media) => ListTile(
-                      title: Text(
-                        media.resource,
-                        style: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                      ),
-                      subtitle: Text(
-                        media.mediaType.toString(),
-                        style: TextStyle(
-                          fontSize: 14.0,
-                        ),
-                      ),
-                    ),
-                  ).toList() + <Widget>[
-                    Divider(
-                      height: 8.0,
-                      color: Colors.transparent,
-                    ),
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => this.setState(() {
-                            this.player.open(
-                              new Playlist(
-                                medias: this.medias,
-                              ),
-                            );
-                          }),
-                          child: Text(
-                            'Open',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 12.0),
-                        ElevatedButton(
-                          onPressed: () => this.setState(() {
-                            this.medias.clear();
-                          }),
-                          child: Text(
-                            'Clear',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
               ),
             ),
@@ -356,8 +353,8 @@ class _DartVLCState extends State<DartVLC> {
                       value: this.state.position.inMilliseconds.toDouble(),
                       onChanged: (double position) {
                         this.player.seek(
-                          Duration(milliseconds: position.toInt()),
-                        );
+                              Duration(milliseconds: position.toInt()),
+                            );
                       },
                     ),
                     Text('Stats for nerds.'),
@@ -367,66 +364,46 @@ class _DartVLCState extends State<DartVLC> {
                     ),
                     Table(
                       children: [
-                        TableRow(
-                          children: [
-                            Text('player.state.volume'),
-                            Text('${this.state.volume}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.rate'),
-                            Text('${this.state.rate}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.position'),
-                            Text('${this.state.position}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.duration'),
-                            Text('${this.state.duration}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.index'),
-                            Text('${this.state.index}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.isCompleted'),
-                            Text('${this.state.isCompleted}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.isPlaying'),
-                            Text('${this.state.isPlaying}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.isSeekable'),
-                            Text('${this.state.isSeekable}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.isValid'),
-                            Text('${this.state.isValid}')
-                          ]
-                        ),
-                        TableRow(
-                          children: [
-                            Text('player.state.medias'),
-                            Text('${this.state.medias}')
-                          ]
-                        ),
+                        TableRow(children: [
+                          Text('player.state.volume'),
+                          Text('${this.state.volume}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.rate'),
+                          Text('${this.state.rate}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.position'),
+                          Text('${this.state.position}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.duration'),
+                          Text('${this.state.duration}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.index'),
+                          Text('${this.state.index}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.isCompleted'),
+                          Text('${this.state.isCompleted}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.isPlaying'),
+                          Text('${this.state.isPlaying}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.isSeekable'),
+                          Text('${this.state.isSeekable}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.isValid'),
+                          Text('${this.state.isValid}')
+                        ]),
+                        TableRow(children: [
+                          Text('player.state.medias'),
+                          Text('${this.state.medias}')
+                        ]),
                       ],
                     ),
                   ],

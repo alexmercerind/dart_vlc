@@ -2,6 +2,7 @@
 enum MediaSourceType {
   /// A single [Media].
   media,
+
   /// A [Playlist] containing multiple [Media] to play sequencially.
   playlist,
 }
