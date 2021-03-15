@@ -13,6 +13,14 @@
 </tr>
 </table>
 
+## :: Installation
+
+```yaml
+dependencies:
+  ...
+  dart_vlc: ^0.0.1
+```
+
 ## :book: Documentation
 
 Create a new `Player` instance.
