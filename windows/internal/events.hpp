@@ -13,10 +13,10 @@
 
 class PlayerEvents : public PlayerGetters {
 public:
-	void onLoad(std::function<void(VLC::Media)> callback) {
-		this->_loadCallback = callback;
+	void onOpen(std::function<void(VLC::Media)> callback) {
+		this->_openCallback = callback;
 		this->mediaPlayer.eventManager().onMediaChanged(
-			std::bind(&PlayerEvents::_onLoadCallback, this, std::placeholders::_1)
+			std::bind(&PlayerEvents::_onOpenCallback, this, std::placeholders::_1)
 		);
 	}
 
@@ -48,13 +48,6 @@ public:
 		);
 	}
 
-	void onVolume(std::function<void(float)> callback) {
-		this->_volumeCallback = callback;
-		this->mediaPlayer.eventManager().onAudioVolume(
-			std::bind(&PlayerEvents::_onVolumeCallback, this, std::placeholders::_1)
-		);
-	}
-
 	void onSeekable(std::function<void(bool)> callback) {
 		this->_seekableCallback = callback;
 		this->mediaPlayer.eventManager().onSeekableChanged(
@@ -69,17 +62,25 @@ public:
 		);
 	}
 
-protected:
-	std::function<void(VLC::Media)> _loadCallback;
+	void onVolume(std::function<void(float)> callback) {
+		this->_volumeCallback = callback;
+	}
 
-	void _onLoadCallback(VLC::MediaPtr media) {
+	void onRate(std::function<void(float)> callback) {
+		this->_rateCallback = callback;
+	}
+
+protected:
+	std::function<void(VLC::Media)> _openCallback;
+
+	void _onOpenCallback(VLC::MediaPtr media) {
 		if (this->getDuration() > 0) {
 			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
 			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
-			this->_loadCallback(*media.get());
+			this->_openCallback(*media.get());
 		}
 		else {
 			this->state->isPlaying = this->mediaPlayer.isPlaying();
@@ -87,7 +88,7 @@ protected:
 			this->state->isCompleted = false;
 			this->state->position = 0;
 			this->state->duration = 0;
-			this->_loadCallback(*media.get());
+			this->_openCallback(*media.get());
 		}
 		this->state->index = this->mediaList.indexOfItem(*media.get());
 	}
@@ -143,15 +144,6 @@ protected:
 		}
 	}
 
-	std::function<void(float)> _volumeCallback;
-
-	void _onVolumeCallback(int volume) {
-		if (this->getDuration() > 0) {
-			this->state->volume = static_cast<float>(volume) / 100.0f;
-			this->_volumeCallback(this->state->volume);
-		}
-	}
-
 	std::function<void(bool)> _seekableCallback;
 
 	void _onSeekableCallback(bool isSeekable) {
@@ -173,4 +165,8 @@ protected:
 			this->_completeCallback();
 		}
 	}
+
+	std::function<void(float)> _volumeCallback;
+
+	std::function<void(float)> _rateCallback;
 };

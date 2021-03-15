@@ -19,14 +19,139 @@
 
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
 
-void event(PlayerState* &state) {
+
+void position(PlayerState* &state) {
+    /*
+     * Method to notify Dart about position event.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'positionEvent',
+     *      'id': 0,
+     *      'position': 56783,
+     *      'duration': 370278
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "playerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("positionEvent")
+                        },
+                        {
+                            flutter::EncodableValue("id"),
+                            flutter::EncodableValue(state->id)
+                        },
+                        {
+                            flutter::EncodableValue("position"),
+                            flutter::EncodableValue(state->position)
+                        },
+                        {
+                            flutter::EncodableValue("duration"),
+                            flutter::EncodableValue(state->duration)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
+void playback(PlayerState* &state) {
     /*
      * Method to notify Dart about playback events.
      *
      * Argument:
      * 
      * {
-     *      'type': 'event',
+     *      'type': 'playbackEvent',
+     *      'id': 0,
+     *      'isPlaying': true,
+     *      'isSeekable': false
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "playerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("playbackEvent")
+                        },
+                        {
+                            flutter::EncodableValue("id"),
+                            flutter::EncodableValue(state->id)
+                        },
+                        {
+                            flutter::EncodableValue("isPlaying"),
+                            flutter::EncodableValue(state->isPlaying)
+                        },
+                        {
+                            flutter::EncodableValue("isSeekable"),
+                            flutter::EncodableValue(state->isSeekable)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
+void complete(PlayerState* &state) {
+    /*
+     * Method to notify Dart about playback completion event.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'completeEvent',
+     *      'id': 0,
+     *      'isCompleted': false
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "playerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("completeEvent")
+                        },
+                        {
+                            flutter::EncodableValue("id"),
+                            flutter::EncodableValue(state->id)
+                        },
+                        {
+                            flutter::EncodableValue("isCompleted"),
+                            flutter::EncodableValue(state->isCompleted)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
+void open(PlayerState* &state) {
+    /*
+     * Method to notify Dart about open event.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'openEvent',
      *      'id': 0,
      *      'index': 1,
      *      'medias': [
@@ -41,14 +166,6 @@ void event(PlayerState* &state) {
      *              'resource': 'C:/alexmercerind/music.MP3'
      *          }
      *      ],
-     *      'isPlaying': true,
-     *      'isValid': true,
-     *      'isSeekable': false,
-     *      'isCompleted': false,
-     *      'position': 56783,
-     *      'duration': 370278,
-     *      'volume': 1.0,
-     *      'rate': 1.25,
      *      'isPlaylist': true
      * }
      * 
@@ -61,7 +178,7 @@ void event(PlayerState* &state) {
                     {
                         {
                             flutter::EncodableValue("type"),
-                            flutter::EncodableValue("event")
+                            flutter::EncodableValue("openEvent")
                         },
                         {
                             flutter::EncodableValue("id"),
@@ -78,40 +195,84 @@ void event(PlayerState* &state) {
                             )
                         },
                         {
-                            flutter::EncodableValue("isPlaying"),
-                            flutter::EncodableValue(state->isPlaying)
+                            flutter::EncodableValue("isPlaylist"),
+                            flutter::EncodableValue(state->isPlaylist)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
+void volume(PlayerState* &state) {
+    /*
+     * Method to notify Dart about open event.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'volumeEvent',
+     *      'id': 0,
+     *      'volume': 0.345
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "playerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("volumeEvent")
                         },
                         {
-                            flutter::EncodableValue("isValid"),
-                            flutter::EncodableValue(state->isValid)
-                        },
-                        {
-                            flutter::EncodableValue("isSeekable"),
-                            flutter::EncodableValue(state->isSeekable)
-                        },
-                        {
-                            flutter::EncodableValue("isCompleted"),
-                            flutter::EncodableValue(state->isCompleted)
-                        },
-                        {
-                            flutter::EncodableValue("position"),
-                            flutter::EncodableValue(state->position)
-                        },
-                        {
-                            flutter::EncodableValue("duration"),
-                            flutter::EncodableValue(state->duration)
+                            flutter::EncodableValue("id"),
+                            flutter::EncodableValue(state->id)
                         },
                         {
                             flutter::EncodableValue("volume"),
                             flutter::EncodableValue(state->volume)
+                        }
+                    }
+                )
+            )
+        )
+    );
+}
+
+void rate(PlayerState* &state) {
+    /*
+     * Method to notify Dart about rate event.
+     *
+     * Argument:
+     * 
+     * {
+     *      'type': 'openEvent',
+     *      'id': 0,
+     *      'rate': 1.23
+     * }
+     * 
+     */
+    channel->InvokeMethod(
+        "playerState",
+        std::unique_ptr<flutter::EncodableValue>(
+            new flutter::EncodableValue(
+                flutter::EncodableMap(
+                    {
+                        {
+                            flutter::EncodableValue("type"),
+                            flutter::EncodableValue("rateEvent")
+                        },
+                        {
+                            flutter::EncodableValue("id"),
+                            flutter::EncodableValue(state->id)
                         },
                         {
                             flutter::EncodableValue("rate"),
                             flutter::EncodableValue(state->rate)
-                        },
-                        {
-                            flutter::EncodableValue("isPlaylist"),
-                            flutter::EncodableValue(state->isPlaylist)
                         }
                     }
                 )
@@ -141,7 +302,7 @@ void exception(PlayerState* &state) {
                     {
                         {
                             flutter::EncodableValue("type"),
-                            flutter::EncodableValue("exception")
+                            flutter::EncodableValue("exceptionEvent")
                         },
                         {
                             flutter::EncodableValue("id"),
@@ -205,9 +366,44 @@ namespace {
         if (method->name == "create") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
-            player->onEvent(
+            player->onPlay(
                 [player] () -> void {
-                    event(player->state);
+                    playback(player->state);
+                }
+            );
+            player->onPause(
+                [player] () -> void {
+                    playback(player->state);
+                }
+            );
+            player->onStop(
+                [player] () -> void {
+                    playback(player->state);
+                }
+            );
+            player->onPosition(
+                [player] (int _) -> void {
+                    position(player->state);
+                }
+            );
+            player->onOpen(
+                [player] (VLC::Media _) -> void {
+                    open(player->state);
+                }
+            );
+            player->onVolume(
+                [player] (float _) -> void {
+                    volume(player->state);
+                }
+            );
+            player->onRate(
+                [player] (float _) -> void {
+                    rate(player->state);
+                }
+            );
+            player->onComplete(
+                [player] () -> void {
+                    complete(player->state);
                 }
             );
             player->onException(

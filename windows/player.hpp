@@ -31,7 +31,7 @@ public:
 		this->onSeekable(
 			[callback](bool _) -> void { callback(); }
 		);
-		this->onLoad(
+		this->onOpen(
 			[callback](VLC::Media _) -> void { callback(); }
 		);
 		this->onPosition(

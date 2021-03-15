@@ -31,6 +31,8 @@ public:
 		}
 		else if (mediaSource->mediaSourceType() == "MediaSourceType.playlist") {
 			Playlist* playlist = dynamic_cast<Playlist*>(mediaSource);
+			if (playlist->medias.empty())
+				return;
 			for (Media* vlcMedia : playlist->medias) {
 				VLC::Media media = VLC::Media(this->instance, vlcMedia->location, VLC::Media::FromLocation);
 				this->mediaList.addMedia(media);
@@ -39,7 +41,7 @@ public:
 			this->state->medias = playlist;
 			this->state->isPlaylist = true;
 		}
-		this->_onLoadCallback(this->mediaList.itemAtIndex(0));
+		this->_onOpenCallback(this->mediaList.itemAtIndex(0));
 		if (autoStart) {
 			this->mediaListPlayer.playItemAtIndex(0);
 			this->state->index = 0;
@@ -76,7 +78,8 @@ public:
 	}
 
 	void jump(int index) {
-		this->mediaListPlayer.playItemAtIndex(index);
+		if (index > 0 && index < this->mediaList.count())
+			this->mediaListPlayer.playItemAtIndex(index);
 	}
 
 	void seek(int position) {
@@ -89,10 +92,12 @@ public:
 				static_cast<int>(volume * 100)
 		);
 		this->state->volume = volume;
+		this->_volumeCallback(volume);
 	}
 
 	void setRate(float rate) {
 		this->mediaPlayer.setRate(rate);
 		this->state->rate = rate;
+		this->_rateCallback(rate);
 	}
 };
