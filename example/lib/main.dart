@@ -1,32 +1,32 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_vlc/flutter_vlc.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 
 
 void main() {
-  runApp(FlutterVLCApp());
+  runApp(DartVLC());
 }
 
 
-class FlutterVLCApp extends StatefulWidget {
+class DartVLC extends StatefulWidget {
   @override
-  _FlutterVLCAppState createState() => _FlutterVLCAppState();
+  _DartVLCState createState() => _DartVLCState();
 }
 
 
-class _FlutterVLCAppState extends State<FlutterVLCApp> {
-  AudioPlayer audioPlayer;
-  AudioType audioType = AudioType.file;
-  AudioPlayerState state = new AudioPlayerState();
-  List<Audio> audios = <Audio>[];
+class _DartVLCState extends State<DartVLC> {
+  Player player;
+  MediaType mediaType = MediaType.file;
+  PlayerState state = new PlayerState();
+  List<Media> medias = <Media>[];
   TextEditingController controller = new TextEditingController();
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    this.audioPlayer = await AudioPlayer.create(id: 0);
-    this.audioPlayer.stream.listen((AudioPlayerState state) {
+    this.player = await Player.create(id: 0);
+    this.player.stream.listen((PlayerState state) {
       this.setState(() => this.state = state);
     });
   }
@@ -37,7 +37,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
       home: Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
-          title: const Text('Flutter VLC'),
+          title: const Text('dart_vlc'),
           centerTitle: true,
         ),
         body: ListView(
@@ -72,38 +72,38 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                               hintStyle: TextStyle(
                                 fontSize: 14.0,
                               ),
-                              hintText: 'Audio resource location.',
+                              hintText: 'Media resource location.',
                             ),
                           ),
                         ),
                         Container(
                           width: 148.0,
-                          child: DropdownButton<AudioType>(
-                            value: this.audioType,
-                            onChanged: (audioType) => this.setState(() => this.audioType = audioType),
+                          child: DropdownButton<MediaType>(
+                            value: this.mediaType,
+                            onChanged: (mediaType) => this.setState(() => this.mediaType = mediaType),
                             items: [
-                              DropdownMenuItem<AudioType>(
-                                value: AudioType.file,
+                              DropdownMenuItem<MediaType>(
+                                value: MediaType.file,
                                 child: Text(
-                                  AudioType.file.toString(),
+                                  MediaType.file.toString(),
                                   style: TextStyle(
                                     fontSize: 14.0,
                                   ),
                                 ),
                               ),
-                              DropdownMenuItem<AudioType>(
-                                value: AudioType.network,
+                              DropdownMenuItem<MediaType>(
+                                value: MediaType.network,
                                 child: Text(
-                                  AudioType.network.toString(),
+                                  MediaType.network.toString(),
                                   style: TextStyle(
                                     fontSize: 14.0,
                                   ),
                                 ),
                               ),
-                              DropdownMenuItem<AudioType>(
-                                value: AudioType.asset,
+                              DropdownMenuItem<MediaType>(
+                                value: MediaType.asset,
                                 child: Text(
-                                  AudioType.asset.toString(),
+                                  MediaType.asset.toString(),
                                   style: TextStyle(
                                     fontSize: 14.0,
                                   ),
@@ -116,23 +116,23 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                           padding: EdgeInsets.only(left: 16.0),
                           child: ElevatedButton(
                             onPressed: () async {
-                              if (this.audioType == AudioType.file) {
-                                this.audios.add(
-                                  Audio.file(
+                              if (this.mediaType == MediaType.file) {
+                                this.medias.add(
+                                  Media.file(
                                     new File(controller.text)
                                   ),
                                 );
                               }
-                              else if (this.audioType == AudioType.network) {
-                                this.audios.add(
-                                  Audio.network(
+                              else if (this.mediaType == MediaType.network) {
+                                this.medias.add(
+                                  Media.network(
                                     controller.text
                                   ),
                                 );
                               }
-                              else if (this.audioType == AudioType.asset) {
-                                this.audios.add(
-                                  await Audio.asset(
+                              else if (this.mediaType == MediaType.asset) {
+                                this.medias.add(
+                                  await Media.asset(
                                     controller.text
                                   ),
                                 );
@@ -157,16 +157,16 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                       color: Colors.transparent,
                     ),
                     Text('Playlist'),
-                  ] + this.audios.map(
-                    (audio) => ListTile(
+                  ] + this.medias.map(
+                    (media) => ListTile(
                       title: Text(
-                        audio.resource,
+                        media.resource,
                         style: TextStyle(
                           fontSize: 14.0,
                         ),
                       ),
                       subtitle: Text(
-                        audio.audioType.toString(),
+                        media.mediaType.toString(),
                         style: TextStyle(
                           fontSize: 14.0,
                         ),
@@ -181,9 +181,9 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                       children: [
                         ElevatedButton(
                           onPressed: () => this.setState(() {
-                            this.audioPlayer.open(
+                            this.player.open(
                               new Playlist(
-                                audios: this.audios,
+                                medias: this.medias,
                               ),
                             );
                           }),
@@ -197,7 +197,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                         SizedBox(width: 12.0),
                         ElevatedButton(
                           onPressed: () => this.setState(() {
-                            this.audios.clear();
+                            this.medias.clear();
                           }),
                           child: Text(
                             'Clear',
@@ -229,7 +229,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                     Row(
                       children: [
                         ElevatedButton(
-                          onPressed: () => this.audioPlayer.play(),
+                          onPressed: () => this.player.play(),
                           child: Text(
                             'play',
                             style: TextStyle(
@@ -239,7 +239,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                         ),
                         SizedBox(width: 12.0),
                         ElevatedButton(
-                          onPressed: () => this.audioPlayer.pause(),
+                          onPressed: () => this.player.pause(),
                           child: Text(
                             'pause',
                             style: TextStyle(
@@ -249,7 +249,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                         ),
                         SizedBox(width: 12.0),
                         ElevatedButton(
-                          onPressed: () => this.audioPlayer.playOrPause(),
+                          onPressed: () => this.player.playOrPause(),
                           child: Text(
                             'playOrPause',
                             style: TextStyle(
@@ -259,7 +259,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                         ),
                         SizedBox(width: 12.0),
                         ElevatedButton(
-                          onPressed: () => this.audioPlayer.playOrPause(),
+                          onPressed: () => this.player.playOrPause(),
                           child: Text(
                             'stop',
                             style: TextStyle(
@@ -269,7 +269,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                         ),
                         SizedBox(width: 12.0),
                         ElevatedButton(
-                          onPressed: () => this.audioPlayer.next(),
+                          onPressed: () => this.player.next(),
                           child: Text(
                             'next',
                             style: TextStyle(
@@ -279,7 +279,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                         ),
                         SizedBox(width: 12.0),
                         ElevatedButton(
-                          onPressed: () => this.audioPlayer.back(),
+                          onPressed: () => this.player.back(),
                           child: Text(
                             'back',
                             style: TextStyle(
@@ -304,9 +304,9 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                     Slider(
                       min: 0.0,
                       max: 1.0,
-                      value: this.audioPlayer?.state?.volume ?? 1.0,
+                      value: this.player?.state?.volume ?? 1.0,
                       onChanged: (volume) {
-                        this.audioPlayer.setVolume(volume);
+                        this.player.setVolume(volume);
                         this.setState(() {});
                       },
                     ),
@@ -318,9 +318,9 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                     Slider(
                       min: 0.5,
                       max: 1.5,
-                      value: this.audioPlayer?.state?.rate ?? 1.0,
+                      value: this.player?.state?.rate ?? 1.0,
                       onChanged: (rate) {
-                        this.audioPlayer.setRate(rate);
+                        this.player.setRate(rate);
                         this.setState(() {});
                       },
                     ),
@@ -355,7 +355,7 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                       max: this.state.duration.inMilliseconds.toDouble(),
                       value: this.state.position.inMilliseconds.toDouble(),
                       onChanged: (double position) {
-                        this.audioPlayer.seek(
+                        this.player.seek(
                           Duration(milliseconds: position.toInt()),
                         );
                       },
@@ -369,62 +369,62 @@ class _FlutterVLCAppState extends State<FlutterVLCApp> {
                       children: [
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.volume'),
+                            Text('player.state.volume'),
                             Text('${this.state.volume}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.rate'),
+                            Text('player.state.rate'),
                             Text('${this.state.rate}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.position'),
+                            Text('player.state.position'),
                             Text('${this.state.position}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.duration'),
+                            Text('player.state.duration'),
                             Text('${this.state.duration}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.index'),
+                            Text('player.state.index'),
                             Text('${this.state.index}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.isCompleted'),
+                            Text('player.state.isCompleted'),
                             Text('${this.state.isCompleted}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.isPlaying'),
+                            Text('player.state.isPlaying'),
                             Text('${this.state.isPlaying}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.isSeekable'),
+                            Text('player.state.isSeekable'),
                             Text('${this.state.isSeekable}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.isValid'),
+                            Text('player.state.isValid'),
                             Text('${this.state.isValid}')
                           ]
                         ),
                         TableRow(
                           children: [
-                            Text('audioPlayer.state.audios'),
-                            Text('${this.state.audios}')
+                            Text('player.state.medias'),
+                            Text('${this.state.medias}')
                           ]
                         ),
                       ],

@@ -1,6 +1,6 @@
-# flutter_vlc_example
+# dart_vlc_example
 
-Demonstrates how to use the flutter_vlc plugin.
+Demonstrates how to use the dart_vlc plugin.
 
 ## Getting Started
 

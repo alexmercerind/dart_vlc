@@ -3,7 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  flutter_vlc
+  dart_vlc
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
