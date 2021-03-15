@@ -1,19 +1,9 @@
 # dart_vlc
 
- [WIP] Bringing power of :film_strip: VLC to Flutter & Dart apps on Windows & Linux (presently).
+ [WIP] Bringing power of VLC to Flutter & Dart apps on Windows & Linux (presently).
 
-<table>
-<tr>
-  <td>
-    <img src="https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true"></img>
-  </td>
-  <td>
-    <img src="https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_1.PNG?raw=true"></img>
-  </td>
-</tr>
-</table>
 
-## :: Installation
+## Installation
 
 ```yaml
 dependencies:
@@ -21,7 +11,7 @@ dependencies:
   dart_vlc: ^0.0.1
 ```
 
-## :book: Documentation
+## Documentation
 
 Create a new `Player` instance.
 ```dart
@@ -119,9 +109,25 @@ player.generalStream.listen((GeneralState state) {
 });
 ```
 
-## :pushpin: Progress
+## Support
 
-:white_check_mark: Done
+Consider supporting the project by either/and:
+- Starring the repository, to get this hardwork noticed.
+- Buying me a coffee.
+
+<a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
+
+## Example
+
+You can see an example project [here](https://github.com/alexmercerind/dart_vlc/blob/master/example/lib/main.dart).
+
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true)
+
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_1.PNG?raw=true)
+
+## Progress
+
+Done
 
 - `Media` playback from file.
 - `Media` playback from network.
@@ -153,7 +159,7 @@ player.generalStream.listen((GeneralState state) {
     - `volume`: Volume of current `Player` instance.
     - `rate`: Rate of current `Player` instance.
 
-:negative_squared_cross_mark: Under progress (irrespective of order)...
+Under progress (irrespective of order)...
 
 - Device enumeration.
 - `add`/`insert` `Media` to `Playlist` during playback.
@@ -165,38 +171,30 @@ player.generalStream.listen((GeneralState state) {
 - Bringing project on other platforms like Android/iOS.
 - Supporting native volume control/lock screen notifications.
 
-## :blue_heart: Support
-
-Consider supporting the project by either/and:
-- Starring the repository, to get this hardwork noticed.
-- Buying me a coffee.
-
-<a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
-
-## :sparkles: Contributions
+## Contributions
 
 The code in the project is very nicely arranged, I have added comments wherever I felt necessary.
 
 Contributions to the project are open, it will be appreciated if you discuss the bug-fix/feature-addition in the issues first.
 
-## :page_facing_up: License
+## License
 
 Copyright (C) 2021, Hitesh Kumar Saini.
 
 This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
 
-## :scroll: Acknowledgements
+## Acknowledgements
 
 Thanks to [@DomingoMG](https://github.com/DomingoMG) for the donation & testing of the project.
 
-## :eyes: Spoilers
+## Spoilers
 
 Currenty video playback is also supported out of the box, but it doesnt show inside Flutter window.
 
 
-<img src="https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_2.PNG?raw=true"></img>
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_2.PNG?raw=true)
 
-## :safety_pin: Vision
+## Vision
 
 There aren't any media (audio or video) playback libraries for Flutter on Windows/Linux yet. So, this project is all about that.
 As one might be already aware, VLC is one of the best media playback tools out there.
