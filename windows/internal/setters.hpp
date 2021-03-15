@@ -1,32 +1,42 @@
+/*
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
+ * 
+ * Hitesh Kumar Saini
+ * https://github.com/alexmercerind
+ * alexmercerind@gmail.com
+ * 
+ * GNU Lesser General Public License v2.1
+ */
+
 #include "events.hpp"
-#include "../audiosource/audiosource.hpp"
-#include "../audiosource/audio.hpp"
-#include "../audiosource/playlist.hpp"
+#include "../mediasource/mediasource.hpp"
+#include "../mediasource/media.hpp"
+#include "../mediasource/playlist.hpp"
 
 
-class AudioPlayerSetters: public AudioPlayerEvents {
+class PlayerSetters: public PlayerEvents {
 public:
-	void open(AudioSource* audioSource, bool autoStart = true) {
+	void open(MediaSource* mediaSource, bool autoStart = true) {
 		this->stop();
-		this->state->audios = new Playlist({});
+		this->state->medias = new Playlist({});
 		this->mediaList = VLC::MediaList(this->instance);
-		if (audioSource->audioSourceType() == "AudioSourceType.audio") {
-			Audio* audio = dynamic_cast<Audio*>(audioSource);
-			VLC::Media media = VLC::Media(this->instance, audio->location, VLC::Media::FromLocation);
-			this->mediaList.addMedia(media);
+		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
+			Media* media = dynamic_cast<Media*>(mediaSource);
+			VLC::Media vlcMedia = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
+			this->mediaList.addMedia(vlcMedia);
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->state->audios = new Playlist({ audio });
+			this->state->medias = new Playlist({ media });
 			this->state->isPlaylist = false;
 
 		}
-		else if (audioSource->audioSourceType() == "AudioSourceType.playlist") {
-			Playlist* playlist = dynamic_cast<Playlist*>(audioSource);
-			for (Audio* audio : playlist->audios) {
-				VLC::Media media = VLC::Media(this->instance, audio->location, VLC::Media::FromLocation);
+		else if (mediaSource->mediaSourceType() == "MediaSourceType.playlist") {
+			Playlist* playlist = dynamic_cast<Playlist*>(mediaSource);
+			for (Media* vlcMedia : playlist->medias) {
+				VLC::Media media = VLC::Media(this->instance, vlcMedia->location, VLC::Media::FromLocation);
 				this->mediaList.addMedia(media);
 			}
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->state->audios = playlist;
+			this->state->medias = playlist;
 			this->state->isPlaylist = true;
 		}
 		this->_onLoadCallback(this->mediaList.itemAtIndex(0));

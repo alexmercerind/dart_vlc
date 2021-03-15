@@ -1,8 +1,16 @@
+# dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
+#
+# Hitesh Kumar Saini
+# https://github.com/alexmercerind
+# alexmercerind@gmail.com
+# GNU Lesser General Public License v2.1
+# 
+
 cmake_minimum_required(VERSION 3.15)
 
-set(PROJECT_NAME "flutter_vlc")
+set(PROJECT_NAME "dart_vlc")
 project(${PROJECT_NAME} LANGUAGES CXX)
-set(PLUGIN_NAME "flutter_vlc_plugin")
+set(PLUGIN_NAME "dart_vlc_plugin")
 
 set(LIBVLC_VERSION "3.0.9.2")
 
@@ -10,7 +18,7 @@ include_directories("${PLUGIN_NAME}" INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 add_library("${PLUGIN_NAME}" SHARED
-  "flutter_vlc_plugin.cpp"
+  "dart_vlc_plugin.cpp"
 )
 
 apply_standard_settings("${PLUGIN_NAME}")
@@ -62,7 +70,7 @@ target_link_libraries("${PLUGIN_NAME}" PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/libvlccore.lib"
 )
 set(
-  flutter_vlc_bundled_libraries
+  dart_vlc_bundled_libraries
   "${CMAKE_CURRENT_SOURCE_DIR}/dll/libvlc.dll"
   "${CMAKE_CURRENT_SOURCE_DIR}/dll/libvlccore.dll"
   "${CMAKE_CURRENT_SOURCE_DIR}/dll/plugins"

@@ -1,7 +1,17 @@
+/*
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
+ * 
+ * Hitesh Kumar Saini
+ * https://github.com/alexmercerind
+ * alexmercerind@gmail.com
+ * 
+ * GNU Lesser General Public License v2.1
+ */
+
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
-#include "include/flutter_vlc/flutter_vlc_plugin.h"
+#include "include/dart_vlc/dart_vlc_plugin.h"
 #include "include/flutter_types.hpp"
 
 #include "main.cpp"
@@ -9,7 +19,7 @@
 
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
 
-void event(AudioPlayerState* &state) {
+void event(PlayerState* &state) {
     /*
      * Method to notify Dart about playback events.
      *
@@ -19,15 +29,15 @@ void event(AudioPlayerState* &state) {
      *      'type': 'event',
      *      'id': 0,
      *      'index': 1,
-     *      'audios': [
+     *      'medias': [
      *          {
-     *              'audioSourceType': 'AudioSourceType.audio',
-     *              'audioType': 'AudioType.network',
+     *              'mediaSourceType': 'MediaSourceType.media',
+     *              'mediaType': 'MediaType.network',
      *              'resource': 'https://alexmercerind.com/music.MP3'
      *          },
      *          {
-     *              'audioSourceType': 'AudioSourceType.audio',
-     *              'audioType': AudioType.'file',
+     *              'mediaSourceType': 'MediaSourceType.media',
+     *              'mediaType': MediaType.file',
      *              'resource': 'C:/alexmercerind/music.MP3'
      *          }
      *      ],
@@ -44,7 +54,7 @@ void event(AudioPlayerState* &state) {
      * 
      */
     channel->InvokeMethod(
-        "audioPlayerState",
+        "playerState",
         std::unique_ptr<flutter::EncodableValue>(
             new flutter::EncodableValue(
                 flutter::EncodableMap(
@@ -62,9 +72,9 @@ void event(AudioPlayerState* &state) {
                             flutter::EncodableValue(state->index)
                         },
                         {
-                            flutter::EncodableValue("audios"),
+                            flutter::EncodableValue("medias"),
                             InvokeMethodHandler::getValue<std::vector<std::map<std::string, std::string>>>(
-                                state->audios->get()
+                                state->medias->get()
                             )
                         },
                         {
@@ -110,7 +120,7 @@ void event(AudioPlayerState* &state) {
     );
 }
 
-void exception(AudioPlayerState* &state) {
+void exception(PlayerState* &state) {
     /*
      * Method to notify Dart about exception events.
      *
@@ -124,7 +134,7 @@ void exception(AudioPlayerState* &state) {
      * 
      */
     channel->InvokeMethod(
-        "audioPlayerState",
+        "playerState",
         std::unique_ptr<flutter::EncodableValue>(
             new flutter::EncodableValue(
                 flutter::EncodableMap(
@@ -152,22 +162,22 @@ void exception(AudioPlayerState* &state) {
 namespace {
 
 
-    class FlutterVlcPlugin : public flutter::Plugin {
+    class DartVlcPlugin : public flutter::Plugin {
     public:
         static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-        FlutterVlcPlugin();
+        DartVlcPlugin();
 
-        virtual ~FlutterVlcPlugin();
+        virtual ~DartVlcPlugin();
 
     private:
         void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &method_call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
     };
 
 
-    void FlutterVlcPlugin::RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar) {
-        channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(registrar->messenger(), "flutter_vlc", &flutter::StandardMethodCodec::GetInstance());
-        auto plugin = std::make_unique<FlutterVlcPlugin>();
+    void DartVlcPlugin::RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar) {
+        channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(registrar->messenger(), "dart_vlc", &flutter::StandardMethodCodec::GetInstance());
+        auto plugin = std::make_unique<DartVlcPlugin>();
         channel->SetMethodCallHandler(
             [plugin_pointer = plugin.get()](const auto &call, auto result) {
                 plugin_pointer->HandleMethodCall(call, std::move(result));
@@ -176,14 +186,14 @@ namespace {
         registrar->AddPlugin(std::move(plugin));
     }
 
-    FlutterVlcPlugin::FlutterVlcPlugin() {}
+    DartVlcPlugin::DartVlcPlugin() {}
 
-    FlutterVlcPlugin::~FlutterVlcPlugin() {}
+    DartVlcPlugin::~DartVlcPlugin() {}
 
-    void FlutterVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+    void DartVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
         MethodCallHandler* method = new MethodCallHandler(&methodCall, std::move(result));
         /*
-         * Creates a new [AudioPlayer] instance & setups event & exception callbacks.
+         * Creates a new [Player] instance & setups event & exception callbacks.
          * 
          * Argument:
          * 
@@ -194,30 +204,30 @@ namespace {
          */
         if (method->name == "create") {
             int id = method->getArgument<int>("id");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->onEvent(
-                [audioPlayer] () -> void {
-                    event(audioPlayer->state);
+            Player* player = players->get(id);
+            player->onEvent(
+                [player] () -> void {
+                    event(player->state);
                 }
             );
-            audioPlayer->onException(
-                [audioPlayer] () -> void {
-                    exception(audioPlayer->state);
+            player->onException(
+                [player] () -> void {
+                    exception(player->state);
                 }
             );
             method->returnNull();
         }
         /*
-         * Opens an [AudioSource] i.e [Audio] or [Playlist] into the [AudioPlayer].
+         * Opens an [MediaSource] i.e [Media] or [Playlist] into the [Player].
          * 
-         * Argument for loading an [Audio]:
+         * Argument for loading an [Media]:
          * 
          * {
          *      'id': 0,
          *      'autoStart': true,
          *      'source': {
-         *          'audioSourceType': 'AudioSourceType.audio',
-         *          'audioType': 'AudioType.file',
+         *          'mediaSourceType': 'MediaSourceType.media',
+         *          'mediaType': 'MediaType.file',
          *          'resource': 'C:/alexmercerind/music.MP3'
          *      }
          * }
@@ -228,17 +238,16 @@ namespace {
          *      'id': 1,
          *      'autoStart': true,
          *      'source': {
-         *          'audioSourceType': 'AudioSourceType.playlist',
-         *          'start': 0,
-         *          'audios': [
+         *          'mediaSourceType': 'MediaSourceType.playlist',
+         *          'medias': [
          *              {
-         *                  'audioSourceType': 'AudioSourceType.audio',
-         *                  'audioType': 'AudioType.file',
+         *                  'mediaSourceType': 'MediaSourceType.media',
+         *                  'mediaType': 'MediaType.file',
          *                  'resource': 'C:/alexmercerind/music.MP3'
          *              },
          *              {
-         *                  'audioSourceType': 'AudioSourceType.audio',
-         *                  'type': 'AudioType.network',
+         *                  'mediaSourceType': 'MediaSourceType.media',
+         *                  'mediaType': 'MediaType.network',
          *                  'resource': 'C:/alexmercerind/music.MP3'
          *              }
          *          ]
@@ -249,43 +258,43 @@ namespace {
             int id = method->getArgument<int>("id");
             bool autoStart = method->getArgument<bool>("autoStart");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
-            std::string audioSourceType = std::get<std::string>(source[flutter::EncodableValue("audioSourceType")]);
-            if (audioSourceType == "AudioSourceType.audio") {
-                std::string audioType = std::get<std::string>(source[flutter::EncodableValue("audioType")]);
+            std::string mediaSourceType = std::get<std::string>(source[flutter::EncodableValue("mediaSourceType")]);
+            if (mediaSourceType == "MediaSourceType.media") {
+                std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
                 std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
-                Audio* audio = nullptr;
-                if (audioType == "AudioType.file")
-                    audio = Audio::file(resource);
-                else if (audioType == "AudioType.network")
-                    audio = Audio::network(resource);
+                Media* media = nullptr;
+                if (mediaType == "MediaType.file")
+                    media = Media::file(resource);
+                else if (mediaType == "MediaType.network")
+                    media = Media::network(resource);
                 else
-                    audio = Audio::asset(resource);
-                AudioPlayer* audioPlayer = audioPlayers->get(id);
-                audioPlayer->open(audio, autoStart);
+                    media = Media::asset(resource);
+                Player* player = players->get(id);
+                player->open(media, autoStart);
             }
-            if (audioSourceType == "AudioSourceType.playlist") {
-                std::vector<Audio*> audios;
-                std::vector<std::map<std::string, std::string>> audiosMap = MethodCallHandler::getValue<std::vector<std::map<std::string, std::string>>>(source[flutter::EncodableValue("audios")]);
-                for (std::map<std::string,std::string> audioMap: audiosMap) {
-                    Audio* audio;
-                    if (audioMap["audioType"] == "AudioType.file")
-                        audio = Audio::file(audioMap["resource"]);
-                    else if (audioMap["audioType"] == "AudioType.network")
-                        audio = Audio::network(audioMap["resource"]);
+            if (mediaSourceType == "MediaSourceType.playlist") {
+                std::vector<Media*> medias;
+                std::vector<std::map<std::string, std::string>> mediasMap = MethodCallHandler::getValue<std::vector<std::map<std::string, std::string>>>(source[flutter::EncodableValue("medias")]);
+                for (std::map<std::string,std::string> mediaMap: mediasMap) {
+                    Media* media;
+                    if (mediaMap["mediaType"] == "MediaType.file")
+                        media = Media::file(mediaMap["resource"]);
+                    else if (mediaMap["mediaType"] == "MediaType.network")
+                        media = Media::network(mediaMap["resource"]);
                     else
-                        audio = Audio::asset(audioMap["resource"]);
-                    audios.emplace_back(audio);
+                        media = Media::asset(mediaMap["resource"]);
+                    medias.emplace_back(media);
                 }
-                AudioPlayer* audioPlayer = audioPlayers->get(id);
-                audioPlayer->open(
-                    new Playlist(audios),
+                Player* player = players->get(id);
+                player->open(
+                    new Playlist(medias),
                     autoStart
                 );
             }
             method->returnNull();
         }
         /*
-         * Plays the [AudioPlayer] instance.
+         * Plays the [Player] instance.
          * 
          * Argument:
          * 
@@ -296,12 +305,12 @@ namespace {
          */
         else if (method->name == "play") {
             int id = method->getArgument<int>("id");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->play();
+            Player* player = players->get(id);
+            player->play();
             method->returnNull();
         }
         /*
-         * Pauses the [AudioPlayer] instance.
+         * Pauses the [Player] instance.
          * 
          * Argument:
          * 
@@ -312,12 +321,12 @@ namespace {
          */
         else if (method->name == "pause") {
             int id = method->getArgument<int>("id");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->pause();
+            Player* player = players->get(id);
+            player->pause();
             method->returnNull();
         }
         /*
-         * Switches between play & pause states of the [AudioPlayer] instance.
+         * Switches between play & pause states of the [Player] instance.
          * 
          * Argument:
          * 
@@ -328,12 +337,12 @@ namespace {
          */
         else if (method->name == "playOrPause") {
             int id = method->getArgument<int>("id");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->playOrPause();
+            Player* player = players->get(id);
+            player->playOrPause();
             method->returnNull();
         }
         /*
-         * Stops the [AudioPlayer] instance.
+         * Stops the [Player] instance.
          * 
          * Argument:
          * 
@@ -344,12 +353,12 @@ namespace {
          */
         else if (method->name == "stop") {
             int id = method->getArgument<int>("id");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->stop();
+            Player* player = players->get(id);
+            player->stop();
             method->returnNull();
         }
         /*
-         * Jumps to next audio in the [Playlist] loaded in [AudioPlayer] instance.
+         * Jumps to next media in the [Playlist] loaded in [Player] instance.
          * 
          * Argument:
          * 
@@ -360,12 +369,12 @@ namespace {
          */
         else if (method->name == "next") {
             int id = method->getArgument<int>("id");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->next();
+            Player* player = players->get(id);
+            player->next();
             method->returnNull();
         }
         /*
-         * Jumps to previous audio in the [Playlist] loaded in [AudioPlayer] instance.
+         * Jumps to previous media in the [Playlist] loaded in [Player] instance.
          * 
          * Argument:
          * 
@@ -376,12 +385,12 @@ namespace {
          */
         else if (method->name == "back") {
             int id = method->getArgument<int>("id");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->back();
+            Player* player = players->get(id);
+            player->back();
             method->returnNull();
         }
         /*
-         * Jumps to specific index in the [Playlist] loaded in [AudioPlayer] instance.
+         * Jumps to specific index in the [Playlist] loaded in [Player] instance.
          * 
          * Argument:
          * 
@@ -394,12 +403,12 @@ namespace {
         else if (method->name == "jump") {
             int id = method->getArgument<int>("id");
             int index = method->getArgument<int>("index");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->jump(index);
+            Player* player = players->get(id);
+            player->jump(index);
             method->returnNull();
         }
         /*
-         * Seeks [AudioPlayer] instance.
+         * Seeks [Player] instance.
          * 
          * Argument:
          * 
@@ -412,12 +421,12 @@ namespace {
         else if (method->name == "seek") {
             int id = method->getArgument<int>("id");
             int duration = method->getArgument<int>("duration");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->seek(duration);
+            Player* player = players->get(id);
+            player->seek(duration);
             method->returnNull();
         }
         /*
-         * Sets volume of [AudioPlayer] instance.
+         * Sets volume of [Player] instance.
          * 
          * Argument:
          * 
@@ -430,12 +439,12 @@ namespace {
         else if (method->name == "setVolume") {
             int id = method->getArgument<int>("id");
             float volume = method->getArgument<float>("volume");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->setVolume(volume);
+            Player* player = players->get(id);
+            player->setVolume(volume);
             method->returnNull();
         }
         /*
-         * Sets playback rate of [AudioPlayer] instance.
+         * Sets playback rate of [Player] instance.
          * 
          * Argument:
          * 
@@ -448,8 +457,8 @@ namespace {
         else if (method->name == "setRate") {
             int id = method->getArgument<int>("id");
             float rate = method->getArgument<float>("rate");
-            AudioPlayer* audioPlayer = audioPlayers->get(id);
-            audioPlayer->setRate(rate);
+            Player* player = players->get(id);
+            player->setRate(rate);
             method->returnNull();
         }
         else {
@@ -459,6 +468,6 @@ namespace {
     }
 }
 
-void FlutterVlcPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {
-    FlutterVlcPlugin::RegisterWithRegistrar(flutter::PluginRegistrarManager::GetInstance()->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
+void DartVlcPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {
+    DartVlcPlugin::RegisterWithRegistrar(flutter::PluginRegistrarManager::GetInstance()->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }

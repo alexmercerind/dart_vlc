@@ -8,13 +8,17 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "../include/vlcpp/vlc.hpp"
+#ifndef MediaSource_HEADER
+#define MediaSource_HEADER
+
+#include <string>
 
 
-class PlayerInternal {
-protected:
-	VLC::Instance instance;
-	VLC::MediaPlayer mediaPlayer;
-	VLC::MediaListPlayer mediaListPlayer;
-	VLC::MediaList mediaList;
+class MediaSource {
+public:
+	int _;
+	virtual std::string mediaSourceType() = 0;
 };
+
+
+#endif

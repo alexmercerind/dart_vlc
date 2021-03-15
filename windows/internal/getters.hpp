@@ -1,10 +1,20 @@
+/*
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
+ * 
+ * Hitesh Kumar Saini
+ * https://github.com/alexmercerind
+ * alexmercerind@gmail.com
+ * 
+ * GNU Lesser General Public License v2.1
+ */
+
 #include "internal.hpp"
 #include "state.hpp"
 
 
-class AudioPlayerGetters: protected AudioPlayerInternal {
+class PlayerGetters: protected PlayerInternal {
 public:
-	AudioPlayerState* state;
+	PlayerState* state;
 
 	int getDuration() {
 		return static_cast<int>(

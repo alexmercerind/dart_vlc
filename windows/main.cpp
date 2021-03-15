@@ -1,52 +1,62 @@
+/*
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
+ * 
+ * Hitesh Kumar Saini
+ * https://github.com/alexmercerind
+ * alexmercerind@gmail.com
+ * 
+ * GNU Lesser General Public License v2.1
+ */
+
 #include <iostream>
 #include <vector>
 
-#include "AudioPlayer.hpp"
+#include "player.hpp"
 
 
-class AudioPlayers {
+class Players {
 public:
-	AudioPlayer* get(int id) {
-		if (this->audioPlayers.find(id) == this->audioPlayers.end()) {
-			this->audioPlayers[id] = new AudioPlayer(id);
+	Player* get(int id) {
+		if (this->players.find(id) == this->players.end()) {
+			this->players[id] = new Player(id);
 		}
-		return this->audioPlayers[id];
+		return this->players[id];
 	}
 
 private:
-	std::map<int, AudioPlayer*> audioPlayers;
+	std::map<int, Player*> players;
 };
 
-AudioPlayers* audioPlayers = new AudioPlayers();
+Players* players = new Players();
 
 int main(int argc, char** argv) {
-	AudioPlayer* audioPlayer = new AudioPlayer(0);
-	audioPlayer->onEvent([audioPlayer] () -> void {
+	Player* player = new Player(0);
+	player->onEvent([player] () -> void {
 		std::cout << std::boolalpha;
-		std::cout << "index       : " << audioPlayer->state->index << std::endl;
-		std::cout << "position    : " << audioPlayer->state->position << std::endl;
-		std::cout << "duration    : " << audioPlayer->state->duration << std::endl;
-		std::cout << "isPlaying   : " << audioPlayer->state->isPlaying << std::endl;
-		std::cout << "isSeekable  : " << audioPlayer->state->isSeekable << std::endl;
-		std::cout << "isCompleted : " << audioPlayer->state->isCompleted << std::endl;
-		std::cout << "isValid     : " << audioPlayer->state->isValid << std::endl;
-		std::cout << "volume      : " << audioPlayer->state->volume << std::endl;
+		std::cout << "index       : " << player->state->index << std::endl;
+		std::cout << "position    : " << player->state->position << std::endl;
+		std::cout << "duration    : " << player->state->duration << std::endl;
+		std::cout << "isPlaying   : " << player->state->isPlaying << std::endl;
+		std::cout << "isSeekable  : " << player->state->isSeekable << std::endl;
+		std::cout << "isCompleted : " << player->state->isCompleted << std::endl;
+		std::cout << "isValid     : " << player->state->isValid << std::endl;
+		std::cout << "volume      : " << player->state->volume << std::endl;
 		std::cout << "playlist    : " << "[ " << std::endl;
 		int index = 0;
-		for (Audio* audio : audioPlayer->state->audios->audios) {
-			std::cout << "    " << index << ". " << audio->audioType << ", " << audio->resource << ", " << std::endl;
+		for (Media* media : player->state->medias->medias) {
+			std::cout << "    " << index << ". " << media->mediaType << ", " << media->resource << ", " << std::endl;
 			index++;
 		}
 		std::cout << "]" << std::endl << std::endl;
 	});
-	std::vector<Audio*> audios;
+	std::vector<Media*> medias;
 	for (int index = 0; index < argc; index++) {
-		audios.emplace_back(
-			Audio::file(argv[index])
+		medias.emplace_back(
+			Media::file(argv[index])
 		);
 	}
-	audioPlayer->open(
-		new Playlist(audios)
+	player->open(
+		new Playlist(medias)
 	);
 	std::cin.get();
 	return 0;

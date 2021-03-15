@@ -1,11 +1,21 @@
-#include "audiosource/playlist.hpp"
+/*
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
+ * 
+ * Hitesh Kumar Saini
+ * https://github.com/alexmercerind
+ * alexmercerind@gmail.com
+ * 
+ * GNU Lesser General Public License v2.1
+ */
+
+#include "mediasource/playlist.hpp"
 
 
-class AudioPlayerState {
+class PlayerState {
 public:
 	int id;
 	int index = 0;
-	Playlist* audios = new Playlist({});
+	Playlist* medias = new Playlist({});
 	bool isPlaying = false;
 	bool isValid = true;
 	bool isSeekable = true;

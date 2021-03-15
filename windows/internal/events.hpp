@@ -1,61 +1,71 @@
+/*
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
+ * 
+ * Hitesh Kumar Saini
+ * https://github.com/alexmercerind
+ * alexmercerind@gmail.com
+ * 
+ * GNU Lesser General Public License v2.1
+ */
+
 #include "getters.hpp"
 
 
-class AudioPlayerEvents : public AudioPlayerGetters {
+class PlayerEvents : public PlayerGetters {
 public:
 	void onLoad(std::function<void(VLC::Media)> callback) {
 		this->_loadCallback = callback;
 		this->mediaPlayer.eventManager().onMediaChanged(
-			std::bind(&AudioPlayerEvents::_onLoadCallback, this, std::placeholders::_1)
+			std::bind(&PlayerEvents::_onLoadCallback, this, std::placeholders::_1)
 		);
 	}
 
 	void onPlay(std::function<void(void)> callback) {
 		this->_playCallback = callback;
 		this->mediaPlayer.eventManager().onPlaying(
-			std::bind(&AudioPlayerEvents::_onPlayCallback, this)
+			std::bind(&PlayerEvents::_onPlayCallback, this)
 		);
 	}
 
 	void onPause(std::function<void(void)> callback) {
 		this->_pauseCallback = callback;
 		this->mediaPlayer.eventManager().onPaused(
-			std::bind(&AudioPlayerEvents::_onPauseCallback, this)
+			std::bind(&PlayerEvents::_onPauseCallback, this)
 		);
 	}
 
 	void onStop(std::function<void(void)> callback) {
 		this->_stopCallback = callback;
 		this->mediaPlayer.eventManager().onStopped(
-			std::bind(&AudioPlayerEvents::_onStopCallback, this)
+			std::bind(&PlayerEvents::_onStopCallback, this)
 		);
 	}
 
 	void onPosition(std::function<void(int)> callback) {
 		this->_positionCallback = callback;
 		this->mediaPlayer.eventManager().onPositionChanged(
-			std::bind(&AudioPlayerEvents::_onPositionCallback, this, std::placeholders::_1)
+			std::bind(&PlayerEvents::_onPositionCallback, this, std::placeholders::_1)
 		);
 	}
 
 	void onVolume(std::function<void(float)> callback) {
 		this->_volumeCallback = callback;
 		this->mediaPlayer.eventManager().onAudioVolume(
-			std::bind(&AudioPlayerEvents::_onVolumeCallback, this, std::placeholders::_1)
+			std::bind(&PlayerEvents::_onVolumeCallback, this, std::placeholders::_1)
 		);
 	}
 
 	void onSeekable(std::function<void(bool)> callback) {
 		this->_seekableCallback = callback;
 		this->mediaPlayer.eventManager().onSeekableChanged(
-			std::bind(&AudioPlayerEvents::_onSeekableCallback, this, std::placeholders::_1)
+			std::bind(&PlayerEvents::_onSeekableCallback, this, std::placeholders::_1)
 		);
 	}
 
 	void onComplete(std::function<void(void)> callback) {
 		this->_completeCallback = callback;
 		this->mediaPlayer.eventManager().onEndReached(
-			std::bind(&AudioPlayerEvents::_onCompleteCallback, this)
+			std::bind(&PlayerEvents::_onCompleteCallback, this)
 		);
 	}
 
