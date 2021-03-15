@@ -1,3 +1,7 @@
+## 0.0.1+1
+
+- Little left-over changes in the project documentation.
+
 ## 0.0.1
 
 **This first release of dart_vlc adds:**
