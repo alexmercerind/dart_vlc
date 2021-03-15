@@ -1,9 +1,9 @@
-name: flutter_vlc
-description: A media playback library for Flutter. Based on libVLC.
+name: dart_vlc
+description: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
 version: 0.0.1
-homepage: https://github.com/alexmercerind/flutter_vlc
-repository: https://github.com/alexmercerind/flutter_vlc
-documentation: https://github.com/alexmercerind/flutter_vlc/blob/master/README.md
+homepage: https://github.com/alexmercerind/dart_vlc
+repository: https://github.com/alexmercerind/dart_vlc
+documentation: https://github.com/alexmercerind/dart_vlc/blob/master/README.md
 
 
 environment:
@@ -32,7 +32,7 @@ flutter:
   plugin:
     platforms:
       windows:
-        pluginClass: FlutterVlcPlugin
+        pluginClass: DartVlcPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
