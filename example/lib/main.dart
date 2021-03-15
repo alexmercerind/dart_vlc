@@ -15,7 +15,10 @@ class DartVLC extends StatefulWidget {
 class _DartVLCState extends State<DartVLC> {
   Player player;
   MediaType mediaType = MediaType.file;
-  PlayerState state = new PlayerState();
+  CurrentState current = new CurrentState();
+  PositionState position = new PositionState();
+  PlaybackState playback = new PlaybackState();
+  GeneralState general = new GeneralState();
   List<Media> medias = <Media>[];
   TextEditingController controller = new TextEditingController();
 
@@ -23,8 +26,17 @@ class _DartVLCState extends State<DartVLC> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     this.player = await Player.create(id: 0);
-    this.player.stream.listen((PlayerState state) {
-      this.setState(() => this.state = state);
+    this.player.currentStream.listen((current) {
+      this.setState(() => this.current = current);
+    });
+    this.player.positionStream.listen((position) {
+      this.setState(() => this.position = position);
+    });
+    this.player.playbackStream.listen((playback) {
+      this.setState(() => this.playback = playback);
+    });
+    this.player.generateStream.listen((general) {
+      this.setState(() => this.general = general);
     });
   }
 
@@ -301,7 +313,7 @@ class _DartVLCState extends State<DartVLC> {
                     Slider(
                       min: 0.0,
                       max: 1.0,
-                      value: this.player?.state?.volume ?? 1.0,
+                      value: this.player?.general?.volume ?? 1.0,
                       onChanged: (volume) {
                         this.player.setVolume(volume);
                         this.setState(() {});
@@ -315,7 +327,7 @@ class _DartVLCState extends State<DartVLC> {
                     Slider(
                       min: 0.5,
                       max: 1.5,
-                      value: this.player?.state?.rate ?? 1.0,
+                      value: this.player?.general?.rate ?? 1.0,
                       onChanged: (rate) {
                         this.player.setRate(rate);
                         this.setState(() {});
@@ -349,8 +361,8 @@ class _DartVLCState extends State<DartVLC> {
                     ),
                     Slider(
                       min: 0,
-                      max: this.state.duration.inMilliseconds.toDouble(),
-                      value: this.state.position.inMilliseconds.toDouble(),
+                      max: this.position.duration.inMilliseconds.toDouble(),
+                      value: this.position.position.inMilliseconds.toDouble(),
                       onChanged: (double position) {
                         this.player.seek(
                               Duration(milliseconds: position.toInt()),
@@ -365,44 +377,44 @@ class _DartVLCState extends State<DartVLC> {
                     Table(
                       children: [
                         TableRow(children: [
-                          Text('player.state.volume'),
-                          Text('${this.state.volume}')
+                          Text('player.general.volume'),
+                          Text('${this.general.volume}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.rate'),
-                          Text('${this.state.rate}')
+                          Text('player.general.rate'),
+                          Text('${this.general.rate}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.position'),
-                          Text('${this.state.position}')
+                          Text('player.position.position'),
+                          Text('${this.position.position}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.duration'),
-                          Text('${this.state.duration}')
+                          Text('player.position.duration'),
+                          Text('${this.position.duration}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.index'),
-                          Text('${this.state.index}')
+                          Text('player.playback.isCompleted'),
+                          Text('${this.playback.isCompleted}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.isCompleted'),
-                          Text('${this.state.isCompleted}')
+                          Text('player.playback.isPlaying'),
+                          Text('${this.playback.isPlaying}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.isPlaying'),
-                          Text('${this.state.isPlaying}')
+                          Text('player.playback.isSeekable'),
+                          Text('${this.playback.isSeekable}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.isSeekable'),
-                          Text('${this.state.isSeekable}')
+                          Text('player.current.index'),
+                          Text('${this.current.index}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.isValid'),
-                          Text('${this.state.isValid}')
+                          Text('player.current.media'),
+                          Text('${this.current.media}')
                         ]),
                         TableRow(children: [
-                          Text('player.state.medias'),
-                          Text('${this.state.medias}')
+                          Text('player.current.medias'),
+                          Text('${this.current.medias}')
                         ]),
                       ],
                     ),
