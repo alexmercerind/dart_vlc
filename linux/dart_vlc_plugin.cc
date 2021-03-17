@@ -4,7 +4,7 @@
 #include <cstring>
 #define DART_VLC_PLUGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), dart_vlc_plugin_get_type(), DartVlcPlugin))
 
-#include "main.cpp"
+#include "../dartvlc/main.cpp"
 
 
 struct _DartVlcPlugin {

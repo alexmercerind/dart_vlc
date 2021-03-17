@@ -18,7 +18,6 @@ set(LIBVLC_VERSION 3.0.9.2)
 
 include_directories(${PLUGIN_NAME} INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 add_library(${PLUGIN_NAME} SHARED
   dart_vlc_plugin.cc
@@ -30,7 +29,7 @@ set_target_properties(${PLUGIN_NAME} PROPERTIES
 target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories(${PLUGIN_NAME} INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc
 )
 
 set(LIBVLC_BINARIES ${CMAKE_CURRENT_SOURCE_DIR}/bin)
