@@ -16,11 +16,3 @@ bin
 
 include/vlc
 include/vlcpp
-
-# libVLC Static LIBs
-
-lib
-
-# libVLC DLLs
-
-dll

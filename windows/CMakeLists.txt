@@ -27,6 +27,7 @@ set_target_properties("${PLUGIN_NAME}" PROPERTIES
 target_compile_definitions("${PLUGIN_NAME}" PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories("${PLUGIN_NAME}" INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc"
 )
 
 set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/bin")
@@ -54,11 +55,6 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIBVLC_SOURCE}/sdk/include/vlc ${CMAKE_CURRENT_SOURCE_DIR}/include/vlc
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIBVLCPP_SOURCE}/vlcpp ${CMAKE_CURRENT_SOURCE_DIR}/include/vlcpp
-  COMMAND ${CMAKE_COMMAND} -E copy ${LIBVLC_SOURCE}/sdk/lib/libvlc.lib ${CMAKE_CURRENT_SOURCE_DIR}/lib/libvlc.lib
-  COMMAND ${CMAKE_COMMAND} -E copy ${LIBVLC_SOURCE}/sdk/lib/libvlccore.lib ${CMAKE_CURRENT_SOURCE_DIR}/lib/libvlccore.lib
-  COMMAND ${CMAKE_COMMAND} -E copy ${LIBVLC_SOURCE}/libvlc.dll ${CMAKE_CURRENT_SOURCE_DIR}/dll/libvlc.dll
-  COMMAND ${CMAKE_COMMAND} -E copy ${LIBVLC_SOURCE}/libvlccore.dll ${CMAKE_CURRENT_SOURCE_DIR}/dll/libvlccore.dll
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIBVLC_SOURCE}/plugins ${CMAKE_CURRENT_SOURCE_DIR}/dll/plugins
   WORKING_DIRECTORY "${LIBVLC_BINARIES}"
   DEPENDS "${LIBVLC_ARCHIVE}"
 )
@@ -66,14 +62,14 @@ add_custom_command(
 target_link_libraries("${PLUGIN_NAME}" PRIVATE
   flutter
   flutter_wrapper_plugin
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/libvlc.lib"
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/libvlccore.lib"
+  "${LIBVLC_SOURCE}/sdk/lib/libvlc.lib"
+  "${LIBVLC_SOURCE}/sdk/lib/libvlccore.lib"
 )
 set(
   dart_vlc_bundled_libraries
-  "${CMAKE_CURRENT_SOURCE_DIR}/dll/libvlc.dll"
-  "${CMAKE_CURRENT_SOURCE_DIR}/dll/libvlccore.dll"
-  "${CMAKE_CURRENT_SOURCE_DIR}/dll/plugins"
+  "${LIBVLC_SOURCE}/libvlc.dll"
+  "${LIBVLC_SOURCE}/libvlccore.dll"
+  "${LIBVLC_SOURCE}/plugins"
   PARENT_SCOPE
 )
 

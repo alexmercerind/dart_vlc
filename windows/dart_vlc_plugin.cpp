@@ -14,7 +14,7 @@
 #include "include/dart_vlc/dart_vlc_plugin.h"
 #include "include/flutter_types.hpp"
 
-#include "main.cpp"
+#include "../dartvlc/main.cpp"
 
 
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
