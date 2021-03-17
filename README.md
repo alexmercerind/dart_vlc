@@ -10,16 +10,8 @@ dependencies:
   dart_vlc: ^0.0.1
 ```
 
-<table>
- <tr>
-  <td>
-   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_3.png?raw=true'></img>
-  </td>
-  <td>
-   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_4.png?raw=true'></img>
-  </td>
- </tr>
-</table>
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_3.png?raw=true)
+
 
 ## Documentation
 
@@ -133,16 +125,7 @@ You can see an example project [here](https://github.com/alexmercerind/dart_vlc/
 
 Windows
 
-<table>
- <tr>
-  <td>
-   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true'></img>
-  </td>
-  <td>
-   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_1.PNG?raw=true'></img>
-  </td>
- </tr>
-</table>
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true)
 
 ## Progress
 
