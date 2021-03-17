@@ -1,6 +1,5 @@
-# dart_vlc
-
- [WIP] Bringing power of VLC to Flutter & Dart apps on Windows & Linux (presently).
+<h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
+<h4 align="center">Bringing power of VLC to Flutter & Dart apps on Windows & Linux</h4>
 
 
 ## Installation
@@ -10,6 +9,17 @@ dependencies:
   ...
   dart_vlc: ^0.0.1
 ```
+
+<table>
+ <tr>
+  <td>
+   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_3.png?raw=true'></img>
+  </td>
+  <td>
+   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_4.png?raw=true'></img>
+  </td>
+ </tr>
+</table>
 
 ## Documentation
 
@@ -121,9 +131,18 @@ Consider supporting the project by either/and:
 
 You can see an example project [here](https://github.com/alexmercerind/dart_vlc/blob/master/example/lib/main.dart).
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true)
+Windows
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_1.PNG?raw=true)
+<table>
+ <tr>
+  <td>
+   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true'></img>
+  </td>
+  <td>
+   <img src='https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_1.PNG?raw=true'></img>
+  </td>
+ </tr>
+</table>
 
 ## Progress
 
@@ -158,6 +177,8 @@ Done
   - `Player.generalState`
     - `volume`: Volume of current `Player` instance.
     - `rate`: Rate of current `Player` instance.
+- Working on Linux.
+- Working on Windows.
 
 Under progress (irrespective of order)...
 
@@ -165,7 +186,7 @@ Under progress (irrespective of order)...
 - `add`/`insert` `Media` to `Playlist` during playback.
 - Retrieving metadata of a file.
 - FFI version of the library for plain Dart applications.
-- Linux version.
+- Add player state.
 - Embeding video inside the Flutter window.
 - Supporting live streaming links.
 - Bringing project on other platforms like Android/iOS.
