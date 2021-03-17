@@ -313,7 +313,7 @@ class _DartVLCState extends State<DartVLC> {
                     Slider(
                       min: 0.0,
                       max: 1.0,
-                      value: this.player?.general?.volume ?? 1.0,
+                      value: this.player?.general?.volume ?? 0.5,
                       onChanged: (volume) {
                         this.player.setVolume(volume);
                         this.setState(() {});

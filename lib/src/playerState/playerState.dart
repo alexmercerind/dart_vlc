@@ -39,7 +39,7 @@ class PlaybackState {
 /// Volume & Rate state of a [Player] instance.
 class GeneralState {
   /// Volume of [Player] instance.
-  double volume = 1.0;
+  double volume = 0.5;
 
   /// Rate of playback of [Player] instance.
   double rate = 1.0;
