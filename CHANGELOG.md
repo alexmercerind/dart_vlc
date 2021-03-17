@@ -1,3 +1,11 @@
+## 0.0.2
+
+**This new release of dart_vlc adds:**
+
+- Support for Flutter on Linux.
+- Fixed bug that caused index to not update properly in `Playlist`, when `next` or `back` or on completion of `Media`.
+- Changed default `Player` volume to `0.5`.
+
 ## 0.0.1+1
 
 - Little left-over changes in the project documentation.
