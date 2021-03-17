@@ -1,0 +1,8 @@
+
+# libVLC++ Binaries
+
+bin
+
+# libVLC++ Headers
+
+include/vlcpp
