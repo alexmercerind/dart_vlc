@@ -29,6 +29,7 @@ void position(PlayerState* &state) {
      * {
      *      'type': 'positionEvent',
      *      'id': 0,
+     *      'index': 1,
      *      'position': 56783,
      *      'duration': 370278
      * }
@@ -47,6 +48,10 @@ void position(PlayerState* &state) {
                         {
                             flutter::EncodableValue("id"),
                             flutter::EncodableValue(state->id)
+                        },
+                        {
+                            flutter::EncodableValue("index"),
+                            flutter::EncodableValue(state->index)
                         },
                         {
                             flutter::EncodableValue("position"),

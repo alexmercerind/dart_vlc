@@ -80,6 +80,7 @@ protected:
 			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
+			this->state->index = this->mediaList.indexOfItem(*media.get());
 			this->_openCallback(*media.get());
 		}
 		else {
@@ -88,9 +89,9 @@ protected:
 			this->state->isCompleted = false;
 			this->state->position = 0;
 			this->state->duration = 0;
+			this->state->index = this->mediaList.indexOfItem(*media.get());
 			this->_openCallback(*media.get());
 		}
-		this->state->index = this->mediaList.indexOfItem(*media.get());
 	}
 
 	std::function<void(void)> _playCallback;
