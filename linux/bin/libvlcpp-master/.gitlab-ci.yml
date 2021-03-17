@@ -1,0 +1,25 @@
+variables:
+  VLC30_IMAGE: registry.videolan.org/medialibrary:20201009131431
+  VLC40_IMAGE: registry.videolan.org/libvlcpp-unstable:20201119105540
+
+.common_build:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "$CI_DEFAULT_BRANCH@videolan/libvlcpp"'
+  tags:
+    - docker
+    - amd64
+  script:
+    - ./bootstrap
+    - ./configure --enable-examples --enable-werror
+    - make -j4
+    - make -j4 distcheck
+
+continuous_build_4.0:
+  extends: .common_build
+  image: $VLC40_IMAGE
+
+continuous_build_3.0:
+  extends: .common_build
+  image: $VLC30_IMAGE
+
