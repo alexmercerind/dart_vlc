@@ -765,6 +765,36 @@ namespace {
             player->move(initial, final);
             method->returnNull();
         }
+        /* Sets the playback device.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'device': {
+         *          'name': 'An audio device'
+         *          'description': 'Audio device description.'
+         *      }
+         * }
+         * 
+         */
+        else if (method->name == "setDevice") {
+            method->returnValue<std::vector<std::map<std::string, std::string>>>(
+                devices->get()
+            );
+        }
+        /* Gets List of all available devices.
+         *
+         * Argument:
+         * 
+         * {}
+         * 
+         */
+        else if (method->name == "getDevices") {
+            method->returnValue<std::vector<std::map<std::string, std::string>>>(
+                devices->get()
+            );
+        }
         else {
             method->returnNotImplemented();
         }
