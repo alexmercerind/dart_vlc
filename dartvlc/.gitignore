@@ -1,0 +1,19 @@
+
+# libVLC Shared Libraries
+
+*.dll
+
+plugins
+
+# libVLC Static Libraries
+
+libs
+
+# libVLC & libVLC++ Headers
+
+include
+
+# Compiled Binaries
+
+main.exe
+main.obj
