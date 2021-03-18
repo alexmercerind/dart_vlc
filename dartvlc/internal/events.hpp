@@ -193,7 +193,7 @@ protected:
 			this->state->isCompleted = true;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
-			/* Explicitly change current `Media` & play it since playback is ended. */
+			/* Explicitly change current `Media`. */
 			this->_onPlaylistCallback(true);
 			this->_completeCallback();
 		}

@@ -51,7 +51,7 @@ int main() {
 			std::cout << "isValid     : " << player->state->isValid << std::endl;
 			std::cout << "volume      : " << player->state->volume << std::endl;
 			std::cout << "playlist    : " << "[ " << std::endl;
-			int index = 1;
+			int index = 0;
 			for (Media* media : player->state->medias->medias) {
 				std::cout << "    " << index << ". " << media->mediaType << ", " << media->resource << ", " << std::endl;
 				index++;
@@ -71,6 +71,15 @@ int main() {
 			std::cout << "Index:";
 			std::cin >> index;
 			player->remove(index);
+		}
+		if (input == "move") {
+			int initial;
+			std::cout << "Initial:";
+			std::cin >> initial;
+			int final;
+			std::cout << "Final:";
+			std::cin >> final;
+			player->move(initial, final);
 		}
 		if (input == "insert") {
 			int index;
@@ -107,9 +116,6 @@ int main() {
 			std::cout << "Duration:";
 			std::cin >> duration;
 			player->seek(duration);
-		}
-		if (input == "exit") {
-			break;
 		}
 	}
 	std::cin.get();

@@ -68,27 +68,35 @@ public:
 
     void stop() {
         this->mediaListPlayer.stop();
+		this->state->isPlaying = false;
+		this->state->position = 0;
+		this->state->duration = 0;
     }
 
 	void next() {
 		/*
 		 * Intentionally not using `this->mediaListPlayer.back` to get `this->state->index` changed.
 		 */
-		this->mediaListPlayer.playItemAtIndex(
-			++this->state->index
-		);
+		this->_onPlaylistCallback(true);
+		if (this->state->index < this->mediaList.count())
+			this->mediaListPlayer.playItemAtIndex(
+				++this->state->index
+			);
 	}
 
 	void back() {
 		/*
 		 * Intentionally not using `this->mediaListPlayer.next` to get `this->state->index` changed.
 		 */
-		this->mediaListPlayer.playItemAtIndex(
-			--this->state->index
-		);
+		this->_onPlaylistCallback(true);
+		if (this->state->index > 0)
+			this->mediaListPlayer.playItemAtIndex(
+				--this->state->index
+			);
 	}
 
 	void jump(int index) {
+		this->_onPlaylistCallback(true);
 		if (index >= 0 && index < this->mediaList.count())
 			this->mediaListPlayer.playItemAtIndex(index);
 	}
@@ -123,55 +131,88 @@ public:
 	}
 
 	void add(Media* media) {
-		isPlaylistModified = true;
+		this->isPlaylistModified = true;
 		/* Append the `Media` to `Playlist`. */
 		this->state->medias->medias.emplace_back(media);
-		VLC::Media vlcMedia = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
-		this->mediaList.addMedia(vlcMedia);
-		/* Notify changes & play if completion was done. */
-		this->_onPlaylistCallback(this->state->isCompleted);
+		VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
+		this->mediaList.addMedia(_);
+		this->_onPlaylistCallback(false);
 		this->state->isPlaylist = true;
 	}
 
 	void remove(int index) {
-		isPlaylistModified = true;
+		if (index < 0 || index >= this->state->medias->medias.size()) return;
+		this->isPlaylistModified = true;
 		/* Update the `Media` `Playlist`. */
 		this->state->medias->medias.erase(state->medias->medias.begin() + index);
 		this->mediaList.removeIndex(index);
-		/* Notify changes & play if completion was done. */
-		this->_onPlaylistCallback(this->state->isCompleted);
+		this->_onPlaylistCallback(false);
 		/* Handling if the index is same as current `Media` index. */
 		if (!this->state->isCompleted && this->state->index == index) {
 			/* Stop the `Player` if the remove index was the last. */
 			if (this->state->index == this->mediaList.count()) {
 				this->mediaListPlayer.stop();
-				this->state->isPlaying = false;
-				this->state->position = 0;
-				this->state->duration = 0;
 			}
-			/* If the remove index is same as the current index, then start playing the `Media` at the same index (since, it is now the next `Media` in the playlist after removal.) */
+			/* If the remove index is same as the current index, then start playing the `Media` at the same index (since it is now the next `Media` in the playlist after removal). */
 			else
 				this->jump(index);
 		}
 		/* Decrement the current index if it falls behind current `Media` index. */
 		if (this->state->index > index)
 			this->state->index--;
+		this->state->isPlaylist = true;
 	}
 
 	void insert(int index, Media* media) {
-		isPlaylistModified = true;
+		if (index < 0 || index >= this->state->medias->medias.size()) return;
+		this->isPlaylistModified = true;
 		/* Update the `Media` `Playlist`. */
 		this->state->medias->medias.insert(
 			state->medias->medias.begin() + index,
 			media
 		);
-		VLC::Media vlcMedia = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
-		this->mediaList.insertMedia(vlcMedia, index);
-		/* Notify changes & play if completion was done. */
-		this->_onPlaylistCallback(this->state->isCompleted);
-		this->state->isPlaylist = true;
+		VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
+		this->mediaList.insertMedia(_, index);
+		this->_onPlaylistCallback(false);
 		/* If the insertion index falls behind the current `Media` index, increment current index by 1. */
 		if (this->state->index <= index)
 			this->state->index++;
+		this->state->isPlaylist = true;
+	}
+
+	void move(int initial, int final) {
+		Media* initialMedia = this->state->medias->medias[this->state->index];
+		if (initial < 0 || initial >= this->state->medias->medias.size() || final < 0 || final >= this->state->medias->medias.size()) return;
+		if (initial == final) return;
+		this->isPlaylistModified = true;
+		Media* _ = this->state->medias->medias[initial];
+		VLC::Media __ = VLC::Media(this->instance, this->mediaList.itemAtIndex(initial).get()->mrl(), VLC::Media::FromLocation);
+		this->state->medias->medias.erase(
+			this->state->medias->medias.begin() + initial
+		);
+		this->mediaList.removeIndex(initial);
+		this->state->medias->medias.insert(
+			this->state->medias->medias.begin() + final,
+			_
+		);
+		this->mediaList.insertMedia(__, final);
+		/* If `initial` & `final` lie on the either side of the `this->state->index` */
+		if (initial != this->state->index && final != this->state->index) {
+			if (initialMedia != this->state->medias->medias[this->state->index]) {
+				this->_onPlaylistCallback(true);
+			}
+			else {
+				this->_onPlaylistCallback(false);
+			}
+		}
+		else if (initial == this->state->index) {
+			/* If the moving `Media` is the one that is playing currently, then just change the current index. */
+			this->state->index = final;
+			this->_onPlaylistCallback(false);
+		}
+		else if (final == this->state->index) {
+			/* If the final index is same as the currently playing index, then stop current `Media` and play the moved one. */
+			this->_onPlaylistCallback(true);
+		}
 	}
 };
