@@ -63,10 +63,30 @@ Playlist playlist = new Playlist(
 Control playback.
 ```dart
 player.play();
+
 player.seek(Duration(seconds: 30));
+
 player.pause();
+
 player.playOrPause();
+
 player.stop();
+```
+
+Manipulate playlist.
+```dart
+player.add(
+  Media.file(new File('C:/music0.mp3')),
+);
+
+player.remove(4);
+
+player.insert(
+  2,
+  Media.file(new File('C:/music0.mp3')),
+);
+
+player.move(0, 4);
 ```
 
 Set playback volume & rate.
@@ -168,15 +188,15 @@ Done
     - `rate`: Rate of current `Player` instance.
 - Working on Linux.
 - Working on Windows.
+- `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback.
+- Device enumeration & changing.
+
 
 Under progress (irrespective of order)...
 
-- Device enumeration.
-- `add`/`insert` `Media` to `Playlist` during playback.
 - Retrieving metadata of a file.
-- FFI version of the library for plain Dart applications.
-- Add player state.
 - Embeding video inside the Flutter window.
+- FFI version of the library for plain Dart applications.
 - Supporting live streaming links.
 - Bringing project on other platforms like Android/iOS.
 - Supporting native volume control/lock screen notifications.
