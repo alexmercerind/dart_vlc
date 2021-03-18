@@ -37,6 +37,7 @@ public:
 		this->onPosition(
 			[callback](int _) -> void { callback(); }
 		);
+		this->onPlaylist(callback);
 	}
 
 	void onException(std::function<void(void)> callback) {

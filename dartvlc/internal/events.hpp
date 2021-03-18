@@ -70,28 +70,58 @@ public:
 		this->_rateCallback = callback;
 	}
 
+	void onPlaylist(std::function<void(void)> callback) {
+		this->_playlistCallback = callback;
+	}
+
 protected:
+
+	std::function<void(void)> _playlistCallback;
+
+	/*
+	 * Related to `Playlist` modifications by `this->add`, `this->remove` and `this->insert`.
+	 * This only gets called when there is change in currently playing `Media` e.g. by `this->next` or `this->back` or on completion of the playback.
+	 * This method is called to update `Media` in the `Playlist` without user noticing.
+	 * 
+	 * Pass `false` for silently updating playlist & `true` to play the resulting current `Media`.
+	 */
+	void _onPlaylistCallback(bool play = false) {
+		/* Check if `this->mediaList` is modified by `this->add`, `this->remove` or `this->insert`. */
+		if (this->isPlaylistModified) {
+			this->mediaListPlayer.setMediaList(this->mediaList);
+			/* Stop the `Player` if the `this->mediaList` is empty after any `Playlist` modifications. */
+			if (!this->mediaList.count()) {
+				this->state = new PlayerState();
+				this->mediaListPlayer.stop();
+				return;
+			}
+			/* Set the `this->state->index` to end if it exceeds the length. */
+			if (this->state->index > this->mediaList.count())
+				this->state->index = this->mediaList.count() - 1;
+			if (play)
+				this->mediaListPlayer.playItemAtIndex(this->state->index);
+			this->isPlaylistModified = false;
+			this->_playlistCallback();
+		};
+	}
+
 	std::function<void(VLC::Media)> _openCallback;
 
 	void _onOpenCallback(VLC::MediaPtr media) {
+		this->state->isPlaying = this->mediaPlayer.isPlaying();
+		this->state->isValid = this->mediaPlayer.isValid();
 		if (this->getDuration() > 0) {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
-			this->state->isValid = this->mediaPlayer.isValid();
 			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
-			this->state->index = this->mediaList.indexOfItem(*media.get());
-			this->_openCallback(*media.get());
 		}
 		else {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
-			this->state->isValid = this->mediaPlayer.isValid();
 			this->state->isCompleted = false;
 			this->state->position = 0;
 			this->state->duration = 0;
-			this->state->index = this->mediaList.indexOfItem(*media.get());
-			this->_openCallback(*media.get());
 		}
+		this->state->index = this->mediaList.indexOfItem(*media.get());
+		this->_openCallback(*media.get());
 	}
 
 	std::function<void(void)> _playCallback;
@@ -163,6 +193,8 @@ protected:
 			this->state->isCompleted = true;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
+			/* Explicitly change current `Media` & play it since playback is ended. */
+			this->_onPlaylistCallback(true);
 			this->_completeCallback();
 		}
 	}
