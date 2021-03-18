@@ -37,10 +37,6 @@ class Devices {
 public:
 	std::vector<Device*> all;
 
-	Devices() {
-		this->refresh();
-	}
-
     void refresh() {
         VLC::Instance _ = VLC::Instance(0, nullptr);
 		VLC::MediaPlayer __ = VLC::MediaPlayer(_);
@@ -56,6 +52,7 @@ public:
     }
 
     std::vector<std::map<std::string, std::string>> get() {
+		this->refresh();
         std::vector<std::map<std::string, std::string>> devices;
         for (Device* device: this->all)
 			devices.emplace_back(device->get());
