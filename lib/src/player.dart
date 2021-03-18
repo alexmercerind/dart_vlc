@@ -4,6 +4,8 @@ import 'package:dart_vlc/src/channel.dart';
 import 'package:dart_vlc/src/playerState/playerState.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
+import 'package:dart_vlc/src/device.dart';
+
 
 /// Internally used class to avoid direct creation of the object of a+ [Player] class.
 class _Player extends Player {}
@@ -293,6 +295,20 @@ abstract class Player {
         'id': this.id,
         'initial': initialIndex,
         'final': finalIndex
+      },
+    );
+  }
+
+  /// Sets playback [Device] for the instance of [Player].
+  /// 
+  /// Use [Devices.all] getter to get [List] of all [Device].
+  /// 
+  Future<void> setDevice(Device device) async {
+    await channel.invokeMethod(
+      'setDevice',
+      {
+        'id': this.id,
+        'device': device.toMap(),
       },
     );
   }
