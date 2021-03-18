@@ -416,6 +416,11 @@ namespace {
                     exception(player->state);
                 }
             );
+            player->onPlaylist(
+                [player] () -> void {
+                    open(player->state);
+                }
+            );
             method->returnNull();
         }
         /*
@@ -660,6 +665,104 @@ namespace {
             float rate = method->getArgument<float>("rate");
             Player* player = players->get(id);
             player->setRate(rate);
+            method->returnNull();
+        }
+        /* Adds new `Media` to the end of the `Playlist` of the `Player`.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'source': {
+         *          'mediaSourceType': 'MediaSourceType.media',
+         *          'mediaType': 'MediaType.file',
+         *          'resource': 'C:/alexmercerind/music.MP3'
+         *      }
+         * }
+         * 
+         */
+        else if (method->name == "add") {
+            int id = method->getArgument<int>("id");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
+            std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
+            std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
+            Media* media = nullptr;
+            if (mediaType == "MediaType.file")
+                media = Media::file(resource);
+            else if (mediaType == "MediaType.network")
+                media = Media::network(resource);
+            else
+                media = Media::asset(resource);
+            Player* player = players->get(id);
+            player->add(media);
+            method->returnNull();
+        }
+        /* Removed `Media` from the `Playlist` at the given index.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'index': 1
+         * }
+         * 
+         */
+        else if (method->name == "remove") {
+            int id = method->getArgument<int>("id");
+            int index = method->getArgument<int>("index");
+            Player* player = players->get(id);
+            player->remove(index);
+            method->returnNull();
+        }
+        /* Inserts `Media` at an index to the `Playlist` of the `Player`.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'index': 2,
+         *      'source': {
+         *          'mediaSourceType': 'MediaSourceType.media',
+         *          'mediaType': 'MediaType.file',
+         *          'resource': 'C:/alexmercerind/music.MP3'
+         *      }
+         * }
+         * 
+         */
+        else if (method->name == "insert") {
+            int id = method->getArgument<int>("id");
+            int index = method->getArgument<int>("index");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
+            std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
+            std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
+            Media* media = nullptr;
+            if (mediaType == "MediaType.file")
+                media = Media::file(resource);
+            else if (mediaType == "MediaType.network")
+                media = Media::network(resource);
+            else
+                media = Media::asset(resource);
+            Player* player = players->get(id);
+            player->insert(index, media);
+            method->returnNull();
+        }
+        /* Moves `Media` from initial index to final index in the `Playlist`.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'initial': 2,
+         *      'final': 0
+         * }
+         * 
+         */
+        else if (method->name == "move") {
+            int id = method->getArgument<int>("id");
+            int initial = method->getArgument<int>("initial");
+            int final = method->getArgument<int>("final");
+            Player* player = players->get(id);
+            player->move(initial, final);
             method->returnNull();
         }
         else {
