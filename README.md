@@ -114,7 +114,7 @@ player.generalStream.listen((GeneralState state) {
 **NOTE:** For using this plugin on Linux, you must have [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. On debian based distros, run:
 
 ```bash
-sudo apt-get intall libvlc-dev
+sudo apt-get install libvlc-dev
 ```
 
 ## Support
