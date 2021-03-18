@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:dart_vlc/src/channel.dart';
 import 'package:dart_vlc/src/playerState/playerState.dart';
+import 'package:dart_vlc/src/mediaSource/media.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 
 /// Internally used class to avoid direct creation of the object of a+ [Player] class.
@@ -246,6 +247,52 @@ abstract class Player {
       {
         'id': this.id,
         'rate': rate,
+      },
+    );
+  }
+
+  /// Appends [Media] to the [Playlist] of the [Player] instance.
+  Future<void> add(Media source) async {
+    await channel.invokeMethod(
+      'add',
+      {
+        'id': this.id,
+        'source': source.toMap(),
+      },
+    );
+  }
+
+  /// Removes [Media] from the [Playlist] at a specific index.
+  Future<void> remove(int index) async {
+    await channel.invokeMethod(
+      'remove',
+      {
+        'id': this.id,
+        'index': index,
+      },
+    );
+  }
+
+  /// Inserts [Media] to the [Playlist] of the [Player] instance at specific index.
+  Future<void> insert(int index, Media source) async {
+    await channel.invokeMethod(
+      'insert',
+      {
+        'id': this.id,
+        'index': index,
+        'source': source.toMap(),
+      },
+    );
+  }
+
+  /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
+  Future<void> move(int initialIndex, int finalIndex) async {
+    await channel.invokeMethod(
+      'move',
+      {
+        'id': this.id,
+        'initial': initialIndex,
+        'final': finalIndex
       },
     );
   }
