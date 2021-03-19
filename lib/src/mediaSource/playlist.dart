@@ -37,7 +37,7 @@ class Playlist extends MediaSource {
             .map(
               (media) => Media.fromMap(media),
             )
-            .toList(),
+            .toList().cast<Media>(),
       );
 
   /// Internally used method to easily transform data for sending through Platform channel.

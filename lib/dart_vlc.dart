@@ -15,3 +15,4 @@ export 'package:dart_vlc/src/mediaSource/media.dart';
 export 'package:dart_vlc/src/mediaSource/playlist.dart';
 export 'package:dart_vlc/src/enums/mediaSourceType.dart';
 export 'package:dart_vlc/src/enums/mediaType.dart';
+export 'package:dart_vlc/src/device.dart';

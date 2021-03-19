@@ -6,7 +6,7 @@ class CurrentState {
   int index;
 
   /// [List] of [Media] currently opened in the [Player] instance.
-  List<dynamic> medias = <dynamic>[];
+  List<Media> medias = <Media>[];
 
   /// Currently playing [Media].
   Media media;

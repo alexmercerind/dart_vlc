@@ -26,13 +26,13 @@ class Device {
 class Devices {
 
   /// Gets [List] of all available playback [Device].
-  static Future<List<Devices>> get all {
-    dynamic devices = channel.invokeMethod(
+  static Future<List<Device>> get all async {
+    dynamic devices = await channel.invokeMethod(
       'getDevices',
       {}
     );
     return devices.map(
       (dynamic device) => Device.fromMap(device),
-    ).toList();
+    ).toList().cast<Device>();
   } 
 }

@@ -20,7 +20,7 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
                     .map(
                       (media) => Media.fromMap(media),
                     )
-                    .toList();
+                    .toList().cast<Media>();
                 players[id].current.media =
                     players[id].current.medias[players[id].current.index];
                 players[id].current.isPlaylist =
