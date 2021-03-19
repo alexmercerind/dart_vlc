@@ -13,6 +13,9 @@
 
 #include <vlcpp/vlc.hpp>
 
+#ifndef Device_HEADER
+#define Device_HEADER
+
 
 class Device {
 public:
@@ -60,3 +63,8 @@ public:
 		return devices;
     }
 };
+
+
+Devices* devices = new Devices();
+
+#endif

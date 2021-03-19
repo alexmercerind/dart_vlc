@@ -10,6 +10,9 @@
 
 #include "internal/setters.hpp"
 
+#ifndef Player_HEADER
+#define Player_HEADER
+
 
 class Player: public PlayerSetters {
 public:
@@ -44,3 +47,23 @@ public:
 		this->mediaPlayer.eventManager().onEncounteredError(callback);
 	}
 };
+
+
+class Players {
+public:
+	Player* get(int id) {
+		if (this->players.find(id) == this->players.end()) {
+			this->players[id] = new Player(id);
+		}
+		return this->players[id];
+	}
+
+private:
+	std::map<int, Player*> players;
+};
+
+
+Players* players = new Players();
+
+
+#endif

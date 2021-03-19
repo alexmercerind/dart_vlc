@@ -9,7 +9,7 @@
  */
 
 #include "events.hpp"
-#include "../devices.hpp"
+#include "../device.hpp"
 #include "../mediasource/mediasource.hpp"
 #include "../mediasource/media.hpp"
 #include "../mediasource/playlist.hpp"
@@ -181,7 +181,6 @@ public:
 	}
 
 	void move(int initial, int final) {
-		Media* initialMedia = this->state->medias->medias[this->state->index];
 		if (initial < 0 || initial >= this->state->medias->medias.size() || final < 0 || final >= this->state->medias->medias.size()) return;
 		if (initial == final) return;
 		this->isPlaylistModified = true;
@@ -198,12 +197,11 @@ public:
 		this->mediaList.insertMedia(__, final);
 		/* If `initial` & `final` lie on the either side of the `this->state->index` */
 		if (initial != this->state->index && final != this->state->index) {
-			if (initialMedia != this->state->medias->medias[this->state->index]) {
-				this->_onPlaylistCallback(true);
-			}
-			else {
-				this->_onPlaylistCallback(false);
-			}
+			if (initial > final)
+				this->state->index++;
+			else
+				this->state->index--;
+			this->_onPlaylistCallback(false);
 		}
 		else if (initial == this->state->index) {
 			/* If the moving `Media` is the one that is playing currently, then just change the current index. */
@@ -212,7 +210,8 @@ public:
 		}
 		else if (final == this->state->index) {
 			/* If the final index is same as the currently playing index, then stop current `Media` and play the moved one. */
-			this->_onPlaylistCallback(true);
+			this->state->index++;
+			this->_onPlaylistCallback(false);
 		}
 	}
 };
