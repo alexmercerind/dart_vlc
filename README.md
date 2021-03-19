@@ -96,6 +96,15 @@ player.setVolume(0.5);
 player.setRate(1.25);
 ```
 
+Get & change playback devices.
+```dart
+List<Device> devices = await Devices.all;
+
+player.setDevice(
+  devices[0],
+);
+```
+
 Listen to playback events.
 
 (Same can be retrieved directly from `Player` instance without having to rely on stream).
