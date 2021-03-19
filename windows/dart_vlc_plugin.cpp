@@ -779,9 +779,12 @@ namespace {
          * 
          */
         else if (method->name == "setDevice") {
-            method->returnValue<std::vector<std::map<std::string, std::string>>>(
-                devices->get()
-            );
+            int id = method->getArgument<int>("id");
+            std::map<std::string, std::string> _ = method->getArgument<std::map<std::string, std::string>>("device");
+            Device* device = new Device(_["name"], _["description"]);
+            Player* player = players->get(id);
+            player->setDevice(device);
+            method->returnNull();
         }
         /* Gets List of all available devices.
          *
