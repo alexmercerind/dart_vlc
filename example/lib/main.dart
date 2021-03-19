@@ -20,6 +20,7 @@ class _DartVLCState extends State<DartVLC> {
   PlaybackState playback = new PlaybackState();
   GeneralState general = new GeneralState();
   List<Media> medias = <Media>[];
+  List<Device> devices = <Device>[];
   TextEditingController controller = new TextEditingController();
 
   @override
@@ -38,6 +39,8 @@ class _DartVLCState extends State<DartVLC> {
     this.player.generateStream.listen((general) {
       this.setState(() => this.general = general);
     });
+    this.devices = await Devices.all;
+    this.setState(() {});
   }
 
   @override
@@ -61,7 +64,7 @@ class _DartVLCState extends State<DartVLC> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                        Text('Add to playlist.'),
+                        Text('Playlist creation.'),
                         Divider(
                           height: 8.0,
                           color: Colors.transparent,
@@ -369,7 +372,7 @@ class _DartVLCState extends State<DartVLC> {
                             );
                       },
                     ),
-                    Text('Stats for nerds.'),
+                    Text('Event streams.'),
                     Divider(
                       height: 8.0,
                       color: Colors.transparent,
@@ -419,6 +422,103 @@ class _DartVLCState extends State<DartVLC> {
                       ],
                     ),
                   ],
+                ),
+              ),
+            ),
+            Card(
+              elevation: 2.0,
+              color: Colors.white,
+              margin: EdgeInsets.all(4.0),
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 16.0, top: 16.0),
+                      alignment: Alignment.topLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Playlist manipulation.'),
+                          Divider(
+                            height: 12.0,
+                            color: Colors.transparent,
+                          ),
+                          Divider(
+                            height: 12.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 256.0,
+                      child: ReorderableListView(
+                        shrinkWrap: true,
+                        onReorder: (int initialIndex, int finalIndex) async {
+                          await this.player.move(initialIndex, finalIndex);
+                          this.setState(() {});
+                        },
+                        scrollDirection: Axis.vertical,
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        children: List.generate(
+                          this.current.medias.length,
+                          (int index) => new ListTile(
+                            key: Key(index.toString()),
+                            leading: Text(
+                              index.toString(),
+                              style: TextStyle(
+                                fontSize: 14.0
+                              ),
+                            ),
+                            title: Text(
+                              this.current.medias[index].resource,
+                              style: TextStyle(
+                                fontSize: 14.0
+                              ),
+                            ),
+                            subtitle: Text(
+                              this.current.medias[index].mediaType.toString(),
+                              style: TextStyle(
+                                fontSize: 14.0
+                              ),
+                            ),
+                          ),
+                          growable: true,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              elevation: 2.0,
+              color: Colors.white,
+              margin: EdgeInsets.all(4.0),
+              child: Container(
+                margin: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Playback Devices.'),
+                    Divider(
+                      height: 12.0,
+                      color: Colors.transparent,
+                    ),
+                    Divider(
+                      height: 12.0,
+                    ),
+                  ] + this.devices.map(
+                    (device) => new ListTile(
+                      title: Text(
+                        device.name,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                        ),
+                      ),
+                      onTap: () => this.player.setDevice(device),
+                    ),
+                  ).toList(),
                 ),
               ),
             ),
