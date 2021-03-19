@@ -38,6 +38,7 @@ public:
 	std::vector<Device*> all;
 
     void refresh() {
+		this->all.clear();
         VLC::Instance _ = VLC::Instance(0, nullptr);
 		VLC::MediaPlayer __ = VLC::MediaPlayer(_);
 		std::vector<VLC::AudioOutputDeviceDescription> devices = __.outputDeviceEnum();
