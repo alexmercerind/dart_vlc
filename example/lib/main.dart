@@ -522,7 +522,9 @@ class _DartVLCState extends State<DartVLC> {
                           fontSize: 14.0,
                         ),
                       ),
-                      onTap: () => this.player.setDevice(device),
+                      onTap: () => this.player.setDevice(
+                        device
+                      ),
                     ),
                   ).toList(),
                 ),

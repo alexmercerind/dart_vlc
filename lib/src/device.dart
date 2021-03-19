@@ -11,8 +11,8 @@ class Device {
 
   /// Internally used method to easily transform data for sending through Platform channel.
   static Device fromMap(dynamic map) => Device(
-    map['id'],
-    map['name']
+    map['id'] != '' ? '{0.0.0.00000000}.' + map['id'].toLowerCase(): '',
+    map['name'],
   );
 
   /// Internally used method to easily transform data for sending through Platform channel.
