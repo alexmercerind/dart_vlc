@@ -111,6 +111,15 @@ int main() {
 			std::cin >> index;
 			player->jump(index);
 		}
+		if (input == "device") {
+			int index;
+			std::cout << "Index:";
+			std::cin >> index;
+			devices->refresh();
+			player->setDevice(
+				devices->all[index]
+			);
+		}
 		if (input == "seek") {
 			int duration;
 			std::cout << "Duration:";

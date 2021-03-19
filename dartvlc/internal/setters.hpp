@@ -121,7 +121,7 @@ public:
 	}
 
 	void setDevice(Device* device) {
-		this->mediaPlayer.outputDeviceSet(device->name);
+		this->mediaPlayer.outputDeviceSet(device->id);
 	}
 
 	void setPlaylistMode(int mode) {

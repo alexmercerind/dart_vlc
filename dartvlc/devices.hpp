@@ -16,18 +16,18 @@
 
 class Device {
 public:
+	std::string id;
 	std::string name;
-	std::string description;
 
-	Device(std::string name, std::string description) {
+	Device(std::string id, std::string name) {
+		this->id = id;
 		this->name = name;
-		this->description = description;
 	}
 
     std::map<std::string, std::string> get() {
 		std::map<std::string, std::string> device;
+		device["id"] = this->id;
 		device["name"] = this->name;
-		device["description"] = this->description;
 		return device;
 	}
 };
