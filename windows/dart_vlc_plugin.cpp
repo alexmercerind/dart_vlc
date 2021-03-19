@@ -781,7 +781,7 @@ namespace {
         else if (method->name == "setDevice") {
             int id = method->getArgument<int>("id");
             std::map<std::string, std::string> _ = method->getArgument<std::map<std::string, std::string>>("device");
-            Device* device = new Device(_["name"], _["description"]);
+            Device* device = new Device(_["id"], _["name"]);
             Player* player = players->get(id);
             player->setDevice(device);
             method->returnNull();
