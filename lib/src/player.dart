@@ -302,8 +302,11 @@ abstract class Player {
   /// Sets playback [Device] for the instance of [Player].
   /// 
   /// Use [Devices.all] getter to get [List] of all [Device].
+  /// A playback [Device] for a [Player] instance cannot be changed in the middle of playback.
   /// 
-  Future<void> setDevice(Device device) async {
+  /// Pass `refresh: true` for changing the device instantly, this will cause the playback to start from beginning.
+  /// 
+  Future<void> setDevice(Device device, {bool refresh: false}) async {
     await channel.invokeMethod(
       'setDevice',
       {
@@ -311,6 +314,8 @@ abstract class Player {
         'device': device.toMap(),
       },
     );
+    if (refresh)
+      await this.jump(this.current.index);
   }
 
   /// Internally used [StreamController]s,

@@ -1,24 +1,24 @@
 import 'package:dart_vlc/src/channel.dart';
 
-/// Represents a [Device] for playback in the [Player].
+/// Represents a playback [Device] for the [Player].
 class Device {
+  /// ID corresponding to the [Device].
+  String id;
   /// Name of the [Device].
   String name;
-  /// Description of the [Device].
-  String description;
 
-  Device(this.name, this.description);
+  Device(this.id, this.name);
 
   /// Internally used method to easily transform data for sending through Platform channel.
   static Device fromMap(dynamic map) => Device(
-    map['name'],
-    map['description']
+    map['id'],
+    map['name']
   );
 
   /// Internally used method to easily transform data for sending through Platform channel.
   Map<String, String> toMap() => {
+    'id': this.id,
     'name': this.name,
-    'description': this.description,
   };
 }
 
