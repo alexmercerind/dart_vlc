@@ -127,5 +127,6 @@ class Media extends MediaSource {
     this.metas["albumArtist"] = metas["albumArtist"];
     this.metas["discNumber"]  = metas["discNumber"];
     this.metas["discTotal"]   = metas["discTotal"];
+    this.metas['duration']    = metas['duration'];
   }
 }

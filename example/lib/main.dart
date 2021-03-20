@@ -490,72 +490,6 @@ class _DartVLCState extends State<DartVLC> {
                         color: Colors.white,
                         margin: EdgeInsets.all(4.0),
                         child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 16.0, top: 16.0),
-                                alignment: Alignment.topLeft,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Playlist manipulation.'),
-                                    Divider(
-                                      height: 12.0,
-                                      color: Colors.transparent,
-                                    ),
-                                    Divider(
-                                      height: 12.0,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: 256.0,
-                                child: ReorderableListView(
-                                  shrinkWrap: true,
-                                  onReorder: (int initialIndex, int finalIndex) async {
-                                    await this.player.move(initialIndex, finalIndex);
-                                    this.setState(() {});
-                                  },
-                                  scrollDirection: Axis.vertical,
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  children: List.generate(
-                                    this.current.medias.length,
-                                    (int index) => new ListTile(
-                                      key: Key(index.toString()),
-                                      leading: Text(
-                                        index.toString(),
-                                        style: TextStyle(
-                                          fontSize: 14.0
-                                        ),
-                                      ),
-                                      title: Text(
-                                        this.current.medias[index].resource,
-                                        style: TextStyle(
-                                          fontSize: 14.0
-                                        ),
-                                      ),
-                                      subtitle: Text(
-                                        this.current.medias[index].mediaType.toString(),
-                                        style: TextStyle(
-                                          fontSize: 14.0
-                                        ),
-                                      ),
-                                    ),
-                                    growable: true,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 2.0,
-                        color: Colors.white,
-                        margin: EdgeInsets.all(4.0),
-                        child: Container(
                           margin: EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -651,6 +585,78 @@ class _DartVLCState extends State<DartVLC> {
                               ),
                               Text(
                                 JsonEncoder.withIndent('    ').convert(this.metasMedia?.metas),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        elevation: 2.0,
+                        color: Colors.white,
+                        margin: EdgeInsets.all(4.0),
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 16.0, top: 16.0),
+                                alignment: Alignment.topLeft,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Playlist manipulation.'),
+                                    Divider(
+                                      height: 12.0,
+                                      color: Colors.transparent,
+                                    ),
+                                    Divider(
+                                      height: 12.0,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                height: 256.0,
+                                child: ReorderableListView(
+                                  shrinkWrap: true,
+                                  onReorder: (int initialIndex, int finalIndex) async {
+                                    /// 🙏🙏🙏
+                                    /// https://github.com/flutter/flutter/issues/24786
+                                    /// https://stackoverflow.com/a/54164333/12825435
+                                    if (finalIndex > this.current.medias.length) finalIndex = this.current.medias.length;
+                                    if (initialIndex < finalIndex) finalIndex--;
+
+                                    await this.player.move(initialIndex, finalIndex);
+                                    this.setState(() {});
+                                  },
+                                  scrollDirection: Axis.vertical,
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  children: List.generate(
+                                    this.current.medias.length,
+                                    (int index) => new ListTile(
+                                      key: Key(index.toString()),
+                                      leading: Text(
+                                        index.toString(),
+                                        style: TextStyle(
+                                          fontSize: 14.0
+                                        ),
+                                      ),
+                                      title: Text(
+                                        this.current.medias[index].resource,
+                                        style: TextStyle(
+                                          fontSize: 14.0
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        this.current.medias[index].mediaType.toString(),
+                                        style: TextStyle(
+                                          fontSize: 14.0
+                                        ),
+                                      ),
+                                    ),
+                                    growable: true,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
