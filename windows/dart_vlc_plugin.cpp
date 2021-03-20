@@ -798,6 +798,34 @@ namespace {
                 devices->get()
             );
         }
+        /* Parses [Media] for retrieving its meta.
+         *
+         * Argument:
+         * 
+         * {
+         *      'timeout': 10000,
+         *      'source': {
+         *          'mediaSourceType': 'MediaSourceType.media',
+         *          'mediaType': 'MediaType.file',
+         *          'resource': 'C:/alexmercerind/music.MP3'
+         *      }
+         * }
+         * 
+         */
+        else if (method->name == "Media.parse") {
+            int timeout = method->getArgument<int>("timeout");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
+            std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
+            std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
+            Media* media = nullptr;
+            if (mediaType == "MediaType.file")
+                media = Media::file(resource, true, timeout);
+            else if (mediaType == "MediaType.network")
+                media = Media::network(resource, true, timeout);
+            else
+                media = Media::asset(resource, true, timeout);
+            method->returnValue<std::map<std::string, std::string>>(media->metas);
+        }
         else {
             method->returnNotImplemented();
         }
