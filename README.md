@@ -73,7 +73,7 @@ player.playOrPause();
 player.stop();
 ```
 
-Manipulate playlist.
+Manipulate `Playlist`.
 ```dart
 player.add(
   await Media.file(new File('C:/music0.mp3')),
@@ -96,7 +96,7 @@ player.setVolume(0.5);
 player.setRate(1.25);
 ```
 
-Get & change playback devices.
+Get & change playback `Device`.
 ```dart
 List<Device> devices = await Devices.all;
 
@@ -105,7 +105,7 @@ player.setDevice(
 );
 ```
 
-Retrieve metadata of media.
+Retrieve metadata of `Media`.
 ```dart
 Media media = await Media.network(
   'https://www.example.com/media.mp3',
@@ -122,32 +122,32 @@ Listen to playback events.
 
 ```dart
 player.currentStream.listen((CurrentState state) {
-  // state.index;
-  // state.media;
-  // state.medias;
-  // state.isPlaylist;
+  state.index;
+  state.media;
+  state.medias;
+  state.isPlaylist;
 });
 ```
 
 ```dart
 player.positionStream.listen((PositionState state) {
-  // state.position;
-  // state.duration;
+  state.position;
+  state.duration;
 });
 ```
 
 ```dart
 player.playbackStream.listen((PlaybackState state) {
-  // state.isPlaying;
-  // state.isSeekable;
-  // state.isCompleted;
+  state.isPlaying;
+  state.isSeekable;
+  state.isCompleted;
 });
 ```
 
 ```dart
 player.generalStream.listen((GeneralState state) {
-  // state.volume;
-  // state.rate;
+  state.volume;
+  state.rate;
 });
 ```
 
@@ -177,7 +177,7 @@ Windows
 
 Done
 
-- `Media` playback from file.
+- `Media` playback from `File`.
 - `Media` playback from network.
 - `Media` playback from assets.
 - `play`/`pause`/`playOrPause`/`stop`.
@@ -206,24 +206,23 @@ Done
   - `Player.generalState`
     - `volume`: Volume of current `Player` instance.
     - `rate`: Rate of current `Player` instance.
-- Working on Linux.
-- Working on Windows.
 - `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback.
 - Device enumeration & changing.
-- Retrieving metadata of a `Media`.
+- Retrieving `Meta` of a `Media`.
 
 
 Under progress (irrespective of order)...
 
-- Embeding video inside the Flutter window.
-- FFI version of the library for plain Dart applications.
+- Embedding video inside the Flutter window.
 - Supporting live streaming links.
-- Bringing project on other platforms like Android/iOS.
 - Supporting native volume control/lock screen notifications.
+- FFI version of the library for plain Dart applications.
+- Bringing project on other platforms like Android/iOS.
+
 
 ## Contributions
 
-The code in the project is very nicely arranged, I have added comments wherever I felt necessary.
+The code in the project is nicely arranged (I guess), I have added comments wherever I felt necessary.
 
 Contributions to the project are open, it will be appreciated if you discuss the bug-fix/feature-addition in the issues first.
 
