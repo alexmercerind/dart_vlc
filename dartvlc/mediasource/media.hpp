@@ -91,6 +91,7 @@ public:
 		this->metas["albumArtist"] = ___.meta(libvlc_meta_AlbumArtist);
 		this->metas["discNumber"]  = ___.meta(libvlc_meta_DiscNumber);
 		this->metas["discTotal"]   = ___.meta(libvlc_meta_DiscTotal);
+		this->metas["duration"]    = std::to_string(___.duration());
 	}
 
 	std::string mediaSourceType() {

@@ -173,8 +173,6 @@ public:
 		if (initial < 0 || initial >= this->state->medias->medias.size() || final < 0 || final >= this->state->medias->medias.size()) return;
 		if (initial == final) return;
 		this->isPlaylistModified = true;
-		if (initial < final && initial != this->state->index && final != this->state->index)
-			final--;
 		Media* _ = this->state->medias->medias[initial];
 		VLC::Media __ = VLC::Media(this->instance, this->mediaList.itemAtIndex(initial).get()->mrl(), VLC::Media::FromLocation);
 		this->state->medias->medias.erase(
@@ -186,19 +184,17 @@ public:
 			_
 		);
 		this->mediaList.insertMedia(__, final);
-		if (initial < final && initial != this->state->index && final != this->state->index)
-			final++;
-		if (!((initial < this->state->index && final < this->state->index) || (initial > this->state->index && final > this->state->index))) {
-			if (initial > final)
-				this->state->index++;
-			else
-				this->state->index--;
-		}
-		else if (initial == this->state->index) {
+		if (initial == this->state->index) {
 			this->state->index = final;
 		}
 		else if (final == this->state->index) {
 			this->state->index++;
+		}
+		else if (!((initial < this->state->index && final < this->state->index) || (initial > this->state->index && final > this->state->index))) {
+			if (initial > final)
+				this->state->index++;
+			else
+				this->state->index--;
 		}
 		this->_onPlaylistCallback();
 	}
