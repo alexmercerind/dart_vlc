@@ -28,7 +28,7 @@ class Devices {
   /// Gets [List] of all available playback [Device].
   static Future<List<Device>> get all async {
     dynamic devices = await channel.invokeMethod(
-      'getDevices',
+      'Devices.all',
       {}
     );
     return devices.map(

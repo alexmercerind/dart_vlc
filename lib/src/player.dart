@@ -61,7 +61,7 @@ abstract class Player {
   ///
   static Future<Player> create({@required int id}) async {
     await channel.invokeMethod(
-      'create',
+      'Player.create',
       {
         'id': id,
       },
@@ -135,7 +135,7 @@ abstract class Player {
           players[this.id].generalController.stream;
     }
     await channel.invokeMethod(
-      'open',
+      'Player.open',
       {
         'id': this.id,
         'autoStart': autoStart,
@@ -147,7 +147,7 @@ abstract class Player {
   /// Plays opened [MediaSource],
   Future<void> play() async {
     await channel.invokeMethod(
-      'play',
+      'Player.play',
       {
         'id': this.id,
       },
@@ -157,7 +157,7 @@ abstract class Player {
   /// Pauses opened [MediaSource],
   Future<void> pause() async {
     await channel.invokeMethod(
-      'pause',
+      'Player.pause',
       {
         'id': this.id,
       },
@@ -167,7 +167,7 @@ abstract class Player {
   /// Play or Pause opened [MediaSource],
   Future<void> playOrPause() async {
     await channel.invokeMethod(
-      'playOrPause',
+      'Player.playOrPause',
       {
         'id': this.id,
       },
@@ -177,7 +177,7 @@ abstract class Player {
   /// Stops the [Player],
   Future<void> stop() async {
     await channel.invokeMethod(
-      'stop',
+      'Player.stop',
       {
         'id': this.id,
       },
@@ -191,7 +191,7 @@ abstract class Player {
   /// Jumps to the next [Media] in the [Playlist] opened.
   Future<void> next() async {
     await channel.invokeMethod(
-      'next',
+      'Player.next',
       {
         'id': this.id,
       },
@@ -201,7 +201,7 @@ abstract class Player {
   /// Jumps to the previous [Media] in the [Playlist] opened.
   Future<void> back() async {
     await channel.invokeMethod(
-      'back',
+      'Player.back',
       {
         'id': this.id,
       },
@@ -212,7 +212,7 @@ abstract class Player {
   /// Pass index as parameter.
   Future<void> jump(int index) async {
     await channel.invokeMethod(
-      'back',
+      'Player.back',
       {
         'id': this.id,
         'index': index,
@@ -223,7 +223,7 @@ abstract class Player {
   /// Seeks the [Media] currently playing in the [Player] instance, to the provided [Duration].
   Future<void> seek(Duration duration) async {
     await channel.invokeMethod(
-      'seek',
+      'Player.seek',
       {
         'id': this.id,
         'duration': duration.inMilliseconds,
@@ -234,7 +234,7 @@ abstract class Player {
   /// Sets volume of the [Player] instance.
   Future<void> setVolume(double volume) async {
     await channel.invokeMethod(
-      'setVolume',
+      'Player.setVolume',
       {
         'id': this.id,
         'volume': volume,
@@ -245,7 +245,7 @@ abstract class Player {
   /// Sets playback rate of the [Media] currently playing in the [Player] instance.
   Future<void> setRate(double rate) async {
     await channel.invokeMethod(
-      'setRate',
+      'Player.setRate',
       {
         'id': this.id,
         'rate': rate,
@@ -256,7 +256,7 @@ abstract class Player {
   /// Appends [Media] to the [Playlist] of the [Player] instance.
   Future<void> add(Media source) async {
     await channel.invokeMethod(
-      'add',
+      'Player.add',
       {
         'id': this.id,
         'source': source.toMap(),
@@ -267,7 +267,7 @@ abstract class Player {
   /// Removes [Media] from the [Playlist] at a specific index.
   Future<void> remove(int index) async {
     await channel.invokeMethod(
-      'remove',
+      'Player.remove',
       {
         'id': this.id,
         'index': index,
@@ -278,7 +278,7 @@ abstract class Player {
   /// Inserts [Media] to the [Playlist] of the [Player] instance at specific index.
   Future<void> insert(int index, Media source) async {
     await channel.invokeMethod(
-      'insert',
+      'Player.insert',
       {
         'id': this.id,
         'index': index,
@@ -290,7 +290,7 @@ abstract class Player {
   /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
   Future<void> move(int initialIndex, int finalIndex) async {
     await channel.invokeMethod(
-      'move',
+      'Player.move',
       {
         'id': this.id,
         'initial': initialIndex,
@@ -308,7 +308,7 @@ abstract class Player {
   /// 
   Future<void> setDevice(Device device) async {
     await channel.invokeMethod(
-      'setDevice',
+      'Player.setDevice',
       {
         'id': this.id,
         'device': device.toMap(),
