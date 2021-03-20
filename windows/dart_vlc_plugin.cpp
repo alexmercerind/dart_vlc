@@ -368,7 +368,7 @@ namespace {
          * }
          * 
          */
-        if (method->name == "create") {
+        if (method->name == "Player.create") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
             player->onPlay(
@@ -460,7 +460,7 @@ namespace {
          *      }
          * }
          */
-        else if (method->name == "open") {
+        else if (method->name == "Player.open") {
             int id = method->getArgument<int>("id");
             bool autoStart = method->getArgument<bool>("autoStart");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
@@ -509,7 +509,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "play") {
+        else if (method->name == "Player.play") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
             player->play();
@@ -525,7 +525,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "pause") {
+        else if (method->name == "Player.pause") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
             player->pause();
@@ -541,7 +541,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "playOrPause") {
+        else if (method->name == "Player.playOrPause") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
             player->playOrPause();
@@ -557,7 +557,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "stop") {
+        else if (method->name == "Player.stop") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
             player->stop();
@@ -573,7 +573,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "next") {
+        else if (method->name == "Player.next") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
             player->next();
@@ -589,7 +589,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "back") {
+        else if (method->name == "Player.back") {
             int id = method->getArgument<int>("id");
             Player* player = players->get(id);
             player->back();
@@ -606,7 +606,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "jump") {
+        else if (method->name == "Player.jump") {
             int id = method->getArgument<int>("id");
             int index = method->getArgument<int>("index");
             Player* player = players->get(id);
@@ -624,7 +624,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "seek") {
+        else if (method->name == "Player.seek") {
             int id = method->getArgument<int>("id");
             int duration = method->getArgument<int>("duration");
             Player* player = players->get(id);
@@ -642,7 +642,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "setVolume") {
+        else if (method->name == "Player.setVolume") {
             int id = method->getArgument<int>("id");
             float volume = method->getArgument<float>("volume");
             Player* player = players->get(id);
@@ -660,7 +660,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "setRate") {
+        else if (method->name == "Player.setRate") {
             int id = method->getArgument<int>("id");
             float rate = method->getArgument<float>("rate");
             Player* player = players->get(id);
@@ -681,7 +681,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "add") {
+        else if (method->name == "Player.add") {
             int id = method->getArgument<int>("id");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
             std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
@@ -707,7 +707,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "remove") {
+        else if (method->name == "Player.remove") {
             int id = method->getArgument<int>("id");
             int index = method->getArgument<int>("index");
             Player* player = players->get(id);
@@ -729,7 +729,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "insert") {
+        else if (method->name == "Player.insert") {
             int id = method->getArgument<int>("id");
             int index = method->getArgument<int>("index");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
@@ -757,7 +757,7 @@ namespace {
          * }
          * 
          */
-        else if (method->name == "move") {
+        else if (method->name == "Player.move") {
             int id = method->getArgument<int>("id");
             int initial = method->getArgument<int>("initial");
             int final = method->getArgument<int>("final");
@@ -772,13 +772,13 @@ namespace {
          * {
          *      'id': 0,
          *      'device': {
-         *          'name': 'An audio device'
-         *          'description': 'Audio device description.'
+         *          'id': '{0.0.0.00000000}.{743d4fd8-998f-44ab-9a46-cef1a7ae37dc}'
+         *          'name': 'Speakers (High Definition Audio Device)'
          *      }
          * }
          * 
          */
-        else if (method->name == "setDevice") {
+        else if (method->name == "Player.setDevice") {
             int id = method->getArgument<int>("id");
             std::map<std::string, std::string> _ = method->getArgument<std::map<std::string, std::string>>("device");
             Device* device = new Device(_["id"], _["name"]);
@@ -793,7 +793,7 @@ namespace {
          * {}
          * 
          */
-        else if (method->name == "getDevices") {
+        else if (method->name == "Devices.all") {
             method->returnValue<std::vector<std::map<std::string, std::string>>>(
                 devices->get()
             );
