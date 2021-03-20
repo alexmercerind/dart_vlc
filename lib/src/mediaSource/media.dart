@@ -3,11 +3,16 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as _path;
 import 'package:path_provider/path_provider.dart' as _path;
+import 'package:dart_vlc/src/channel.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc/src/enums/mediaSourceType.dart';
 import 'package:dart_vlc/src/enums/mediaType.dart';
 
 /// A media object to open inside a [Player].
+/// 
+/// Pass `true` to [parse] for retrieving the metadata of the [Media].
+/// [timeout] sets the time-limit for retriveing metadata.
+/// [Media.metas] can be then, accessed to get the retrived metadata as `Map<String, String>`.
 ///
 /// * A [Media] from a [File].
 ///
@@ -31,28 +36,32 @@ class Media extends MediaSource {
   MediaSourceType mediaSourceType = MediaSourceType.media;
   MediaType mediaType;
   String resource;
+  Map<String, String> metas = {};
+  Map<String, dynamic> extras = {};
 
   /// Makes [Media] object from a [File].
-  static Media file(File file) {
+  static Future<Media> file(File file, {bool parse: false, Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new Media();
     media.mediaType = MediaType.file;
     media.resource = file.path;
+    if (parse) await media.parse(timeout);
     return media;
   }
 
   /// Makes [Media] object from url.
-  static Media network(dynamic url) {
+  static Future<Media> network(dynamic url, {bool parse: false, Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new Media();
     media.mediaType = MediaType.network;
     if (url is Uri)
       media.resource = url.toString();
     else
       media.resource = url;
+    if (parse) await media.parse(timeout);
     return media;
   }
 
   /// Makes [Media] object from a asset.
-  static Future<Media> asset(String path) async {
+  static Future<Media> asset(String path, {bool parse: false, Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new Media();
     media.mediaType = MediaType.asset;
     media.resource = path;
@@ -64,6 +73,7 @@ class Media extends MediaSource {
     ));
     await mediaFile.create(recursive: true);
     await mediaFile.writeAsBytes(mediaBytes);
+    if (parse) await media.parse(timeout);
     return media;
   }
 
@@ -85,4 +95,37 @@ class Media extends MediaSource {
         'mediaType': this.mediaType.toString(),
         'resource': this.resource
       };
+
+  Future<void> parse(Duration timeout) async {
+    dynamic metas = await channel.invokeMethod(
+      'Media.parse',
+      {
+        'timeout': timeout.inMilliseconds,
+        'source': this.toMap(),
+      }
+    );
+    print(metas);
+    this.metas["title"]       = metas["title"];
+    this.metas["artist"]      = metas["artist"];
+    this.metas["genre"]       = metas["genre"];
+    this.metas["copyright"]   = metas["copyright"];
+    this.metas["trackNumber"] = metas["trackNumber"];
+    this.metas["description"] = metas["description"];
+    this.metas["rating"]      = metas["rating"];
+    this.metas["date"]        = metas["date"];
+    this.metas["settings"]    = metas["settings"];
+    this.metas["url"]         = metas["url"];
+    this.metas["language"]    = metas["language"];
+    this.metas["nowPlaying"]  = metas["nowPlaying"];
+    this.metas["encodedBy"]   = metas["encodedBy"];
+    this.metas["artworkUrl"]  = metas["artworkUrl"];
+    this.metas["trackTotal"]  = metas["trackTotal"];
+    this.metas["director"]    = metas["director"];
+    this.metas["season"]      = metas["season"];
+    this.metas["episode"]     = metas["episode"];
+    this.metas["actors"]      = metas["actors"];
+    this.metas["albumArtist"] = metas["albumArtist"];
+    this.metas["discNumber"]  = metas["discNumber"];
+    this.metas["discTotal"]   = metas["discTotal"];
+  }
 }
