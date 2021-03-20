@@ -71,13 +71,12 @@ public:
 		this->state->isPlaying = false;
 		this->state->position = 0;
 		this->state->duration = 0;
+		if (this->state->device != nullptr)
+			this->setDevice(this->state->device);
     }
 
 	void next() {
-		/*
-		 * Intentionally not using `this->mediaListPlayer.back` to get `this->state->index` changed.
-		 */
-		this->_onPlaylistCallback(true);
+		this->_onPlaylistCallback();
 		if (this->state->index < this->mediaList.count())
 			this->mediaListPlayer.playItemAtIndex(
 				++this->state->index
@@ -85,10 +84,7 @@ public:
 	}
 
 	void back() {
-		/*
-		 * Intentionally not using `this->mediaListPlayer.next` to get `this->state->index` changed.
-		 */
-		this->_onPlaylistCallback(true);
+		this->_onPlaylistCallback();
 		if (this->state->index > 0)
 			this->mediaListPlayer.playItemAtIndex(
 				--this->state->index
@@ -96,7 +92,7 @@ public:
 	}
 
 	void jump(int index) {
-		this->_onPlaylistCallback(true);
+		this->_onPlaylistCallback();
 		if (index >= 0 && index < this->mediaList.count())
 			this->mediaListPlayer.playItemAtIndex(index);
 	}
@@ -121,6 +117,7 @@ public:
 	}
 
 	void setDevice(Device* device) {
+		this->state->device = device->id != "" ? device: nullptr;
 		this->mediaPlayer.outputDeviceSet(device->id);
 	}
 
@@ -132,32 +129,26 @@ public:
 
 	void add(Media* media) {
 		this->isPlaylistModified = true;
-		/* Append the `Media` to `Playlist`. */
 		this->state->medias->medias.emplace_back(media);
 		VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
 		this->mediaList.addMedia(_);
-		this->_onPlaylistCallback(false);
+		this->_onPlaylistCallback();
 		this->state->isPlaylist = true;
 	}
 
 	void remove(int index) {
 		if (index < 0 || index >= this->state->medias->medias.size()) return;
 		this->isPlaylistModified = true;
-		/* Update the `Media` `Playlist`. */
 		this->state->medias->medias.erase(state->medias->medias.begin() + index);
 		this->mediaList.removeIndex(index);
-		this->_onPlaylistCallback(false);
-		/* Handling if the index is same as current `Media` index. */
+		this->_onPlaylistCallback();
 		if (!this->state->isCompleted && this->state->index == index) {
-			/* Stop the `Player` if the remove index was the last. */
 			if (this->state->index == this->mediaList.count()) {
 				this->mediaListPlayer.stop();
 			}
-			/* If the remove index is same as the current index, then start playing the `Media` at the same index (since it is now the next `Media` in the playlist after removal). */
 			else
 				this->jump(index);
 		}
-		/* Decrement the current index if it falls behind current `Media` index. */
 		if (this->state->index > index)
 			this->state->index--;
 		this->state->isPlaylist = true;
@@ -166,15 +157,13 @@ public:
 	void insert(int index, Media* media) {
 		if (index < 0 || index >= this->state->medias->medias.size()) return;
 		this->isPlaylistModified = true;
-		/* Update the `Media` `Playlist`. */
 		this->state->medias->medias.insert(
 			state->medias->medias.begin() + index,
 			media
 		);
 		VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
 		this->mediaList.insertMedia(_, index);
-		this->_onPlaylistCallback(false);
-		/* If the insertion index falls behind the current `Media` index, increment current index by 1. */
+		this->_onPlaylistCallback();
 		if (this->state->index <= index)
 			this->state->index++;
 		this->state->isPlaylist = true;
@@ -184,6 +173,8 @@ public:
 		if (initial < 0 || initial >= this->state->medias->medias.size() || final < 0 || final >= this->state->medias->medias.size()) return;
 		if (initial == final) return;
 		this->isPlaylistModified = true;
+		if (initial < final && initial != this->state->index && final != this->state->index)
+			final--;
 		Media* _ = this->state->medias->medias[initial];
 		VLC::Media __ = VLC::Media(this->instance, this->mediaList.itemAtIndex(initial).get()->mrl(), VLC::Media::FromLocation);
 		this->state->medias->medias.erase(
@@ -195,23 +186,20 @@ public:
 			_
 		);
 		this->mediaList.insertMedia(__, final);
-		/* If `initial` & `final` lie on the either side of the `this->state->index` */
-		if (initial != this->state->index && final != this->state->index) {
+		if (initial < final && initial != this->state->index && final != this->state->index)
+			final++;
+		if (!((initial < this->state->index && final < this->state->index) || (initial > this->state->index && final > this->state->index))) {
 			if (initial > final)
 				this->state->index++;
 			else
 				this->state->index--;
-			this->_onPlaylistCallback(false);
 		}
 		else if (initial == this->state->index) {
-			/* If the moving `Media` is the one that is playing currently, then just change the current index. */
 			this->state->index = final;
-			this->_onPlaylistCallback(false);
 		}
 		else if (final == this->state->index) {
-			/* If the final index is same as the currently playing index, then stop current `Media` and play the moved one. */
 			this->state->index++;
-			this->_onPlaylistCallback(false);
 		}
+		this->_onPlaylistCallback();
 	}
 };

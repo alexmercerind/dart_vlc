@@ -78,28 +78,16 @@ protected:
 
 	std::function<void(void)> _playlistCallback;
 
-	/*
-	 * Related to `Playlist` modifications by `this->add`, `this->remove` and `this->insert`.
-	 * This only gets called when there is change in currently playing `Media` e.g. by `this->next` or `this->back` or on completion of the playback.
-	 * This method is called to update `Media` in the `Playlist` without user noticing.
-	 * 
-	 * Pass `false` for silently updating playlist & `true` to play the resulting current `Media`.
-	 */
-	void _onPlaylistCallback(bool play = false) {
-		/* Check if `this->mediaList` is modified by `this->add`, `this->remove` or `this->insert`. */
+	void _onPlaylistCallback() {
 		if (this->isPlaylistModified) {
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			/* Stop the `Player` if the `this->mediaList` is empty after any `Playlist` modifications. */
 			if (!this->mediaList.count()) {
 				this->state = new PlayerState();
 				this->mediaListPlayer.stop();
 				return;
 			}
-			/* Set the `this->state->index` to end if it exceeds the length. */
 			if (this->state->index > this->mediaList.count())
 				this->state->index = this->mediaList.count() - 1;
-			if (play)
-				this->mediaListPlayer.playItemAtIndex(this->state->index);
 			this->isPlaylistModified = false;
 			this->_playlistCallback();
 		};
@@ -152,13 +140,11 @@ protected:
 	std::function<void(void)> _stopCallback;
 
 	void _onStopCallback() {
-		if (this->getDuration() > 0) {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
-			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->position = this->getPosition();
-			this->state->duration = this->getDuration();
-			this->_stopCallback();
-		}
+		this->state->isPlaying = this->mediaPlayer.isPlaying();
+		this->state->isValid = this->mediaPlayer.isValid();
+		this->state->position = 0;
+		this->state->duration = 0;
+		this->_stopCallback();
 	}
 
 	std::function<void(int)> _positionCallback;
@@ -193,8 +179,7 @@ protected:
 			this->state->isCompleted = true;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
-			/* Explicitly change current `Media`. */
-			this->_onPlaylistCallback(true);
+			this->_onPlaylistCallback();
 			this->_completeCallback();
 		}
 	}
