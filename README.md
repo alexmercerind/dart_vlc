@@ -22,16 +22,27 @@ Player player = await Player.create(id: 69420);
 
 Create a single `Media`.
 ```dart
-Media media0 = Media.file(
+Media media0 = await Media.file(
   new File('C:/music.mp3')
 );
 
-Media media1 = Media.network(
-  'https://alexmercerind.github.io/music.aac'
+Media media1 = await Media.network(
+  'https://www.example.com/music.aac'
 );
 
 Media media2 = await Media.asset(
   'assets/music.ogg'
+);
+```
+
+Create a list of `Media`s using `Playlist`.
+```dart
+Playlist playlist = new Playlist(
+  medias: [
+    await Media.file(new File('C:/music.mp3')),
+    await Media.asset('assets/music.ogg'),
+    await Media.network('https://www.example.com/music.aac'),
+  ],
 );
 ```
 
@@ -40,23 +51,12 @@ Open `Media` or `Playlist` into a `Player` instance.
 player.open(
   new Playlist(
     medias: [
-      Media.file(new File('C:/music0.mp3')),
-      Media.file(new File('C:/music1.mp3')),
-      Media.file(new File('C:/music2.mp3')),
+      await Media.file(new File('C:/music0.mp3')),
+      await Media.file(new File('C:/music1.mp3')),
+      await Media.file(new File('C:/music2.mp3')),
     ],
   ),
   autoStart: true, //default
-);
-```
-
-Create a list of `Media`s using `Playlist`.
-```dart
-Playlist playlist = new Playlist(
-  medias: [
-    Media.file(new File('C:/music.mp3')),
-    await Media.asset('assets/music.ogg'),
-    Media.network('https://alexmercerind.github.io/music.aac'),
-  ],
 );
 ```
 
@@ -76,14 +76,14 @@ player.stop();
 Manipulate playlist.
 ```dart
 player.add(
-  Media.file(new File('C:/music0.mp3')),
+  await Media.file(new File('C:/music0.mp3')),
 );
 
 player.remove(4);
 
 player.insert(
   2,
-  Media.file(new File('C:/music0.mp3')),
+  await Media.file(new File('C:/music0.mp3')),
 );
 
 player.move(0, 4);
@@ -103,6 +103,17 @@ List<Device> devices = await Devices.all;
 player.setDevice(
   devices[0],
 );
+```
+
+Retrieve metadata of media.
+```dart
+Media media = await Media.network(
+  'https://www.example.com/media.mp3',
+  parse: true,
+  timeout: new Duration(seconds: 10),
+);
+
+Map<String, String> metas = media.metas;
 ```
 
 Listen to playback events.
@@ -199,11 +210,11 @@ Done
 - Working on Windows.
 - `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback.
 - Device enumeration & changing.
+- Retrieving metadata of a `Media`.
 
 
 Under progress (irrespective of order)...
 
-- Retrieving metadata of a file.
 - Embeding video inside the Flutter window.
 - FFI version of the library for plain Dart applications.
 - Supporting live streaming links.
