@@ -69,9 +69,6 @@ public:
 
     void stop() {
         this->mediaListPlayer.stop();
-		this->state->isPlaying = false;
-		this->state->position = 0;
-		this->state->duration = 0;
     }
 
 	void next() {
