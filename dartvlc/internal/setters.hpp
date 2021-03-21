@@ -18,13 +18,12 @@
 class PlayerSetters: public PlayerEvents {
 public:
 	void open(MediaSource* mediaSource, bool autoStart = true) {
-		this->stop();
 		this->state->medias = new Playlist({});
 		this->mediaList = VLC::MediaList(this->instance);
 		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
 			Media* media = dynamic_cast<Media*>(mediaSource);
-			VLC::Media vlcMedia = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
-			this->mediaList.addMedia(vlcMedia);
+			VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
+			this->mediaList.addMedia(_);
 			this->mediaListPlayer.setMediaList(this->mediaList);
 			this->state->medias = new Playlist({ media });
 			this->state->isPlaylist = false;
@@ -34,8 +33,8 @@ public:
 			Playlist* playlist = dynamic_cast<Playlist*>(mediaSource);
 			if (playlist->medias.empty())
 				return;
-			for (Media* vlcMedia : playlist->medias) {
-				VLC::Media media = VLC::Media(this->instance, vlcMedia->location, VLC::Media::FromLocation);
+			for (Media* _ : playlist->medias) {
+				VLC::Media media = VLC::Media(this->instance, _->location, VLC::Media::FromLocation);
 				this->mediaList.addMedia(media);
 			}
 			this->mediaListPlayer.setMediaList(this->mediaList);
@@ -71,8 +70,8 @@ public:
 		this->state->isPlaying = false;
 		this->state->position = 0;
 		this->state->duration = 0;
-		if (this->state->device != nullptr)
-			this->setDevice(this->state->device);
+		if (this->device != nullptr)
+			this->setDevice(this->device);
     }
 
 	void next() {
@@ -116,9 +115,9 @@ public:
 		this->_rateCallback(rate);
 	}
 
-	void setDevice(Device* device) {
-		this->state->device = device->id != "" ? device: nullptr;
-		this->mediaPlayer.outputDeviceSet(device->id);
+	void setDevice(Device* selectedDevice) {
+		this->device = selectedDevice->id != "" ? selectedDevice: nullptr;
+		this->mediaPlayer.outputDeviceSet(selectedDevice->id);
 	}
 
 	void setPlaylistMode(int mode) {

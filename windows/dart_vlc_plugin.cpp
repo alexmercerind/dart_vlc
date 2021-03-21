@@ -432,6 +432,7 @@ namespace {
          *      'id': 0,
          *      'autoStart': true,
          *      'source': {
+         *          'id': 0,
          *          'mediaSourceType': 'MediaSourceType.media',
          *          'mediaType': 'MediaType.file',
          *          'resource': 'C:/alexmercerind/music.MP3'
@@ -447,11 +448,13 @@ namespace {
          *          'mediaSourceType': 'MediaSourceType.playlist',
          *          'medias': [
          *              {
+         *                  'id': 0,
          *                  'mediaSourceType': 'MediaSourceType.media',
          *                  'mediaType': 'MediaType.file',
          *                  'resource': 'C:/alexmercerind/music.MP3'
          *              },
          *              {
+         *                  'id': 0,
          *                  'mediaSourceType': 'MediaSourceType.media',
          *                  'mediaType': 'MediaType.network',
          *                  'resource': 'C:/alexmercerind/music.MP3'
@@ -466,29 +469,34 @@ namespace {
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
             std::string mediaSourceType = std::get<std::string>(source[flutter::EncodableValue("mediaSourceType")]);
             if (mediaSourceType == "MediaSourceType.media") {
+                int mediaId = std::get<int>(source[flutter::EncodableValue("id")]);
                 std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
                 std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
                 Media* media = nullptr;
                 if (mediaType == "MediaType.file")
-                    media = Media::file(resource);
+                    media = Media::file(mediaId, resource);
                 else if (mediaType == "MediaType.network")
-                    media = Media::network(resource);
+                    media = Media::network(mediaId, resource);
                 else
-                    media = Media::asset(resource);
+                    media = Media::asset(mediaId, resource);
                 Player* player = players->get(id);
                 player->open(media, autoStart);
             }
             if (mediaSourceType == "MediaSourceType.playlist") {
                 std::vector<Media*> medias;
-                std::vector<std::map<std::string, std::string>> mediasMap = MethodCallHandler::getValue<std::vector<std::map<std::string, std::string>>>(source[flutter::EncodableValue("medias")]);
-                for (std::map<std::string,std::string> mediaMap: mediasMap) {
+                flutter::EncodableList mediaList = std::get<flutter::EncodableList>(source[flutter::EncodableValue("medias")]);
+                for (flutter::EncodableValue encodedMedia: mediaList) {
+                    flutter::EncodableMap mediaMap = std::get<flutter::EncodableMap>(encodedMedia);
+                    int mediaId = std::get<int>(mediaMap[flutter::EncodableValue("id")]);
+                    std::string mediaType = std::get<std::string>(mediaMap[flutter::EncodableValue("mediaType")]);
+                    std::string resource = std::get<std::string>(mediaMap[flutter::EncodableValue("resource")]);
                     Media* media;
-                    if (mediaMap["mediaType"] == "MediaType.file")
-                        media = Media::file(mediaMap["resource"]);
-                    else if (mediaMap["mediaType"] == "MediaType.network")
-                        media = Media::network(mediaMap["resource"]);
+                    if (mediaType == "MediaType.file")
+                        media = Media::file(mediaId, resource);
+                    else if (mediaType == "MediaType.network")
+                        media = Media::network(mediaId, resource);
                     else
-                        media = Media::asset(mediaMap["resource"]);
+                        media = Media::asset(mediaId, resource);
                     medias.emplace_back(media);
                 }
                 Player* player = players->get(id);
@@ -684,15 +692,16 @@ namespace {
         else if (method->name == "Player.add") {
             int id = method->getArgument<int>("id");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
+            int mediaId = std::get<int>(source[flutter::EncodableValue("id")]);
             std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
             std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
             Media* media = nullptr;
             if (mediaType == "MediaType.file")
-                media = Media::file(resource);
+                media = Media::file(mediaId, resource);
             else if (mediaType == "MediaType.network")
-                media = Media::network(resource);
+                media = Media::network(mediaId, resource);
             else
-                media = Media::asset(resource);
+                media = Media::asset(mediaId, resource);
             Player* player = players->get(id);
             player->add(media);
             method->returnNull();
@@ -733,15 +742,16 @@ namespace {
             int id = method->getArgument<int>("id");
             int index = method->getArgument<int>("index");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
+            int mediaId = std::get<int>(source[flutter::EncodableValue("id")]);
             std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
             std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
             Media* media = nullptr;
             if (mediaType == "MediaType.file")
-                media = Media::file(resource);
+                media = Media::file(mediaId, resource);
             else if (mediaType == "MediaType.network")
-                media = Media::network(resource);
+                media = Media::network(mediaId, resource);
             else
-                media = Media::asset(resource);
+                media = Media::asset(mediaId, resource);
             Player* player = players->get(id);
             player->insert(index, media);
             method->returnNull();
@@ -815,15 +825,16 @@ namespace {
         else if (method->name == "Media.parse") {
             int timeout = method->getArgument<int>("timeout");
             std::map<flutter::EncodableValue, flutter::EncodableValue> source = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("source")]);
+            int mediaId = std::get<int>(source[flutter::EncodableValue("id")]);
             std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
             std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
             Media* media = nullptr;
             if (mediaType == "MediaType.file")
-                media = Media::file(resource, true, timeout);
+                media = Media::file(mediaId, resource, true, timeout);
             else if (mediaType == "MediaType.network")
-                media = Media::network(resource, true, timeout);
+                media = Media::network(mediaId, resource, true, timeout);
             else
-                media = Media::asset(resource, true, timeout);
+                media = Media::asset(mediaId, resource, true, timeout);
             method->returnValue<std::map<std::string, std::string>>(media->metas);
         }
         else {

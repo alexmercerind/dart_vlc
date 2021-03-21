@@ -8,7 +8,6 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "../device.hpp"
 #include "../mediasource/playlist.hpp"
 
 
@@ -26,5 +25,4 @@ public:
 	float volume = 0.5;
 	float rate = 1.0;
 	bool isPlaylist = false;
-	Device* device = nullptr;
 };

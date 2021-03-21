@@ -22,13 +22,15 @@
 
 class Media: public MediaSource {
 public:
+	int id;
 	std::string mediaType;
 	std::string resource;
 	std::string location;
 	std::map<std::string, std::string> metas;
 
-	static Media* file(std::string path, bool parse = false, int timeout = 10000) {
+	static Media* file(int id, std::string path, bool parse = false, int timeout = 10000) {
 		Media* media = new Media();
+		media->id = id;
 		media->resource = path;
 		media->location = "file:///" + path;
 		media->mediaType = "MediaType.file";
@@ -36,8 +38,9 @@ public:
 		return media;
 	}
 
-	static Media* network(std::string url, bool parse = false, int timeout = 10000) {
+	static Media* network(int id, std::string url, bool parse = false, int timeout = 10000) {
 		Media* media = new Media();
+		media->id = id;
 		media->resource = url;
 		media->location = url;
 		media->mediaType = "MediaType.network";
@@ -45,8 +48,9 @@ public:
 		return media;
 	}
 
-	static Media* asset(std::string path, bool parse = false, int timeout = 10000) {
+	static Media* asset(int id, std::string path, bool parse = false, int timeout = 10000) {
 		Media* media = new Media();
+		media->id = id;
 		media->resource = path;
 		media->location = "file:///" + std::filesystem::temp_directory_path().u8string() + path;
 		media->mediaType = "MediaType.asset";
@@ -68,7 +72,8 @@ public:
 			VLC::Media::ParseFlags::Network,
 			timeout
 		);
-		while (!*isParsedPointer) {}
+		while (!*isParsedPointer)
+			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		this->metas["title"]       = ___.meta(libvlc_meta_Title);
 		this->metas["artist"]      = ___.meta(libvlc_meta_Artist);
 		this->metas["genre"]       = ___.meta(libvlc_meta_Genre);
@@ -100,6 +105,7 @@ public:
 
 	std::map<std::string, std::string> get() {
 		std::map<std::string, std::string> media;
+		media["id"] = this->id;
 		media["mediaType"] = this->mediaType;
 		media["resource"] = this->resource;
 		return media;
