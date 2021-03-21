@@ -214,6 +214,7 @@ Done
 Under progress (irrespective of order)...
 
 - Embedding video inside the Flutter window.
+- Make things more efficient.
 - Supporting live streaming links.
 - Supporting native volume control/lock screen notifications.
 - FFI version of the library for plain Dart applications.
