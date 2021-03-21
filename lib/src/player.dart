@@ -7,7 +7,7 @@ import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc/src/device.dart';
 
 
-/// Internally used class to avoid direct creation of the object of a+ [Player] class.
+/// Internally used class to avoid direct creation of the object of a [Player] class.
 class _Player extends Player {}
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
@@ -174,7 +174,11 @@ abstract class Player {
     );
   }
 
-  /// Stops the [Player],
+  /// Stops the [Player].
+  /// 
+  /// Also resets the [Device] set using [Player.setDevice].
+  /// A new instance must be created, once this method is called.
+  /// 
   Future<void> stop() async {
     await channel.invokeMethod(
       'Player.stop',
