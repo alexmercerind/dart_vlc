@@ -9,7 +9,6 @@
  */
 
 #include "../include/vlcpp/vlc.hpp"
-#include "../device.hpp"
 
 
 class PlayerInternal {
@@ -19,5 +18,4 @@ protected:
 	VLC::MediaListPlayer mediaListPlayer;
 	VLC::MediaList mediaList;
 	bool isPlaylistModified = false;
-	Device* device = nullptr;
 };

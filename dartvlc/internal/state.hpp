@@ -9,6 +9,7 @@
  */
 
 #include "../mediasource/playlist.hpp"
+#include "../device.hpp"
 
 
 class PlayerState {
@@ -25,4 +26,5 @@ public:
 	float volume = 0.5;
 	float rate = 1.0;
 	bool isPlaylist = false;
+	Device* device = nullptr;
 };

@@ -18,6 +18,8 @@
 class PlayerSetters: public PlayerEvents {
 public:
 	void open(MediaSource* mediaSource, bool autoStart = true) {
+		if (this->state->device == nullptr)
+			this->stop();
 		this->state->medias = new Playlist({});
 		this->mediaList = VLC::MediaList(this->instance);
 		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
@@ -70,8 +72,6 @@ public:
 		this->state->isPlaying = false;
 		this->state->position = 0;
 		this->state->duration = 0;
-		if (this->device != nullptr)
-			this->setDevice(this->device);
     }
 
 	void next() {
@@ -115,9 +115,9 @@ public:
 		this->_rateCallback(rate);
 	}
 
-	void setDevice(Device* selectedDevice) {
-		this->device = selectedDevice->id != "" ? selectedDevice: nullptr;
-		this->mediaPlayer.outputDeviceSet(selectedDevice->id);
+	void setDevice(Device* device) {
+		this->state->device = device->id != "" ? device: nullptr;
+		this->mediaPlayer.outputDeviceSet(device->id);
 	}
 
 	void setPlaylistMode(int mode) {
