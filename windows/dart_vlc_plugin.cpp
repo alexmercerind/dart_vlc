@@ -161,11 +161,13 @@ void open(PlayerState* &state) {
      *      'index': 1,
      *      'medias': [
      *          {
+     *              'id': 0,
      *              'mediaSourceType': 'MediaSourceType.media',
      *              'mediaType': 'MediaType.network',
      *              'resource': 'https://alexmercerind.com/music.MP3'
      *          },
      *          {
+     *              'id': 1,
      *              'mediaSourceType': 'MediaSourceType.media',
      *              'mediaType': MediaType.file',
      *              'resource': 'C:/alexmercerind/music.MP3'
@@ -175,6 +177,15 @@ void open(PlayerState* &state) {
      * }
      * 
      */
+    flutter::EncodableList mediaMaps = flutter::EncodableList();
+    for (Media* media: state->medias->medias) {
+        flutter::EncodableMap mediaMap = flutter::EncodableMap();
+        mediaMap[flutter::EncodableValue("id")] = flutter::EncodableValue(media->id);
+        mediaMap[flutter::EncodableValue("mediaSourceType")] = flutter::EncodableValue("MediaSourceType.media");
+        mediaMap[flutter::EncodableValue("mediaType")] = flutter::EncodableValue(media->mediaType);
+        mediaMap[flutter::EncodableValue("resource")] = flutter::EncodableValue(media->resource);
+        mediaMaps.emplace_back(mediaMap);
+    }
     channel->InvokeMethod(
         "playerState",
         std::unique_ptr<flutter::EncodableValue>(
@@ -195,9 +206,7 @@ void open(PlayerState* &state) {
                         },
                         {
                             flutter::EncodableValue("medias"),
-                            InvokeMethodHandler::getValue<std::vector<std::map<std::string, std::string>>>(
-                                state->medias->get()
-                            )
+                            mediaMaps,
                         },
                         {
                             flutter::EncodableValue("isPlaylist"),
@@ -384,6 +393,7 @@ namespace {
             player->onStop(
                 [player] () -> void {
                     playback(player->state);
+                    position(player->state);
                 }
             );
             player->onPosition(
