@@ -284,7 +284,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player.playOrPause(),
+                                    onPressed: () => this.player.stop(),
                                     child: Text(
                                       'stop',
                                       style: TextStyle(
@@ -455,7 +455,7 @@ class _DartVLCState extends State<DartVLC> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Playback Devices.'),
+                              Text('Playback devices.'),
                               Divider(
                                 height: 12.0,
                                 color: Colors.transparent,
@@ -494,7 +494,7 @@ class _DartVLCState extends State<DartVLC> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Metas Parsing.'),
+                              Text('Metas parsing.'),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -616,7 +616,7 @@ class _DartVLCState extends State<DartVLC> {
                                 ),
                               ),
                               Container(
-                                height: 256.0,
+                                height: 456.0,
                                 child: ReorderableListView(
                                   shrinkWrap: true,
                                   onReorder: (int initialIndex, int finalIndex) async {

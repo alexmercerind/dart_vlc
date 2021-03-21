@@ -116,24 +116,6 @@ abstract class Player {
   /// ```
   ///
   Future<void> open(MediaSource source, {bool autoStart: true}) async {
-    if (this.currentController.isClosed) {
-      players[this.id].currentController =
-          StreamController<CurrentState>.broadcast();
-      players[this.id].currentStream =
-          players[this.id].currentController.stream;
-      players[this.id].positionController =
-          StreamController<PositionState>.broadcast();
-      players[this.id].positionStream =
-          players[this.id].positionController.stream;
-      players[this.id].playbackController =
-          StreamController<PlaybackState>.broadcast();
-      players[this.id].playbackStream =
-          players[this.id].playbackController.stream;
-      players[this.id].generalController =
-          StreamController<GeneralState>.broadcast();
-      players[this.id].generateStream =
-          players[this.id].generalController.stream;
-    }
     await channel.invokeMethod(
       'Player.open',
       {
@@ -186,10 +168,6 @@ abstract class Player {
         'id': this.id,
       },
     );
-    await this.currentController.close();
-    await this.positionController.close();
-    await this.playbackController.close();
-    await this.generalController.close();
   }
 
   /// Jumps to the next [Media] in the [Playlist] opened.
@@ -318,6 +296,15 @@ abstract class Player {
         'device': device.toMap(),
       },
     );
+  }
+
+
+  /// Destroys the instance of [Player] & closes all [StreamController]s in it.
+  Future<void> dispose() async {
+    await this.currentController.close();
+    await this.positionController.close();
+    await this.playbackController.close();
+    await this.generalController.close();
   }
 
   /// Internally used [StreamController]s,
