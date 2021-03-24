@@ -235,7 +235,9 @@ This library & work under this repository is licensed under GNU Lesser General P
 
 ## Acknowledgements
 
-Thanks to [@DomingoMG](https://github.com/DomingoMG) for the donation & testing of the project.
+Thanks to following people for supporing the project:
+- [@DomingoMG](https://github.com/DomingoMG)
+- Salman Aljabri
 
 ## Spoilers
 
@@ -255,4 +257,4 @@ The API style of this project is highly influenced by [assets_audio_player](http
 
 Although, the mentioned repositories above are for audio playback, video playback is also a part of consideration for this project.
 
-Thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp).
+Thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
