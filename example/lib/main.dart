@@ -97,7 +97,8 @@ class _DartVLCState extends State<DartVLC> {
                                             hintStyle: TextStyle(
                                               fontSize: 14.0,
                                             ),
-                                            hintText: 'Media resource location.',
+                                            hintText:
+                                                'Media resource location.',
                                           ),
                                         ),
                                       ),
@@ -106,7 +107,8 @@ class _DartVLCState extends State<DartVLC> {
                                         child: DropdownButton<MediaType>(
                                           value: this.mediaType,
                                           onChanged: (mediaType) => this
-                                              .setState(() => this.mediaType = mediaType),
+                                              .setState(() =>
+                                                  this.mediaType = mediaType),
                                           items: [
                                             DropdownMenuItem<MediaType>(
                                               value: MediaType.file,
@@ -142,19 +144,23 @@ class _DartVLCState extends State<DartVLC> {
                                         padding: EdgeInsets.only(left: 16.0),
                                         child: ElevatedButton(
                                           onPressed: () async {
-                                            if (this.mediaType == MediaType.file) {
+                                            if (this.mediaType ==
+                                                MediaType.file) {
                                               this.medias.add(
-                                                    await Media.file(new File(controller.text)),
+                                                    await Media.file(new File(
+                                                        controller.text)),
                                                   );
                                             } else if (this.mediaType ==
                                                 MediaType.network) {
                                               this.medias.add(
-                                                    await Media.network(controller.text),
+                                                    await Media.network(
+                                                        controller.text),
                                                   );
                                             } else if (this.mediaType ==
                                                 MediaType.asset) {
                                               this.medias.add(
-                                                    await Media.asset(controller.text),
+                                                    await Media.asset(
+                                                        controller.text),
                                                   );
                                             }
                                             this.setState(() {});
@@ -377,11 +383,20 @@ class _DartVLCState extends State<DartVLC> {
                               ),
                               Slider(
                                 min: 0,
-                                max: this.position.duration.inMilliseconds.toDouble(),
-                                value: this.position.position.inMilliseconds.toDouble(),
+                                max: this
+                                    .position
+                                    .duration
+                                    .inMilliseconds
+                                    .toDouble(),
+                                value: this
+                                    .position
+                                    .position
+                                    .inMilliseconds
+                                    .toDouble(),
                                 onChanged: (double position) {
                                   this.player.seek(
-                                        Duration(milliseconds: position.toInt()),
+                                        Duration(
+                                            milliseconds: position.toInt()),
                                       );
                                 },
                               ),
@@ -455,33 +470,36 @@ class _DartVLCState extends State<DartVLC> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Playback devices.'),
-                              Divider(
-                                height: 12.0,
-                                color: Colors.transparent,
-                              ),
-                              Divider(
-                                height: 12.0,
-                              ),
-                            ] + this.devices.map(
-                              (device) => new ListTile(
-                                title: Text(
-                                  device.name,
-                                  style: TextStyle(
-                                    fontSize: 14.0,
+                                  Text('Playback devices.'),
+                                  Divider(
+                                    height: 12.0,
+                                    color: Colors.transparent,
                                   ),
-                                ),
-                                subtitle: Text(
-                                  device.id,
-                                  style: TextStyle(
-                                    fontSize: 14.0,
+                                  Divider(
+                                    height: 12.0,
                                   ),
-                                ),
-                                onTap: () => this.player.setDevice(
-                                  device
-                                ),
-                              ),
-                            ).toList(),
+                                ] +
+                                this
+                                    .devices
+                                    .map(
+                                      (device) => new ListTile(
+                                        title: Text(
+                                          device.name,
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          device.id,
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                          ),
+                                        ),
+                                        onTap: () =>
+                                            this.player.setDevice(device),
+                                      ),
+                                    )
+                                    .toList(),
                           ),
                         ),
                       ),
@@ -518,8 +536,8 @@ class _DartVLCState extends State<DartVLC> {
                                     width: 148.0,
                                     child: DropdownButton<MediaType>(
                                       value: this.mediaType,
-                                      onChanged: (mediaType) => this
-                                          .setState(() => this.mediaType = mediaType),
+                                      onChanged: (mediaType) => this.setState(
+                                          () => this.mediaType = mediaType),
                                       items: [
                                         DropdownMenuItem<MediaType>(
                                           value: MediaType.file,
@@ -556,13 +574,20 @@ class _DartVLCState extends State<DartVLC> {
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         if (this.mediaType == MediaType.file) {
-                                          this.metasMedia = await Media.file(new File(this.metasController.text), parse: true);
+                                          this.metasMedia = await Media.file(
+                                              new File(
+                                                  this.metasController.text),
+                                              parse: true);
                                         } else if (this.mediaType ==
                                             MediaType.network) {
-                                          this.metasMedia = await Media.network(this.metasController.text, parse: true);
+                                          this.metasMedia = await Media.network(
+                                              this.metasController.text,
+                                              parse: true);
                                         } else if (this.mediaType ==
                                             MediaType.asset) {
-                                          this.metasMedia = await Media.asset(this.metasController.text, parse: true);
+                                          this.metasMedia = await Media.asset(
+                                              this.metasController.text,
+                                              parse: true);
                                         }
                                         this.setState(() {});
                                       },
@@ -584,7 +609,8 @@ class _DartVLCState extends State<DartVLC> {
                                 color: Colors.transparent,
                               ),
                               Text(
-                                JsonEncoder.withIndent('    ').convert(this.metasMedia?.metas),
+                                JsonEncoder.withIndent('    ')
+                                    .convert(this.metasMedia?.metas),
                               ),
                             ],
                           ),
@@ -619,39 +645,42 @@ class _DartVLCState extends State<DartVLC> {
                                 height: 456.0,
                                 child: ReorderableListView(
                                   shrinkWrap: true,
-                                  onReorder: (int initialIndex, int finalIndex) async {
+                                  onReorder:
+                                      (int initialIndex, int finalIndex) async {
                                     /// 🙏🙏🙏
                                     /// https://github.com/flutter/flutter/issues/24786
                                     /// https://stackoverflow.com/a/54164333/12825435
-                                    if (finalIndex > this.current.medias.length) finalIndex = this.current.medias.length;
+                                    if (finalIndex > this.current.medias.length)
+                                      finalIndex = this.current.medias.length;
                                     if (initialIndex < finalIndex) finalIndex--;
 
-                                    await this.player.move(initialIndex, finalIndex);
+                                    await this
+                                        .player
+                                        .move(initialIndex, finalIndex);
                                     this.setState(() {});
                                   },
                                   scrollDirection: Axis.vertical,
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
                                   children: List.generate(
                                     this.current.medias.length,
                                     (int index) => new ListTile(
                                       key: Key(index.toString()),
                                       leading: Text(
                                         index.toString(),
-                                        style: TextStyle(
-                                          fontSize: 14.0
-                                        ),
+                                        style: TextStyle(fontSize: 14.0),
                                       ),
                                       title: Text(
                                         this.current.medias[index].resource,
-                                        style: TextStyle(
-                                          fontSize: 14.0
-                                        ),
+                                        style: TextStyle(fontSize: 14.0),
                                       ),
                                       subtitle: Text(
-                                        this.current.medias[index].mediaType.toString(),
-                                        style: TextStyle(
-                                          fontSize: 14.0
-                                        ),
+                                        this
+                                            .current
+                                            .medias[index]
+                                            .mediaType
+                                            .toString(),
+                                        style: TextStyle(fontSize: 14.0),
                                       ),
                                     ),
                                     growable: true,

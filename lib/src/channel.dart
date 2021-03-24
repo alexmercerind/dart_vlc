@@ -4,8 +4,10 @@ import 'package:dart_vlc/src/mediaSource/media.dart';
 
 /// Internally used map to keep [Player] instances & manage event streams.
 Map<int, Player> players = {};
+
 /// Internally used map to keep [Media] instances & manage [Media.metas].
 Map<int, Map<String, String>> mediaMetas = {};
+
 /// Internally used map to keep [Media] instances & manage [Media.extras].
 Map<int, Map<String, dynamic>> mediaExtras = {};
 
@@ -24,7 +26,8 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
                     .map(
                       (media) => Media.fromMap(media),
                     )
-                    .toList().cast<Media>();
+                    .toList()
+                    .cast<Media>();
                 players[id].current.media =
                     players[id].current.medias[players[id].current.index];
                 players[id].current.isPlaylist =

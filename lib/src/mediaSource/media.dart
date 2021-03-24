@@ -8,12 +8,11 @@ import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc/src/enums/mediaSourceType.dart';
 import 'package:dart_vlc/src/enums/mediaType.dart';
 
-
 /// Internally used class to avoid direct creation of the object of a [Media] class.
 class _Media extends Media {}
 
 /// A media object to open inside a [Player].
-/// 
+///
 /// Pass `true` to [parse] for retrieving the metadata of the [Media].
 /// [timeout] sets the time-limit for retriveing metadata.
 /// [Media.metas] can be then, accessed to get the retrived metadata as `Map<String, String>`.
@@ -45,7 +44,10 @@ abstract class Media extends MediaSource {
   Map<String, dynamic> extras = {};
 
   /// Makes [Media] object from a [File].
-  static Future<Media> file(File file, {bool parse: false, Map<String, dynamic> extras, Duration timeout: const Duration(seconds: 10)}) async {
+  static Future<Media> file(File file,
+      {bool parse: false,
+      Map<String, dynamic> extras,
+      Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new _Media();
     media.mediaType = MediaType.file;
     media.resource = file.path;
@@ -61,7 +63,10 @@ abstract class Media extends MediaSource {
   }
 
   /// Makes [Media] object from url.
-  static Future<Media> network(dynamic url, {bool parse: false, Map<String, dynamic> extras, Duration timeout: const Duration(seconds: 10)}) async {
+  static Future<Media> network(dynamic url,
+      {bool parse: false,
+      Map<String, dynamic> extras,
+      Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new _Media();
     media.mediaType = MediaType.network;
     if (url is Uri)
@@ -80,7 +85,10 @@ abstract class Media extends MediaSource {
   }
 
   /// Makes [Media] object from a asset.
-  static Future<Media> asset(String path, {bool parse: false, Map<String, dynamic> extras, Duration timeout: const Duration(seconds: 10)}) async {
+  static Future<Media> asset(String path,
+      {bool parse: false,
+      Map<String, dynamic> extras,
+      Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new _Media();
     media.mediaType = MediaType.asset;
     media.resource = path;
@@ -127,35 +135,32 @@ abstract class Media extends MediaSource {
       };
 
   Future<void> parse(Duration timeout) async {
-    dynamic metas = await channel.invokeMethod(
-      'Media.parse',
-      {
-        'timeout': timeout.inMilliseconds,
-        'source': this.toMap(),
-      }
-    );
-    this.metas['title']       = metas['title'];
-    this.metas['artist']      = metas['artist'];
-    this.metas['genre']       = metas['genre'];
-    this.metas['copyright']   = metas['copyright'];
+    dynamic metas = await channel.invokeMethod('Media.parse', {
+      'timeout': timeout.inMilliseconds,
+      'source': this.toMap(),
+    });
+    this.metas['title'] = metas['title'];
+    this.metas['artist'] = metas['artist'];
+    this.metas['genre'] = metas['genre'];
+    this.metas['copyright'] = metas['copyright'];
     this.metas['trackNumber'] = metas['trackNumber'];
     this.metas['description'] = metas['description'];
-    this.metas['rating']      = metas['rating'];
-    this.metas['date']        = metas['date'];
-    this.metas['settings']    = metas['settings'];
-    this.metas['url']         = metas['url'];
-    this.metas['language']    = metas['language'];
-    this.metas['nowPlaying']  = metas['nowPlaying'];
-    this.metas['encodedBy']   = metas['encodedBy'];
-    this.metas['artworkUrl']  = metas['artworkUrl'];
-    this.metas['trackTotal']  = metas['trackTotal'];
-    this.metas['director']    = metas['director'];
-    this.metas['season']      = metas['season'];
-    this.metas['episode']     = metas['episode'];
-    this.metas['actors']      = metas['actors'];
+    this.metas['rating'] = metas['rating'];
+    this.metas['date'] = metas['date'];
+    this.metas['settings'] = metas['settings'];
+    this.metas['url'] = metas['url'];
+    this.metas['language'] = metas['language'];
+    this.metas['nowPlaying'] = metas['nowPlaying'];
+    this.metas['encodedBy'] = metas['encodedBy'];
+    this.metas['artworkUrl'] = metas['artworkUrl'];
+    this.metas['trackTotal'] = metas['trackTotal'];
+    this.metas['director'] = metas['director'];
+    this.metas['season'] = metas['season'];
+    this.metas['episode'] = metas['episode'];
+    this.metas['actors'] = metas['actors'];
     this.metas['albumArtist'] = metas['albumArtist'];
-    this.metas['discNumber']  = metas['discNumber'];
-    this.metas['discTotal']   = metas['discTotal'];
-    this.metas['duration']    = metas['duration'];
+    this.metas['discNumber'] = metas['discNumber'];
+    this.metas['discTotal'] = metas['discTotal'];
+    this.metas['duration'] = metas['duration'];
   }
 }

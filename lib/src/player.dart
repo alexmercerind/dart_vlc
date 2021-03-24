@@ -6,7 +6,6 @@ import 'package:dart_vlc/src/mediaSource/media.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc/src/device.dart';
 
-
 /// Internally used class to avoid direct creation of the object of a [Player] class.
 class _Player extends Player {}
 
@@ -157,10 +156,10 @@ abstract class Player {
   }
 
   /// Stops the [Player].
-  /// 
+  ///
   /// Also resets the [Device] set using [Player.setDevice].
   /// A new instance must be created, once this method is called.
-  /// 
+  ///
   Future<void> stop() async {
     await channel.invokeMethod(
       'Player.stop',
@@ -273,21 +272,17 @@ abstract class Player {
   Future<void> move(int initialIndex, int finalIndex) async {
     await channel.invokeMethod(
       'Player.move',
-      {
-        'id': this.id,
-        'initial': initialIndex,
-        'final': finalIndex
-      },
+      {'id': this.id, 'initial': initialIndex, 'final': finalIndex},
     );
   }
 
   /// Sets playback [Device] for the instance of [Player].
-  /// 
+  ///
   /// Use [Devices.all] getter to get [List] of all [Device].
-  /// 
-  /// A playback [Device] for a [Player] instance cannot be changed in the middle of playback. 
+  ///
+  /// A playback [Device] for a [Player] instance cannot be changed in the middle of playback.
   /// Device will be switched once a new [Media] is played.
-  /// 
+  ///
   Future<void> setDevice(Device device) async {
     await channel.invokeMethod(
       'Player.setDevice',
@@ -297,7 +292,6 @@ abstract class Player {
       },
     );
   }
-
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.
   Future<void> dispose() async {
