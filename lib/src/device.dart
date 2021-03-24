@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dart_vlc/src/channel.dart';
 
 /// Represents a playback [Device] for the [Player].
@@ -11,7 +12,7 @@ class Device {
 
   /// Internally used method to easily transform data for sending through Platform channel.
   static Device fromMap(dynamic map) => Device(
-    map['id'] != '' ? '{0.0.0.00000000}.' + map['id'].toLowerCase(): '',
+    Platform.isWindows ? (map['id'] != '' ? '{0.0.0.00000000}.' + map['id'].toLowerCase(): ''): map['id'],
     map['name'],
   );
 

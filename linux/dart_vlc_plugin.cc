@@ -50,6 +50,7 @@ void open(PlayerState* &state) {
     auto medias = fl_value_new_list();
     for (Media* media: state->medias->medias) {
         auto mediaMap = fl_value_new_map();
+        fl_value_set_string_take(mediaMap, "id", fl_value_new_int(media->id));
         fl_value_set_string_take(mediaMap, "mediaSourceType", fl_value_new_string(media->mediaSourceType().c_str()));
         fl_value_set_string_take(mediaMap, "mediaType", fl_value_new_string(media->mediaType.c_str()));
         fl_value_set_string_take(mediaMap, "resource", fl_value_new_string(media->resource.c_str()));
@@ -87,7 +88,7 @@ void exception(PlayerState* &state) {
 static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall* method_call) {
     g_autoptr(FlMethodResponse) response = nullptr;
     const gchar* method = fl_method_call_get_name(method_call);
-    if (strcmp(method, "create") == 0) {
+    if (strcmp(method, "Player.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Player* player = players->get(id);
         player->onOpen(
@@ -103,6 +104,12 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         player->onPause(
             [player] () -> void {
                 playback(player->state);
+            }
+        );
+        player->onStop(
+            [player] () -> void {
+                playback(player->state);
+                position(player->state);
             }
         );
         player->onPosition(
@@ -125,6 +132,11 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                 complete(player->state);
             }
         );
+        player->onPlaylist(
+            [player] () -> void {
+                open(player->state);
+            }
+        );
         player->onException(
             [player] () -> void {
                 exception(player->state);
@@ -132,21 +144,22 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         );
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "open") == 0) {
+    else if (strcmp(method, "Player.open") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         bool autoStart = fl_value_get_bool(fl_value_lookup_string(fl_method_call_get_args(method_call), "autoStart"));
         auto source = fl_value_lookup_string(fl_method_call_get_args(method_call), "source");
         const char* mediaSourceType = fl_value_get_string(fl_value_lookup_string(source, "mediaSourceType"));
         if (strcmp(mediaSourceType, "MediaSourceType.media") == 0) {
+            int mediaId = fl_value_get_int(fl_value_lookup_string(source, "id"));
             const char* mediaType = fl_value_get_string(fl_value_lookup_string(source, "mediaType"));
             const char* resource = fl_value_get_string(fl_value_lookup_string(source, "resource"));
             Media* media = nullptr;
             if (strcmp(mediaType, "MediaType.file") == 0)
-                media = Media::file(resource);
+                media = Media::file(mediaId, resource, false);
             else if (strcmp(mediaType, "MediaType.network") == 0)
-                media = Media::network(resource);
+                media = Media::network(mediaId, resource, false);
             else
-                media = Media::asset(resource);
+                media = Media::asset(mediaId, resource, false);
             Player* player = players->get(id);
             player->open(media, autoStart);
         }
@@ -154,15 +167,16 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
             std::vector<Media*> medias;
             auto mediasList = fl_value_lookup_string(source, "medias");
             for (int index = 0; index < fl_value_get_length(mediasList); index++) {
+                int mediaId = fl_value_get_int(fl_value_lookup_string(fl_value_get_list_value(mediasList, index), "id"));
                 const char* mediaType = fl_value_get_string(fl_value_lookup_string(fl_value_get_list_value(mediasList, index), "mediaType"));
                 const char* resource = fl_value_get_string(fl_value_lookup_string(fl_value_get_list_value(mediasList, index), "resource"));
                 Media* media = nullptr;
                 if (strcmp(mediaType, "MediaType.file") == 0)
-                    media = Media::file(resource);
+                    media = Media::file(mediaId, resource);
                 else if (strcmp(mediaType, "MediaType.network") == 0)
-                    media = Media::network(resource);
+                    media = Media::network(mediaId, resource);
                 else
-                    media = Media::asset(resource);
+                    media = Media::asset(mediaId, resource);
                 medias.emplace_back(media);
             }
             Player* player = players->get(id);
@@ -173,69 +187,159 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "play") == 0) {
+    else if (strcmp(method, "Player.play") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Player* player = players->get(id);
         player->play();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "pause") == 0) {
+    else if (strcmp(method, "Player.pause") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Player* player = players->get(id);
         player->pause();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "playOrPause") == 0) {
+    else if (strcmp(method, "Player.playOrPause") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Player* player = players->get(id);
         player->playOrPause();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "stop") == 0) {
+    else if (strcmp(method, "Player.stop") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Player* player = players->get(id);
         player->stop();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "next") == 0) {
+    else if (strcmp(method, "Player.next") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Player* player = players->get(id);
         player->next();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "back") == 0) {
+    else if (strcmp(method, "Player.back") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Player* player = players->get(id);
         player->back();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "jump") == 0) {
+    else if (strcmp(method, "Player.jump") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         int index = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "index"));
         Player* player = players->get(id);
         player->jump(index);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "seek") == 0) {
+    else if (strcmp(method, "Player.seek") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         int duration = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "duration"));
         Player* player = players->get(id);
         player->seek(duration);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "setVolume") == 0) {
+    else if (strcmp(method, "Player.setVolume") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         float volume = fl_value_get_float(fl_value_lookup_string(fl_method_call_get_args(method_call), "volume"));
         Player* player = players->get(id);
         player->setVolume(volume);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
-    else if (strcmp(method, "setRate") == 0) {
+    else if (strcmp(method, "Player.setRate") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         float rate = fl_value_get_float(fl_value_lookup_string(fl_method_call_get_args(method_call), "rate"));
         Player* player = players->get(id);
         player->setRate(rate);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Player.add") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        auto source = fl_value_lookup_string(fl_method_call_get_args(method_call), "source");
+        int mediaId = fl_value_get_int(fl_value_lookup_string(source, "id"));
+        const char* mediaType = fl_value_get_string(fl_value_lookup_string(source, "mediaType"));
+        const char* resource = fl_value_get_string(fl_value_lookup_string(source, "resource"));
+        Media* media = nullptr;
+        if (strcmp(mediaType, "MediaType.file") == 0)
+            media = Media::file(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.network") == 0)
+            media = Media::network(mediaId, resource);
+        else
+            media = Media::asset(mediaId, resource);
+        Player* player = players->get(id);
+        player->add(media);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Player.remove") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        int index = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "index"));
+        Player* player = players->get(id);
+        player->remove(index);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Player.insert") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        int index = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "index"));
+        auto source = fl_value_lookup_string(fl_method_call_get_args(method_call), "source");
+        int mediaId = fl_value_get_int(fl_value_lookup_string(source, "id"));
+        const char* mediaType = fl_value_get_string(fl_value_lookup_string(source, "mediaType"));
+        const char* resource = fl_value_get_string(fl_value_lookup_string(source, "resource"));
+        Media* media = nullptr;
+        if (strcmp(mediaType, "MediaType.file") == 0)
+            media = Media::file(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.network") == 0)
+            media = Media::network(mediaId, resource);
+        else
+            media = Media::asset(mediaId, resource);
+        Player* player = players->get(id);
+        player->insert(index, media);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Player.move") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        int initial = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "initial"));
+        int final = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "final"));
+        Player* player = players->get(id);
+        player->move(initial, final);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Player.setDevice") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        auto deviceMap = fl_value_lookup_string(fl_method_call_get_args(method_call), "device");
+        Device* device = new Device(
+            fl_value_get_string(fl_value_lookup_string(deviceMap, "id")),
+            fl_value_get_string(fl_value_lookup_string(deviceMap, "name"))
+        );
+        Player* player = players->get(id);
+        player->setDevice(device);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Devices.all") == 0) {
+        auto devicesList = fl_value_new_list();
+        for (auto deviceMap: devices->get()) {
+            auto device = fl_value_new_map();
+            fl_value_set_string_take(device, "id", fl_value_new_string(deviceMap["id"].c_str()));
+            fl_value_set_string_take(device, "name", fl_value_new_string(deviceMap["name"].c_str()));
+            fl_value_append_take(devicesList, device);
+        }
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(devicesList));
+    }
+    else if (strcmp(method, "Media.parse") == 0) {
+        int timeout = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "timeout"));
+        auto source = fl_value_lookup_string(fl_method_call_get_args(method_call), "source");
+        int mediaId = fl_value_get_int(fl_value_lookup_string(source, "id"));
+        const char* mediaType = fl_value_get_string(fl_value_lookup_string(source, "mediaType"));
+        const char* resource = fl_value_get_string(fl_value_lookup_string(source, "resource"));
+        Media* media = nullptr;
+        if (strcmp(mediaType, "MediaType.file") == 0)
+            media = Media::file(mediaId, resource, true, timeout);
+        else if (strcmp(mediaType, "MediaType.network") == 0)
+            media = Media::network(mediaId, resource, true, timeout);
+        else
+            media = Media::asset(mediaId, resource, true, timeout);
+        auto metas = fl_value_new_map();
+        for (const auto &pair: media->metas) {
+            fl_value_set_string_take(metas, pair.first.c_str(), fl_value_new_string(pair.second.c_str()));
+        }
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(metas));
     }
     else {
         response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
