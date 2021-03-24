@@ -10,7 +10,7 @@ dependencies:
   dart_vlc: ^0.0.1
 ```
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_3.png?raw=true)
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_5.png?raw=true)
 
 
 ## Documentation
