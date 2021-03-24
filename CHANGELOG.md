@@ -1,3 +1,40 @@
+## 0.0.3
+
+**This new release of dart_vlc adds:**
+
+- More advanced playlist modification methods like:
+  - `add` for appending a new `Media` to the `Playlist` of the `Player`.
+  - `remove` for removing a `Media` from the `Playlist` of the `Player` from certain index.
+  - `insert` method for inserting `Media` to certain index.
+  - `move` a `Media` from one index to another.
+- Ability to get all playback `Device`s on machine & change.
+  - `Devices.all` gives `List` of all `Device`s.
+  - `Player.setDevice` can be used to set a playback device for the `Player` instance.
+- Now event streams are splitted into four:
+  - `Player.currentStream`
+    - Contains:
+      - `index`
+      - `media`
+      - `medias`
+      - `isPlaylist`
+  - `Player.positionStream`
+    - Contains:
+      - `position`
+      - `duration`
+  - `Player.playbackStream`
+    - Contains:
+      - `isPlaying`
+      - `isSeekable`
+      - `isCompleted`
+  - `Player.generalStream`
+    - Contains:
+      - `volume`
+      - `rate`
+- Ability to retrieve metadata of a `Media` (either from `Media.network` or `Media.file`). 
+  - Now you can access metadata of a `Media` by passing `parse: true` for parsing the metadata.
+  - Retrieved metadata is stored inside `Media.metas` as `Map<String, String>`.
+
+
 ## 0.0.2
 
 **This new release of dart_vlc adds:**
