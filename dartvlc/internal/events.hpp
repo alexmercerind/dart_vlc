@@ -7,6 +7,8 @@
  * 
  * GNU Lesser General Public License v2.1
  */
+#include <string.h>
+#include <stdlib.h>
 
 #include "getters.hpp"
 
@@ -74,8 +76,31 @@ public:
 		this->_playlistCallback = callback;
 	}
 
-protected:
+	void onVideo(int height, int width, std::function<void(uint8_t* frame)> callback) {
+		this->_videoCallback = callback;
+		int pitch = width * 4;
+		int size = height * pitch;
+		this->_videoFrameBuffer = (uint8_t*)malloc(size * sizeof(uint8_t));
+		this->mediaPlayer.setVideoCallbacks(
+			std::bind(&PlayerEvents::_videoLockCallback, this, std::placeholders::_1),
+			nullptr,
+			std::bind(&PlayerEvents::_videoPictureCallback, this, std::placeholders::_1)
+		);
+		this->mediaPlayer.setVideoFormatCallbacks(
+			[=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p, uint32_t* l) -> int {
+				strcpy(chroma, "RV32");
+				*w = width;
+				*h = height;
+				*p = pitch;
+				*l = width;
+				return 1;
+			},
+			nullptr
+		);
+		this->mediaPlayer.setVideoFormat("RV32", width, height, pitch);
+	}
 
+protected:
 	std::function<void(void)> _playlistCallback;
 
 	void _onPlaylistCallback() {
@@ -187,4 +212,17 @@ protected:
 	std::function<void(float)> _volumeCallback;
 
 	std::function<void(float)> _rateCallback;
+
+	std::function<void(uint8_t* frame)> _videoCallback;
+
+	uint8_t* _videoFrameBuffer;
+
+	void* _videoLockCallback(void** planes) {
+		planes[0] = static_cast<void*>(this->_videoFrameBuffer);
+		return nullptr;
+	}
+
+	void _videoPictureCallback(void* picture) {
+		this->_videoCallback(static_cast<uint8_t*>(this->_videoFrameBuffer));
+	}
 };
