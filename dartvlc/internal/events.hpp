@@ -7,9 +7,6 @@
  * 
  * GNU Lesser General Public License v2.1
  */
-#include <string.h>
-#include <stdlib.h>
-
 #include "getters.hpp"
 
 
@@ -80,7 +77,7 @@ public:
 		this->_videoCallback = callback;
 		int pitch = width * 4;
 		int size = height * pitch;
-		this->_videoFrameBuffer = (uint8_t*)malloc(size * sizeof(uint8_t));
+		this->_videoFrameBuffer = new uint8_t[size];
 		this->mediaPlayer.setVideoCallbacks(
 			std::bind(&PlayerEvents::_videoLockCallback, this, std::placeholders::_1),
 			nullptr,
@@ -92,7 +89,7 @@ public:
 				*w = width;
 				*h = height;
 				*p = pitch;
-				*l = width;
+				*l = height;
 				return 1;
 			},
 			nullptr

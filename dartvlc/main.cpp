@@ -26,17 +26,13 @@ int main() {
         320,
         [=](uint8_t* frame) -> void {
             (*indexPointer)++;
-            std::fstream file(
-                "/home/alexmercerind/frames/frame" + std::to_string((*indexPointer)) + ".BMP",
-                std::ios::out | std::ios::binary
-            );
-            file.write((char*)frame, sizeof(frame));
-            file.flush();
+            std::fstream file("/home/alexmercerind/frames/frame" + std::to_string((*indexPointer)) + ".RAW", std::ios::out | std::ios::binary);
+            file.write((char*)frame, 480 * 320 * 4 * 8);
             file.close();
         }
     );
     player->open(
-        Media::file(0, "/home/alexmercerind/video.mp4")
+        Media::file(0, "/home/alexmercerind/movie.mkv")
     );
     std::cin.get();
     return 0;
