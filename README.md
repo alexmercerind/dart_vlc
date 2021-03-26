@@ -220,6 +220,27 @@ Under progress (irrespective of order)...
 - FFI version of the library for plain Dart applications.
 - Bringing project on other platforms like Android/iOS.
 
+## Acknowledgements
+
+First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
+
+Thanks to following people for supporting this project:
+- [@DomingoMG](https://github.com/DomingoMG)
+- Salman Aljabri
+
+Thanks to following members of libVLC community to give me bit of look & advice about how things work:
+
+- [@jeremyVignelles](https://github.com/jeremyVignelles)
+- [@chouquette](https://github.com/chouquette)
+- [@caprica](https://github.com/caprica)
+
+## Spoilers
+
+Currenty video playback is also supported out of the box, but it doesnt show inside Flutter window.
+
+Getting videos embedding inside Flutter window is a work in progress currently.
+
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_2.PNG?raw=true)
 
 ## Contributions
 
@@ -233,19 +254,6 @@ Copyright (C) 2021, Hitesh Kumar Saini.
 
 This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
 
-## Acknowledgements
-
-Thanks to following people for supporing the project:
-- [@DomingoMG](https://github.com/DomingoMG)
-- Salman Aljabri
-
-## Spoilers
-
-Currenty video playback is also supported out of the box, but it doesnt show inside Flutter window.
-
-
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_2.PNG?raw=true)
-
 ## Vision
 
 There aren't any media (audio or video) playback libraries for Flutter on Windows/Linux yet. So, this project is all about that.
@@ -253,8 +261,6 @@ As one might be already aware, VLC is one of the best media playback tools out t
 
 So, now you can use it to play audio or video [WIP] files from Flutter Desktop app.
 
-The API style of this project is highly influenced by [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer) due to its completeness. This project will serve as a base to add Windows & Linux support to already existing audio playback libraries like [just_audio](https://github.com/ryanheise/just_audio) and [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer).
+The API style of this project is highly influenced by [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer) due to its ease of use. This project will serve as a base to add Windows & Linux support to already existing audio playback libraries like [just_audio](https://github.com/ryanheise/just_audio) and [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer).
 
 Although, the mentioned repositories above are for audio playback, video playback is also a part of consideration for this project.
-
-Thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
