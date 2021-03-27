@@ -107,6 +107,7 @@ player.setDevice(
 ```
 
 - Show the `Video` inside window.
+
 Instanciate `Player` as follows.
 ```dart
 Player player = await Player.create(
