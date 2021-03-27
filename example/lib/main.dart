@@ -13,6 +13,7 @@ class DartVLC extends StatefulWidget {
 }
 
 class _DartVLCState extends State<DartVLC> {
+  bool init = true;
   Player player;
   MediaType mediaType = MediaType.file;
   CurrentState current = new CurrentState();
@@ -27,22 +28,29 @@ class _DartVLCState extends State<DartVLC> {
 
   @override
   void didChangeDependencies() async {
-    super.didChangeDependencies();
-    this.player = await Player.create(id: 0);
-    this.player.currentStream.listen((current) {
-      this.setState(() => this.current = current);
-    });
-    this.player.positionStream.listen((position) {
-      this.setState(() => this.position = position);
-    });
-    this.player.playbackStream.listen((playback) {
-      this.setState(() => this.playback = playback);
-    });
-    this.player.generateStream.listen((general) {
-      this.setState(() => this.general = general);
-    });
-    this.devices = await Devices.all;
-    this.setState(() {});
+    if (this.init) {
+      super.didChangeDependencies();
+      this.player = await Player.create(
+        id: 0,
+        videoWidth: 480,
+        videoHeight: 320,
+      );
+      this.player.currentStream.listen((current) {
+        this.setState(() => this.current = current);
+      });
+      this.player.positionStream.listen((position) {
+        this.setState(() => this.position = position);
+      });
+      this.player.playbackStream.listen((playback) {
+        this.setState(() => this.playback = playback);
+      });
+      this.player.generateStream.listen((general) {
+        this.setState(() => this.general = general);
+      });
+      this.devices = await Devices.all;
+      this.setState(() {});
+    }
+    this.init = false;
   }
 
   @override
@@ -58,6 +66,22 @@ class _DartVLCState extends State<DartVLC> {
           shrinkWrap: true,
           padding: EdgeInsets.all(4.0),
           children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 2.0,
+                  child: Video(
+                    playerId: 0,
+                    width: 480,
+                    height: 320,
+                  ),
+                ),
+              ],
+            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -252,122 +276,6 @@ class _DartVLCState extends State<DartVLC> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Playback controls.'),
-                              Divider(
-                                height: 8.0,
-                                color: Colors.transparent,
-                              ),
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () => this.player.play(),
-                                    child: Text(
-                                      'play',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.pause(),
-                                    child: Text(
-                                      'pause',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.playOrPause(),
-                                    child: Text(
-                                      'playOrPause',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.stop(),
-                                    child: Text(
-                                      'stop',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.next(),
-                                    child: Text(
-                                      'next',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.back(),
-                                    child: Text(
-                                      'back',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(
-                                height: 12.0,
-                                color: Colors.transparent,
-                              ),
-                              Divider(
-                                height: 12.0,
-                              ),
-                              Text('Volume control.'),
-                              Divider(
-                                height: 8.0,
-                                color: Colors.transparent,
-                              ),
-                              Slider(
-                                min: 0.0,
-                                max: 1.0,
-                                value: this.player?.general?.volume ?? 0.5,
-                                onChanged: (volume) {
-                                  this.player.setVolume(volume);
-                                  this.setState(() {});
-                                },
-                              ),
-                              Text('Playback rate control.'),
-                              Divider(
-                                height: 8.0,
-                                color: Colors.transparent,
-                              ),
-                              Slider(
-                                min: 0.5,
-                                max: 1.5,
-                                value: this.player?.general?.rate ?? 1.0,
-                                onChanged: (rate) {
-                                  this.player.setRate(rate);
-                                  this.setState(() {});
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 2.0,
-                        color: Colors.white,
-                        margin: EdgeInsets.all(4.0),
-                        child: Container(
-                          margin: EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
                               Text('Playback event listeners.'),
                               Divider(
                                 height: 12.0,
@@ -453,14 +361,6 @@ class _DartVLCState extends State<DartVLC> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
                       Card(
                         elevation: 2.0,
                         color: Colors.white,
@@ -611,6 +511,130 @@ class _DartVLCState extends State<DartVLC> {
                               Text(
                                 JsonEncoder.withIndent('    ')
                                     .convert(this.metasMedia?.metas),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Card(
+                        elevation: 2.0,
+                        color: Colors.white,
+                        margin: EdgeInsets.all(4.0),
+                        child: Container(
+                          margin: EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Playback controls.'),
+                              Divider(
+                                height: 8.0,
+                                color: Colors.transparent,
+                              ),
+                              Row(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () => this.player.play(),
+                                    child: Text(
+                                      'play',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.0),
+                                  ElevatedButton(
+                                    onPressed: () => this.player.pause(),
+                                    child: Text(
+                                      'pause',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.0),
+                                  ElevatedButton(
+                                    onPressed: () => this.player.playOrPause(),
+                                    child: Text(
+                                      'playOrPause',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.0),
+                                  ElevatedButton(
+                                    onPressed: () => this.player.stop(),
+                                    child: Text(
+                                      'stop',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.0),
+                                  ElevatedButton(
+                                    onPressed: () => this.player.next(),
+                                    child: Text(
+                                      'next',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.0),
+                                  ElevatedButton(
+                                    onPressed: () => this.player.back(),
+                                    child: Text(
+                                      'back',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Divider(
+                                height: 12.0,
+                                color: Colors.transparent,
+                              ),
+                              Divider(
+                                height: 12.0,
+                              ),
+                              Text('Volume control.'),
+                              Divider(
+                                height: 8.0,
+                                color: Colors.transparent,
+                              ),
+                              Slider(
+                                min: 0.0,
+                                max: 1.0,
+                                value: this.player?.general?.volume ?? 0.5,
+                                onChanged: (volume) {
+                                  this.player.setVolume(volume);
+                                  this.setState(() {});
+                                },
+                              ),
+                              Text('Playback rate control.'),
+                              Divider(
+                                height: 8.0,
+                                color: Colors.transparent,
+                              ),
+                              Slider(
+                                min: 0.5,
+                                max: 1.5,
+                                value: this.player?.general?.rate ?? 1.0,
+                                onChanged: (rate) {
+                                  this.player.setRate(rate);
+                                  this.setState(() {});
+                                },
                               ),
                             ],
                           ),
