@@ -15,6 +15,8 @@
 class PlayerGetters: protected PlayerInternal {
 public:
 	PlayerState* state;
+	int videoWidth = 0;
+	int videoHeight = 0;
 
 	int getDuration() {
 		return static_cast<int>(

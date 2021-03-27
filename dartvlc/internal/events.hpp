@@ -73,10 +73,10 @@ public:
 		this->_playlistCallback = callback;
 	}
 
-	void onVideo(int height, int width, std::function<void(uint8_t* frame)> callback) {
+	void onVideo(std::function<void(uint8_t* frame)> callback) {
 		this->_videoCallback = callback;
-		int pitch = width * 4;
-		int size = height * pitch;
+		int pitch = this->videoWidth * 4;
+		int size = this->videoHeight * pitch;
 		this->_videoFrameBuffer = new uint8_t[size];
 		this->mediaPlayer.setVideoCallbacks(
 			std::bind(&PlayerEvents::_videoLockCallback, this, std::placeholders::_1),
@@ -86,15 +86,15 @@ public:
 		this->mediaPlayer.setVideoFormatCallbacks(
 			[=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p, uint32_t* l) -> int {
 				strcpy(chroma, "RV32");
-				*w = width;
-				*h = height;
+				*w = this->videoWidth;
+				*h = this->videoHeight;
 				*p = pitch;
-				*l = height;
+				*l = this->videoHeight;
 				return 1;
 			},
 			nullptr
 		);
-		this->mediaPlayer.setVideoFormat("RV32", width, height, pitch);
+		this->mediaPlayer.setVideoFormat("RV32", this->videoWidth, this->videoHeight, pitch);
 	}
 
 protected:
