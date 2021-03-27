@@ -17,14 +17,31 @@ class _Player extends Player {}
 /// ```dart
 /// Player player = await Player.create(id: 0);
 /// ```
+/// 
+/// If you wish to use this instance for [Video] playback, then provide [videoWidth] & [videoHeight] optional parameters.
+/// Higher value may lead to degraded performance.
+/// 
+/// ```dart
+/// Player player = await Player.create(
+///   id: 0,
+///   videoWidth: 1920,
+///   videoHeight: 1080,
+/// );
+/// ```
+/// 
+/// Do not provide [videoWidth] & [videoHeight], if you wish to use the [Player] for only audio playback.
 ///
-/// Use various methods avaiable to control the playback.
-/// [Player.state] stores the current state of [Player] in form of [PlayerState].
-/// [Player.stream] can be used to listen to playback events of [Player] instance.
+/// Use various methods & event streams avaiable to control & listen to events of the playback.
 ///
 abstract class Player {
-  /// ID associated with the [Player] instance.
+  /// Id associated with the [Player] instance.
   int id;
+
+  /// Width of the [Video] frames to be extracted. Higher value may lead to degraded performance.
+  int videoWidth;
+
+  /// Height of the [Video] frames to be extracted. Higher value may lead to degraded performance.
+  int videoHeight;
 
   /// State of the current & opened [MediaSource] in [Player] instance.
   CurrentState current = new CurrentState();
@@ -58,11 +75,13 @@ abstract class Player {
   /// Player player = await Player.create(id: 0);
   /// ```
   ///
-  static Future<Player> create({@required int id}) async {
+  static Future<Player> create({@required int id, int videoWidth: 0, int videoHeight: 0}) async {
     await channel.invokeMethod(
       'Player.create',
       {
         'id': id,
+        'videoWidth': videoWidth,
+        'videoHeight': videoHeight,
       },
     );
     players[id] = new _Player()..id = id;

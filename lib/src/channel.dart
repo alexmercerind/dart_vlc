@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:dart_vlc/src/player.dart';
+import 'package:dart_vlc/src/video.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';
 
 /// Internally used map to keep [Player] instances & manage event streams.
@@ -81,6 +82,20 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
               }
             default:
               break;
+          }
+          break;
+        }
+      case 'videoFrame':
+        {
+          int playerId = methodCall.arguments['id'];
+          if (videoStreamControllers.containsKey(playerId)) {
+            VideoFrame frame = new VideoFrame(
+              playerId: playerId,
+              videoWidth: methodCall.arguments['videoWidth'],
+              videoHeight: methodCall.arguments['videoHeight'],
+              byteArray: methodCall.arguments['byteArray'],
+            );
+            videoStreamControllers[playerId].add(frame);
           }
           break;
         }
