@@ -10,17 +10,18 @@ dependencies:
   dart_vlc: ^0.0.1
 ```
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_5.png?raw=true)
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
 
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_7.png?raw=true)
 
 ## Documentation
 
-Create a new `Player` instance.
+- Create a new `Player` instance.
 ```dart
 Player player = await Player.create(id: 69420);
 ```
 
-Create a single `Media`.
+- Create a single `Media`.
 ```dart
 Media media0 = await Media.file(
   new File('C:/music.mp3')
@@ -35,7 +36,7 @@ Media media2 = await Media.asset(
 );
 ```
 
-Create a list of `Media`s using `Playlist`.
+- Create a list of `Media`s using `Playlist`.
 ```dart
 Playlist playlist = new Playlist(
   medias: [
@@ -46,7 +47,7 @@ Playlist playlist = new Playlist(
 );
 ```
 
-Open `Media` or `Playlist` into a `Player` instance.
+- Open `Media` or `Playlist` into a `Player` instance.
 ```dart
 player.open(
   new Playlist(
@@ -56,11 +57,11 @@ player.open(
       await Media.file(new File('C:/music2.mp3')),
     ],
   ),
-  autoStart: true, //default
+  autoStart: true, // default
 );
 ```
 
-Control playback.
+- Control playback.
 ```dart
 player.play();
 
@@ -73,7 +74,7 @@ player.playOrPause();
 player.stop();
 ```
 
-Manipulate `Playlist`.
+- Manipulate `Playlist`.
 ```dart
 player.add(
   await Media.file(new File('C:/music0.mp3')),
@@ -89,14 +90,14 @@ player.insert(
 player.move(0, 4);
 ```
 
-Set playback volume & rate.
+- Set playback volume & rate.
 ```dart
 player.setVolume(0.5);
 
 player.setRate(1.25);
 ```
 
-Get & change playback `Device`.
+- Get & change playback `Device`.
 ```dart
 List<Device> devices = await Devices.all;
 
@@ -105,7 +106,32 @@ player.setDevice(
 );
 ```
 
-Retrieve metadata of `Media`.
+- Show `Video`.
+```dart
+player.setVideoSize(
+  width: 480,
+  height: 320,
+);
+```
+
+```dart
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Video(
+        playerId: 69420,
+        height: 480.0,
+        width: 320.0,
+        scale: 1.0 // default
+        showControls: false // default
+      ),
+    );
+  }
+}
+```
+
+- Retrieve metadata of `Media`.
 ```dart
 Media media = await Media.network(
   'https://www.example.com/media.mp3',
@@ -163,6 +189,11 @@ Consider supporting the project by either/and:
 - Starring the repository, to get this hardwork noticed.
 - Buying me a coffee.
 
+
+Thanks to following people for supporting this project. I'm REALLY GLAD to recieve your appreciation for the time I've spent:
+- [@DomingoMG](https://github.com/DomingoMG)
+- Salman Aljabri
+
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
 ## Example
@@ -209,38 +240,30 @@ Done
 - `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback.
 - Device enumeration & changing.
 - Retrieving `Meta` of a `Media`.
-
-
-Under progress (irrespective of order)...
-
 - Embedding video inside the Flutter window.
-- Make things more efficient.
+
+Under progress or planned features (irrespective of order)...
+
 - Supporting live streaming links.
-- Supporting native volume control/lock screen notifications.
 - FFI version of the library for plain Dart applications.
-- Bringing project on other platforms like Android/iOS.
+- Writing metadata tags.
+- Making things more efficient.
+- Supporting native volume control/lock screen notifications (Maybe).
+- Bringing project on other platforms like Android/iOS (Maybe).
+- Adding headers for MRLs (Maybe).
+- D-Bus MPRIS controls for `Media` playback control (Maybe).
 
 ## Acknowledgements
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
 
-Thanks to following people for supporting this project:
-- [@DomingoMG](https://github.com/DomingoMG)
-- Salman Aljabri
-
 Thanks to following members of libVLC community to give me bit of look & advice about how things work:
 
 - [@jeremyVignelles](https://github.com/jeremyVignelles)
 - [@chouquette](https://github.com/chouquette)
+- [@mfkl](https://github.com/mfkl)
 - [@caprica](https://github.com/caprica)
 
-## Spoilers
-
-Currenty video playback is also supported out of the box, but it doesnt show inside Flutter window.
-
-Getting videos embedding inside Flutter window is a work in progress currently.
-
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_2.PNG?raw=true)
 
 ## Contributions
 
@@ -259,7 +282,7 @@ This library & work under this repository is licensed under GNU Lesser General P
 There aren't any media (audio or video) playback libraries for Flutter on Windows/Linux yet. So, this project is all about that.
 As one might be already aware, VLC is one of the best media playback tools out there.
 
-So, now you can use it to play audio or video [WIP] files from Flutter Desktop app.
+So, now you can use it to play audio or video files from Flutter Desktop app.
 
 The API style of this project is highly influenced by [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer) due to its ease of use. This project will serve as a base to add Windows & Linux support to already existing audio playback libraries like [just_audio](https://github.com/ryanheise/just_audio) and [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer).
 
