@@ -7,7 +7,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.0.1
+  dart_vlc: ^0.0.4
 ```
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
@@ -106,14 +106,16 @@ player.setDevice(
 );
 ```
 
-- Show `Video`.
+- Show the `Video` inside window.
+Instanciate `Player` as follows.
 ```dart
-player.setVideoSize(
-  width: 480,
-  height: 320,
+Player player = await Player.create(
+  id: 69420,
+  videoWidth: 480,
+  videoHeight: 320,
 );
 ```
-
+Show `Video` in the `Widget` tree.
 ```dart
 class _MyAppState extends State<MyApp> {
   @override
@@ -121,8 +123,8 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       body: Video(
         playerId: 69420,
-        height: 480.0,
-        width: 320.0,
+        height: 1920.0,
+        width: 1080.0,
         scale: 1.0 // default
         showControls: false // default
       ),
@@ -203,6 +205,15 @@ You can see an example project [here](https://github.com/alexmercerind/dart_vlc/
 Windows
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true)
+
+
+## Workings
+
+The internal wrapper used in the plugin is [here](https://github.com/alexmercerind/dart_vlc/tree/master/dartvlc) in the repository (Based on libVLC++). It makes handling of events and controls a lot easier & has additional features to it.
+
+Same wrapper will be used for upcoming FFI version.
+
+I preferred to do majority of plugin handling in C++ itself, thus Dart code is minimal & very slight mapping to it.
 
 ## Progress
 
