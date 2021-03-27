@@ -51,10 +51,11 @@ add_custom_command(
   DEPENDS ${LIBVLC_ARCHIVE}
 )
 
+include(GNUInstallDirs)
 target_link_libraries(${PLUGIN_NAME} PRIVATE
   flutter
   PkgConfig::GTK
-  "/usr/lib/x86_64-linux-gnu/libvlc.so"
+  "/usr/${CMAKE_INSTALL_LIBDIR}/libvlc.so"
 )
 set(
   dart_vlc_bundled_libraries
