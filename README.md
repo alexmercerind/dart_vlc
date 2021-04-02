@@ -150,7 +150,7 @@ Listen to playback events.
 (Same can be retrieved directly from `Player` instance without having to rely on stream).
 
 ```dart
-player.currentStream.listen((CurrentState state) {
+player.currentStream?.listen((CurrentState state) {
   state.index;
   state.media;
   state.medias;
@@ -159,14 +159,14 @@ player.currentStream.listen((CurrentState state) {
 ```
 
 ```dart
-player.positionStream.listen((PositionState state) {
+player.positionStream?.listen((PositionState state) {
   state.position;
   state.duration;
 });
 ```
 
 ```dart
-player.playbackStream.listen((PlaybackState state) {
+player.playbackStream?.listen((PlaybackState state) {
   state.isPlaying;
   state.isSeekable;
   state.isCompleted;
@@ -174,7 +174,7 @@ player.playbackStream.listen((PlaybackState state) {
 ```
 
 ```dart
-player.generalStream.listen((GeneralState state) {
+player.generalStream?.listen((GeneralState state) {
   state.volume;
   state.rate;
 });
