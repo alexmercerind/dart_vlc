@@ -1,3 +1,12 @@
+## 0.0.4
+
+**This new release of dart_vlc adds:**
+
+- `Video` `Widget` for showing video output from a `Player` inside `Widget` tree.
+  - `Player` must be used as a controller for a `Video`.
+  - Initialize `Player` with `videoHeight` and `videoWidth` optional parameters, if you wish to use it for video playback.
+- Null-safety migration.
+
 ## 0.0.3
 
 **This new release of dart_vlc adds:**
