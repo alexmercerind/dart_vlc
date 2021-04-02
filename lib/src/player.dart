@@ -35,37 +35,37 @@ class _Player extends Player {}
 ///
 abstract class Player {
   /// Id associated with the [Player] instance.
-  int id;
+  late int id;
 
   /// Width of the [Video] frames to be extracted. Higher value may lead to degraded performance.
-  int videoWidth;
+  int? videoWidth;
 
   /// Height of the [Video] frames to be extracted. Higher value may lead to degraded performance.
-  int videoHeight;
+  int? videoHeight;
 
   /// State of the current & opened [MediaSource] in [Player] instance.
   CurrentState current = new CurrentState();
 
   /// Stream to listen to current & opened [MediaSource] state of the [Player] instance.
-  Stream<CurrentState> currentStream;
+  Stream<CurrentState>? currentStream;
 
   /// Position & duration state of the [Player] instance.
   PositionState position = new PositionState();
 
   /// Stream to listen to position & duration state of the [Player] instance.
-  Stream<PositionState> positionStream;
+  Stream<PositionState>? positionStream;
 
   /// Playback state of the [Player] instance.
   PlaybackState playback = new PlaybackState();
 
   /// Stream to listen to playback state of the [Player] instance.
-  Stream<PlaybackState> playbackStream;
+  Stream<PlaybackState>? playbackStream;
 
   /// Volume & Rate state of the [Player] instance.
   GeneralState general = new GeneralState();
 
   /// Stream to listen to volume & rate state of the [Player] instance.
-  Stream<GeneralState> generateStream;
+  Stream<GeneralState>? generateStream;
 
   /// Creates a new [Player] instance.
   ///
@@ -75,7 +75,7 @@ abstract class Player {
   /// Player player = await Player.create(id: 0);
   /// ```
   ///
-  static Future<Player> create({@required int id, int videoWidth: 0, int videoHeight: 0}) async {
+  static Future<Player> create({required int id, int videoWidth: 0, int videoHeight: 0}) async {
     await channel.invokeMethod(
       'Player.create',
       {
@@ -85,17 +85,17 @@ abstract class Player {
       },
     );
     players[id] = new _Player()..id = id;
-    players[id].currentController = StreamController<CurrentState>.broadcast();
-    players[id].currentStream = players[id].currentController.stream;
-    players[id].positionController =
+    players[id]?.currentController = StreamController<CurrentState>.broadcast();
+    players[id]?.currentStream = players[id]?.currentController?.stream;
+    players[id]?.positionController =
         StreamController<PositionState>.broadcast();
-    players[id].positionStream = players[id].positionController.stream;
-    players[id].playbackController =
+    players[id]?.positionStream = players[id]?.positionController?.stream;
+    players[id]?.playbackController =
         StreamController<PlaybackState>.broadcast();
-    players[id].playbackStream = players[id].playbackController.stream;
-    players[id].generalController = StreamController<GeneralState>.broadcast();
-    players[id].generateStream = players[id].generalController.stream;
-    return players[id];
+    players[id]?.playbackStream = players[id]?.playbackController?.stream;
+    players[id]?.generalController = StreamController<GeneralState>.broadcast();
+    players[id]?.generateStream = players[id]?.generalController?.stream;
+    return players[id]!;
   }
 
   /// Opens a new media source into the player.
@@ -314,15 +314,15 @@ abstract class Player {
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.
   Future<void> dispose() async {
-    await this.currentController.close();
-    await this.positionController.close();
-    await this.playbackController.close();
-    await this.generalController.close();
+    await this.currentController?.close();
+    await this.positionController?.close();
+    await this.playbackController?.close();
+    await this.generalController?.close();
   }
 
   /// Internally used [StreamController]s,
-  StreamController<CurrentState> currentController;
-  StreamController<PositionState> positionController;
-  StreamController<PlaybackState> playbackController;
-  StreamController<GeneralState> generalController;
+  StreamController<CurrentState>? currentController;
+  StreamController<PositionState>? positionController;
+  StreamController<PlaybackState>? playbackController;
+  StreamController<GeneralState>? generalController;
 }

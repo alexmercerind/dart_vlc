@@ -16,10 +16,10 @@ class VideoFrame {
   final Uint8List byteArray;
 
   VideoFrame({
-    @required this.playerId,
-    @required this.videoWidth,
-    @required this.videoHeight,
-    @required this.byteArray,
+    required this.playerId,
+    required this.videoWidth,
+    required this.videoHeight,
+    required this.byteArray,
   });
 }
 
@@ -76,12 +76,12 @@ class Video extends StatefulWidget {
   final bool showControls;
 
   Video({
-    @required this.playerId,
-    @required this.width,
-    @required this.height,
+    required this.playerId,
+    required this.width,
+    required this.height,
     this.scale: 1.0,
     this.showControls: true,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   VideoState createState() => VideoState();
@@ -89,7 +89,7 @@ class Video extends StatefulWidget {
 
 
 class VideoState extends State<Video> {
-  Widget videoFrameRawImage;
+  Widget? videoFrameRawImage;
 
   Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
     Completer<ui.Image> imageCompleter  = new Completer<ui.Image>();
@@ -116,14 +116,14 @@ class VideoState extends State<Video> {
   @override
   Future<void> dispose() async {
     super.dispose();
-    await videoStreamControllers[widget.playerId].close();
+    await videoStreamControllers[widget.playerId]?.close();
   }
 
   @override
   void initState() {
     super.initState();
     videoStreamControllers[widget.playerId] = new StreamController<VideoFrame>.broadcast();
-    videoStreamControllers[widget.playerId].stream.listen(
+    videoStreamControllers[widget.playerId]?.stream.listen(
       (VideoFrame videoFrame) async {
         this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
         this.setState(() {});

@@ -22,57 +22,57 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
           switch (methodCall.arguments['type']) {
             case 'openEvent':
               {
-                players[id].current.index = methodCall.arguments['index'];
-                players[id].current.medias = methodCall.arguments['medias']
+                players[id]!.current.index = methodCall.arguments['index'];
+                players[id]!.current.medias = methodCall.arguments['medias']
                     .map(
                       (media) => Media.fromMap(media),
                     )
                     .toList()
                     .cast<Media>();
-                players[id].current.media =
-                    players[id].current.medias[players[id].current.index];
-                players[id].current.isPlaylist =
+                players[id]!.current.media =
+                    players[id]!.current.medias[players[id]!.current.index!];
+                players[id]!.current.isPlaylist =
                     methodCall.arguments['isPlaylist'];
-                players[id].currentController.add(players[id].current);
-                players[id].playback.isCompleted = false;
-                players[id].playbackController.add(players[id].playback);
+                players[id]!.currentController?.add(players[id]!.current);
+                players[id]!.playback.isCompleted = false;
+                players[id]!.playbackController?.add(players[id]!.playback);
                 break;
               }
             case 'positionEvent':
               {
-                players[id].position.position = Duration(
+                players[id]!.position.position = Duration(
                     milliseconds: methodCall.arguments['position'] ?? 0);
-                players[id].position.duration = Duration(
+                players[id]!.position.duration = Duration(
                     milliseconds: methodCall.arguments['duration'] ?? 0);
-                players[id].positionController.add(players[id].position);
+                players[id]!.positionController?.add(players[id]!.position);
                 break;
               }
             case 'playbackEvent':
               {
-                players[id].playback.isPlaying =
+                players[id]!.playback.isPlaying =
                     methodCall.arguments['isPlaying'];
-                players[id].playback.isSeekable =
+                players[id]!.playback.isSeekable =
                     methodCall.arguments['isSeekable'];
-                players[id].playbackController.add(players[id].playback);
+                players[id]!.playbackController?.add(players[id]!.playback);
                 break;
               }
             case 'completeEvent':
               {
-                players[id].playback.isCompleted =
+                players[id]!.playback.isCompleted =
                     methodCall.arguments['isCompleted'];
-                players[id].playbackController.add(players[id].playback);
+                players[id]!.playbackController?.add(players[id]!.playback);
                 break;
               }
             case 'volumeEvent':
               {
-                players[id].general.volume = methodCall.arguments['volume'];
-                players[id].generalController.add(players[id].general);
+                players[id]!.general.volume = methodCall.arguments['volume'];
+                players[id]!.generalController?.add(players[id]!.general);
                 break;
               }
             case 'rateEvent':
               {
-                players[id].general.rate = methodCall.arguments['rate'];
-                players[id].generalController.add(players[id].general);
+                players[id]!.general.rate = methodCall.arguments['rate'];
+                players[id]!.generalController?.add(players[id]!.general);
                 break;
               }
             case 'exceptionEvent':
@@ -95,7 +95,7 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
               videoHeight: methodCall.arguments['videoHeight'],
               byteArray: methodCall.arguments['byteArray'],
             );
-            videoStreamControllers[playerId].add(frame);
+            videoStreamControllers[playerId]?.add(frame);
           }
           break;
         }

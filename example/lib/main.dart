@@ -13,8 +13,8 @@ class DartVLC extends StatefulWidget {
 }
 
 class _DartVLCState extends State<DartVLC> {
+  Player? player;
   bool init = true;
-  Player player;
   MediaType mediaType = MediaType.file;
   CurrentState current = new CurrentState();
   PositionState position = new PositionState();
@@ -23,7 +23,7 @@ class _DartVLCState extends State<DartVLC> {
   List<Media> medias = <Media>[];
   List<Device> devices = <Device>[];
   TextEditingController controller = new TextEditingController();
-  Media metasMedia;
+  Media? metasMedia;
   TextEditingController metasController = new TextEditingController();
 
   @override
@@ -35,16 +35,16 @@ class _DartVLCState extends State<DartVLC> {
         videoWidth: 480,
         videoHeight: 320,
       );
-      this.player.currentStream.listen((current) {
+      this.player?.currentStream?.listen((current) {
         this.setState(() => this.current = current);
       });
-      this.player.positionStream.listen((position) {
+      this.player?.positionStream?.listen((position) {
         this.setState(() => this.position = position);
       });
-      this.player.playbackStream.listen((playback) {
+      this.player?.playbackStream?.listen((playback) {
         this.setState(() => this.playback = playback);
       });
-      this.player.generateStream.listen((general) {
+      this.player?.generateStream?.listen((general) {
         this.setState(() => this.general = general);
       });
       this.devices = await Devices.all;
@@ -132,7 +132,7 @@ class _DartVLCState extends State<DartVLC> {
                                           value: this.mediaType,
                                           onChanged: (mediaType) => this
                                               .setState(() =>
-                                                  this.mediaType = mediaType),
+                                                  this.mediaType = mediaType!),
                                           items: [
                                             DropdownMenuItem<MediaType>(
                                               value: MediaType.file,
@@ -236,7 +236,7 @@ class _DartVLCState extends State<DartVLC> {
                                     children: [
                                       ElevatedButton(
                                         onPressed: () => this.setState(() {
-                                          this.player.open(
+                                          this.player?.open(
                                                 new Playlist(
                                                   medias: this.medias,
                                                 ),
@@ -302,7 +302,7 @@ class _DartVLCState extends State<DartVLC> {
                                     .inMilliseconds
                                     .toDouble(),
                                 onChanged: (double position) {
-                                  this.player.seek(
+                                  this.player?.seek(
                                         Duration(
                                             milliseconds: position.toInt()),
                                       );
@@ -396,7 +396,7 @@ class _DartVLCState extends State<DartVLC> {
                                           ),
                                         ),
                                         onTap: () =>
-                                            this.player.setDevice(device),
+                                            this.player?.setDevice(device),
                                       ),
                                     )
                                     .toList(),
@@ -437,7 +437,7 @@ class _DartVLCState extends State<DartVLC> {
                                     child: DropdownButton<MediaType>(
                                       value: this.mediaType,
                                       onChanged: (mediaType) => this.setState(
-                                          () => this.mediaType = mediaType),
+                                          () => this.mediaType = mediaType!),
                                       items: [
                                         DropdownMenuItem<MediaType>(
                                           value: MediaType.file,
@@ -541,7 +541,7 @@ class _DartVLCState extends State<DartVLC> {
                               Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () => this.player.play(),
+                                    onPressed: () => this.player?.play(),
                                     child: Text(
                                       'play',
                                       style: TextStyle(
@@ -551,7 +551,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player.pause(),
+                                    onPressed: () => this.player?.pause(),
                                     child: Text(
                                       'pause',
                                       style: TextStyle(
@@ -561,7 +561,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player.playOrPause(),
+                                    onPressed: () => this.player?.playOrPause(),
                                     child: Text(
                                       'playOrPause',
                                       style: TextStyle(
@@ -571,7 +571,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player.stop(),
+                                    onPressed: () => this.player?.stop(),
                                     child: Text(
                                       'stop',
                                       style: TextStyle(
@@ -581,7 +581,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player.next(),
+                                    onPressed: () => this.player?.next(),
                                     child: Text(
                                       'next',
                                       style: TextStyle(
@@ -591,7 +591,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player.back(),
+                                    onPressed: () => this.player?.back(),
                                     child: Text(
                                       'back',
                                       style: TextStyle(
@@ -616,9 +616,9 @@ class _DartVLCState extends State<DartVLC> {
                               Slider(
                                 min: 0.0,
                                 max: 1.0,
-                                value: this.player?.general?.volume ?? 0.5,
+                                value: this.player?.general.volume ?? 0.5,
                                 onChanged: (volume) {
-                                  this.player.setVolume(volume);
+                                  this.player?.setVolume(volume);
                                   this.setState(() {});
                                 },
                               ),
@@ -630,9 +630,9 @@ class _DartVLCState extends State<DartVLC> {
                               Slider(
                                 min: 0.5,
                                 max: 1.5,
-                                value: this.player?.general?.rate ?? 1.0,
+                                value: this.player?.general.rate ?? 0.5,
                                 onChanged: (rate) {
-                                  this.player.setRate(rate);
+                                  this.player?.setRate(rate);
                                   this.setState(() {});
                                 },
                               ),
@@ -678,9 +678,7 @@ class _DartVLCState extends State<DartVLC> {
                                       finalIndex = this.current.medias.length;
                                     if (initialIndex < finalIndex) finalIndex--;
 
-                                    await this
-                                        .player
-                                        .move(initialIndex, finalIndex);
+                                    await this.player?.move(initialIndex, finalIndex);
                                     this.setState(() {});
                                   },
                                   scrollDirection: Axis.vertical,

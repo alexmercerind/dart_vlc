@@ -29,7 +29,7 @@ class Playlist extends MediaSource {
   /// [List] of [Media] present in the playlist.
   List<Media> medias;
 
-  Playlist({@required this.medias});
+  Playlist({required this.medias});
 
   /// Internally used method to easily transform data for sending through Platform channel.
   static Playlist fromMap(dynamic map) => new Playlist(

@@ -3,13 +3,13 @@ import 'package:dart_vlc/src/mediaSource/media.dart';
 /// State of a [Player] instance.
 class CurrentState {
   /// Index of currently playing [Media].
-  int index;
+  int? index;
+
+  /// Currently playing [Media].
+  Media? media;
 
   /// [List] of [Media] currently opened in the [Player] instance.
   List<Media> medias = <Media>[];
-
-  /// Currently playing [Media].
-  Media media;
 
   /// Whether a [Playlist] is opened or a [Media].
   bool isPlaylist = false;

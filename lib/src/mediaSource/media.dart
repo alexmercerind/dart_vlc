@@ -38,15 +38,15 @@ class _Media extends Media {}
 abstract class Media extends MediaSource {
   int id = mediaExtras.length;
   MediaSourceType mediaSourceType = MediaSourceType.media;
-  MediaType mediaType;
-  String resource;
   Map<String, String> metas = {};
   Map<String, dynamic> extras = {};
+  late MediaType mediaType;
+  late String resource;
 
   /// Makes [Media] object from a [File].
   static Future<Media> file(File file,
       {bool parse: false,
-      Map<String, dynamic> extras,
+      Map<String, dynamic>? extras,
       Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new _Media();
     media.mediaType = MediaType.file;
@@ -65,7 +65,7 @@ abstract class Media extends MediaSource {
   /// Makes [Media] object from url.
   static Future<Media> network(dynamic url,
       {bool parse: false,
-      Map<String, dynamic> extras,
+      Map<String, dynamic>? extras,
       Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new _Media();
     media.mediaType = MediaType.network;
@@ -87,7 +87,7 @@ abstract class Media extends MediaSource {
   /// Makes [Media] object from a asset.
   static Future<Media> asset(String path,
       {bool parse: false,
-      Map<String, dynamic> extras,
+      Map<String, dynamic>? extras,
       Duration timeout: const Duration(seconds: 10)}) async {
     Media media = new _Media();
     media.mediaType = MediaType.asset;
@@ -119,10 +119,10 @@ abstract class Media extends MediaSource {
       'MediaType.file': MediaType.file,
       'MediaType.network': MediaType.network,
       'MediaType.asset': MediaType.asset,
-    }[map['mediaType']];
+    }[map['mediaType']]!;
     media.resource = map['resource'];
-    media.metas = mediaMetas[media.id];
-    media.extras = mediaExtras[media.id];
+    media.metas = mediaMetas[media.id]!;
+    media.extras = mediaExtras[media.id]!;
     return media;
   }
 
