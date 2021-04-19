@@ -180,8 +180,11 @@ player.generalStream?.listen((GeneralState state) {
 });
 ```
 
-**NOTE:** For using this plugin on Linux, you must have [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. On debian based distros, run:
+**NOTE:** For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. On debian based distros, run:
 
+```bash
+sudo apt-get install vlc
+```
 ```bash
 sudo apt-get install libvlc-dev
 ```
@@ -194,8 +197,9 @@ Consider supporting the project by either/and:
 
 
 Thanks to following people for supporting this project. I'm REALLY GLAD to recieve your appreciation for the time I've spent:
-- [@DomingoMG](https://github.com/DomingoMG)
+- Pavel Zika
 - Salman Aljabri
+- [@domingomg97](https://twitter.com/domingomg97)
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
