@@ -7,6 +7,7 @@ plugins
 
 # libVLC Static Libraries
 
+*.lib
 libs
 
 # libVLC & libVLC++ Headers

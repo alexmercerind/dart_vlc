@@ -10,6 +10,7 @@
 
 #include "player.hpp"
 #include "device.hpp"
+#include "broadcast.hpp"
 
 
 /* libVLC++ wrapper for dart_vlc */
