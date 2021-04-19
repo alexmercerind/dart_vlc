@@ -15,6 +15,7 @@
 #include "include/flutter_types.hpp"
 
 #include "../dartvlc/main.cpp"
+#include "include/vlc/libvlc_vlm.h"
 
 
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
@@ -367,6 +368,7 @@ namespace {
 
     void DartVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
         MethodCallHandler* method = new MethodCallHandler(&methodCall, std::move(result));
+
         /*
          * Creates a new [Player] instance & setups event & exception callbacks.
          * 
@@ -379,11 +381,7 @@ namespace {
          */
         if (method->name == "Player.create") {
             int id = method->getArgument<int>("id");
-            int videoWidth = method->getArgument<int>("videoWidth");
-            int videoHeight = method->getArgument<int>("videoHeight");
             Player* player = players->get(id);
-            player->videoWidth = videoWidth;
-            player->videoHeight = videoHeight;
             player->onPlay(
                 [player] () -> void {
                     playback(player->state);
@@ -430,41 +428,6 @@ namespace {
                     exception(player->state);
                 }
             );
-            if (videoWidth > 0 && videoHeight > 0) {
-                player->onVideo(
-                    [=](uint8_t* frame) -> void {
-                        channel->InvokeMethod(
-                            "videoFrame",
-                            std::unique_ptr<flutter::EncodableValue>(
-                                new flutter::EncodableValue(
-                                    flutter::EncodableMap(
-                                        {
-                                            {
-                                                flutter::EncodableValue("id"),
-                                                flutter::EncodableValue(player->state->id)
-                                            },
-                                            {
-                                                flutter::EncodableValue("videoWidth"),
-                                                flutter::EncodableValue(player->videoWidth)
-                                            },
-                                            {
-                                                flutter::EncodableValue("videoHeight"),
-                                                flutter::EncodableValue(player->videoHeight)
-                                            },
-                                            {
-                                                flutter::EncodableValue("byteArray"),
-                                                flutter::EncodableValue(
-                                                    std::vector<uint8_t>(frame, frame + (player->videoWidth * player->videoHeight * 4))
-                                                )
-                                            }
-                                        }
-                                    )
-                                )
-                            )
-                        );
-                    }
-                );
-            }
             player->onPlaylist(
                 [player] () -> void {
                     open(player->state);
@@ -472,6 +435,7 @@ namespace {
             );
             method->returnNull();
         }
+
         /*
          * Opens an [MediaSource] i.e [Media] or [Playlist] into the [Player].
          * 
@@ -522,30 +486,33 @@ namespace {
                 std::string mediaType = std::get<std::string>(source[flutter::EncodableValue("mediaType")]);
                 std::string resource = std::get<std::string>(source[flutter::EncodableValue("resource")]);
                 Media* media = nullptr;
-                if (mediaType == "MediaType.file")
+                if( mediaType == "MediaType.file" ){
                     media = Media::file(mediaId, resource);
-                else if (mediaType == "MediaType.network")
+                } else if ( mediaType == "MediaType.network" ){
                     media = Media::network(mediaId, resource);
-                else
+                } else {
                     media = Media::asset(mediaId, resource);
+                }
                 Player* player = players->get(id);
                 player->open(media, autoStart);
             }
             if (mediaSourceType == "MediaSourceType.playlist") {
                 std::vector<Media*> medias;
                 flutter::EncodableList mediaList = std::get<flutter::EncodableList>(source[flutter::EncodableValue("medias")]);
+                std::string playlistMode = std::get<std::string>(source[flutter::EncodableValue("playlistMode")]);
                 for (flutter::EncodableValue encodedMedia: mediaList) {
                     flutter::EncodableMap mediaMap = std::get<flutter::EncodableMap>(encodedMedia);
                     int mediaId = std::get<int>(mediaMap[flutter::EncodableValue("id")]);
                     std::string mediaType = std::get<std::string>(mediaMap[flutter::EncodableValue("mediaType")]);
                     std::string resource = std::get<std::string>(mediaMap[flutter::EncodableValue("resource")]);
                     Media* media;
-                    if (mediaType == "MediaType.file")
+                    if( mediaType == "MediaType.file" ){
                         media = Media::file(mediaId, resource);
-                    else if (mediaType == "MediaType.network")
+                    } else if ( mediaType == "MediaType.network" ){
                         media = Media::network(mediaId, resource);
-                    else
+                    } else {
                         media = Media::asset(mediaId, resource);
+                    }                     
                     medias.emplace_back(media);
                 }
                 Player* player = players->get(id);
@@ -553,6 +520,12 @@ namespace {
                     new Playlist(medias),
                     autoStart
                 );
+                if( playlistMode == "playlistMode.repeat")
+                    player->setPlaylistMode( libvlc_playback_mode_repeat );
+                else if( playlistMode == "playlistMode.loop" )
+                    player->setPlaylistMode( libvlc_playback_mode_loop );
+                else
+                    player->setPlaylistMode( libvlc_playback_mode_default );
             }
             method->returnNull();
         }
@@ -886,6 +859,15 @@ namespace {
                 media = Media::asset(mediaId, resource, true, timeout);
             method->returnValue<std::map<std::string, std::string>>(media->metas);
         }
+        /* Parses [PlaybackMode] .
+         *
+         * Argument:
+         * 
+         * {
+         *      'playbackMode': 'PlaybackMode.single',
+         * }
+         * 
+         */
         else {
             method->returnNotImplemented();
         }

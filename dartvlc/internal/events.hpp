@@ -7,6 +7,7 @@
  * 
  * GNU Lesser General Public License v2.1
  */
+
 #include "getters.hpp"
 
 
@@ -73,31 +74,8 @@ public:
 		this->_playlistCallback = callback;
 	}
 
-	void onVideo(std::function<void(uint8_t* frame)> callback) {
-		this->_videoCallback = callback;
-		int pitch = this->videoWidth * 4;
-		int size = this->videoHeight * pitch;
-		this->_videoFrameBuffer = new uint8_t[size];
-		this->mediaPlayer.setVideoCallbacks(
-			std::bind(&PlayerEvents::_videoLockCallback, this, std::placeholders::_1),
-			nullptr,
-			std::bind(&PlayerEvents::_videoPictureCallback, this, std::placeholders::_1)
-		);
-		this->mediaPlayer.setVideoFormatCallbacks(
-			[=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p, uint32_t* l) -> int {
-				strcpy(chroma, "RV32");
-				*w = this->videoWidth;
-				*h = this->videoHeight;
-				*p = pitch;
-				*l = this->videoHeight;
-				return 1;
-			},
-			nullptr
-		);
-		this->mediaPlayer.setVideoFormat("RV32", this->videoWidth, this->videoHeight, pitch);
-	}
-
 protected:
+
 	std::function<void(void)> _playlistCallback;
 
 	void _onPlaylistCallback() {
@@ -137,26 +115,26 @@ protected:
 	std::function<void(void)> _playCallback;
 
 	void _onPlayCallback() {
+		this->state->isPlaying = this->mediaPlayer.isPlaying();
 		if (this->getDuration() > 0) {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
 			this->state->isCompleted = false;
 			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
-			this->_playCallback();
 		}
+		this->_playCallback();
 	}
 
 	std::function<void(void)> _pauseCallback;
 
 	void _onPauseCallback() {
+		this->state->isPlaying = this->mediaPlayer.isPlaying();
+		this->state->position = this->getPosition();
 		if (this->getDuration() > 0) {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
-			this->_pauseCallback();
 		}
+		this->_pauseCallback();
 	}
 
 	std::function<void(void)> _stopCallback;
@@ -172,15 +150,15 @@ protected:
 	std::function<void(int)> _positionCallback;
 
 	void _onPositionCallback(float relativePosition) {
+		this->state->isPlaying = this->mediaPlayer.isPlaying();
+		this->state->position = this->getPosition();
 		if (this->getDuration() > 0) {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->position = this->getPosition();
 			this->state->duration = this->getDuration();
-			this->_positionCallback(
-				static_cast<int>(relativePosition * this->mediaPlayer.length())
-			);
 		}
+		this->_positionCallback(
+			static_cast<int>(relativePosition * this->mediaPlayer.length())
+		);
 	}
 
 	std::function<void(bool)> _seekableCallback;
@@ -195,8 +173,8 @@ protected:
 	std::function<void(void)> _completeCallback;
 
 	void _onCompleteCallback() {
+		this->state->isPlaying = this->mediaPlayer.isPlaying();
 		if (this->getDuration() > 0) {
-			this->state->isPlaying = this->mediaPlayer.isPlaying();
 			this->state->isValid = this->mediaPlayer.isValid();
 			this->state->isCompleted = true;
 			this->state->position = this->getPosition();
@@ -209,17 +187,4 @@ protected:
 	std::function<void(float)> _volumeCallback;
 
 	std::function<void(float)> _rateCallback;
-
-	std::function<void(uint8_t* frame)> _videoCallback;
-
-	uint8_t* _videoFrameBuffer;
-
-	void* _videoLockCallback(void** planes) {
-		planes[0] = static_cast<void*>(this->_videoFrameBuffer);
-		return nullptr;
-	}
-
-	void _videoPictureCallback(void* picture) {
-		this->_videoCallback(static_cast<uint8_t*>(this->_videoFrameBuffer));
-	}
 };

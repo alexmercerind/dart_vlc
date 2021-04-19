@@ -3,6 +3,7 @@
 #include <gtk/gtk.h>
 #include <cstring>
 #define DART_VLC_PLUGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), dart_vlc_plugin_get_type(), DartVlcPlugin))
+
 #include "../dartvlc/main.cpp"
 
 
@@ -89,11 +90,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
     const gchar* method = fl_method_call_get_name(method_call);
     if (strcmp(method, "Player.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
-        int videoWidth = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "videoWidth"));
-        int videoHeight = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "videoHeight"));
         Player* player = players->get(id);
-        player->videoWidth = videoWidth;
-        player->videoHeight = videoHeight;
         player->onOpen(
             [player] (VLC::Media _) -> void {
                 open(player->state);
@@ -140,19 +137,6 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                 open(player->state);
             }
         );
-        if (videoWidth > 0 && videoHeight > 0) {
-            player->onVideo(
-                [=](uint8_t* frame) -> void {
-                    auto videoFrame = fl_value_new_map();
-                    auto videoFrameByteArray = fl_value_new_uint8_list(frame, player->videoWidth * player->videoHeight * 4);
-                    fl_value_set_string_take(videoFrame, "id", fl_value_new_int(player->state->id));
-                    fl_value_set_string_take(videoFrame, "videoWidth", fl_value_new_int(player->videoWidth));
-                    fl_value_set_string_take(videoFrame, "videoHeight", fl_value_new_int(player->videoHeight));
-                    fl_value_set_string_take(videoFrame, "byteArray", videoFrameByteArray);
-                    fl_method_channel_invoke_method(channel, "videoFrame", videoFrame, NULL, NULL, NULL);
-                }
-            );
-        }
         player->onException(
             [player] () -> void {
                 exception(player->state);
@@ -182,6 +166,8 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         if (strcmp(mediaSourceType, "MediaSourceType.playlist") == 0) {
             std::vector<Media*> medias;
             auto mediasList = fl_value_lookup_string(source, "medias");
+            const char* playlistMode = fl_value_lookup_string(source, "playlistMode");
+
             for (int index = 0; index < fl_value_get_length(mediasList); index++) {
                 int mediaId = fl_value_get_int(fl_value_lookup_string(fl_value_get_list_value(mediasList, index), "id"));
                 const char* mediaType = fl_value_get_string(fl_value_lookup_string(fl_value_get_list_value(mediasList, index), "mediaType"));
@@ -200,6 +186,12 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                 new Playlist(medias),
                 autoStart
             );
+            if( playlistMode == "playlistMode.repeat")
+                player->setPlaylistMode( libvlc_playback_mode_repeat );
+            else if( playlistMode == "playlistMode.loop" )
+                player->setPlaylistMode( libvlc_playback_mode_loop );
+            else
+                player->setPlaylistMode( libvlc_playback_mode_default );
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
