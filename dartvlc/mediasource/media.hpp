@@ -11,6 +11,7 @@
 #include <string>
 #include <map>
 #include <filesystem>
+#include <sstream>
 #include <future>
 
 #include <vlcpp/vlc.hpp>
@@ -56,6 +57,18 @@ public:
 		media->location = "file:///" + std::filesystem::temp_directory_path().u8string() + path;
 		media->mediaType = "MediaType.asset";
 		if (parse) media->parse(timeout);
+		return media;
+	}
+
+	static Media* directShow(int id, std::string vdev = "", std::string adev = "", int liveCaching = 300) {
+		Media* media = new Media();
+		media->id = id;
+		std::stringstream configuration;
+		configuration << "dshow://";
+		configuration << " :dshow-vdev=" << vdev << " :dshow-adev=" << adev << " :live-caching=" << liveCaching;
+		media->resource = configuration.str();
+		media->location = configuration.str();
+		media->mediaType = "MediaType.directShow";
 		return media;
 	}
 
