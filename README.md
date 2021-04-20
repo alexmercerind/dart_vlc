@@ -7,7 +7,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.0.4
+  dart_vlc: ^0.0.5
 ```
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
@@ -106,7 +106,7 @@ player.setDevice(
 );
 ```
 
-- Show the `Video` inside window.
+- Show the `Video` inside `Widget` tree.
 
 Instanciate `Player` as follows.
 ```dart
@@ -126,8 +126,8 @@ class _MyAppState extends State<MyApp> {
         playerId: 69420,
         height: 1920.0,
         width: 1080.0,
-        scale: 1.0 // default
-        showControls: false // default
+        scale: 1.0, // default
+        showControls: false, // default
       ),
     );
   }
@@ -180,6 +180,32 @@ player.generalStream?.listen((GeneralState state) {
 });
 ```
 
+- `Broadcast` a `Media`.
+
+Broadcasting to localhost.
+
+```dart
+Broadcast broadcast = await Broadcast.create(
+  id: 0,
+  media: await Media.file(new File('C:/video.mp4')),
+  configuration: new BroadcastConfiguration(
+    access: 'http',
+    mux: 'mpeg1',
+    dst: '127.0.0.1:8080',
+    vcodec: 'mp1v',
+    vb: 1024,
+    acodec: 'mpga',
+    ab: 128,
+  ),
+);
+broadcast.start();
+```
+
+Dispose the `Broadcast` instance to release resources.
+```dart
+broadcast.dispose();
+```
+
 **NOTE:** For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. On debian based distros, run:
 
 ```bash
@@ -197,9 +223,9 @@ Consider supporting the project by either/and:
 
 
 Thanks to following people for supporting this project. I'm REALLY GLAD to recieve your appreciation for the time I've spent:
+- [@domingomg97](https://twitter.com/domingomg97)
 - Pavel Zika
 - Salman Aljabri
-- [@domingomg97](https://twitter.com/domingomg97)
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
@@ -256,6 +282,7 @@ Done
 - `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback.
 - Device enumeration & changing.
 - Retrieving `Meta` of a `Media`.
+- `Broadcast` class for broadcasting media.
 - Embedding video inside the Flutter window.
 
 Under progress or planned features (irrespective of order)...
