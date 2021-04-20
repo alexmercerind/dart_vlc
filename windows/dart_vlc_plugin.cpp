@@ -743,6 +743,7 @@ namespace {
          * {
          *      'id': 0,
          *      'source': {
+         *          'id': 0,
          *          'mediaSourceType': 'MediaSourceType.media',
          *          'mediaType': 'MediaType.file',
          *          'resource': 'C:/alexmercerind/music.MP3'
@@ -898,15 +899,91 @@ namespace {
                 media = Media::asset(mediaId, resource, true, timeout);
             method->returnValue<std::map<std::string, std::string>>(media->metas);
         }
-        /* Parses [PlaybackMode] .
+        /* Creates new [Broadcast] instance.
          *
          * Argument:
          * 
          * {
-         *      'playbackMode': 'PlaybackMode.single',
+         *      'id': 0,
+         *      'media': {
+         *          'id': 0,
+         *          'mediaSourceType': 'MediaSourceType.media',
+         *          'mediaType': 'MediaType.file',
+         *          'resource': 'C:/alexmercerind/music.MP3'
+         *      },
+         *      'configuration': {
+         *          'access': 'http',
+         *          'mux': 'mpeg1',
+         *          'dst': '127.0.0.1:8080',
+         *          'vcodec': 'mp1v',
+         *          'vb': 1024,
+         *          'acodec': 'mpga',
+         *          'ab': 128
+         *     }
          * }
          * 
          */
+        else if (method->name == "Broadcast.create") {
+            int id = method->getArgument<int>("id");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> _media = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("media")]);
+            int mediaId = std::get<int>(_media[flutter::EncodableValue("id")]);
+            std::string mediaType = std::get<std::string>(_media[flutter::EncodableValue("mediaType")]);
+            std::string resource = std::get<std::string>(_media[flutter::EncodableValue("resource")]);
+            Media* media = nullptr;
+            if (mediaType == "MediaType.file")
+                media = Media::file(mediaId, resource);
+            else if (mediaType == "MediaType.network")
+                media = Media::network(mediaId, resource);
+            else if (mediaType == "MediaType.asset")
+                media = Media::asset(mediaId, resource);
+            else 
+                media = Media::directShow(mediaId, resource);
+            std::map<flutter::EncodableValue, flutter::EncodableValue> _configuration = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("configuration")]);
+            std::string access = std::get<std::string>(_configuration[flutter::EncodableValue("access")]);
+            std::string mux = std::get<std::string>(_configuration[flutter::EncodableValue("mux")]);
+            std::string dst = std::get<std::string>(_configuration[flutter::EncodableValue("dst")]);
+            std::string vcodec = std::get<std::string>(_configuration[flutter::EncodableValue("vcodec")]);
+            int vb = std::get<int>(_configuration[flutter::EncodableValue("vb")]);
+            std::string acodec = std::get<std::string>(_configuration[flutter::EncodableValue("acodec")]);
+            int ab = std::get<int>(_configuration[flutter::EncodableValue("ab")]);
+            BroadcastConfiguration* configuration = new BroadcastConfiguration(
+                access, mux, dst, vcodec, vb, acodec, ab
+            );
+            broadcasts->get(id, media, configuration);
+            method->returnNull();
+        }
+        /*
+         * Starts the [Broadcast].
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+         */
+        else if (method->name == "Broadcast.start") {
+            int id = method->getArgument<int>("id");
+            Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
+            broadcast->start();
+            method->returnNull();
+        }
+        /*
+         * Disposes the [Broadcast] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+         */
+        else if (method->name == "Broadcast.dispose") {
+            int id = method->getArgument<int>("id");
+            Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
+            broadcast->dispose();
+            method->returnNull();
+        }
         else {
             method->returnNotImplemented();
         }
