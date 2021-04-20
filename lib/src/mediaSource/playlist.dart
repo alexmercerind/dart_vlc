@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:dart_vlc/src/enums/playlistMode.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc/src/enums/mediaSourceType.dart';
@@ -28,27 +28,19 @@ class Playlist extends MediaSource {
 
   /// [List] of [Media] present in the playlist.
   List<Media> medias;
-
-  Playlist({required this.medias});
-
-  /// Internally used method to easily transform data for sending through Platform channel.
-  static Playlist fromMap(dynamic map) => new Playlist(
-        medias: map['medias']
-            .map(
-              (media) => Media.fromMap(media),
-            )
-            .toList()
-            .cast<Media>(),
-      );
+  PlaylistMode playlistMode;
+  Playlist({ required this.medias, this.playlistMode = PlaylistMode.single });
+  
+  static Playlist fromMap(dynamic map) {
+    return new Playlist(
+      medias: map['medias'].map((media) => Media.fromMap(media)).toList().cast<Media>(),
+    );
+  } 
 
   /// Internally used method to easily transform data for sending through Platform channel.
   Map<String, dynamic> toMap() => {
-        'mediaSourceType': this._mediaSourceType.toString(),
-        'medias': this
-            .medias
-            .map(
-              (Media media) => media.toMap(),
-            )
-            .toList(),
-      };
+    'mediaSourceType': this._mediaSourceType.toString(),
+    'medias': this.medias.map((Media media) => media.toMap()).toList(),
+    "playlistMode": playlistMode.toString()
+  };
 }
