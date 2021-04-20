@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/widgets.dart';
 import 'package:dart_vlc/src/channel.dart';
 import 'package:dart_vlc/src/playerState/playerState.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';

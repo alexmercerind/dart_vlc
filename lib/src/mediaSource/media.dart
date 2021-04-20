@@ -20,19 +20,19 @@ class _Media extends Media {}
 /// * A [Media] from a [File].
 ///
 /// ```dart
-/// Media media = Media.file(new File('C:/music.ogg'));
+/// Media media = await Media.file(new File('C:/music.ogg'));
 /// ```
 ///
 /// * A [Media] from a [Uri].
 ///
 /// ```dart
-/// Media media = Media.network('http://alexmercerind.github.io/music.mp3');
+/// Media media = await Media.network('http://alexmercerind.github.io/music.mp3');
 /// ```
 ///
 /// * A [Media] from assets.
 ///
 /// ```dart
-/// Media media = Media.asset('asset/media/music.aac');
+/// Media media = await Media.asset('asset/media/music.aac');
 /// ```
 ///
 abstract class Media extends MediaSource {
@@ -121,8 +121,8 @@ abstract class Media extends MediaSource {
       'MediaType.asset': MediaType.asset,
     }[map['mediaType']]!;
     media.resource = map['resource'];
-    media.metas = mediaMetas[media.id]!;
-    media.extras = mediaExtras[media.id]!;
+    media.metas = mediaMetas[media.id] ?? {};
+    media.extras = mediaExtras[media.id] ?? {};
     return media;
   }
 
