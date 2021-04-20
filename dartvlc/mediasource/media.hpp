@@ -11,7 +11,6 @@
 #include <string>
 #include <map>
 #include <filesystem>
-#include <sstream>
 #include <future>
 
 #include <vlcpp/vlc.hpp>
@@ -60,14 +59,11 @@ public:
 		return media;
 	}
 
-	static Media* directShow(int id, std::string vdev = "", std::string adev = "", int liveCaching = 300) {
+	static Media* directShow(int id, std::string resource) {
 		Media* media = new Media();
 		media->id = id;
-		std::stringstream configuration;
-		configuration << "dshow://";
-		configuration << " :dshow-vdev=" << vdev << " :dshow-adev=" << adev << " :live-caching=" << liveCaching;
-		media->resource = configuration.str();
-		media->location = configuration.str();
+		media->resource = resource;
+		media->location = resource;
 		media->mediaType = "MediaType.directShow";
 		return media;
 	}
