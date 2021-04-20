@@ -678,7 +678,9 @@ class _DartVLCState extends State<DartVLC> {
                                       finalIndex = this.current.medias.length;
                                     if (initialIndex < finalIndex) finalIndex--;
 
-                                    await this.player?.move(initialIndex, finalIndex);
+                                    await this
+                                        .player
+                                        ?.move(initialIndex, finalIndex);
                                     this.setState(() {});
                                   },
                                   scrollDirection: Axis.vertical,
