@@ -16,10 +16,10 @@ class _Player extends Player {}
 /// ```dart
 /// Player player = await Player.create(id: 0);
 /// ```
-/// 
+///
 /// If you wish to use this instance for [Video] playback, then provide [videoWidth] & [videoHeight] optional parameters.
 /// Higher value may lead to degraded performance.
-/// 
+///
 /// ```dart
 /// Player player = await Player.create(
 ///   id: 0,
@@ -27,7 +27,7 @@ class _Player extends Player {}
 ///   videoHeight: 1080,
 /// );
 /// ```
-/// 
+///
 /// Do not provide [videoWidth] & [videoHeight], if you wish to use the [Player] for only audio playback.
 ///
 /// Use various methods & event streams avaiable to control & listen to events of the playback.
@@ -74,7 +74,8 @@ abstract class Player {
   /// Player player = await Player.create(id: 0);
   /// ```
   ///
-  static Future<Player> create({required int id, int videoWidth: 0, int videoHeight: 0}) async {
+  static Future<Player> create(
+      {required int id, int videoWidth: 0, int videoHeight: 0}) async {
     await channel.invokeMethod(
       'Player.create',
       {

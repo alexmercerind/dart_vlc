@@ -8,4 +8,7 @@ enum MediaType {
 
   /// A [Media] opened from assets.
   asset,
+
+  /// A [Media] created from direct show.
+  directShow,
 }

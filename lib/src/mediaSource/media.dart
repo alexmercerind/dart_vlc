@@ -111,6 +111,16 @@ abstract class Media extends MediaSource {
     return media;
   }
 
+  /// Makes [Media] object from direct show.
+  static Future<Media> directShow(
+      {String vdev = '', String adev = '', required int liveCaching}) async {
+    Media media = new _Media();
+    media.mediaType = MediaType.directShow;
+    media.resource =
+        'dshow:// :dshow-vdev=$vdev :dshow-adev=$adev :live-caching=$liveCaching';
+    return media;
+  }
+
   /// Internally used method to easily transform data for sending through Platform channel.
   static Media fromMap(dynamic map) {
     Media media = new _Media();

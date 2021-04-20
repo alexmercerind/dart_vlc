@@ -3,10 +3,8 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
-
 /// Internally used map to keep [StreamController]s for [Video] [Widget]s.
 Map<int, StreamController<VideoFrame>> videoStreamControllers = {};
-
 
 /// Represents a [Video] frame, used for retriving frame through platform channel.
 class VideoFrame {
@@ -25,15 +23,15 @@ class VideoFrame {
 
 /// Widget for showing [Video] inside the [Widget] tree.
 /// Creation of [Player] instance is necessary as a controller, for this [Widget] to show [Video] output.
-/// 
+///
 /// An example configuration between a [Player] and a [Video] can be as follows.
 /// The [Player.id] and [Video.playerId] must be same for two to work together.
-/// 
+///
 /// ```dart
 /// class _MyAppState extends State<MyApp> {
 ///   Player player;
-///   bool init = true;  
-/// 
+///   bool init = true;
+///
 ///   @override
 ///   Future<void> didChangeDependencies() async {
 ///     super.didChangeDependencies();
@@ -42,7 +40,7 @@ class VideoFrame {
 ///     }
 ///     this.init = false;
 ///   }
-///   
+///
 ///   @override
 ///   Widget build(BuildContext context) {
 ///     return Scaffold(
@@ -57,18 +55,21 @@ class VideoFrame {
 ///   }
 /// }
 /// ```
-/// 
+///
 /// This [Widget] internally uses [StreamController].
 /// Prefer calling [Player.stop] & [Video.dispose] to freed the resources.
 /// A global [Key] may be used for this purpose.
-/// 
+///
 class Video extends StatefulWidget {
   /// Id of the [Player] whose [Video] output should be shown.
   final int playerId;
+
   /// Width of the viewport.
   final double width;
+
   /// Height of the viewport.
   final double height;
+
   /// Scale.
   final double scale;
 
@@ -87,12 +88,11 @@ class Video extends StatefulWidget {
   VideoState createState() => VideoState();
 }
 
-
 class VideoState extends State<Video> {
   Widget? videoFrameRawImage;
 
   Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
-    Completer<ui.Image> imageCompleter  = new Completer<ui.Image>();
+    Completer<ui.Image> imageCompleter = new Completer<ui.Image>();
     ui.decodeImageFromPixels(
       videoFrame.byteArray,
       videoFrame.videoWidth,
@@ -122,21 +122,23 @@ class VideoState extends State<Video> {
   @override
   void initState() {
     super.initState();
-    videoStreamControllers[widget.playerId] = new StreamController<VideoFrame>.broadcast();
-    videoStreamControllers[widget.playerId]?.stream.listen(
-      (VideoFrame videoFrame) async {
-        this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
-        this.setState(() {});
-      }
-    );
+    videoStreamControllers[widget.playerId] =
+        new StreamController<VideoFrame>.broadcast();
+    videoStreamControllers[widget.playerId]
+        ?.stream
+        .listen((VideoFrame videoFrame) async {
+      this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
+      this.setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return this.videoFrameRawImage ?? Container(
-      color: Colors.black,
-      height: widget.height,
-      width: widget.width,
-    );
+    return this.videoFrameRawImage ??
+        Container(
+          color: Colors.black,
+          height: widget.height,
+          width: widget.width,
+        );
   }
 }
