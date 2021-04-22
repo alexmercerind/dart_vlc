@@ -49,6 +49,22 @@ class _DartVLCState extends State<DartVLC> {
       });
       this.devices = await Devices.all;
       this.setState(() {});
+      if (false) {
+        Broadcast broadcast = await Broadcast.create(
+          id: 0,
+          media: await Media.file(new File('/home/alexmercerind/video.mp4')),
+          configuration: new BroadcastConfiguration(
+            access: 'http',
+            mux: 'mpeg1',
+            dst: '127.0.0.1:8080',
+            vcodec: 'mp1v',
+            vb: 1024,
+            acodec: 'mpga',
+            ab: 128,
+          ),
+        );
+        broadcast.start();
+      }
     }
     this.init = false;
   }
