@@ -95,7 +95,6 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         Player* player = players->get(id);
         player->videoWidth = videoWidth;
         player->videoHeight = videoHeight;
-        Player* player = players->get(id);
         player->onOpen(
             [player] (VLC::Media _) -> void {
                 open(player->state);
@@ -184,7 +183,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         if (strcmp(mediaSourceType, "MediaSourceType.playlist") == 0) {
             std::vector<Media*> medias;
             auto mediasList = fl_value_lookup_string(source, "medias");
-            const char* playlistMode = fl_value_lookup_string(source, "playlistMode");
+            const char* playlistMode = fl_value_get_string(fl_value_lookup_string(source, "playlistMode"));
 
             for (int index = 0; index < fl_value_get_length(mediasList); index++) {
                 int mediaId = fl_value_get_int(fl_value_lookup_string(fl_value_get_list_value(mediasList, index), "id"));
@@ -204,9 +203,9 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                 new Playlist(medias),
                 autoStart
             );
-            if( playlistMode == "playlistMode.repeat")
+            if(strcmp(playlistMode, "playlistMode.repeat") == 0)
                 player->setPlaylistMode( libvlc_playback_mode_repeat );
-            else if( playlistMode == "playlistMode.loop" )
+            else if( strcmp(playlistMode, "playlistMode.loop") == 0 );
                 player->setPlaylistMode( libvlc_playback_mode_loop );
             else
                 player->setPlaylistMode( libvlc_playback_mode_default );
