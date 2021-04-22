@@ -366,6 +366,47 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(metas));
     }
+    else if (strcmp(method, "Broadcast.create") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");
+        int mediaId = fl_value_get_int(fl_value_lookup_string(_media, "id"));
+        const char* mediaType = fl_value_get_string(fl_value_lookup_string(_media, "mediaType"));
+        const char* resource = fl_value_get_string(fl_value_lookup_string(_media, "resource"));
+        Media* media = nullptr;
+        if (strcmp(mediaType, "MediaType.file") == 0)
+            media = Media::file(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.network") == 0)
+            media = Media::network(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.asset") == 0)
+            media = Media::asset(mediaId, resource);
+        else 
+            media = Media::directShow(mediaId, resource);
+        auto _configuration = fl_value_lookup_string(fl_method_call_get_args(method_call), "configuration");
+        const char* access = fl_value_get_string(fl_value_lookup_string(_configuration, "access"));
+        const char* mux = fl_value_get_string(fl_value_lookup_string(_configuration, "mux"));
+        const char* dst = fl_value_get_string(fl_value_lookup_string(_configuration, "dst"));
+        const char* vcodec = fl_value_get_string(fl_value_lookup_string(_configuration, "vcodec"));
+        int vb = fl_value_get_int(fl_value_lookup_string(_configuration, "vb"));
+        const char* acodec = fl_value_get_string(fl_value_lookup_string(_configuration, "acodec"));
+        int ab = fl_value_get_int(fl_value_lookup_string(_configuration, "ab"));
+        BroadcastConfiguration* configuration = new BroadcastConfiguration(
+            access, mux, dst, vcodec, vb, acodec, ab
+        );
+        broadcasts->get(id, media, configuration);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Broadcast.start") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
+        broadcast->start();
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if (strcmp(method, "Broadcast.dispose") == 0) {
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
+        broadcast->dispose();
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
     else {
         response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
     }
