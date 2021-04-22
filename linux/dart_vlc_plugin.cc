@@ -203,12 +203,12 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                 new Playlist(medias),
                 autoStart
             );
-            if(strcmp(playlistMode, "playlistMode.repeat") == 0)
-                player->setPlaylistMode( libvlc_playback_mode_repeat );
-            else if( strcmp(playlistMode, "playlistMode.loop") == 0 );
-                player->setPlaylistMode( libvlc_playback_mode_loop );
+            if (strcmp(playlistMode, "playlistMode.repeat") == 0)
+                player->setPlaylistMode(libvlc_playback_mode_repeat);
+            else if (strcmp(playlistMode, "playlistMode.loop") == 0)
+                player->setPlaylistMode(libvlc_playback_mode_loop);
             else
-                player->setPlaylistMode( libvlc_playback_mode_default );
+                player->setPlaylistMode(libvlc_playback_mode_default);
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
