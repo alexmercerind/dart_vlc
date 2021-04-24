@@ -1,3 +1,10 @@
+## 0.0.5
+
+**This new release of dart_vlc adds:**
+
+- `Broadcast` class to broadcast a `Media`.
+- Fix to a bug that caused `CurrentState` to not update in `Player`.
+
 ## 0.0.4
 
 **This new release of dart_vlc adds:**
@@ -53,6 +60,8 @@
 - Changed default `Player` volume to `0.5`.
 
 ## 0.0.1+1
+
+**This new release of dart_vlc adds:**
 
 - Little left-over changes in the project documentation.
 
