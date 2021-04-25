@@ -52,7 +52,7 @@ class _DartVLCState extends State<DartVLC> {
       Record record = await Record.create(
         id: 205, 
         media: await Media.network(Uri.parse('http://22533.live.streamtheworld.com/LOS40.mp3')), 
-        pathFile: 'C:\\Users\\Domingo\\Music\\record_${DateTime.now().millisecondsSinceEpoch}.mp3'
+        pathFile: 'C:\\record_${DateTime.now().millisecondsSinceEpoch}.mp3'
       );
       record.start();
       Future.delayed(Duration(seconds: 10), ()=> record.stop());
