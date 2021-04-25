@@ -32,18 +32,21 @@ class Playlist extends MediaSource {
   Playlist({required this.medias, this.playlistMode = PlaylistMode.single});
 
   static Playlist fromMap(dynamic map) {
+    final playlistMode = {
+      'PlaylistMode.single': PlaylistMode.single,
+      'PlaylistMode.repeat': PlaylistMode.repeat,
+      'PlaylistMode.loop': PlaylistMode.loop,
+    }[map['playlistMode']]!;
     return new Playlist(
-      medias: map['medias']
-          .map((media) => Media.fromMap(media))
-          .toList()
-          .cast<Media>(),
+      medias: map['medias'].map((media) => Media.fromMap(media)).toList().cast<Media>(),
+      playlistMode: playlistMode
     );
   }
 
   /// Internally used method to easily transform data for sending through Platform channel.
   Map<String, dynamic> toMap() => {
-        'mediaSourceType': this._mediaSourceType.toString(),
-        'medias': this.medias.map((Media media) => media.toMap()).toList(),
-        "playlistMode": playlistMode.toString()
-      };
+    'mediaSourceType': this._mediaSourceType.toString(),
+    'medias': this.medias.map((Media media) => media.toMap()).toList(),
+    "playlistMode": playlistMode.toString()
+  };
 }
