@@ -20,14 +20,14 @@ public:
 	void open(MediaSource* mediaSource, bool autoStart = true) {
 		if (this->state->device == nullptr)
 			this->stop();
-		this->state->medias = new Playlist({});
+		this->state->medias = new Playlist({}, "PlaylistMode.single");
 		this->mediaList = VLC::MediaList(this->instance);
 		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
 			Media* media = dynamic_cast<Media*>(mediaSource);
 			VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
 			this->mediaList.addMedia(_);
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->state->medias = new Playlist({ media });
+			this->state->medias = new Playlist({ media }, "PlaylistMode.single" );
 			this->state->isPlaylist = false;
 
 		}
