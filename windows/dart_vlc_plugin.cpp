@@ -1012,7 +1012,78 @@ namespace {
             method->returnNull();
         } 
         
-        
+        /* Creates new [Record] instance.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'media': {
+         *          'id': 0,
+         *          'mediaSourceType': 'MediaSourceType.media',
+         *          'mediaType': 'MediaType.file',
+         *          'resource': 'C:/alexmercerind/music.MP3'
+         *      },
+         *      'pathFile': 'C:/alexmercerind/recordAudio.MP3'
+         * }
+         * 
+         */
+
+        else if (method->name == "Record.create") {
+            int id = method->getArgument<int>("id");
+            std::string pathFile = method->getArgument<std::string>("pathFile");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> _media = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("media")]);
+            int mediaId = std::get<int>(_media[flutter::EncodableValue("id")]);
+            std::string mediaType = std::get<std::string>(_media[flutter::EncodableValue("mediaType")]);
+            std::string resource = std::get<std::string>(_media[flutter::EncodableValue("resource")]);            
+
+            std::cout<< "Canal creado de grabación" <<std::endl;
+
+            Media* media = nullptr;
+            if (mediaType == "MediaType.file")
+                media = Media::file(mediaId, resource);
+            else if (mediaType == "MediaType.network")
+                media = Media::network(mediaId, resource);
+            else if (mediaType == "MediaType.asset")
+                media = Media::asset(mediaId, resource);
+            else 
+                media = Media::directShow(mediaId, resource);
+
+            records->get(id, media, pathFile);
+            method->returnNull();
+        }
+        /*
+         * Starts the [Record] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+        */
+        else if (method->name == "Record.start") {
+            int id = method->getArgument<int>("id");
+            Record* record = records->get(id, nullptr, "");
+            record->start();
+            method->returnNull();
+        }
+        /*
+         * Disposes the [Record] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+        */
+        else if (method->name == "Record.dispose") {
+            int id = method->getArgument<int>("id");
+            Record* record = records->get(id, nullptr, "");
+            record->dispose();
+            method->returnNull();
+        }
 
         else {
             method->returnNotImplemented();
