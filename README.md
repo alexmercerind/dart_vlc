@@ -14,6 +14,21 @@ dependencies:
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_7.png?raw=true)
 
+
+## Support
+
+Consider supporting the project by either/and:
+- :star: Starring the repository, to get this hardwork noticed.
+- :coffee: Buying me a coffee.
+
+
+Thanks to following people for supporting this project. I'm REALLY GLAD to recieve your appreciation for the time I've spent:
+- [@domingomg97](https://twitter.com/domingomg97)
+- Pavel Zika
+- Salman Aljabri
+
+<a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
+
 ## Documentation
 
 - Create a new `Player` instance.
@@ -214,20 +229,6 @@ sudo apt-get install vlc
 ```bash
 sudo apt-get install libvlc-dev
 ```
-
-## Support
-
-Consider supporting the project by either/and:
-- Starring the repository, to get this hardwork noticed.
-- Buying me a coffee.
-
-
-Thanks to following people for supporting this project. I'm REALLY GLAD to recieve your appreciation for the time I've spent:
-- [@domingomg97](https://twitter.com/domingomg97)
-- Pavel Zika
-- Salman Aljabri
-
-<a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
 ## Example
 
