@@ -22,9 +22,11 @@
 class Playlist : public MediaSource {
 public:
 	std::vector<Media*> medias;
+	std::string playlistMode;
 
-	Playlist(std::vector<Media*> medias) {
+	Playlist(std::vector<Media*> medias, std::string playlistMode) {
 		this->medias = medias;
+		this->playlistMode = playlistMode;
 	};
 
 	std::vector<std::map<std::string, std::string>> get() {
