@@ -379,6 +379,16 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(metas));
     }
+
+    else if(strcmp(method, "Record.create") == 0){
+        
+    
+    } else if(strcmp(method, "Record.start") == 0){
+
+    } else if(strcmp(method, "Record.dispose") == 0){
+
+    }
+
     else if (strcmp(method, "Broadcast.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");
