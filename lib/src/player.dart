@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/channel.dart';
 import 'package:dart_vlc/src/playerState/playerState.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';
@@ -249,6 +250,17 @@ abstract class Player {
       {
         'id': this.id,
         'rate': rate,
+      },
+    );
+  }
+
+  /// Assign Playlist Mode
+  Future<void> setPlaylistMode( PlaylistMode newPlaylistMode ) async {
+    await channel.invokeMethod(
+      'Player.setPlaylistMode',
+      {
+        'id': this.id,
+        'playlistMode': newPlaylistMode.toString()
       },
     );
   }
