@@ -382,7 +382,6 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
 
     else if(strcmp(method, "Record.create") == 0){
         
-    
     } else if(strcmp(method, "Record.start") == 0){
 
     } else if(strcmp(method, "Record.dispose") == 0){
