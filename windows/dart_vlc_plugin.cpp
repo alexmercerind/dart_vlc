@@ -555,16 +555,19 @@ namespace {
                     medias.emplace_back(media);
                 }
                 Player* player = players->get(id);
+                if( playlistMode == "PlaylistMode.repeat"){
+                    player->setPlaylistMode( libvlc_playback_mode_repeat );
+                }
+                else if( playlistMode == "PlaylistMode.loop" ){
+                    player->setPlaylistMode( libvlc_playback_mode_loop );
+                }
+                else {
+                    player->setPlaylistMode( libvlc_playback_mode_default );
+                }
                 player->open(
-                    new Playlist(medias),
+                    new Playlist(medias, playlistMode),
                     autoStart
                 );
-                if( playlistMode == "playlistMode.repeat")
-                    player->setPlaylistMode( libvlc_playback_mode_repeat );
-                else if( playlistMode == "playlistMode.loop" )
-                    player->setPlaylistMode( libvlc_playback_mode_loop );
-                else
-                    player->setPlaylistMode( libvlc_playback_mode_default );
             }
             method->returnNull();
         }
@@ -734,6 +737,30 @@ namespace {
             float rate = method->getArgument<float>("rate");
             Player* player = players->get(id);
             player->setRate(rate);
+            method->returnNull();
+        }
+        /*
+         * Assign PlaylistMode to [Playlist].
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'playlistMode': 'PlaylistMode.single'
+         * }
+         * 
+         */
+        else if (method->name == "Player.setPlaylistMode") {
+            int id = method->getArgument<int>("id");
+            std::string playlistMode = method->getArgument<std::string>("playlistMode");
+            Player* player = players->get(id);
+            if( playlistMode == "PlaylistMode.repeat") {
+                player->setPlaylistMode( libvlc_playback_mode_repeat );
+            } else if( playlistMode == "PlaylistMode.loop" ){
+                player->setPlaylistMode( libvlc_playback_mode_loop );
+            } else {
+                player->setPlaylistMode( libvlc_playback_mode_default );
+            }
             method->returnNull();
         }
         /* Adds new `Media` to the end of the `Playlist` of the `Player`.
@@ -983,7 +1010,83 @@ namespace {
             Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
             broadcast->dispose();
             method->returnNull();
+        } 
+        
+        /* Creates new [Record] instance.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'media': {
+         *          'id': 0,
+         *          'mediaSourceType': 'MediaSourceType.media',
+         *          'mediaType': 'MediaType.file',
+         *          'resource': 'C:/alexmercerind/music.MP3'
+         *      },
+         *      'pathFile': 'C:/alexmercerind/recordAudio.MP3'
+         * }
+         * 
+         */
+
+        else if (method->name == "Record.create") {
+            int id = method->getArgument<int>("id");
+            std::string pathFile = method->getArgument<std::string>("pathFile");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> _media = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("media")]);
+            int mediaId = std::get<int>(_media[flutter::EncodableValue("id")]);
+            std::string mediaType = std::get<std::string>(_media[flutter::EncodableValue("mediaType")]);
+            std::string resource = std::get<std::string>(_media[flutter::EncodableValue("resource")]);
+            
+            std::cout<< id <<std::endl;
+            std::cout<< pathFile <<std::endl;
+
+            Media* media = nullptr;
+            if (mediaType == "MediaType.file")
+                media = Media::file(mediaId, resource);
+            else if (mediaType == "MediaType.network")
+                media = Media::network(mediaId, resource);
+            else if (mediaType == "MediaType.asset")
+                media = Media::asset(mediaId, resource);
+            else 
+                media = Media::directShow(mediaId, resource);
+
+            records->get(id, media, pathFile);
+            method->returnNull();
         }
+        /*
+         * Starts the [Record] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+        */
+        else if (method->name == "Record.start") {
+            int id = method->getArgument<int>("id");
+            std::cout<< id <<std::endl;
+            Record* recordFind = records->get(id, nullptr, nullptr);
+            recordFind->startV2();
+            method->returnNull();
+        }
+        /*
+         * Disposes the [Record] instance.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0
+         * }
+         * 
+        */
+        else if (method->name == "Record.dispose") {
+            int id = method->getArgument<int>("id");
+            Record* record = records->get(id, nullptr, nullptr);
+            record->disposeV2();
+            method->returnNull();
+        }
+
         else {
             method->returnNotImplemented();
         }
