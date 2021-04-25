@@ -1036,9 +1036,6 @@ namespace {
             int mediaId = std::get<int>(_media[flutter::EncodableValue("id")]);
             std::string mediaType = std::get<std::string>(_media[flutter::EncodableValue("mediaType")]);
             std::string resource = std::get<std::string>(_media[flutter::EncodableValue("resource")]);            
-
-            std::cout<< "Canal creado de grabación" <<std::endl;
-
             Media* media = nullptr;
             if (mediaType == "MediaType.file")
                 media = Media::file(mediaId, resource);
