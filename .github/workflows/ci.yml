@@ -4,6 +4,10 @@ on:
       branches:
         - stable
 
+defaults:
+  run:
+    working-directory: example
+
 jobs:
   build_windows:
     name: Build Windows
@@ -16,7 +20,6 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "beta"
-        working-directory: example
       - run: flutter pub get
       - run: flutter clean
       - run: flutter build windows
@@ -32,7 +35,6 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "beta"
-        working-directory: example
       - run: flutter pub get
       - run: flutter clean
       - run: flutter build linux
