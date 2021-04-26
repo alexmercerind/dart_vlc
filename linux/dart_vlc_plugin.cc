@@ -203,9 +203,9 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                 new Playlist(medias),
                 autoStart
             );
-            if (strcmp(playlistMode, "PlaylistMode.repeat") == 0)
+            if (strcmp(playlistMode, "playlistMode.repeat") == 0)
                 player->setPlaylistMode(libvlc_playback_mode_repeat);
-            else if (strcmp(playlistMode, "PlaylistMode.loop") == 0)
+            else if (strcmp(playlistMode, "playlistMode.loop") == 0)
                 player->setPlaylistMode(libvlc_playback_mode_loop);
             else
                 player->setPlaylistMode(libvlc_playback_mode_default);
@@ -379,7 +379,6 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(metas));
     }
-
     else if(strcmp(method, "Record.create") == 0){
         
     } else if(strcmp(method, "Record.start") == 0){
@@ -387,7 +386,6 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
     } else if(strcmp(method, "Record.dispose") == 0){
 
     }
-
     else if (strcmp(method, "Broadcast.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");

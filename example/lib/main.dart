@@ -47,8 +47,7 @@ class _DartVLCState extends State<DartVLC> {
         this.setState(() => this.general = general);
       });
       this.devices = await Devices.all;
-      this.setState(() {});
-      
+      this.setState(() {}); 
       Record record = await Record.create(
         id: 205, 
         media: await Media.network(Uri.parse('http://22533.live.streamtheworld.com/LOS40.mp3')), 
