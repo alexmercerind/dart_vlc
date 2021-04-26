@@ -276,6 +276,19 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         player->setRate(rate);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
+    else if(strcmp(method, "Player.setPlaylistMode") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        const char* playlistMode = fl_value_get_string(fl_method_call_get_args(method_call), "playlistMode"));
+        Player* player = players->get(id);
+        if (strcmp(playlistMode, "PlaylistMode.repeat") == 0)
+            player->setPlaylistMode(libvlc_playback_mode_repeat);
+        else if (strcmp(playlistMode, "PlaylistMode.loop") == 0)
+            player->setPlaylistMode(libvlc_playback_mode_loop);
+        else
+            player->setPlaylistMode(libvlc_playback_mode_default);
+
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
     else if (strcmp(method, "Player.add") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         auto source = fl_value_lookup_string(fl_method_call_get_args(method_call), "source");
@@ -365,6 +378,13 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
             fl_value_set_string_take(metas, pair.first.c_str(), fl_value_new_string(pair.second.c_str()));
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(metas));
+    }
+    else if(strcmp(method, "Record.create") == 0){
+        
+    } else if(strcmp(method, "Record.start") == 0){
+
+    } else if(strcmp(method, "Record.dispose") == 0){
+
     }
     else if (strcmp(method, "Broadcast.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));

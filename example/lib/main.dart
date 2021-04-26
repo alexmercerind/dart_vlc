@@ -13,8 +13,7 @@ class DartVLC extends StatefulWidget {
 }
 
 class _DartVLCState extends State<DartVLC> {
-  Player? player;
-  bool init = true;
+  Player? player;  
   MediaType mediaType = MediaType.file;
   CurrentState current = new CurrentState();
   PositionState position = new PositionState();
@@ -28,8 +27,8 @@ class _DartVLCState extends State<DartVLC> {
 
   @override
   void didChangeDependencies() async {
-    if (this.init) {
-      super.didChangeDependencies();
+    super.didChangeDependencies();
+    if (this.mounted) {
       this.player = await Player.create(
         id: 0,
         videoWidth: 480,
@@ -48,25 +47,15 @@ class _DartVLCState extends State<DartVLC> {
         this.setState(() => this.general = general);
       });
       this.devices = await Devices.all;
-      this.setState(() {});
-      if (false) {
-        Broadcast broadcast = await Broadcast.create(
-          id: 0,
-          media: await Media.file(new File('/home/alexmercerind/video.mp4')),
-          configuration: new BroadcastConfiguration(
-            access: 'http',
-            mux: 'mpeg1',
-            dst: '127.0.0.1:8080',
-            vcodec: 'mp1v',
-            vb: 1024,
-            acodec: 'mpga',
-            ab: 128,
-          ),
-        );
-        broadcast.start();
-      }
+      this.setState(() {}); 
+      Record record = await Record.create(
+        id: 205, 
+        media: await Media.network(Uri.parse('http://22533.live.streamtheworld.com/LOS40.mp3')), 
+        pathFile: 'C:\\record_${DateTime.now().millisecondsSinceEpoch}.mp3'
+      );
+      record.start();
+      Future.delayed(Duration(seconds: 10), ()=> record.stop());
     }
-    this.init = false;
   }
 
   @override
@@ -253,10 +242,11 @@ class _DartVLCState extends State<DartVLC> {
                                       ElevatedButton(
                                         onPressed: () => this.setState(() {
                                           this.player?.open(
-                                                new Playlist(
-                                                  medias: this.medias,
-                                                ),
-                                              );
+                                            new Playlist(
+                                              medias: this.medias,
+                                              playlistMode: PlaylistMode.loop
+                                            ),
+                                          );
                                         }),
                                         child: Text(
                                           'Open',
