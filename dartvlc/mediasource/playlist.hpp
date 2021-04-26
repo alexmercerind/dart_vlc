@@ -31,7 +31,7 @@ public:
 	std::vector<Media*> medias;
 	PlaylistMode playlistMode;
 
-	Playlist(std::vector<Media*> medias, PlaylistMode playlistMode) {
+	Playlist(std::vector<Media*> medias, PlaylistMode playlistMode = PlaylistMode::single) {
 		this->medias = medias;
 		this->playlistMode = playlistMode;
 	};

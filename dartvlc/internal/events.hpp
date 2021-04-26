@@ -100,7 +100,7 @@ public:
 
 protected:
 
-	std::function<void(void)> _playlistCallback;
+	std::function<void(void)> _playlistCallback = [=]() -> void {};
 
 	void _onPlaylistCallback() {
 		if (this->isPlaylistModified) {
@@ -117,7 +117,7 @@ protected:
 		};
 	}
 
-	std::function<void(VLC::Media)> _openCallback;
+	std::function<void(VLC::Media)> _openCallback = [=](VLC::Media media) -> void {};
 
 	void _onOpenCallback(VLC::MediaPtr media) {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
@@ -136,7 +136,7 @@ protected:
 		this->_openCallback(*media.get());
 	}
 
-	std::function<void(void)> _playCallback;
+	std::function<void(void)> _playCallback = [=]() -> void {};
 
 	void _onPlayCallback() {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
@@ -149,7 +149,7 @@ protected:
 		this->_playCallback();
 	}
 
-	std::function<void(void)> _pauseCallback;
+	std::function<void(void)> _pauseCallback = [=]() -> void {};
 
 	void _onPauseCallback() {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
@@ -161,7 +161,7 @@ protected:
 		this->_pauseCallback();
 	}
 
-	std::function<void(void)> _stopCallback;
+	std::function<void(void)> _stopCallback = [=]() -> void {};
 
 	void _onStopCallback() {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
@@ -171,7 +171,7 @@ protected:
 		this->_stopCallback();
 	}
 
-	std::function<void(int)> _positionCallback;
+	std::function<void(int)> _positionCallback = [=](int position) -> void {};
 
 	void _onPositionCallback(float relativePosition) {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
@@ -185,7 +185,7 @@ protected:
 		);
 	}
 
-	std::function<void(bool)> _seekableCallback;
+	std::function<void(bool)> _seekableCallback = [=](bool isSeekable) -> void {};
 
 	void _onSeekableCallback(bool isSeekable) {
 		if (this->getDuration() > 0) {
@@ -194,7 +194,7 @@ protected:
 		}
 	}
 
-	std::function<void(void)> _completeCallback;
+	std::function<void(void)> _completeCallback = [=]() -> void {};
 
 	void _onCompleteCallback() {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
@@ -208,11 +208,11 @@ protected:
 		}
 	}
 
-	std::function<void(float)> _volumeCallback;
+	std::function<void(float)> _volumeCallback = [=](float volume) -> void {};
 
-	std::function<void(float)> _rateCallback;
+	std::function<void(float)> _rateCallback = [=](float rate) -> void {};
 
-	std::function<void(uint8_t* frame)> _videoCallback;
+	std::function<void(uint8_t* frame)> _videoCallback = [=](uint8_t* frame) -> void {};
 
 	uint8_t* _videoFrameBuffer;
 
