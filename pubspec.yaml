@@ -14,7 +14,6 @@ dependencies:
     sdk: flutter
   path_provider: ^2.0.1
   path: ^1.8.0
-
 flutter:
   plugin:
     platforms:
