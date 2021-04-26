@@ -23,7 +23,7 @@ enum PlaylistMode {
 	single,
 	loop,
 	repeat
-}
+};
 
 
 class Playlist : public MediaSource {

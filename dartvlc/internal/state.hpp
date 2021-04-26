@@ -16,7 +16,7 @@ class PlayerState {
 public:
 	int id;
 	int index = 0;
-	Playlist* medias = new Playlist({}, "PlaylistMode.single");
+	Playlist* medias = new Playlist({}, PlaylistMode::single);
 	bool isPlaying = false;
 	bool isValid = true;
 	bool isSeekable = true;
