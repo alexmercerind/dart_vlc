@@ -1,7 +1,7 @@
 /*
  * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
  * 
- * Hitesh Kumar Saini
+ * Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
  * https://github.com/alexmercerind
  * alexmercerind@gmail.com
  * 
