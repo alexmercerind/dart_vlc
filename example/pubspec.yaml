@@ -1,6 +1,5 @@
 name: dart_vlc_example
 description: Demonstrates how to use the dart_vlc plugin.
-
 publish_to: 'none'
 
 environment:
@@ -14,6 +13,6 @@ dependencies:
     path: ../
 
   cupertino_icons: ^1.0.2
-  
 flutter:
+
   uses-material-design: true
