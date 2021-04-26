@@ -1,0 +1,12 @@
+name: dart_vlc_ffi
+description: FFI based binding to dart_vlc wrapper (Based on libVLC & libVLC++).
+version: 0.0.1
+
+environment:
+  sdk: '>=2.10.0 <3.0.0'
+
+dependencies:
+  ffi: ^1.0.0
+  path: ^1.7.0
+
+dev_dependencies:

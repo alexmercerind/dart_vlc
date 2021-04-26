@@ -1,0 +1,7 @@
+# Object Files
+
+*.o
+
+# Shared Libraries
+
+*.so
