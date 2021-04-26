@@ -19,12 +19,19 @@
 #define Playlist_HEADER
 
 
+enum PlaylistMode {
+	single,
+	loop,
+	repeat
+}
+
+
 class Playlist : public MediaSource {
 public:
 	std::vector<Media*> medias;
-	std::string playlistMode;
+	PlaylistMode playlistMode;
 
-	Playlist(std::vector<Media*> medias, std::string playlistMode) {
+	Playlist(std::vector<Media*> medias, PlaylistMode playlistMode) {
 		this->medias = medias;
 		this->playlistMode = playlistMode;
 	};
