@@ -1,11 +1,11 @@
-/// Enum to specify the mode of [Playlist].
+/// Enum to specify the playback mode of [Playlist].
 enum PlaylistMode {
-  /// Indicate [single] [Playlist] mode
+  /// Indicates single [Playlist] mode
   single,
 
-  /// Indicate [loop] [Playlist] mode
+  /// Indicates loop [Playlist] mode
   loop,
 
-  /// Indicate [repeat] [Playlist] mode
+  /// Indicates repeat [Playlist] mode
   repeat
 }
