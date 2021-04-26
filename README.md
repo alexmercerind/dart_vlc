@@ -221,6 +221,17 @@ Dispose the `Broadcast` instance to release resources.
 broadcast.dispose();
 ```
 
+- `Record` a `Media`.
+
+```dart
+Record record = await Record.create(
+  id: 205, 
+  media: await Media.network('https://www.example.com/streaming-media.MP3'), 
+  pathFile: '/home/alexmercerind/recording.MP3',
+);
+record.start();
+```
+
 **NOTE:** For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. On debian based distros, run:
 
 ```bash
@@ -283,12 +294,13 @@ Done
 - `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback.
 - Device enumeration & changing.
 - Retrieving `Meta` of a `Media`.
-- `Broadcast` class for broadcasting media.
-- Embedding video inside the Flutter window.
+- Embedding `Video` inside the Flutter window.
+- Supporting live streaming links.
+- `Broadcast` class for broadcasting `Media`.
+- `Record` class for recording `Media`.
 
 Under progress or planned features (irrespective of order)...
 
-- Supporting live streaming links.
 - FFI version of the library for plain Dart applications.
 - Writing metadata tags.
 - Making things more efficient.
