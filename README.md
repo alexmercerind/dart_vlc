@@ -302,6 +302,7 @@ Done
 Under progress or planned features (irrespective of order)...
 
 - FFI version of the library for plain Dart applications.
+- Removing [libVLC++](https://github.com/videolan/libvlcpp) dependency. (Maybe).
 - Writing metadata tags.
 - Making things more efficient.
 - Supporting native volume control/lock screen notifications (Maybe).
