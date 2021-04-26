@@ -183,7 +183,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         if (strcmp(mediaSourceType, "MediaSourceType.playlist") == 0) {
             std::vector<Media*> medias;
             auto mediasList = fl_value_lookup_string(source, "medias");
-            const char* playlistMode = fl_value_get_string(fl_value_lookup_string(source, "playlistMode"));
+            const char* _playlistMode = fl_value_get_string(fl_value_lookup_string(source, "playlistMode"));
 
             for (int index = 0; index < fl_value_get_length(mediasList); index++) {
                 int mediaId = fl_value_get_int(fl_value_lookup_string(fl_value_get_list_value(mediasList, index), "id"));
@@ -199,16 +199,18 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                 medias.emplace_back(media);
             }
             Player* player = players->get(id);
+            PlaylistMode playlistMode;
+            if (strcmp(_playlistMode, "playlistMode.repeat") == 0)
+                playlistMode = PlaylistMode::repeat;
+            else if (strcmp(_playlistMode, "playlistMode.loop") == 0)
+                playlistMode = PlaylistMode::loop;
+            else
+                playlistMode = PlaylistMode::single;
+            player->setPlaylistMode(playlistMode);
             player->open(
-                new Playlist(medias),
+                new Playlist(medias, playlistMode),
                 autoStart
             );
-            if (strcmp(playlistMode, "playlistMode.repeat") == 0)
-                player->setPlaylistMode(libvlc_playback_mode_repeat);
-            else if (strcmp(playlistMode, "playlistMode.loop") == 0)
-                player->setPlaylistMode(libvlc_playback_mode_loop);
-            else
-                player->setPlaylistMode(libvlc_playback_mode_default);
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
@@ -278,15 +280,16 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
     }
     else if(strcmp(method, "Player.setPlaylistMode") == 0){
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
-        const char* playlistMode = fl_value_get_string(fl_method_call_get_args(method_call), "playlistMode"));
+        const char* _playlistMode = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "playlistMode"));
         Player* player = players->get(id);
-        if (strcmp(playlistMode, "PlaylistMode.repeat") == 0)
-            player->setPlaylistMode(libvlc_playback_mode_repeat);
-        else if (strcmp(playlistMode, "PlaylistMode.loop") == 0)
-            player->setPlaylistMode(libvlc_playback_mode_loop);
+        PlaylistMode playlistMode;
+        if (strcmp(_playlistMode, "playlistMode.repeat") == 0)
+            playlistMode = PlaylistMode::repeat;
+        else if (strcmp(_playlistMode, "playlistMode.loop") == 0)
+            playlistMode = PlaylistMode::loop;
         else
-            player->setPlaylistMode(libvlc_playback_mode_default);
-
+            playlistMode = PlaylistMode::single;
+        player->setPlaylistMode(playlistMode);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
     else if (strcmp(method, "Player.add") == 0) {
@@ -379,13 +382,6 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(metas));
     }
-    else if(strcmp(method, "Record.create") == 0){
-        
-    } else if(strcmp(method, "Record.start") == 0){
-
-    } else if(strcmp(method, "Record.dispose") == 0){
-
-    }
     else if (strcmp(method, "Broadcast.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");
@@ -425,6 +421,37 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
         broadcast->dispose();
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if(strcmp(method, "Record.create") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        const char* pathFile = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "pathFile"));
+        auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");
+        int mediaId = fl_value_get_int(fl_value_lookup_string(_media, "id"));
+        const char* mediaType = fl_value_get_string(fl_value_lookup_string(_media, "mediaType"));
+        const char* resource = fl_value_get_string(fl_value_lookup_string(_media, "resource"));
+        Media* media = nullptr;
+        if (strcmp(mediaType, "MediaType.file") == 0)
+            media = Media::file(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.network") == 0)
+            media = Media::network(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.asset") == 0)
+            media = Media::asset(mediaId, resource);
+        else 
+            media = Media::directShow(mediaId, resource);
+        records->get(id, media, pathFile);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if(strcmp(method, "Record.start") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        Record* record = records->get(id, nullptr, "");
+        record->start();
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if(strcmp(method, "Record.dispose") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        Record* record = records->get(id, nullptr, "");
+        record->dispose();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
     else {

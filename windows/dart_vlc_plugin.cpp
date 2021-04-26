@@ -538,7 +538,7 @@ namespace {
             if (mediaSourceType == "MediaSourceType.playlist") {
                 std::vector<Media*> medias;
                 flutter::EncodableList mediaList = std::get<flutter::EncodableList>(source[flutter::EncodableValue("medias")]);
-                std::string playlistMode = std::get<std::string>(source[flutter::EncodableValue("playlistMode")]);
+                std::string _playlistMode = std::get<std::string>(source[flutter::EncodableValue("playlistMode")]);
                 for (flutter::EncodableValue encodedMedia: mediaList) {
                     flutter::EncodableMap mediaMap = std::get<flutter::EncodableMap>(encodedMedia);
                     int mediaId = std::get<int>(mediaMap[flutter::EncodableValue("id")]);
@@ -555,15 +555,14 @@ namespace {
                     medias.emplace_back(media);
                 }
                 Player* player = players->get(id);
-                if( playlistMode == "PlaylistMode.repeat"){
-                    player->setPlaylistMode( libvlc_playback_mode_repeat );
-                }
-                else if( playlistMode == "PlaylistMode.loop" ){
-                    player->setPlaylistMode( libvlc_playback_mode_loop );
-                }
-                else {
-                    player->setPlaylistMode( libvlc_playback_mode_default );
-                }
+                PlaylistMode playlistMode;
+                if (_playlistMode == "PlaylistMode.repeat")
+                    playlistMode = PlaylistMode::repeat;
+                else if (_playlistMode == "PlaylistMode.loop")
+                    playlistMode = PlaylistMode::loop;
+                else
+                    playlistMode = PlaylistMode::single;
+                player->setPlaylistMode(playlistMode);
                 player->open(
                     new Playlist(medias, playlistMode),
                     autoStart
@@ -752,15 +751,16 @@ namespace {
          */
         else if (method->name == "Player.setPlaylistMode") {
             int id = method->getArgument<int>("id");
-            std::string playlistMode = method->getArgument<std::string>("playlistMode");
+            std::string _playlistMode = method->getArgument<std::string>("playlistMode");
             Player* player = players->get(id);
-            if( playlistMode == "PlaylistMode.repeat") {
-                player->setPlaylistMode( libvlc_playback_mode_repeat );
-            } else if( playlistMode == "PlaylistMode.loop" ){
-                player->setPlaylistMode( libvlc_playback_mode_loop );
-            } else {
-                player->setPlaylistMode( libvlc_playback_mode_default );
-            }
+            PlaylistMode playlistMode;
+            if (_playlistMode == "PlaylistMode.repeat")
+                playlistMode = PlaylistMode::repeat;
+            else if (_playlistMode == "PlaylistMode.loop")
+                playlistMode = PlaylistMode::loop;
+            else
+                playlistMode = PlaylistMode::single;
+            player->setPlaylistMode(playlistMode);
             method->returnNull();
         }
         /* Adds new `Media` to the end of the `Playlist` of the `Player`.
