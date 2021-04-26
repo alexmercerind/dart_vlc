@@ -21,7 +21,6 @@ jobs:
         with:
           channel: "beta"
       - run: flutter pub get
-      - run: flutter clean
       - run: flutter build windows
 
   build_linux:
@@ -36,5 +35,4 @@ jobs:
         with:
           channel: "beta"
       - run: flutter pub get
-      - run: flutter clean
       - run: flutter build linux
