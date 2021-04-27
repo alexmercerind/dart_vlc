@@ -1,7 +1,11 @@
+import 'package:flutter/material.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flutter/material.dart';
+
+import '../dart_vlc.dart';
+import 'controls.dart';
 
 /// Internally used map to keep [StreamController]s for [Video] [Widget]s.
 Map<int, StreamController<VideoFrame>> videoStreamControllers = {};
@@ -62,7 +66,7 @@ class VideoFrame {
 ///
 class Video extends StatefulWidget {
   /// Id of the [Player] whose [Video] output should be shown.
-  final int playerId;
+  final Player player;
 
   /// Width of the viewport.
   final double width;
@@ -73,11 +77,11 @@ class Video extends StatefulWidget {
   /// Scale.
   final double scale;
 
-  /// TODO: Add in-built [Video] controls & other visual parameters.
+  // Built-In video controls.
   final bool showControls;
 
   Video({
-    required this.playerId,
+    required this.player,
     required this.width,
     required this.height,
     this.scale: 1.0,
@@ -116,17 +120,14 @@ class VideoState extends State<Video> {
   @override
   Future<void> dispose() async {
     super.dispose();
-    await videoStreamControllers[widget.playerId]?.close();
+    await videoStreamControllers[widget.player.id]?.close();
   }
 
   @override
   void initState() {
     super.initState();
-    videoStreamControllers[widget.playerId] =
-        new StreamController<VideoFrame>.broadcast();
-    videoStreamControllers[widget.playerId]
-        ?.stream
-        .listen((VideoFrame videoFrame) async {
+    videoStreamControllers[widget.player.id] = new StreamController<VideoFrame>.broadcast();
+    videoStreamControllers[widget.player.id]?.stream.listen((VideoFrame videoFrame) async {
       this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
       this.setState(() {});
     });
@@ -134,11 +135,25 @@ class VideoState extends State<Video> {
 
   @override
   Widget build(BuildContext context) {
-    return this.videoFrameRawImage ??
-        Container(
-          color: Colors.black,
-          height: widget.height,
-          width: widget.width,
-        );
+    if (widget.showControls) {
+      return Control(
+        player: widget.player,
+        height: widget.height,
+        width: widget.width,
+        child: this.videoFrameRawImage ??
+            Container(
+              color: Colors.black,
+              height: widget.height,
+              width: widget.width,
+            ),
+      );
+    } else {
+      return this.videoFrameRawImage ??
+          Container(
+            color: Colors.black,
+            height: widget.height,
+            width: widget.width,
+          );
+    }
   }
 }
