@@ -80,12 +80,52 @@ class Video extends StatefulWidget {
   // Built-In video controls.
   final bool showControls;
 
+  // radius of the progressbar's thumb
+  final double progressBarThumbRadius;
+
+  // radius of the progressbar's glow of the thumb
+  final double progressBarThumbGlowRadius;
+
+  // active color of the progress bar
+  final Color progressBarActiveColor;
+
+  // inactive color of the progress bar
+  final Color progressBarInactiveColor;
+
+  // thumb color of the progress bar
+  final Color progressBarThumbColor;
+
+  // thumb's glow color of the progress bar
+  final Color progressBarThumbGlowColor;
+
+  // active color of the volume slider
+  final Color volumeActiveColor;
+
+  // inactive color of the volume slider
+  final Color volumeInactiveColor;
+
+  // background color of the volume slider
+  final Color volumeBackgroundColor;
+
+  // thumb color of the volume slider
+  final Color volumeThumbColor;
+
   Video({
     required this.player,
     required this.width,
     required this.height,
     this.scale: 1.0,
     this.showControls: true,
+    this.progressBarActiveColor = Colors.red,
+    this.progressBarInactiveColor = Colors.white24,
+    this.progressBarThumbColor = Colors.red,
+    this.progressBarThumbGlowColor = const Color.fromRGBO(235, 0, 0, .2),
+    this.volumeActiveColor = Colors.red,
+    this.volumeInactiveColor = Colors.grey,
+    this.volumeBackgroundColor = const Color(0xff424242),
+    this.volumeThumbColor = Colors.red,
+    this.progressBarThumbRadius = 10.0,
+    this.progressBarThumbGlowRadius = 20.0,
     Key? key,
   }) : super(key: key);
 
@@ -140,6 +180,16 @@ class VideoState extends State<Video> {
         player: widget.player,
         height: widget.height,
         width: widget.width,
+        progressBarThumbRadius: widget.progressBarThumbRadius,
+        progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
+        progressBarActiveColor: widget.progressBarActiveColor,
+        progressBarInactiveColor: widget.progressBarInactiveColor,
+        progressBarThumbColor: widget.progressBarThumbColor,
+        progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+        volumeActiveColor: widget.volumeActiveColor,
+        volumeInactiveColor: widget.volumeInactiveColor,
+        volumeBackgroundColor: widget.volumeBackgroundColor,
+        volumeThumbColor: widget.volumeThumbColor,
         child: this.videoFrameRawImage ??
             Container(
               color: Colors.black,

@@ -70,6 +70,7 @@ class _DartVLCState extends State<DartVLC> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.dark(),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('dart_vlc'),
@@ -96,6 +97,8 @@ class _DartVLCState extends State<DartVLC> {
                           player: player!,
                           width: 960,
                           height: 640,
+                          volumeThumbColor: Colors.blue,
+                          volumeActiveColor: Colors.blue,
                         ),
                       ),
                     ],
