@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import '../dart_vlc.dart';
+import 'package:dart_vlc/src/player.dart';
 import 'controls.dart';
 
 /// Internally used map to keep [StreamController]s for [Video] [Widget]s.
