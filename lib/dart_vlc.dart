@@ -10,6 +10,7 @@
 
 export 'package:dart_vlc/src/player.dart';
 export 'package:dart_vlc/src/broadcast.dart';
+export 'package:dart_vlc/src/chromecast.dart';
 export 'package:dart_vlc/src/record.dart';
 export 'package:dart_vlc/src/video.dart';
 export 'package:dart_vlc/src/playerState/playerState.dart';
