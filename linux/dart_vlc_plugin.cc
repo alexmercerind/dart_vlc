@@ -151,6 +151,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                     fl_value_set_string_take(videoFrame, "videoHeight", fl_value_new_int(player->videoHeight));
                     fl_value_set_string_take(videoFrame, "byteArray", videoFrameByteArray);
                     fl_method_channel_invoke_method(channel, "videoFrame", videoFrame, NULL, NULL, NULL);
+                    free(const_cast<void*>(static_cast<const void*>(fl_value_get_uint8_list(videoFrameByteArray))));
                 }
             );
         }
