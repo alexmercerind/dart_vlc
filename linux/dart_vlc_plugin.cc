@@ -454,6 +454,37 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         record->dispose();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
+    else if(strcmp(method, "Chromecast.create") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        const char* chromecastIpAddress = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "chromecastIpAddress"));
+        auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");
+        int mediaId = fl_value_get_int(fl_value_lookup_string(_media, "id"));
+        const char* mediaType = fl_value_get_string(fl_value_lookup_string(_media, "mediaType"));
+        const char* resource = fl_value_get_string(fl_value_lookup_string(_media, "resource"));
+        Media* media = nullptr;
+        if (strcmp(mediaType, "MediaType.file") == 0)
+            media = Media::file(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.network") == 0)
+            media = Media::network(mediaId, resource);
+        else if (strcmp(mediaType, "MediaType.asset") == 0)
+            media = Media::asset(mediaId, resource);
+        else 
+            media = Media::directShow(mediaId, resource);
+        chromecasts->get(id, media, chromecastIpAddress);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if(strcmp(method, "Chromecast.send") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        Chromecast* chromecast = chromecasts->get(id, nullptr, "");
+        chromecast->send();
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
+    else if(strcmp(method, "Chromecast.dispose") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        Chromecast* chromecast = chromecasts->get(id, nullptr, "");
+        record->dispose();
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
     else {
         response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
     }
