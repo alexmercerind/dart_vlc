@@ -14,6 +14,7 @@
 #include "device.hpp"
 #include "broadcast.hpp"
 #include "record.hpp"
+#include "chromecast.hpp"
 
 /* libVLC++ wrapper for dart_vlc */
 

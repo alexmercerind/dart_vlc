@@ -1012,6 +1012,76 @@ namespace {
             method->returnNull();
         } 
         
+        /* Creates new [Chromecast] instance.
+        *
+        * Argument:
+        * 
+        * {
+        *      'id': 0,
+        *      'media': {
+        *          'id': 0,
+        *          'mediaSourceType': 'MediaSourceType.media',
+        *          'mediaType': 'MediaType.file',
+        *          'resource': 'C:/alexmercerind/music.MP3'
+        *      },
+        *      'chromecastIpAddress': '192.168.1.XXX'
+        * }
+        * 
+        */
+        else if(method->name == "Chromecast.create"){
+            int id = method->getArgument<int>("id");
+            std::string chromecastIpAddress = method->getArgument<std::string>("chromecastIpAddress");
+            std::map<flutter::EncodableValue, flutter::EncodableValue> _media = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("media")]);
+            int mediaId = std::get<int>(_media[flutter::EncodableValue("id")]);
+            std::string mediaType = std::get<std::string>(_media[flutter::EncodableValue("mediaType")]);
+            std::string resource = std::get<std::string>(_media[flutter::EncodableValue("resource")]);            
+            Media* media = nullptr;
+            if (mediaType == "MediaType.file")
+                media = Media::file(mediaId, resource);
+            else if (mediaType == "MediaType.network")
+                media = Media::network(mediaId, resource);
+            else if (mediaType == "MediaType.asset")
+                media = Media::asset(mediaId, resource);
+            else 
+                media = Media::directShow(mediaId, resource);
+
+            chromecasts->get(id, media, chromecastIpAddress);
+            method->returnNull();
+        } 
+        
+        /* Send content [Chromecast] instance.
+        *
+        * Argument:
+        * 
+        * {
+        *      'id': 0,
+        * }
+        * 
+        */
+        
+        else if(method->name == "Chromecast.send"){
+            int id = method->getArgument<int>("id");
+            Chromecast* chromecast = chromecasts->get(id, nullptr, "");
+            chromecast->send();
+            method->returnNull();
+        } 
+        
+        /* Disposes the [Chromecast] instance.
+        *
+        * Argument:
+        * 
+        * {
+        *      'id': 0,
+        * }
+        * 
+        */
+        else if(method->name == "Chromecast.dispose"){
+            int id = method->getArgument<int>("id");
+            Chromecast* chromecast = chromecasts->get(id, nullptr, "");
+            chromecast->dispose();
+            method->returnNull();
+        }
+
         /* Creates new [Record] instance.
          *
          * Argument:
@@ -1028,7 +1098,6 @@ namespace {
          * }
          * 
          */
-
         else if (method->name == "Record.create") {
             int id = method->getArgument<int>("id");
             std::string pathFile = method->getArgument<std::string>("pathFile");
