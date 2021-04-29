@@ -33,7 +33,7 @@ Thanks to following people for supporting this project. I'm REALLY GLAD to recie
 
 - Create a new `Player` instance.
 ```dart
-Player player = await Player.create(id: 69420);
+Player player = Player(id: 69420);
 ```
 
 - Create a single `Media`.
@@ -125,7 +125,7 @@ player.setDevice(
 
 Instanciate `Player` as follows.
 ```dart
-Player player = await Player.create(
+Player player = Player(
   id: 69420,
   videoWidth: 480,
   videoHeight: 320,
@@ -165,7 +165,7 @@ Listen to playback events.
 (Same can be retrieved directly from `Player` instance without having to rely on stream).
 
 ```dart
-player.currentStream?.listen((CurrentState state) {
+player.currentStream.listen((CurrentState state) {
   state.index;
   state.media;
   state.medias;
@@ -174,14 +174,14 @@ player.currentStream?.listen((CurrentState state) {
 ```
 
 ```dart
-player.positionStream?.listen((PositionState state) {
+player.positionStream.listen((PositionState state) {
   state.position;
   state.duration;
 });
 ```
 
 ```dart
-player.playbackStream?.listen((PlaybackState state) {
+player.playbackStream.listen((PlaybackState state) {
   state.isPlaying;
   state.isSeekable;
   state.isCompleted;
@@ -189,7 +189,7 @@ player.playbackStream?.listen((PlaybackState state) {
 ```
 
 ```dart
-player.generalStream?.listen((GeneralState state) {
+player.generalStream.listen((GeneralState state) {
   state.volume;
   state.rate;
 });
@@ -321,6 +321,8 @@ Thanks to following members of libVLC community to give me bit of look & advice 
 - [@mfkl](https://github.com/mfkl)
 - [@caprica](https://github.com/caprica)
 
+Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](http://flutter.dev) team to review code & help me fix the loopholes. 
+
 
 ## Contributions
 
@@ -330,7 +332,7 @@ Contributions to the project are open, it will be appreciated if you discuss the
 
 ## License
 
-Copyright (C) 2021, Hitesh Kumar Saini.
+Copyright (C) 2021, Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
 
 This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
 
