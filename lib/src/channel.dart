@@ -33,9 +33,9 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
                     players[id]!.current.medias[players[id]!.current.index!];
                 players[id]!.current.isPlaylist =
                     methodCall.arguments['isPlaylist'];
-                players[id]!.currentController?.add(players[id]!.current);
+                players[id]!.currentController.add(players[id]!.current);
                 players[id]!.playback.isCompleted = false;
-                players[id]!.playbackController?.add(players[id]!.playback);
+                players[id]!.playbackController.add(players[id]!.playback);
                 break;
               }
             case 'positionEvent':
@@ -44,7 +44,7 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
                     milliseconds: methodCall.arguments['position'] ?? 0);
                 players[id]!.position.duration = Duration(
                     milliseconds: methodCall.arguments['duration'] ?? 0);
-                players[id]!.positionController?.add(players[id]!.position);
+                players[id]!.positionController.add(players[id]!.position);
                 break;
               }
             case 'playbackEvent':
@@ -53,26 +53,26 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
                     methodCall.arguments['isPlaying'];
                 players[id]!.playback.isSeekable =
                     methodCall.arguments['isSeekable'];
-                players[id]!.playbackController?.add(players[id]!.playback);
+                players[id]!.playbackController.add(players[id]!.playback);
                 break;
               }
             case 'completeEvent':
               {
                 players[id]!.playback.isCompleted =
                     methodCall.arguments['isCompleted'];
-                players[id]!.playbackController?.add(players[id]!.playback);
+                players[id]!.playbackController.add(players[id]!.playback);
                 break;
               }
             case 'volumeEvent':
               {
                 players[id]!.general.volume = methodCall.arguments['volume'];
-                players[id]!.generalController?.add(players[id]!.general);
+                players[id]!.generalController.add(players[id]!.general);
                 break;
               }
             case 'rateEvent':
               {
                 players[id]!.general.rate = methodCall.arguments['rate'];
-                players[id]!.generalController?.add(players[id]!.general);
+                players[id]!.generalController.add(players[id]!.general);
                 break;
               }
             case 'exceptionEvent':
@@ -95,7 +95,7 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
               videoHeight: methodCall.arguments['videoHeight'],
               byteArray: methodCall.arguments['byteArray'],
             );
-            videoStreamControllers[playerId]?.add(frame);
+            videoStreamControllers[playerId]!.add(frame);
           }
           break;
         }

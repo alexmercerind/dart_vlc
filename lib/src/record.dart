@@ -1,5 +1,12 @@
+import 'dart:io';
+
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/channel.dart';
+
+
+/// Internally used class to avoid direct creation of the object of a [Record] class.
+class _Record extends Record {}
+
 
 class Record {
   /// ID for this record.
@@ -9,22 +16,24 @@ class Record {
   late Media media;
 
   /// Path where the recording is saved example: `/home/alexmercerind/recording.mp3`
-  late String pathFile;
-
-  Record({required this.id, required this.media, required this.pathFile});
+  late File savingFile;
 
   /// Creates a new [Record] instance.
   static Future<Record> create(
-      {required int id, required Media media, required String pathFile}) async {
+      {required int id, required Media media, required File savingFile}) async {
+    Record record = new _Record();
+    record.id = id;
+    record.media = media;
+    record.savingFile = savingFile;
     await channel.invokeMethod(
       'Record.create',
       {
         'id': id,
         'media': media.toMap(),
-        'pathFile': pathFile,
+        'savingFile': savingFile.path,
       },
     );
-    return new Record(id: id, media: media, pathFile: pathFile);
+    return record;
   }
 
   /// Starts recording the [Media].

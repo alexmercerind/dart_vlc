@@ -6,23 +6,20 @@ import 'package:dart_vlc/src/mediaSource/media.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc/src/device.dart';
 
-/// Internally used class to avoid direct creation of the object of a [Player] class.
-class _Player extends Player {}
-
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
-/// Use [Player.create] method to create a new instance of a [Player].
+/// Use [Player] constructor to create a new instance of a [Player].
 /// Provide a unique [id] while instanciating.
 ///
 /// ```dart
-/// Player player = await Player.create(id: 0);
+/// Player player = Player(id: 0);
 /// ```
 ///
 /// If you wish to use this instance for [Video] playback, then provide [videoWidth] & [videoHeight] optional parameters.
 /// Higher value may lead to degraded performance.
 ///
 /// ```dart
-/// Player player = await Player.create(
+/// Player player = await Player(
 ///   id: 0,
 ///   videoWidth: 1920,
 ///   videoHeight: 1080,
@@ -33,70 +30,63 @@ class _Player extends Player {}
 ///
 /// Use various methods & event streams avaiable to control & listen to events of the playback.
 ///
-abstract class Player {
+class Player {
   /// Id associated with the [Player] instance.
   late int id;
 
   /// Width of the [Video] frames to be extracted. Higher value may lead to degraded performance.
-  int? videoWidth;
+  late int videoWidth;
 
   /// Height of the [Video] frames to be extracted. Higher value may lead to degraded performance.
-  int? videoHeight;
+  late int videoHeight;
 
   /// State of the current & opened [MediaSource] in [Player] instance.
   CurrentState current = new CurrentState();
 
   /// Stream to listen to current & opened [MediaSource] state of the [Player] instance.
-  Stream<CurrentState>? currentStream;
+  late Stream<CurrentState> currentStream;
 
   /// Position & duration state of the [Player] instance.
   PositionState position = new PositionState();
 
   /// Stream to listen to position & duration state of the [Player] instance.
-  Stream<PositionState>? positionStream;
+  late Stream<PositionState> positionStream;
 
   /// Playback state of the [Player] instance.
   PlaybackState playback = new PlaybackState();
 
   /// Stream to listen to playback state of the [Player] instance.
-  Stream<PlaybackState>? playbackStream;
+  late Stream<PlaybackState> playbackStream;
 
   /// Volume & Rate state of the [Player] instance.
   GeneralState general = new GeneralState();
 
   /// Stream to listen to volume & rate state of the [Player] instance.
-  Stream<GeneralState>? generateStream;
+  late Stream<GeneralState> generateStream;
 
   /// Creates a new [Player] instance.
   ///
   /// Takes unique id as parameter.
   ///
   /// ```dart
-  /// Player player = await Player.create(id: 0);
+  /// Player player = await Player(id: 0);
   /// ```
   ///
-  static Future<Player> create(
-      {required int id, int videoWidth: 0, int videoHeight: 0}) async {
-    await channel.invokeMethod(
-      'Player.create',
-      {
-        'id': id,
-        'videoWidth': videoWidth,
-        'videoHeight': videoHeight,
-      },
-    );
-    players[id] = new _Player()..id = id;
-    players[id]?.currentController = StreamController<CurrentState>.broadcast();
-    players[id]?.currentStream = players[id]?.currentController?.stream;
-    players[id]?.positionController =
-        StreamController<PositionState>.broadcast();
-    players[id]?.positionStream = players[id]?.positionController?.stream;
-    players[id]?.playbackController =
-        StreamController<PlaybackState>.broadcast();
-    players[id]?.playbackStream = players[id]?.playbackController?.stream;
-    players[id]?.generalController = StreamController<GeneralState>.broadcast();
-    players[id]?.generateStream = players[id]?.generalController?.stream;
-    return players[id]!;
+  Player({required int id, int videoWidth: 0, int videoHeight: 0}) {
+    this._isInstanceCreated = new Completer<bool>();
+    this.id = id;
+    this.videoWidth = videoWidth;
+    this.videoHeight = videoHeight;
+    this.currentController = StreamController<CurrentState>.broadcast();
+    this.currentStream = this.currentController.stream;
+    this.positionController = StreamController<PositionState>.broadcast();
+    this.positionStream = this.positionController.stream;
+    this.playbackController = StreamController<PlaybackState>.broadcast();
+    this.playbackStream = this.playbackController.stream;
+    this.generalController = StreamController<GeneralState>.broadcast();
+    this.generateStream = this.generalController.stream;
+    players[id] = this;
+    this._create();
   }
 
   /// Opens a new media source into the player.
@@ -135,6 +125,7 @@ abstract class Player {
   /// ```
   ///
   Future<void> open(MediaSource source, {bool autoStart: true}) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.open',
       {
@@ -147,6 +138,7 @@ abstract class Player {
 
   /// Plays opened [MediaSource],
   Future<void> play() async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.play',
       {
@@ -157,6 +149,7 @@ abstract class Player {
 
   /// Pauses opened [MediaSource],
   Future<void> pause() async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.pause',
       {
@@ -167,6 +160,7 @@ abstract class Player {
 
   /// Play or Pause opened [MediaSource],
   Future<void> playOrPause() async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.playOrPause',
       {
@@ -181,6 +175,7 @@ abstract class Player {
   /// A new instance must be created, once this method is called.
   ///
   Future<void> stop() async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.stop',
       {
@@ -191,6 +186,7 @@ abstract class Player {
 
   /// Jumps to the next [Media] in the [Playlist] opened.
   Future<void> next() async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.next',
       {
@@ -201,6 +197,7 @@ abstract class Player {
 
   /// Jumps to the previous [Media] in the [Playlist] opened.
   Future<void> back() async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.back',
       {
@@ -212,6 +209,7 @@ abstract class Player {
   /// Jumps to [Media] at specific index in the [Playlist] opened.
   /// Pass index as parameter.
   Future<void> jump(int index) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.back',
       {
@@ -223,6 +221,7 @@ abstract class Player {
 
   /// Seeks the [Media] currently playing in the [Player] instance, to the provided [Duration].
   Future<void> seek(Duration duration) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.seek',
       {
@@ -234,6 +233,7 @@ abstract class Player {
 
   /// Sets volume of the [Player] instance.
   Future<void> setVolume(double volume) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.setVolume',
       {
@@ -245,6 +245,7 @@ abstract class Player {
 
   /// Sets playback rate of the [Media] currently playing in the [Player] instance.
   Future<void> setRate(double rate) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.setRate',
       {
@@ -254,16 +255,21 @@ abstract class Player {
     );
   }
 
-  /// Assign Playlist Mode
-  Future<void> setPlaylistMode(PlaylistMode newPlaylistMode) async {
+  /// Changes [Playlist] playback mode.
+  Future<void> setPlaylistMode(PlaylistMode playlistMode) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.setPlaylistMode',
-      {'id': this.id, 'playlistMode': newPlaylistMode.toString()},
+      {
+        'id': this.id,
+        'playlistMode': playlistMode.toString()
+      },
     );
   }
 
   /// Appends [Media] to the [Playlist] of the [Player] instance.
   Future<void> add(Media source) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.add',
       {
@@ -275,6 +281,7 @@ abstract class Player {
 
   /// Removes [Media] from the [Playlist] at a specific index.
   Future<void> remove(int index) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.remove',
       {
@@ -286,6 +293,7 @@ abstract class Player {
 
   /// Inserts [Media] to the [Playlist] of the [Player] instance at specific index.
   Future<void> insert(int index, Media source) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.insert',
       {
@@ -298,6 +306,7 @@ abstract class Player {
 
   /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
   Future<void> move(int initialIndex, int finalIndex) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.move',
       {'id': this.id, 'initial': initialIndex, 'final': finalIndex},
@@ -312,6 +321,7 @@ abstract class Player {
   /// Device will be switched once a new [Media] is played.
   ///
   Future<void> setDevice(Device device) async {
+    await this._isInstanceCreated.future;
     await channel.invokeMethod(
       'Player.setDevice',
       {
@@ -323,15 +333,30 @@ abstract class Player {
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.
   Future<void> dispose() async {
-    await this.currentController?.close();
-    await this.positionController?.close();
-    await this.playbackController?.close();
-    await this.generalController?.close();
+    await this.currentController.close();
+    await this.positionController.close();
+    await this.playbackController.close();
+    await this.generalController.close();
   }
 
   /// Internally used [StreamController]s,
-  StreamController<CurrentState>? currentController;
-  StreamController<PositionState>? positionController;
-  StreamController<PlaybackState>? playbackController;
-  StreamController<GeneralState>? generalController;
+  late StreamController<CurrentState> currentController;
+  late StreamController<PositionState> positionController;
+  late StreamController<PlaybackState> playbackController;
+  late StreamController<GeneralState> generalController;
+
+  late Completer<bool> _isInstanceCreated;
+
+  /// Creates new instance of [Player] from constructor.
+  Future<void> _create() async {
+    await channel.invokeMethod(
+      'Player.create',
+      {
+        'id': id,
+        'videoWidth': videoWidth,
+        'videoHeight': videoHeight,
+      },
+    );
+    this._isInstanceCreated.complete(true);
+  }
 }

@@ -33,15 +33,7 @@ class VideoFrame {
 ///
 /// ```dart
 /// class _MyAppState extends State<MyApp> {
-///   Player player;
-///
-///   @override
-///   Future<void> didChangeDependencies() async {
-///     super.didChangeDependencies();
-///     if (this.mount) {
-///       this.player = await Player.create(id: 0);
-///     }
-///   }
+///   Player player = Player(id: 0);
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
@@ -151,7 +143,7 @@ class VideoState extends State<Video> {
       height: widget.height,
       width: widget.width,
       scale: widget.scale,
-      filterQuality: FilterQuality.high,
+      filterQuality: FilterQuality.low,
     );
   }
 
