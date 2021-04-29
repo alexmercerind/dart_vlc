@@ -426,7 +426,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
     }
     else if(strcmp(method, "Record.create") == 0){
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
-        const char* pathFile = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "pathFile"));
+        const char* savingFile = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "savingFile"));
         auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");
         int mediaId = fl_value_get_int(fl_value_lookup_string(_media, "id"));
         const char* mediaType = fl_value_get_string(fl_value_lookup_string(_media, "mediaType"));
@@ -440,7 +440,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
             media = Media::asset(mediaId, resource);
         else 
             media = Media::directShow(mediaId, resource);
-        records->get(id, media, pathFile);
+        records->get(id, media, savingFile);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
     else if(strcmp(method, "Record.start") == 0){
@@ -457,7 +457,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
     }
     else if(strcmp(method, "Chromecast.create") == 0){
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
-        const char* chromecastIpAddress = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "chromecastIpAddress"));
+        const char* ipAddress = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "ipAddress"));
         auto _media = fl_value_lookup_string(fl_method_call_get_args(method_call), "media");
         int mediaId = fl_value_get_int(fl_value_lookup_string(_media, "id"));
         const char* mediaType = fl_value_get_string(fl_value_lookup_string(_media, "mediaType"));
@@ -471,7 +471,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
             media = Media::asset(mediaId, resource);
         else 
             media = Media::directShow(mediaId, resource);
-        chromecasts->get(id, media, chromecastIpAddress);
+        chromecasts->get(id, media, ipAddress);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
     else if(strcmp(method, "Chromecast.send") == 0){
@@ -483,7 +483,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
     else if(strcmp(method, "Chromecast.dispose") == 0){
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         Chromecast* chromecast = chromecasts->get(id, nullptr, "");
-        record->dispose();
+        chromecast->dispose();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
     else {

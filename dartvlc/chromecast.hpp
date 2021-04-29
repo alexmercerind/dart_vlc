@@ -20,18 +20,18 @@ class Chromecast {
 public:
     int id;
     Media* media;
-    std::string chromecastIpAddress;
+    std::string ipAddress;
 
-    Chromecast(int id, Media* media, std::string chromecastIpAddress) {
+    Chromecast(int id, Media* media, std::string ipAddress) {
         this->id = id;
         this->media = media;
-        this->chromecastIpAddress = chromecastIpAddress;
+        this->ipAddress = ipAddress;
         this->instance = VLC::Instance(0, nullptr);
     }
 
     void send() {
         std::stringstream sout;
-        sout << "#chromecast{ip="<< this->chromecastIpAddress <<", demux-filter=demux_chromecast, conversion-quality=0}";
+        sout << "#chromecast{ip="<< this->ipAddress <<", demux-filter=demux_chromecast, conversion-quality=0}";
         libvlc_vlm_add_broadcast(
             this->instance.get(),
             this->media->location.c_str(),

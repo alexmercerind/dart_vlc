@@ -1024,13 +1024,13 @@ namespace {
         *          'mediaType': 'MediaType.file',
         *          'resource': 'C:/alexmercerind/music.MP3'
         *      },
-        *      'chromecastIpAddress': '192.168.1.XXX'
+        *      'ipAddress': '192.168.1.XXX'
         * }
         * 
         */
         else if(method->name == "Chromecast.create"){
             int id = method->getArgument<int>("id");
-            std::string chromecastIpAddress = method->getArgument<std::string>("chromecastIpAddress");
+            std::string ipAddress = method->getArgument<std::string>("ipAddress");
             std::map<flutter::EncodableValue, flutter::EncodableValue> _media = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("media")]);
             int mediaId = std::get<int>(_media[flutter::EncodableValue("id")]);
             std::string mediaType = std::get<std::string>(_media[flutter::EncodableValue("mediaType")]);
@@ -1045,7 +1045,7 @@ namespace {
             else 
                 media = Media::directShow(mediaId, resource);
 
-            chromecasts->get(id, media, chromecastIpAddress);
+            chromecasts->get(id, media, ipAddress);
             method->returnNull();
         } 
         
@@ -1094,13 +1094,13 @@ namespace {
          *          'mediaType': 'MediaType.file',
          *          'resource': 'C:/alexmercerind/music.MP3'
          *      },
-         *      'pathFile': 'C:/alexmercerind/recordAudio.MP3'
+         *      'savingFile': 'C:/alexmercerind/recordAudio.MP3'
          * }
          * 
          */
         else if (method->name == "Record.create") {
             int id = method->getArgument<int>("id");
-            std::string pathFile = method->getArgument<std::string>("pathFile");
+            std::string savingFile = method->getArgument<std::string>("savingFile");
             std::map<flutter::EncodableValue, flutter::EncodableValue> _media = std::get<flutter::EncodableMap>(method->arguments[flutter::EncodableValue("media")]);
             int mediaId = std::get<int>(_media[flutter::EncodableValue("id")]);
             std::string mediaType = std::get<std::string>(_media[flutter::EncodableValue("mediaType")]);
@@ -1115,7 +1115,7 @@ namespace {
             else 
                 media = Media::directShow(mediaId, resource);
 
-            records->get(id, media, pathFile);
+            records->get(id, media, savingFile);
             method->returnNull();
         }
         /*

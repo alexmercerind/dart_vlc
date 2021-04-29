@@ -20,18 +20,18 @@ class Record {
 public:
     int id;
     Media* media;
-    std::string pathFile;
+    std::string savingFile;
 
-    Record(int id, Media* media, std::string pathFile) {
+    Record(int id, Media* media, std::string savingFile) {
         this->id = id;
         this->media = media;
-        this->pathFile = pathFile;
+        this->savingFile = savingFile;
         this->instance = VLC::Instance(0, nullptr);
     }
 
     void start() {
         std::stringstream sout;
-        sout << "#std{access=file,mux=raw,dst=" << this->pathFile << "}";
+        sout << "#std{access=file,mux=raw,dst=" << this->savingFile << "}";
         libvlc_vlm_add_broadcast(
             this->instance.get(),
             this->media->location.c_str(),
@@ -59,9 +59,9 @@ private:
 
 class Records {
 public:
-	Record* get(int id, Media* media, std::string pathFile) {
+	Record* get(int id, Media* media, std::string savingFile) {
 		if (this->records.find(id) == this->records.end()) {
-			this->records[id] = new Record(id, media, pathFile);
+			this->records[id] = new Record(id, media, savingFile);
 		}
 		return this->records[id];
 	}
