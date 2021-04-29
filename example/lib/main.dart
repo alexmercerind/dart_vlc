@@ -70,7 +70,6 @@ class _DartVLCState extends State<DartVLC> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('dart_vlc'),
@@ -146,9 +145,7 @@ class _DartVLCState extends State<DartVLC> {
                                               ),
                                             ),
                                             Container(
-                                              width: 155.0,
-                                              padding: EdgeInsets.only(top: 10),
-                                              margin: EdgeInsets.only(top: 30),
+                                              width: 152.0,
                                               child: DropdownButton<MediaType>(
                                                 value: this.mediaType,
                                                 onChanged: (mediaType) => this.setState(() => this.mediaType = mediaType!),
@@ -401,9 +398,7 @@ class _DartVLCState extends State<DartVLC> {
                                           ),
                                         ),
                                         Container(
-                                          width: 155.0,
-                                          padding: EdgeInsets.only(top: 10),
-                                          margin: EdgeInsets.only(right: 30),
+                                          width: 152.0,
                                           child: DropdownButton<MediaType>(
                                             value: this.mediaType,
                                             onChanged: (mediaType) => this.setState(() => this.mediaType = mediaType!),
