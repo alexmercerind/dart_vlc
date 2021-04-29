@@ -1,3 +1,15 @@
+## 0.0.6
+
+**This new release of dart_vlc adds:**
+
+- Now `Player` class has sync constructor & no longer needs `Player.create`.
+- Fixed memory leak errors on Windows & Linux.
+- Added controls to `Video` widget. Thanks to @tomassasovsky.
+- Added `Record` class for recording media. Thanks to @DomingoMG.
+- Added `Chromecast` class. Thanks to @DomingoMG.
+- Fixed `Player.setPlaylistMode` on Linux.
+- Event streams inside `Player` no longer can be `null`.
+
 ## 0.0.5
 
 **This new release of dart_vlc adds:**
