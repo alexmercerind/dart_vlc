@@ -13,7 +13,11 @@ class DartVLC extends StatefulWidget {
 }
 
 class _DartVLCState extends State<DartVLC> {
-  Player? player;
+  Player? player = Player(
+    id: 0,
+    videoWidth: 480,
+    videoHeight: 360,
+  );
   MediaType mediaType = MediaType.file;
   CurrentState current = new CurrentState();
   PositionState position = new PositionState();
@@ -22,33 +26,33 @@ class _DartVLCState extends State<DartVLC> {
   List<Media> medias = <Media>[];
   List<Device> devices = <Device>[];
   TextEditingController controller = new TextEditingController();
-  Media? metasMedia;
   TextEditingController metasController = new TextEditingController();
+  Media? metasMedia;
 
   @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     if (this.mounted) {
-      this.player = await Player.create(
-        id: 0,
-        videoWidth: 480,
-        videoHeight: 360,
-      );
-      this.player?.currentStream?.listen((current) {
+      this.player?.currentStream.listen((current) {
         this.setState(() => this.current = current);
       });
-      this.player?.positionStream?.listen((position) {
+      this.player?.positionStream.listen((position) {
         this.setState(() => this.position = position);
       });
-      this.player?.playbackStream?.listen((playback) {
+      this.player?.playbackStream.listen((playback) {
         this.setState(() => this.playback = playback);
       });
-      this.player?.generateStream?.listen((general) {
+      this.player?.generateStream.listen((general) {
         this.setState(() => this.general = general);
       });
-      this.devices = await Devices.all;
-      this.setState(() {});
     }
+  }
+
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    this.devices = await Devices.all;
+    this.setState(() {});
   }
 
   @override
@@ -73,8 +77,8 @@ class _DartVLCState extends State<DartVLC> {
                   elevation: 2.0,
                   child: Video(
                     playerId: 0,
-                    width: 480,
-                    height: 320,
+                    width: 640,
+                    height: 480,
                     volumeThumbColor: Colors.blue,
                     volumeActiveColor: Colors.blue,
                   ),
