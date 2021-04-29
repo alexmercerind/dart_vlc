@@ -34,15 +34,13 @@ class VideoFrame {
 /// ```dart
 /// class _MyAppState extends State<MyApp> {
 ///   Player player;
-///   bool init = true;
 ///
 ///   @override
 ///   Future<void> didChangeDependencies() async {
 ///     super.didChangeDependencies();
-///     if (this.init) {
+///     if (this.mount) {
 ///       this.player = await Player.create(id: 0);
 ///     }
-///     this.init = false;
 ///   }
 ///
 ///   @override
@@ -66,7 +64,7 @@ class VideoFrame {
 ///
 class Video extends StatefulWidget {
   /// Id of the [Player] whose [Video] output should be shown.
-  final Player player;
+  final int playerId;
 
   /// Width of the viewport.
   final double width;
@@ -80,50 +78,50 @@ class Video extends StatefulWidget {
   // Built-In video controls.
   final bool showControls;
 
-  // radius of the progressbar's thumb
-  final double progressBarThumbRadius;
+  // Radius of the progressbar's thumb
+  final double? progressBarThumbRadius;
 
-  // radius of the progressbar's glow of the thumb
-  final double progressBarThumbGlowRadius;
+  // Radius of the progressbar's glow of the thumb
+  final double? progressBarThumbGlowRadius;
 
-  // active color of the progress bar
-  final Color progressBarActiveColor;
+  // Active color of the progress bar
+  final Color? progressBarActiveColor;
 
-  // inactive color of the progress bar
-  final Color progressBarInactiveColor;
+  // Inactive color of the progress bar
+  final Color? progressBarInactiveColor;
 
-  // thumb color of the progress bar
-  final Color progressBarThumbColor;
+  // Thumb color of the progress bar
+  final Color? progressBarThumbColor;
 
-  // thumb's glow color of the progress bar
-  final Color progressBarThumbGlowColor;
+  // Thumb's glow color of the progress bar
+  final Color? progressBarThumbGlowColor;
 
-  // active color of the volume slider
-  final Color volumeActiveColor;
+  // Active color of the volume slider
+  final Color? volumeActiveColor;
 
-  // inactive color of the volume slider
-  final Color volumeInactiveColor;
+  // Inactive color of the volume slider
+  final Color? volumeInactiveColor;
 
-  // background color of the volume slider
+  // Background color of the volume slider
   final Color volumeBackgroundColor;
 
-  // thumb color of the volume slider
-  final Color volumeThumbColor;
+  // Thumb color of the volume slider
+  final Color? volumeThumbColor;
 
   Video({
-    required this.player,
+    required this.playerId,
     required this.width,
     required this.height,
     this.scale: 1.0,
     this.showControls: true,
-    this.progressBarActiveColor = Colors.red,
+    this.progressBarActiveColor,
     this.progressBarInactiveColor = Colors.white24,
-    this.progressBarThumbColor = Colors.red,
+    this.progressBarThumbColor,
     this.progressBarThumbGlowColor = const Color.fromRGBO(235, 0, 0, .2),
-    this.volumeActiveColor = Colors.red,
+    this.volumeActiveColor,
     this.volumeInactiveColor = Colors.grey,
     this.volumeBackgroundColor = const Color(0xff424242),
-    this.volumeThumbColor = Colors.red,
+    this.volumeThumbColor,
     this.progressBarThumbRadius = 10.0,
     this.progressBarThumbGlowRadius = 20.0,
     Key? key,
@@ -160,14 +158,17 @@ class VideoState extends State<Video> {
   @override
   Future<void> dispose() async {
     super.dispose();
-    await videoStreamControllers[widget.player.id]?.close();
+    await videoStreamControllers[widget.playerId]?.close();
   }
 
   @override
   void initState() {
     super.initState();
-    videoStreamControllers[widget.player.id] = new StreamController<VideoFrame>.broadcast();
-    videoStreamControllers[widget.player.id]?.stream.listen((VideoFrame videoFrame) async {
+    videoStreamControllers[widget.playerId] =
+        new StreamController<VideoFrame>.broadcast();
+    videoStreamControllers[widget.playerId]
+        ?.stream
+        .listen((VideoFrame videoFrame) async {
       this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
       this.setState(() {});
     });
@@ -177,7 +178,7 @@ class VideoState extends State<Video> {
   Widget build(BuildContext context) {
     if (widget.showControls) {
       return Control(
-        player: widget.player,
+        playerId: widget.playerId,
         height: widget.height,
         width: widget.width,
         progressBarThumbRadius: widget.progressBarThumbRadius,

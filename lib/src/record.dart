@@ -1,26 +1,21 @@
-
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/channel.dart';
 
 class Record {
-
   /// ID for this record.
   late int id;
 
   /// Recording from [Media].
   late Media media;
 
-  /// Path where the recording is saved example: `C:\\audioTest.mp3`
+  /// Path where the recording is saved example: `/home/alexmercerind/recording.mp3`
   late String pathFile;
 
-  Record({
-    required this.id,
-    required this.media,
-    required this.pathFile
-  });
+  Record({required this.id, required this.media, required this.pathFile});
 
   /// Creates a new [Record] instance.
-  static Future<Record> create({ required int id, required Media media, required String pathFile }) async {
+  static Future<Record> create(
+      {required int id, required Media media, required String pathFile}) async {
     await channel.invokeMethod(
       'Record.create',
       {
@@ -31,7 +26,6 @@ class Record {
     );
     return new Record(id: id, media: media, pathFile: pathFile);
   }
-
 
   /// Starts recording the [Media].
   Future<void> start() async {
@@ -52,5 +46,4 @@ class Record {
       },
     );
   }
-
 }

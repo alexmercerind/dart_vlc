@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:dart_vlc/src/player.dart';
-import 'package:dart_vlc/src/video.dart';
+import 'package:dart_vlc/src/widgets/video.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';
 
 /// Internally used map to keep [Player] instances & manage event streams.

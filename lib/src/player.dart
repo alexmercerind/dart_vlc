@@ -255,13 +255,10 @@ abstract class Player {
   }
 
   /// Assign Playlist Mode
-  Future<void> setPlaylistMode( PlaylistMode newPlaylistMode ) async {
+  Future<void> setPlaylistMode(PlaylistMode newPlaylistMode) async {
     await channel.invokeMethod(
       'Player.setPlaylistMode',
-      {
-        'id': this.id,
-        'playlistMode': newPlaylistMode.toString()
-      },
+      {'id': this.id, 'playlistMode': newPlaylistMode.toString()},
     );
   }
 

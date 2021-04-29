@@ -119,7 +119,8 @@ class _DartVLCState extends State<DartVLC> {
                                             hintStyle: TextStyle(
                                               fontSize: 14.0,
                                             ),
-                                            hintText: 'Media resource location.',
+                                            hintText:
+                                                'Media resource location.',
                                           ),
                                         ),
                                       ),
@@ -127,7 +128,9 @@ class _DartVLCState extends State<DartVLC> {
                                         width: 152.0,
                                         child: DropdownButton<MediaType>(
                                           value: this.mediaType,
-                                          onChanged: (mediaType) => this.setState(() => this.mediaType = mediaType!),
+                                          onChanged: (mediaType) => this
+                                              .setState(() =>
+                                                  this.mediaType = mediaType!),
                                           items: [
                                             DropdownMenuItem<MediaType>(
                                               value: MediaType.file,
@@ -163,17 +166,23 @@ class _DartVLCState extends State<DartVLC> {
                                         padding: EdgeInsets.only(left: 10.0),
                                         child: ElevatedButton(
                                           onPressed: () async {
-                                            if (this.mediaType == MediaType.file) {
+                                            if (this.mediaType ==
+                                                MediaType.file) {
                                               this.medias.add(
-                                                    await Media.file(new File(controller.text)),
+                                                    await Media.file(new File(
+                                                        controller.text)),
                                                   );
-                                            } else if (this.mediaType == MediaType.network) {
+                                            } else if (this.mediaType ==
+                                                MediaType.network) {
                                               this.medias.add(
-                                                    await Media.network(controller.text),
+                                                    await Media.network(
+                                                        controller.text),
                                                   );
-                                            } else if (this.mediaType == MediaType.asset) {
+                                            } else if (this.mediaType ==
+                                                MediaType.asset) {
                                               this.medias.add(
-                                                    await Media.asset(controller.text),
+                                                    await Media.asset(
+                                                        controller.text),
                                                   );
                                             }
                                             this.setState(() {});
@@ -226,7 +235,10 @@ class _DartVLCState extends State<DartVLC> {
                                       ElevatedButton(
                                         onPressed: () => this.setState(() {
                                           this.player?.open(
-                                                new Playlist(medias: this.medias, playlistMode: PlaylistMode.loop),
+                                                new Playlist(
+                                                    medias: this.medias,
+                                                    playlistMode:
+                                                        PlaylistMode.loop),
                                               );
                                         }),
                                         child: Text(
@@ -277,11 +289,20 @@ class _DartVLCState extends State<DartVLC> {
                               ),
                               Slider(
                                 min: 0,
-                                max: this.position.duration.inMilliseconds.toDouble(),
-                                value: this.position.position.inMilliseconds.toDouble(),
+                                max: this
+                                    .position
+                                    .duration
+                                    .inMilliseconds
+                                    .toDouble(),
+                                value: this
+                                    .position
+                                    .position
+                                    .inMilliseconds
+                                    .toDouble(),
                                 onChanged: (double position) {
                                   this.player?.seek(
-                                        Duration(milliseconds: position.toInt()),
+                                        Duration(
+                                            milliseconds: position.toInt()),
                                       );
                                 },
                               ),
@@ -292,16 +313,46 @@ class _DartVLCState extends State<DartVLC> {
                               ),
                               Table(
                                 children: [
-                                  TableRow(children: [Text('player.general.volume'), Text('${this.general.volume}')]),
-                                  TableRow(children: [Text('player.general.rate'), Text('${this.general.rate}')]),
-                                  TableRow(children: [Text('player.position.position'), Text('${this.position.position}')]),
-                                  TableRow(children: [Text('player.position.duration'), Text('${this.position.duration}')]),
-                                  TableRow(children: [Text('player.playback.isCompleted'), Text('${this.playback.isCompleted}')]),
-                                  TableRow(children: [Text('player.playback.isPlaying'), Text('${this.playback.isPlaying}')]),
-                                  TableRow(children: [Text('player.playback.isSeekable'), Text('${this.playback.isSeekable}')]),
-                                  TableRow(children: [Text('player.current.index'), Text('${this.current.index}')]),
-                                  TableRow(children: [Text('player.current.media'), Text('${this.current.media}')]),
-                                  TableRow(children: [Text('player.current.medias'), Text('${this.current.medias}')]),
+                                  TableRow(children: [
+                                    Text('player.general.volume'),
+                                    Text('${this.general.volume}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.general.rate'),
+                                    Text('${this.general.rate}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.position.position'),
+                                    Text('${this.position.position}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.position.duration'),
+                                    Text('${this.position.duration}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.playback.isCompleted'),
+                                    Text('${this.playback.isCompleted}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.playback.isPlaying'),
+                                    Text('${this.playback.isPlaying}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.playback.isSeekable'),
+                                    Text('${this.playback.isSeekable}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.current.index'),
+                                    Text('${this.current.index}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.current.media'),
+                                    Text('${this.current.media}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.current.medias'),
+                                    Text('${this.current.medias}')
+                                  ]),
                                 ],
                               ),
                             ],
@@ -341,7 +392,8 @@ class _DartVLCState extends State<DartVLC> {
                                             fontSize: 14.0,
                                           ),
                                         ),
-                                        onTap: () => this.player?.setDevice(device),
+                                        onTap: () =>
+                                            this.player?.setDevice(device),
                                       ),
                                     )
                                     .toList(),
@@ -380,7 +432,8 @@ class _DartVLCState extends State<DartVLC> {
                                     width: 152.0,
                                     child: DropdownButton<MediaType>(
                                       value: this.mediaType,
-                                      onChanged: (mediaType) => this.setState(() => this.mediaType = mediaType!),
+                                      onChanged: (mediaType) => this.setState(
+                                          () => this.mediaType = mediaType!),
                                       items: [
                                         DropdownMenuItem<MediaType>(
                                           value: MediaType.file,
@@ -417,11 +470,20 @@ class _DartVLCState extends State<DartVLC> {
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         if (this.mediaType == MediaType.file) {
-                                          this.metasMedia = await Media.file(new File(this.metasController.text), parse: true);
-                                        } else if (this.mediaType == MediaType.network) {
-                                          this.metasMedia = await Media.network(this.metasController.text, parse: true);
-                                        } else if (this.mediaType == MediaType.asset) {
-                                          this.metasMedia = await Media.asset(this.metasController.text, parse: true);
+                                          this.metasMedia = await Media.file(
+                                              new File(
+                                                  this.metasController.text),
+                                              parse: true);
+                                        } else if (this.mediaType ==
+                                            MediaType.network) {
+                                          this.metasMedia = await Media.network(
+                                              this.metasController.text,
+                                              parse: true);
+                                        } else if (this.mediaType ==
+                                            MediaType.asset) {
+                                          this.metasMedia = await Media.asset(
+                                              this.metasController.text,
+                                              parse: true);
                                         }
                                         this.setState(() {});
                                       },
@@ -443,7 +505,8 @@ class _DartVLCState extends State<DartVLC> {
                                 color: Colors.transparent,
                               ),
                               Text(
-                                JsonEncoder.withIndent('    ').convert(this.metasMedia?.metas),
+                                JsonEncoder.withIndent('    ')
+                                    .convert(this.metasMedia?.metas),
                               ),
                             ],
                           ),
@@ -600,18 +663,23 @@ class _DartVLCState extends State<DartVLC> {
                                 height: 456.0,
                                 child: ReorderableListView(
                                   shrinkWrap: true,
-                                  onReorder: (int initialIndex, int finalIndex) async {
+                                  onReorder:
+                                      (int initialIndex, int finalIndex) async {
                                     /// 🙏🙏🙏
                                     /// https://github.com/flutter/flutter/issues/24786
                                     /// https://stackoverflow.com/a/54164333/12825435
-                                    if (finalIndex > this.current.medias.length) finalIndex = this.current.medias.length;
+                                    if (finalIndex > this.current.medias.length)
+                                      finalIndex = this.current.medias.length;
                                     if (initialIndex < finalIndex) finalIndex--;
 
-                                    await this.player?.move(initialIndex, finalIndex);
+                                    await this
+                                        .player
+                                        ?.move(initialIndex, finalIndex);
                                     this.setState(() {});
                                   },
                                   scrollDirection: Axis.vertical,
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
                                   children: List.generate(
                                     this.current.medias.length,
                                     (int index) => new ListTile(
@@ -625,7 +693,11 @@ class _DartVLCState extends State<DartVLC> {
                                         style: TextStyle(fontSize: 14.0),
                                       ),
                                       subtitle: Text(
-                                        this.current.medias[index].mediaType.toString(),
+                                        this
+                                            .current
+                                            .medias[index]
+                                            .mediaType
+                                            .toString(),
                                         style: TextStyle(fontSize: 14.0),
                                       ),
                                     ),

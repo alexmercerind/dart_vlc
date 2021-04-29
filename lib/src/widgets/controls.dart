@@ -1,31 +1,30 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 import 'package:dart_vlc/src/device.dart';
-import 'package:dart_vlc/src/player.dart';
+import 'package:dart_vlc/src/channel.dart';
 import 'package:dart_vlc/src/playerState/playerState.dart';
 
 class Control extends StatefulWidget {
   final Widget child;
-  final Player player;
+  final int playerId;
   final double height;
   final double width;
-  final double progressBarThumbRadius;
-  final double progressBarThumbGlowRadius;
-  final Color progressBarActiveColor;
-  final Color progressBarInactiveColor;
-  final Color progressBarThumbColor;
-  final Color progressBarThumbGlowColor;
-  final Color volumeActiveColor;
-  final Color volumeInactiveColor;
-  final Color volumeBackgroundColor;
-  final Color volumeThumbColor;
+  final double? progressBarThumbRadius;
+  final double? progressBarThumbGlowRadius;
+  final Color? progressBarActiveColor;
+  final Color? progressBarInactiveColor;
+  final Color? progressBarThumbColor;
+  final Color? progressBarThumbGlowColor;
+  final Color? volumeActiveColor;
+  final Color? volumeInactiveColor;
+  final Color? volumeBackgroundColor;
+  final Color? volumeThumbColor;
 
   Control({
     required this.child,
-    required this.player,
+    required this.playerId,
     required this.height,
     required this.width,
     required this.progressBarThumbRadius,
@@ -54,7 +53,7 @@ class _ControlState extends State<Control> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (widget.player.playback.isPlaying) {
+        if (players[widget.playerId]!.playback.isPlaying) {
           if (_displayTapped) {
             setState(() {
               _hideControls = true;
@@ -105,28 +104,36 @@ class _ControlState extends State<Control> {
                         right: 0,
                         bottom: 0,
                         child: Padding(
-                          padding: EdgeInsets.only(bottom: 60, right: 20, left: 20),
+                          padding:
+                              EdgeInsets.only(bottom: 60, right: 20, left: 20),
                           child: StreamBuilder<PositionState>(
-                            stream: widget.player.positionStream,
-                            builder: (BuildContext context, AsyncSnapshot<PositionState> snapshot) {
+                            stream: players[widget.playerId]!.positionStream,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<PositionState> snapshot) {
                               final durationState = snapshot.data;
-                              final progress = durationState?.position ?? Duration.zero;
-                              final total = durationState?.duration ?? Duration.zero;
+                              final progress =
+                                  durationState?.position ?? Duration.zero;
+                              final total =
+                                  durationState?.duration ?? Duration.zero;
                               return Theme(
                                 data: ThemeData.dark(),
                                 child: ProgressBar(
                                   progress: progress,
                                   total: total,
                                   barHeight: 3,
-                                  progressBarColor: widget.progressBarActiveColor,
+                                  progressBarColor:
+                                      widget.progressBarActiveColor,
                                   thumbColor: widget.progressBarThumbColor,
                                   baseBarColor: widget.progressBarInactiveColor,
-                                  thumbGlowColor: widget.progressBarThumbGlowColor,
-                                  thumbRadius: widget.progressBarThumbRadius,
-                                  thumbGlowRadius: widget.progressBarThumbGlowRadius,
+                                  thumbGlowColor:
+                                      widget.progressBarThumbGlowColor,
+                                  thumbRadius:
+                                      widget.progressBarThumbRadius ?? 10.0,
+                                  thumbGlowRadius:
+                                      widget.progressBarThumbGlowRadius ?? 30.0,
                                   timeLabelLocation: TimeLabelLocation.sides,
                                   onSeek: (duration) {
-                                    widget.player.seek(duration);
+                                    players[widget.playerId]!.seek(duration);
                                   },
                                 ),
                               );
@@ -146,35 +153,54 @@ class _ControlState extends State<Control> {
                               color: Colors.white,
                               iconSize: 30,
                               icon: Icon(Icons.skip_previous),
-                              onPressed: () => widget.player.back(),
+                              onPressed: () => players[widget.playerId]!.back(),
                             ),
                             SizedBox(width: 50),
                             IconButton(
                               color: Colors.white,
                               iconSize: 30,
                               icon: Icon(Icons.replay_10),
-                              onPressed: () => widget.player.seek(Duration(milliseconds: widget.player.position.position.inMilliseconds - 10000)).then((value) => setState(() {})),
+                              onPressed: () => players[widget.playerId]!
+                                  .seek(Duration(
+                                      milliseconds: players[widget.playerId]!
+                                              .position
+                                              .position
+                                              .inMilliseconds -
+                                          10000))
+                                  .then((value) => setState(() {})),
                             ),
                             SizedBox(width: 20),
                             IconButton(
                               color: Colors.white,
                               iconSize: 30,
-                              icon: Icon(widget.player.playback.isPlaying ? Icons.pause : Icons.play_arrow),
-                              onPressed: () => widget.player.playOrPause().then((value) => setState(() {})),
+                              icon: Icon(
+                                  players[widget.playerId]!.playback.isPlaying
+                                      ? Icons.pause
+                                      : Icons.play_arrow),
+                              onPressed: () => players[widget.playerId]!
+                                  .playOrPause()
+                                  .then((value) => setState(() {})),
                             ),
                             SizedBox(width: 20),
                             IconButton(
                               color: Colors.white,
                               iconSize: 30,
                               icon: Icon(Icons.forward_10),
-                              onPressed: () => widget.player.seek(Duration(milliseconds: widget.player.position.position.inMilliseconds + 10000)).then((value) => setState(() {})),
+                              onPressed: () => players[widget.playerId]!
+                                  .seek(Duration(
+                                      milliseconds: players[widget.playerId]!
+                                              .position
+                                              .position
+                                              .inMilliseconds +
+                                          10000))
+                                  .then((value) => setState(() {})),
                             ),
                             SizedBox(width: 50),
                             IconButton(
                               color: Colors.white,
                               iconSize: 30,
                               icon: Icon(Icons.skip_next),
-                              onPressed: () => widget.player.next(),
+                              onPressed: () => players[widget.playerId]!.next(),
                             ),
                           ],
                         ),
@@ -186,7 +212,7 @@ class _ControlState extends State<Control> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             VolumeControl(
-                              player: widget.player,
+                              playerId: widget.playerId,
                               thumbColor: widget.volumeThumbColor,
                               inactiveColor: widget.volumeInactiveColor,
                               activeColor: widget.volumeActiveColor,
@@ -194,12 +220,15 @@ class _ControlState extends State<Control> {
                             ),
                             FutureBuilder(
                               future: Devices.all,
-                              builder: (context, AsyncSnapshot<List<Device>> snapshot) {
+                              builder: (context,
+                                  AsyncSnapshot<List<Device>> snapshot) {
                                 return PopupMenuButton(
                                   iconSize: 30,
-                                  icon: Icon(Icons.speaker, color: Colors.white),
+                                  icon:
+                                      Icon(Icons.speaker, color: Colors.white),
                                   onSelected: (Device device) async {
-                                    await widget.player.setDevice(device);
+                                    await players[widget.playerId]!
+                                        .setDevice(device);
                                     setState(() {});
                                   },
                                   itemBuilder: (context) {
@@ -252,14 +281,14 @@ class _ControlState extends State<Control> {
 }
 
 class VolumeControl extends StatefulWidget {
-  final Player player;
-  final Color activeColor;
-  final Color inactiveColor;
-  final Color backgroundColor;
-  final Color thumbColor;
+  final int playerId;
+  final Color? activeColor;
+  final Color? inactiveColor;
+  final Color? backgroundColor;
+  final Color? thumbColor;
 
   const VolumeControl({
-    required this.player,
+    required this.playerId,
     required this.activeColor,
     required this.inactiveColor,
     required this.backgroundColor,
@@ -297,7 +326,8 @@ class _VolumeControlState extends State<VolumeControl> {
                 height: 250,
                 child: Card(
                   color: widget.backgroundColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100)),
                   child: RotatedBox(
                     quarterTurns: -1,
                     child: SliderTheme(
@@ -309,9 +339,9 @@ class _VolumeControlState extends State<VolumeControl> {
                       child: Slider(
                         min: 0.0,
                         max: 1.0,
-                        value: widget.player.general.volume,
+                        value: players[widget.playerId]!.general.volume,
                         onChanged: (volume) {
-                          widget.player.setVolume(volume);
+                          players[widget.playerId]!.setVolume(volume);
                           setState(() {});
                         },
                       ),
@@ -340,20 +370,20 @@ class _VolumeControlState extends State<VolumeControl> {
   }
 
   IconData getIcon() {
-    if (widget.player.general.volume > .5)
+    if (players[widget.playerId]!.general.volume > .5)
       return Icons.volume_up_sharp;
-    else if (widget.player.general.volume > 0)
+    else if (players[widget.playerId]!.general.volume > 0)
       return Icons.volume_down_sharp;
     else
       return Icons.volume_off_sharp;
   }
 
   void muteUnmute() async {
-    if (widget.player.general.volume > 0) {
-      unmutedVolume = widget.player.general.volume;
-      await widget.player.setVolume(0);
+    if (players[widget.playerId]!.general.volume > 0) {
+      unmutedVolume = players[widget.playerId]!.general.volume;
+      await players[widget.playerId]!.setVolume(0);
     } else {
-      await widget.player.setVolume(unmutedVolume);
+      await players[widget.playerId]!.setVolume(unmutedVolume);
     }
     setState(() {});
   }

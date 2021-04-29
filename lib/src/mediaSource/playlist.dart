@@ -38,15 +38,17 @@ class Playlist extends MediaSource {
       'PlaylistMode.loop': PlaylistMode.loop,
     }[map['playlistMode']]!;
     return new Playlist(
-      medias: map['medias'].map((media) => Media.fromMap(media)).toList().cast<Media>(),
-      playlistMode: playlistMode
-    );
+        medias: map['medias']
+            .map((media) => Media.fromMap(media))
+            .toList()
+            .cast<Media>(),
+        playlistMode: playlistMode);
   }
 
   /// Internally used method to easily transform data for sending through Platform channel.
   Map<String, dynamic> toMap() => {
-    'mediaSourceType': this._mediaSourceType.toString(),
-    'medias': this.medias.map((Media media) => media.toMap()).toList(),
-    "playlistMode": playlistMode.toString()
-  };
+        'mediaSourceType': this._mediaSourceType.toString(),
+        'medias': this.medias.map((Media media) => media.toMap()).toList(),
+        "playlistMode": playlistMode.toString()
+      };
 }
