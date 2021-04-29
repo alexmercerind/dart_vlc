@@ -3,6 +3,11 @@ on:
     pull_request:
       branches:
         - stable
+        - master
+    push:
+      branches:
+        - stable
+        - master
 
 defaults:
   run:
