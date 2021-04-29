@@ -33,7 +33,7 @@ class VideoFrame {
 ///
 /// ```dart
 /// class _MyAppState extends State<MyApp> {
-///   Player player = Player(id: 0);
+///   Player player = new Player(id: 0);
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
@@ -134,8 +134,8 @@ class VideoState extends State<Video> {
       ui.PixelFormat.bgra8888,
       (ui.Image _image) => imageCompleter.complete(_image),
       rowBytes: 4 * videoFrame.videoWidth,
-      targetWidth: videoFrame.videoWidth,
-      targetHeight: videoFrame.videoHeight,
+      targetWidth: widget.width.toInt(),
+      targetHeight: widget.height.toInt(),
     );
     ui.Image image = await imageCompleter.future;
     return new RawImage(

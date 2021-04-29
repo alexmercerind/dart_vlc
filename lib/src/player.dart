@@ -12,14 +12,14 @@ import 'package:dart_vlc/src/device.dart';
 /// Provide a unique [id] while instanciating.
 ///
 /// ```dart
-/// Player player = Player(id: 0);
+/// Player player = new Player(id: 0);
 /// ```
 ///
 /// If you wish to use this instance for [Video] playback, then provide [videoWidth] & [videoHeight] optional parameters.
 /// Higher value may lead to degraded performance.
 ///
 /// ```dart
-/// Player player = await Player(
+/// Player player = new Player(
 ///   id: 0,
 ///   videoWidth: 1920,
 ///   videoHeight: 1080,
