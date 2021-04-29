@@ -23,9 +23,9 @@ Consider supporting the project by either/and:
 
 
 Thanks to following people for supporting this project. I'm REALLY GLAD to recieve your appreciation for the time I've spent:
-- [@domingomg97](https://twitter.com/domingomg97)
-- Pavel Zika
-- Salman Aljabri
+- [@DomingoMG](https://github.com/DomingoMG)
+- [@Aljabri-Salman](https://github.com/Aljabri-Salman)
+- [@PavelPZ](https://github.com/PavelPZ)
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
@@ -33,7 +33,7 @@ Thanks to following people for supporting this project. I'm REALLY GLAD to recie
 
 - Create a new `Player` instance.
 ```dart
-Player player = Player(id: 69420);
+Player player = new Player(id: 69420);
 ```
 
 - Create a single `Media`.
@@ -125,7 +125,7 @@ player.setDevice(
 
 Instanciate `Player` as follows.
 ```dart
-Player player = Player(
+Player player = new Player(
   id: 69420,
   videoWidth: 480,
   videoHeight: 320,
