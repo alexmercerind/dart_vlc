@@ -7,7 +7,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.0.5
+  dart_vlc: ^0.0.6
 ```
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
@@ -21,22 +21,16 @@ Consider supporting the project by either/and:
 - :star: Starring the repository, to get this hardwork noticed.
 - :coffee: Buying me a coffee.
 
-
-Thanks to following people for supporting this project. I'm REALLY GLAD to recieve your appreciation for the time I've spent:
-- [@DomingoMG](https://github.com/DomingoMG)
-- [@Aljabri-Salman](https://github.com/Aljabri-Salman)
-- [@PavelPZ](https://github.com/PavelPZ)
-
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
 ## Documentation
 
-- Create a new `Player` instance.
+#### Create a new player instance.
 ```dart
 Player player = new Player(id: 69420);
 ```
 
-- Create a single `Media`.
+#### Create a media for playback.
 ```dart
 Media media0 = await Media.file(
   new File('C:/music.mp3')
@@ -51,7 +45,7 @@ Media media2 = await Media.asset(
 );
 ```
 
-- Create a list of `Media`s using `Playlist`.
+#### Create a list of medias using playlist.
 ```dart
 Playlist playlist = new Playlist(
   medias: [
@@ -62,7 +56,7 @@ Playlist playlist = new Playlist(
 );
 ```
 
-- Open `Media` or `Playlist` into a `Player` instance.
+#### Open a media or playlist into a player.
 ```dart
 player.open(
   new Playlist(
@@ -76,7 +70,7 @@ player.open(
 );
 ```
 
-- Control playback.
+#### Control playback.
 ```dart
 player.play();
 
@@ -89,7 +83,7 @@ player.playOrPause();
 player.stop();
 ```
 
-- Manipulate `Playlist`.
+#### Manipulate an already playing playlist.
 ```dart
 player.add(
   await Media.file(new File('C:/music0.mp3')),
@@ -105,14 +99,14 @@ player.insert(
 player.move(0, 4);
 ```
 
-- Set playback volume & rate.
+#### Set playback volume & rate.
 ```dart
 player.setVolume(0.5);
 
 player.setRate(1.25);
 ```
 
-- Get & change playback `Device`.
+#### Get & change playback device.
 ```dart
 List<Device> devices = await Devices.all;
 
@@ -121,7 +115,7 @@ player.setDevice(
 );
 ```
 
-- Show the `Video` inside `Widget` tree.
+#### Show the video inside widget tree.
 
 Instanciate `Player` as follows.
 ```dart
@@ -149,7 +143,9 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
-- Retrieve metadata of `Media`.
+Thanks to [@tomassasovsky](https://github.com/tomassasovsky) for adding visual controls to `Video` widget.
+
+#### Retrieve metadata of media.
 ```dart
 Media media = await Media.network(
   'https://www.example.com/media.mp3',
@@ -160,7 +156,7 @@ Media media = await Media.network(
 Map<String, String> metas = media.metas;
 ```
 
-Listen to playback events.
+#### Listen to playback events.
 
 (Same can be retrieved directly from `Player` instance without having to rely on stream).
 
@@ -195,7 +191,7 @@ player.generalStream.listen((GeneralState state) {
 });
 ```
 
-- `Broadcast` a `Media`.
+#### Broadcast a media.
 
 Broadcasting to localhost.
 
@@ -221,7 +217,9 @@ Dispose the `Broadcast` instance to release resources.
 broadcast.dispose();
 ```
 
-- `Record` a `Media`.
+#### Record a media.
+
+Thanks to [@DomingoMG](https://github.com/DomingoMG) for adding `Record` and `Chromecast` classes.
 
 ```dart
 Record record = await Record.create(
@@ -298,6 +296,7 @@ Done
 - Supporting live streaming links.
 - `Broadcast` class for broadcasting `Media`.
 - `Record` class for recording `Media`.
+- `Chromecast` class.
 
 Under progress or planned features (irrespective of order)...
 
@@ -341,8 +340,6 @@ This library & work under this repository is licensed under GNU Lesser General P
 There aren't any media (audio or video) playback libraries for Flutter on Windows/Linux yet. So, this project is all about that.
 As one might be already aware, VLC is one of the best media playback tools out there.
 
-So, now you can use it to play audio or video files from Flutter Desktop app.
-
-The API style of this project is highly influenced by [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer) due to its ease of use. This project will serve as a base to add Windows & Linux support to already existing audio playback libraries like [just_audio](https://github.com/ryanheise/just_audio) and [assets_audio_player](https://github.com/florent37/Flutter-AssetsAudioPlayer).
+So, now you can use it to play audio or video files from Flutter Desktop apps.
 
 Although, the mentioned repositories above are for audio playback, video playback is also a part of consideration for this project.
