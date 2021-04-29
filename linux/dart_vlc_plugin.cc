@@ -23,6 +23,7 @@ void position(PlayerState* &state) {
     fl_value_set_string_take(event, "position", fl_value_new_int(state->position));
     fl_value_set_string_take(event, "duration", fl_value_new_int(state->duration));
     fl_method_channel_invoke_method(channel, "playerState", event, NULL, NULL, NULL);
+    fl_value_unref(event);
 }
 
 void playback(PlayerState* &state) {
@@ -32,6 +33,7 @@ void playback(PlayerState* &state) {
     fl_value_set_string_take(event, "isPlaying", fl_value_new_bool(state->isPlaying));
     fl_value_set_string_take(event, "isSeekable", fl_value_new_bool(state->isSeekable));
     fl_method_channel_invoke_method(channel, "playerState", event, NULL, NULL, NULL);
+    fl_value_unref(event);
 }
 
 void complete(PlayerState* &state) {
@@ -40,6 +42,7 @@ void complete(PlayerState* &state) {
     fl_value_set_string_take(event, "id", fl_value_new_int(state->id));
     fl_value_set_string_take(event, "isCompleted", fl_value_new_bool(state->isCompleted));
     fl_method_channel_invoke_method(channel, "playerState", event, NULL, NULL, NULL);
+    fl_value_unref(event);
 }
 
 void open(PlayerState* &state) {
@@ -59,6 +62,7 @@ void open(PlayerState* &state) {
     fl_value_set_string_take(event, "medias", medias);
     fl_value_set_string_take(event, "isPlaylist", fl_value_new_bool(state->isPlaylist));
     fl_method_channel_invoke_method(channel, "playerState", event, NULL, NULL, NULL);
+    fl_value_unref(event);
 }
 
 void volume(PlayerState* &state) {
@@ -67,6 +71,7 @@ void volume(PlayerState* &state) {
     fl_value_set_string_take(event, "id", fl_value_new_int(state->id));
     fl_value_set_string_take(event, "volume", fl_value_new_float(state->volume));
     fl_method_channel_invoke_method(channel, "playerState", event, NULL, NULL, NULL);
+    fl_value_unref(event);
 }
 
 void rate(PlayerState* &state) {
@@ -75,6 +80,7 @@ void rate(PlayerState* &state) {
     fl_value_set_string_take(event, "id", fl_value_new_int(state->id));
     fl_value_set_string_take(event, "rate", fl_value_new_float(state->rate));
     fl_method_channel_invoke_method(channel, "playerState", event, NULL, NULL, NULL);
+    fl_value_unref(event);
 }
 
 void exception(PlayerState* &state) {
@@ -83,11 +89,12 @@ void exception(PlayerState* &state) {
     fl_value_set_string_take(event, "id", fl_value_new_int(state->id));
     fl_value_set_string_take(event, "index", fl_value_new_int(state->index));
     fl_method_channel_invoke_method(channel, "playerState", event, NULL, NULL, NULL);
+    fl_value_unref(event);
 }
 
 static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall* method_call) {
-    g_autoptr(FlMethodResponse) response = nullptr;
-    const gchar* method = fl_method_call_get_name(method_call);
+    FlMethodResponse* response = nullptr;
+    const char* method = fl_method_call_get_name(method_call);
     if (strcmp(method, "Player.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         int videoWidth = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "videoWidth"));
@@ -151,7 +158,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
                     fl_value_set_string_take(videoFrame, "videoHeight", fl_value_new_int(player->videoHeight));
                     fl_value_set_string_take(videoFrame, "byteArray", videoFrameByteArray);
                     fl_method_channel_invoke_method(channel, "videoFrame", videoFrame, NULL, NULL, NULL);
-                    free(const_cast<void*>(static_cast<const void*>(fl_value_get_uint8_list(videoFrameByteArray))));
+                    fl_value_unref(videoFrame);
                 }
             );
         }
@@ -363,6 +370,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
             fl_value_append_take(devicesList, device);
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(devicesList));
+        fl_value_unref(devicesList);
     }
     else if (strcmp(method, "Media.parse") == 0) {
         int timeout = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "timeout"));
@@ -382,6 +390,7 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
             fl_value_set_string_take(metas, pair.first.c_str(), fl_value_new_string(pair.second.c_str()));
         }
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(metas));
+        fl_value_unref(metas);
     }
     else if (strcmp(method, "Broadcast.create") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
