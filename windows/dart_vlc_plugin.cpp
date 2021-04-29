@@ -15,7 +15,6 @@
 #include "include/flutter_types.hpp"
 
 #include "../dartvlc/main.cpp"
-#include "include/vlc/libvlc_vlm.h"
 
 
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
@@ -367,7 +366,7 @@ namespace {
     DartVlcPlugin::~DartVlcPlugin() {}
 
     void DartVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-        MethodCallHandler* method = new MethodCallHandler(&methodCall, std::move(result));
+        std::unique_ptr<MethodCallHandler> method = std::make_unique<MethodCallHandler>(&methodCall, std::move(result));
 
         /*
          * Creates a new [Player] instance & setups event & exception callbacks.
@@ -545,13 +544,12 @@ namespace {
                     std::string mediaType = std::get<std::string>(mediaMap[flutter::EncodableValue("mediaType")]);
                     std::string resource = std::get<std::string>(mediaMap[flutter::EncodableValue("resource")]);
                     Media* media;
-                    if( mediaType == "MediaType.file" ){
+                    if(mediaType == "MediaType.file")
                         media = Media::file(mediaId, resource);
-                    } else if ( mediaType == "MediaType.network" ){
+                    else if (mediaType == "MediaType.network")
                         media = Media::network(mediaId, resource);
-                    } else {
-                        media = Media::asset(mediaId, resource);
-                    }                     
+                    else
+                        media = Media::asset(mediaId, resource);                     
                     medias.emplace_back(media);
                 }
                 Player* player = players->get(id);
