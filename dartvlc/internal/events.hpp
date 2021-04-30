@@ -153,8 +153,8 @@ protected:
 
 	void _onPauseCallback() {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		this->state->position = this->getPosition();
 		if (this->getDuration() > 0) {
+			this->state->position = this->getPosition();
 			this->state->isValid = this->mediaPlayer.isValid();
 			this->state->duration = this->getDuration();
 		}
@@ -175,8 +175,8 @@ protected:
 
 	void _onPositionCallback(float relativePosition) {
 		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		this->state->position = this->getPosition();
 		if (this->getDuration() > 0) {
+			this->state->position = this->getPosition();
 			this->state->isValid = this->mediaPlayer.isValid();
 			this->state->duration = this->getDuration();
 		}
@@ -205,6 +205,9 @@ protected:
 			this->state->duration = this->getDuration();
 			this->_onPlaylistCallback();
 			this->_completeCallback();
+		} else {
+			this->state->position = 0;
+			this->state->duration = 0;
 		}
 	}
 
