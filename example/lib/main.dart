@@ -239,11 +239,11 @@ class _DartVLCState extends State<DartVLC> {
                                       ElevatedButton(
                                         onPressed: () => this.setState(() {
                                           this.player?.open(
-                                                new Playlist(
-                                                    medias: this.medias,
-                                                    playlistMode:
-                                                        PlaylistMode.loop),
-                                              );
+                                            new Playlist(
+                                              medias: this.medias,
+                                              playlistMode:PlaylistMode.single
+                                            ),
+                                          );
                                         }),
                                         child: Text(
                                           'Open',
@@ -293,22 +293,12 @@ class _DartVLCState extends State<DartVLC> {
                               ),
                               Slider(
                                 min: 0,
-                                max: this
-                                    .position
-                                    .duration
-                                    .inMilliseconds
-                                    .toDouble(),
-                                value: this
-                                    .position
-                                    .position
-                                    .inMilliseconds
-                                    .toDouble(),
-                                onChanged: (double position) {
+                                max: this.position.duration.inMilliseconds.toDouble(),
+                                value: this.position.position.inMilliseconds.toDouble(),
+                                onChanged: (double position) =>
                                   this.player?.seek(
-                                        Duration(
-                                            milliseconds: position.toInt()),
-                                      );
-                                },
+                                    Duration(milliseconds: position.toInt())
+                                  )
                               ),
                               Text('Event streams.'),
                               Divider(
