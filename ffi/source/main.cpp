@@ -9,12 +9,7 @@
  */
 
 #include "../dartvlc/main.cpp"
-
-#ifdef __WIN32
-#define EXPORT declspec(__dllexport)
-#else
-#define EXPORT
-#endif
+#include "callbackmanager.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,13 +23,34 @@ EXPORT void Player_create(int id, int videoWidth, int videoHeight) {
     Player* player = players->get(id);
     player->videoWidth = videoWidth;
     player->videoHeight = videoHeight;
-    /// TODO: Setup event callbacks.
+    player->onOpen([=](VLC::Media _) -> void {
+        std::vector<std::string> event;
+        event.push_back(std::to_string(player->state->id));
+        event.push_back("openEvent");
+        event.push_back(std::to_string(player->state->index));
+        event.push_back(std::to_string(player->state->isPlaylist));
+        for (Media* media: player->state->medias->medias) {
+            event.push_back(std::to_string(media->id));
+            event.push_back(media->mediaType);
+            event.push_back(media->resource);
+        }
+        int _size = event.size();
+        char** _event = new char*[_size];
+        for (int index = 0; index < _size; index++)
+            _event[index] = const_cast<char*>(event[index].c_str());
+        callbackStringArray(
+            _size,
+            _event
+        );
+        delete[] _event;
+    });
+    /// TODO: Improve event callbacks.
 }
 
 EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceSize) {
-    /// [source] is array of [Media] in the following form.
+    /// `source` is array of `Media` in the following form.
     /// "0", "MediaType.file", "/home/alexmercerind/music.mp3", "1", "MediaType.file", "/home/alexmercerind/audio.mp3", "2", "MediaType.network", "https://example.com/music.mp3".
-    /// [sourceSize] describes the number of [Media] passed i.e. 3 in above case.
+    /// `sourceSize` describes the number of `Media` passed i.e. 3 in above case.
     std::vector<Media*> medias;
     Player* player = players->get(id);
     for (int index = 0; index < 3 * sourceSize; index += 3) {
