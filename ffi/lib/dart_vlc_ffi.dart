@@ -58,11 +58,6 @@ abstract class PlayerFFI {
 abstract class CallbackFFI {
 
   static void initialize() {
-    receiver.listen(
-      (Object object) {
-        print(object);
-      }
-    );
     RegisterPostCObjectDart registerPostCObject = dynamicLibrary.lookup<NativeFunction<RegisterPostCObjectCXX>>('RegisterDart_PostCObject').asFunction();
     RegisterCallbackPortDart registerCallbackPort = dynamicLibrary.lookup<NativeFunction<RegisterCallbackPortCXX>>('RegisterDart_CallbackPort').asFunction();
     registerPostCObject(NativeApi.postCObject);

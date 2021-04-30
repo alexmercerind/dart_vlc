@@ -14,13 +14,17 @@ extension on List<String> {
   }
 }
 
-void main() {
+Future main() async {
+  receiver.listen((event) => print(event));
   CallbackFFI.initialize();
   PlayerFFI.create(0, 0, 0);
   PlayerFFI.open(
-    0,
-    1,
+    0, 1,
     ['0', 'MediaType.file', '/home/alexmercerind/music.OGG', '1', 'MediaType.file', '/home/alexmercerind/audio.OGG'].toNativeUtf8Array(),
     2
   );
+  await Future.delayed(Duration(seconds: 5));
+  PlayerFFI.pause(0);
+  PlayerFFI.seek(0, 20000);
+  PlayerFFI.play(0);
 }

@@ -8,8 +8,15 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "../dartvlc/main.cpp"
-#include "callbackmanager.hpp"
+#ifndef EXPORT
+#ifdef __WIN32
+#define EXPORT declspec(__dllexport)
+#else
+#define EXPORT
+#endif
+#endif
+
+#include "eventmanager.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,34 +30,38 @@ EXPORT void Player_create(int id, int videoWidth, int videoHeight) {
     Player* player = players->get(id);
     player->videoWidth = videoWidth;
     player->videoHeight = videoHeight;
-    player->onOpen([=](VLC::Media _) -> void {
-        std::vector<std::string> event;
-        event.push_back(std::to_string(player->state->id));
-        event.push_back("openEvent");
-        event.push_back(std::to_string(player->state->index));
-        event.push_back(std::to_string(player->state->isPlaylist));
-        for (Media* media: player->state->medias->medias) {
-            event.push_back(std::to_string(media->id));
-            event.push_back(media->mediaType);
-            event.push_back(media->resource);
-        }
-        int _size = event.size();
-        char** _event = new char*[_size];
-        for (int index = 0; index < _size; index++)
-            _event[index] = const_cast<char*>(event[index].c_str());
-        callbackStringArray(
-            _size,
-            _event
-        );
-        delete[] _event;
+    player->onPlay([=]() -> void {
+        Player_onPlayPauseStop(player->state);
     });
-    /// TODO: Improve event callbacks.
+    player->onPause([=]() -> void {
+        Player_onPlayPauseStop(player->state);
+    });
+    player->onStop([=]() -> void {
+        Player_onPlayPauseStop(player->state);
+        Player_onPosition(player->state);
+    });
+    player->onComplete([=]() -> void {
+        Player_onComplete(player->state);
+    });
+    player->onVolume([=](float _) -> void {
+        Player_onVolume(player->state);
+    });
+    player->onRate([=](float _) -> void {
+        Player_onRate(player->state);
+    });
+    player->onPosition([=](int _) -> void {
+        Player_onPosition(player->state);
+    });
+    player->onOpen([=](VLC::Media _) -> void {
+        Player_onOpen(player->state);
+    });
+    player->onPlaylist([=]() -> void {
+        Player_onOpen(player->state);
+    });
+    /// TODO: Handle Player::onException.
 }
 
 EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceSize) {
-    /// `source` is array of `Media` in the following form.
-    /// "0", "MediaType.file", "/home/alexmercerind/music.mp3", "1", "MediaType.file", "/home/alexmercerind/audio.mp3", "2", "MediaType.network", "https://example.com/music.mp3".
-    /// `sourceSize` describes the number of `Media` passed i.e. 3 in above case.
     std::vector<Media*> medias;
     Player* player = players->get(id);
     for (int index = 0; index < 3 * sourceSize; index += 3) {

@@ -1,7 +1,9 @@
+#ifndef EXPORT
 #ifdef __WIN32
 #define EXPORT declspec(__dllexport)
 #else
 #define EXPORT
+#endif
 #endif
 
 #include <iostream>
