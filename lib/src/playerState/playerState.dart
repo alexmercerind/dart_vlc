@@ -18,10 +18,10 @@ class CurrentState {
 /// Position & duration state of a [Player] instance.
 class PositionState {
   /// Position of playback in [Duration] of currently playing [Media].
-  Duration position = Duration.zero;
+  Duration? position = Duration.zero;
 
   /// Length of currently playing [Media] in [Duration].
-  Duration duration = Duration.zero;
+  Duration? duration = Duration.zero;
 }
 
 /// Playback state of a [Player] instance.
