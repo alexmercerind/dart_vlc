@@ -160,14 +160,12 @@ class _ControlState extends State<Control> {
                               color: Colors.white,
                               iconSize: 30,
                               icon: Icon(Icons.replay_10),
-                              onPressed: () => players[widget.playerId]!
-                                  .seek(Duration(
-                                      milliseconds: players[widget.playerId]!
-                                              .position
-                                              .position
-                                              .inMilliseconds -
-                                          10000))
-                                  .then((value) => setState(() {})),
+                              onPressed: () {
+                                int positionInMilliseconds = players[widget.playerId]!.position.position.inMilliseconds;
+                                if( !( positionInMilliseconds -1000 ).isNegative )
+                                  positionInMilliseconds -= 1000;
+                                players[widget.playerId]!.seek(Duration(milliseconds:  positionInMilliseconds)).then((value) => setState(() {}));
+                              }
                             ),
                             SizedBox(width: 20),
                             IconButton(
@@ -186,14 +184,14 @@ class _ControlState extends State<Control> {
                               color: Colors.white,
                               iconSize: 30,
                               icon: Icon(Icons.forward_10),
-                              onPressed: () => players[widget.playerId]!
-                                  .seek(Duration(
-                                      milliseconds: players[widget.playerId]!
-                                              .position
-                                              .position
-                                              .inMilliseconds +
-                                          10000))
-                                  .then((value) => setState(() {})),
+                              onPressed: () {
+                                int positionInMilliseconds = players[widget.playerId]!.position.position.inMilliseconds;
+                                int durationInMilliseconds = players[widget.playerId]!.position.duration.inMilliseconds;
+                                if( ( positionInMilliseconds+1000 ) <= durationInMilliseconds ){
+                                  positionInMilliseconds += 1000;
+                                  players[widget.playerId]!.seek(Duration(milliseconds:  positionInMilliseconds)).then((value) => setState(() {}));
+                                }
+                              }
                             ),
                             SizedBox(width: 50),
                             IconButton(
