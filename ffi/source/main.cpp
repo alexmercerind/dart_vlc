@@ -8,13 +8,15 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "../dartvlc/main.cpp"
-
+#ifndef EXPORT
 #ifdef __WIN32
 #define EXPORT declspec(__dllexport)
 #else
 #define EXPORT
 #endif
+#endif
+
+#include "eventmanager.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,13 +30,38 @@ EXPORT void Player_create(int id, int videoWidth, int videoHeight) {
     Player* player = players->get(id);
     player->videoWidth = videoWidth;
     player->videoHeight = videoHeight;
-    /// TODO: Setup event callbacks.
+    player->onPlay([=]() -> void {
+        Player_onPlayPauseStop(player->state);
+    });
+    player->onPause([=]() -> void {
+        Player_onPlayPauseStop(player->state);
+    });
+    player->onStop([=]() -> void {
+        Player_onPlayPauseStop(player->state);
+        Player_onPosition(player->state);
+    });
+    player->onComplete([=]() -> void {
+        Player_onComplete(player->state);
+    });
+    player->onVolume([=](float _) -> void {
+        Player_onVolume(player->state);
+    });
+    player->onRate([=](float _) -> void {
+        Player_onRate(player->state);
+    });
+    player->onPosition([=](int _) -> void {
+        Player_onPosition(player->state);
+    });
+    player->onOpen([=](VLC::Media _) -> void {
+        Player_onOpen(player->state);
+    });
+    player->onPlaylist([=]() -> void {
+        Player_onOpen(player->state);
+    });
+    /// TODO: Handle Player::onException.
 }
 
 EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceSize) {
-    /// [source] is array of [Media] in the following form.
-    /// "0", "MediaType.file", "/home/alexmercerind/music.mp3", "1", "MediaType.file", "/home/alexmercerind/audio.mp3", "2", "MediaType.network", "https://example.com/music.mp3".
-    /// [sourceSize] describes the number of [Media] passed i.e. 3 in above case.
     std::vector<Media*> medias;
     Player* player = players->get(id);
     for (int index = 0; index < 3 * sourceSize; index += 3) {
@@ -87,6 +114,71 @@ EXPORT void Player_back(int id) {
     player->back();
 }
 
+EXPORT void Player_jump(int id, int index) {
+    Player* player = players->get(id);
+    player->jump(index);
+}
+
+EXPORT void Player_seek(int id, int position) {
+    Player* player = players->get(id);
+    player->seek(position);
+}
+
+EXPORT void Player_setVolume(int id, float volume) {
+    Player* player = players->get(id);
+    player->setVolume(volume);
+}
+
+EXPORT void Player_setRate(int id, float rate) {
+    Player* player = players->get(id);
+    player->setRate(rate);
+}
+
+EXPORT void Player_setPlaylistMode(int id, const char* mode) {
+    Player* player = players->get(id);
+    PlaylistMode playlistMode;
+    if (strcmp(mode, "playlistMode.repeat") == 0)
+        playlistMode = PlaylistMode::repeat;
+    else if (strcmp(mode, "playlistMode.loop") == 0)
+        playlistMode = PlaylistMode::loop;
+    else
+        playlistMode = PlaylistMode::single;
+    player->setPlaylistMode(playlistMode);
+}
+
+EXPORT void Player_add(int id, int mediaId, const char* type, const char* resource) {
+    Player* player = players->get(id);
+    Media* media;
+    if (strcmp(type, "MediaType.file") == 0)
+        media = Media::file(mediaId, resource, false);
+    else if (strcmp(type, "MediaType.network") == 0)
+        media = Media::network(mediaId, resource, false);
+    else
+        media = Media::asset(mediaId, resource, false);
+    player->add(media);
+}
+
+EXPORT void Player_remove(int id, int index) {
+    Player* player = players->get(id);
+    player->remove(index);
+}
+
+EXPORT void Player_insert(int id, int index, int mediaId, const char* type, const char* resource) {
+    Player* player = players->get(id);
+    Media* media;
+    if (strcmp(type, "MediaType.file") == 0)
+        media = Media::file(mediaId, resource, false);
+    else if (strcmp(type, "MediaType.network") == 0)
+        media = Media::network(mediaId, resource, false);
+    else
+        media = Media::asset(mediaId, resource, false);
+    player->insert(index, media);
+}
+
+EXPORT void Player_move(int id, int initialIndex, int finalIndex) {
+    Player* player = players->get(id);
+    player->move(initialIndex, finalIndex);
+}
 
 #endif
 
