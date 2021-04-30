@@ -32,8 +32,9 @@ target_include_directories("${PLUGIN_NAME}" INTERFACE
 
 set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
-set(LIBVLC_URL "http://download.videolan.org/pub/videolan/vlc/${LIBVLC_VERSION}/win64/vlc-${LIBVLC_VERSION}-win64.7z")
-set(LIBVLCPP_URL "https://github.com/videolan/libvlcpp/archive/master.zip")
+
+set(LIBVLC_URL "https://mirror.netcologne.de/videolan.org/vlc/${LIBVLC_VERSION}/win64/vlc-${LIBVLC_VERSION}-win64.7z")
+set(LIBVLCPP_URL "https://hub.fastgit.org/videolan/libvlcpp/archive/master.zip")
 set(LIBVLC_ARCHIVE "${LIBVLC_BINARIES}/vlc-${LIBVLC_VERSION}.7z")
 set(LIBVLCPP_ARCHIVE "${LIBVLC_BINARIES}/libvlcpp.zip")
 set(LIBVLC_SOURCE "${LIBVLC_BINARIES}/vlc-${LIBVLC_VERSION}")
