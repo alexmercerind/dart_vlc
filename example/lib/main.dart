@@ -293,8 +293,8 @@ class _DartVLCState extends State<DartVLC> {
                               ),
                               Slider(
                                 min: 0,
-                                max: this.position.duration.inMilliseconds.toDouble(),
-                                value: this.position.position.inMilliseconds.toDouble(),
+                                max: this.position.duration?.inMilliseconds.toDouble() ?? 1.0,
+                                value: this.position.position?.inMilliseconds.toDouble() ?? 0.0,
                                 onChanged: (double position) =>
                                   this.player?.seek(
                                     Duration(milliseconds: position.toInt())
