@@ -161,7 +161,7 @@ class _ControlState extends State<Control> {
                               iconSize: 30,
                               icon: Icon(Icons.replay_10),
                               onPressed: () {
-                                int positionInMilliseconds = players[widget.playerId]!.position.position.inMilliseconds;
+                                int positionInMilliseconds = players[widget.playerId]!.position.position?.inMilliseconds ?? 0;
                                 if( !( positionInMilliseconds -1000 ).isNegative )
                                   positionInMilliseconds -= 1000;
                                 players[widget.playerId]!.seek(Duration(milliseconds:  positionInMilliseconds)).then((value) => setState(() {}));
@@ -185,8 +185,8 @@ class _ControlState extends State<Control> {
                               iconSize: 30,
                               icon: Icon(Icons.forward_10),
                               onPressed: () {
-                                int positionInMilliseconds = players[widget.playerId]!.position.position.inMilliseconds;
-                                int durationInMilliseconds = players[widget.playerId]!.position.duration.inMilliseconds;
+                                int durationInMilliseconds = players[widget.playerId]!.position.duration?.inMilliseconds ?? 0;
+                                int positionInMilliseconds = players[widget.playerId]!.position.position?.inMilliseconds ?? 1;
                                 if( ( positionInMilliseconds+1000 ) <= durationInMilliseconds ){
                                   positionInMilliseconds += 1000;
                                   players[widget.playerId]!.seek(Duration(milliseconds:  positionInMilliseconds)).then((value) => setState(() {}));
