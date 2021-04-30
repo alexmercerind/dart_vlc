@@ -34,7 +34,7 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
 
 set(LIBVLC_BINARIES ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-set(LIBVLCPP_URL https://github.com/videolan/libvlcpp/archive/master.zip)
+set(LIBVLCPP_URL https://hub.fastgit.org/videolan/libvlcpp/archive/master.zip)
 set(LIBVLCPP_ARCHIVE ${LIBVLC_BINARIES}/libvlcpp.zip)
 set(LIBVLCPP_SOURCE ${LIBVLC_BINARIES}/libvlcpp-master)
 
