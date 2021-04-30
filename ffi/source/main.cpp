@@ -87,6 +87,71 @@ EXPORT void Player_back(int id) {
     player->back();
 }
 
+EXPORT void Player_jump(int id, int index) {
+    Player* player = players->get(id);
+    player->jump(index);
+}
+
+EXPORT void Player_seek(int id, int position) {
+    Player* player = players->get(id);
+    player->seek(position);
+}
+
+EXPORT void Player_setVolume(int id, float volume) {
+    Player* player = players->get(id);
+    player->setVolume(volume);
+}
+
+EXPORT void Player_setRate(int id, float rate) {
+    Player* player = players->get(id);
+    player->setRate(rate);
+}
+
+EXPORT void Player_setPlaylistMode(int id, const char* mode) {
+    Player* player = players->get(id);
+    PlaylistMode playlistMode;
+    if (strcmp(mode, "playlistMode.repeat") == 0)
+        playlistMode = PlaylistMode::repeat;
+    else if (strcmp(mode, "playlistMode.loop") == 0)
+        playlistMode = PlaylistMode::loop;
+    else
+        playlistMode = PlaylistMode::single;
+    player->setPlaylistMode(playlistMode);
+}
+
+EXPORT void Player_add(int id, int mediaId, const char* type, const char* resource) {
+    Player* player = players->get(id);
+    Media* media;
+    if (strcmp(type, "MediaType.file") == 0)
+        media = Media::file(mediaId, resource, false);
+    else if (strcmp(type, "MediaType.network") == 0)
+        media = Media::network(mediaId, resource, false);
+    else
+        media = Media::asset(mediaId, resource, false);
+    player->add(media);
+}
+
+EXPORT void Player_remove(int id, int index) {
+    Player* player = players->get(id);
+    player->remove(index);
+}
+
+EXPORT void Player_insert(int id, int index, int mediaId, const char* type, const char* resource) {
+    Player* player = players->get(id);
+    Media* media;
+    if (strcmp(type, "MediaType.file") == 0)
+        media = Media::file(mediaId, resource, false);
+    else if (strcmp(type, "MediaType.network") == 0)
+        media = Media::network(mediaId, resource, false);
+    else
+        media = Media::asset(mediaId, resource, false);
+    player->insert(index, media);
+}
+
+EXPORT void Player_move(int id, int initialIndex, int finalIndex) {
+    Player* player = players->get(id);
+    player->move(initialIndex, finalIndex);
+}
 
 #endif
 
