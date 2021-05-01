@@ -11,12 +11,14 @@ class Control extends StatefulWidget {
   final int playerId;
   final double height;
   final double width;
+  final bool? showTimeLeft;
   final double? progressBarThumbRadius;
   final double? progressBarThumbGlowRadius;
   final Color? progressBarActiveColor;
   final Color? progressBarInactiveColor;
   final Color? progressBarThumbColor;
   final Color? progressBarThumbGlowColor;
+  final TextStyle? progressBarTextStyle;
   final Color? volumeActiveColor;
   final Color? volumeInactiveColor;
   final Color? volumeBackgroundColor;
@@ -27,12 +29,14 @@ class Control extends StatefulWidget {
     required this.playerId,
     required this.height,
     required this.width,
+    required this.showTimeLeft,
     required this.progressBarThumbRadius,
     required this.progressBarThumbGlowRadius,
     required this.progressBarActiveColor,
     required this.progressBarInactiveColor,
     required this.progressBarThumbColor,
     required this.progressBarThumbGlowColor,
+    required this.progressBarTextStyle,
     required this.volumeActiveColor,
     required this.volumeInactiveColor,
     required this.volumeBackgroundColor,
@@ -132,6 +136,11 @@ class _ControlState extends State<Control> {
                                   thumbGlowRadius:
                                       widget.progressBarThumbGlowRadius ?? 30.0,
                                   timeLabelLocation: TimeLabelLocation.sides,
+                                  timeLabelType: widget.showTimeLeft!
+                                      ? TimeLabelType.remainingTime
+                                      : TimeLabelType.totalTime,
+                                  timeLabelTextStyle:
+                                      widget.progressBarTextStyle,
                                   onSeek: (duration) {
                                     players[widget.playerId]!.seek(duration);
                                   },
@@ -157,16 +166,24 @@ class _ControlState extends State<Control> {
                             ),
                             SizedBox(width: 50),
                             IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: Icon(Icons.replay_10),
-                              onPressed: () {
-                                int positionInMilliseconds = players[widget.playerId]!.position.position?.inMilliseconds ?? 0;
-                                if( !( positionInMilliseconds -1000 ).isNegative )
-                                  positionInMilliseconds -= 1000;
-                                players[widget.playerId]!.seek(Duration(milliseconds:  positionInMilliseconds)).then((value) => setState(() {}));
-                              }
-                            ),
+                                color: Colors.white,
+                                iconSize: 30,
+                                icon: Icon(Icons.replay_10),
+                                onPressed: () {
+                                  int positionInMilliseconds =
+                                      players[widget.playerId]!
+                                              .position
+                                              .position
+                                              ?.inMilliseconds ??
+                                          0;
+                                  if (!(positionInMilliseconds - 1000)
+                                      .isNegative)
+                                    positionInMilliseconds -= 1000;
+                                  players[widget.playerId]!
+                                      .seek(Duration(
+                                          milliseconds: positionInMilliseconds))
+                                      .then((value) => setState(() {}));
+                                }),
                             SizedBox(width: 20),
                             IconButton(
                               color: Colors.white,
@@ -181,18 +198,32 @@ class _ControlState extends State<Control> {
                             ),
                             SizedBox(width: 20),
                             IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: Icon(Icons.forward_10),
-                              onPressed: () {
-                                int durationInMilliseconds = players[widget.playerId]!.position.duration?.inMilliseconds ?? 0;
-                                int positionInMilliseconds = players[widget.playerId]!.position.position?.inMilliseconds ?? 1;
-                                if( ( positionInMilliseconds+1000 ) <= durationInMilliseconds ){
-                                  positionInMilliseconds += 1000;
-                                  players[widget.playerId]!.seek(Duration(milliseconds:  positionInMilliseconds)).then((value) => setState(() {}));
-                                }
-                              }
-                            ),
+                                color: Colors.white,
+                                iconSize: 30,
+                                icon: Icon(Icons.forward_10),
+                                onPressed: () {
+                                  int durationInMilliseconds =
+                                      players[widget.playerId]!
+                                              .position
+                                              .duration
+                                              ?.inMilliseconds ??
+                                          0;
+                                  int positionInMilliseconds =
+                                      players[widget.playerId]!
+                                              .position
+                                              .position
+                                              ?.inMilliseconds ??
+                                          1;
+                                  if ((positionInMilliseconds + 1000) <=
+                                      durationInMilliseconds) {
+                                    positionInMilliseconds += 1000;
+                                    players[widget.playerId]!
+                                        .seek(Duration(
+                                            milliseconds:
+                                                positionInMilliseconds))
+                                        .then((value) => setState(() {}));
+                                  }
+                                }),
                             SizedBox(width: 50),
                             IconButton(
                               color: Colors.white,
