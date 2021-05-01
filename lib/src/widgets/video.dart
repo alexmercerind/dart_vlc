@@ -88,6 +88,9 @@ class Video extends StatefulWidget {
   // Thumb's glow color of the progress bar
   final Color? progressBarThumbGlowColor;
 
+  // TextStyle for the Progress Bar
+  final TextStyle progressBarTextStyle;
+
   // Active color of the volume slider
   final Color? volumeActiveColor;
 
@@ -99,6 +102,10 @@ class Video extends StatefulWidget {
 
   // Thumb color of the volume slider
   final Color? volumeThumbColor;
+
+  // if you want the progress bar to display the time left while playing
+  // instead of the total time, set this to true
+  final bool showTimeLeft;
 
   Video({
     required this.playerId,
@@ -116,6 +123,8 @@ class Video extends StatefulWidget {
     this.volumeThumbColor,
     this.progressBarThumbRadius = 10.0,
     this.progressBarThumbGlowRadius = 20.0,
+    this.showTimeLeft = false,
+    this.progressBarTextStyle = const TextStyle(),
     Key? key,
   }) : super(key: key);
 
@@ -183,6 +192,8 @@ class VideoState extends State<Video> {
         volumeInactiveColor: widget.volumeInactiveColor,
         volumeBackgroundColor: widget.volumeBackgroundColor,
         volumeThumbColor: widget.volumeThumbColor,
+        showTimeLeft: widget.showTimeLeft,
+        progressBarTextStyle: widget.progressBarTextStyle,
         child: this.videoFrameRawImage ??
             Container(
               color: Colors.black,
