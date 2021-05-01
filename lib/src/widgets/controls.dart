@@ -111,7 +111,7 @@ class _ControlState extends State<Control> {
                           padding:
                               EdgeInsets.only(bottom: 60, right: 20, left: 20),
                           child: StreamBuilder<PositionState>(
-                            stream: players[widget.playerId]!.positionStream,
+                            stream: players[widget.playerId]?.positionStream,
                             builder: (BuildContext context,
                                 AsyncSnapshot<PositionState> snapshot) {
                               final durationState = snapshot.data;
