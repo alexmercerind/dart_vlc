@@ -49,10 +49,6 @@ public:
 		this->state->index = 0;
 		this->state->isPlaying = this->mediaListPlayer.isPlaying();
 		this->state->isValid = this->mediaListPlayer.isValid();
-		
-		if (!autoStart) {
-			this->stop();
-		}
 	}
 
 	void play() {
@@ -60,14 +56,13 @@ public:
 	}
 
     void pause() {
-        this->mediaListPlayer.pause();
+		if(this->mediaListPlayer.isPlaying()){
+        	this->mediaListPlayer.pause();
+		}
     }
 
 	void playOrPause() {
-		if (this->mediaListPlayer.isPlaying())
-			this->mediaListPlayer.pause();
-		else
-			this->mediaListPlayer.play();
+		this->mediaListPlayer.pause();
 	}
 
     void stop() {
