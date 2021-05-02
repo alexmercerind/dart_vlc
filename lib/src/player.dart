@@ -138,6 +138,9 @@ class Player {
         'source': source.toMap(),
       },
     );
+    if(!autoStart){
+      await Future.delayed(Duration(milliseconds: 350), () => this.pause());
+    }
   }
 
   /// Plays opened [MediaSource],
