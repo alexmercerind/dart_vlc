@@ -6,6 +6,7 @@ import 'package:dart_vlc/src/mediaSource/media.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc/src/device.dart';
 
+
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
 /// Use [Player] constructor to create a new instance of a [Player].
@@ -72,8 +73,11 @@ class Player {
   /// Player player = await Player(id: 0);
   /// ```
   ///
-  Player({required int id, int videoWidth: 0, int videoHeight: 0}) {
+  Player({required int id, Device? device, int videoWidth: 0, int videoHeight: 0}) {
     this._isInstanceCreated = new Completer<bool>();
+    if( device is Device ){
+      this.setDevice( device );
+    }
     this.id = id;
     this.videoWidth = videoWidth;
     this.videoHeight = videoHeight;
