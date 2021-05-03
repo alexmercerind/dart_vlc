@@ -176,13 +176,13 @@ class _ControlState extends State<Control> {
                                               .position
                                               ?.inMilliseconds ??
                                           0;
-                                  if (!(positionInMilliseconds - 1000)
+                                  if (!(positionInMilliseconds - 10000)
                                       .isNegative)
-                                    positionInMilliseconds -= 1000;
+                                    positionInMilliseconds -= 10000;
                                   players[widget.playerId]!
                                       .seek(Duration(
                                           milliseconds: positionInMilliseconds))
-                                      .then((value) => setState(() {}));
+                                      .then((_) => setState(() {}));
                                 }),
                             SizedBox(width: 20),
                             IconButton(
@@ -194,7 +194,7 @@ class _ControlState extends State<Control> {
                                       : Icons.play_arrow),
                               onPressed: () => players[widget.playerId]!
                                   .playOrPause()
-                                  .then((value) => setState(() {})),
+                                  .then((_) => setState(() {})),
                             ),
                             SizedBox(width: 20),
                             IconButton(
@@ -214,14 +214,14 @@ class _ControlState extends State<Control> {
                                               .position
                                               ?.inMilliseconds ??
                                           1;
-                                  if ((positionInMilliseconds + 1000) <=
+                                  if ((positionInMilliseconds + 10000) <=
                                       durationInMilliseconds) {
-                                    positionInMilliseconds += 1000;
+                                    positionInMilliseconds += 10000;
                                     players[widget.playerId]!
                                         .seek(Duration(
                                             milliseconds:
                                                 positionInMilliseconds))
-                                        .then((value) => setState(() {}));
+                                        .then((_) => setState(() {}));
                                   }
                                 }),
                             SizedBox(width: 50),
