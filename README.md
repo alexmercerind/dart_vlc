@@ -236,14 +236,16 @@ sudo apt-get install vlc
 sudo apt-get install libvlc-dev
 ```
 On Fedora, enable RPMFusion repositories first:
+
 ```bash
 sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
 ```
 Then run:
+
 ```bash
 sudo dnf install vlc
 ```
-```
+```bash
 sudo dnf install vlc-devel
 ```
 
