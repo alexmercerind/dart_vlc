@@ -226,13 +226,27 @@ Record record = await Record.create(
 record.start();
 ```
 
-**NOTE:** For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. On debian based distros, run:
+**NOTE:** For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. 
+On debian based distros, run:
 
 ```bash
 sudo apt-get install vlc
 ```
 ```bash
 sudo apt-get install libvlc-dev
+```
+On Fedora, enable RPMFusion repositories first:
+
+```bash
+sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+```
+Then run:
+
+```bash
+sudo dnf install vlc
+```
+```bash
+sudo dnf install vlc-devel
 ```
 
 ## Example
