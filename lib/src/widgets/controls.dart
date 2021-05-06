@@ -236,7 +236,7 @@ class _ControlState extends State<Control> {
                       ),
                       Positioned(
                         right: 15,
-                        bottom: 5,
+                        bottom: 12.5,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -292,12 +292,15 @@ class _ControlState extends State<Control> {
 
   void _cancelAndRestartTimer() {
     _hideTimer?.cancel();
-    _startHideTimer();
 
-    setState(() {
-      _hideControls = false;
-      _displayTapped = true;
-    });
+    if (this.mounted) {
+      _startHideTimer();
+
+      setState(() {
+        _hideControls = false;
+        _displayTapped = true;
+      });
+    }
   }
 
   void _startHideTimer() {
