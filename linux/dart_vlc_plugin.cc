@@ -300,6 +300,13 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         player->setPlaylistMode(playlistMode);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
     }
+    else if(strcmp(method, "Player.setUserAgent") == 0){
+        int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
+        const char* userAgent = fl_value_get_string(fl_value_lookup_string(fl_method_call_get_args(method_call), "userAgent"));
+        Player* player = players->get(id);
+        player->setUserAgent(userAgent);
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+    }
     else if (strcmp(method, "Player.add") == 0) {
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         auto source = fl_value_lookup_string(fl_method_call_get_args(method_call), "source");

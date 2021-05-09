@@ -761,6 +761,24 @@ namespace {
             player->setPlaylistMode(playlistMode);
             method->returnNull();
         }
+        /*
+         * Sets user agent.
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'userAgent': 'curl/7.58.0'
+         * }
+         * 
+         */
+        else if (method->name == "Player.setUserAgent") {
+            int id = method->getArgument<int>("id");
+            std::string userAgent = method->getArgument<std::string>("userAgent");
+            Player* player = players->get(id);
+            player->setUserAgent(userAgent);
+            method->returnNull();
+        }
         /* Adds new `Media` to the end of the `Playlist` of the `Player`.
          *
          * Argument:
