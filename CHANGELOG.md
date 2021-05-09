@@ -1,3 +1,10 @@
+## 0.0.7
+
+- Added `Player.setUserAgent`.
+- Improved & fixed issues related to play/pause button in `Video` widget.
+- Fixed compilation issues on arch linux.
+- Fixes to device changing.
+
 ## 0.0.6
 
 **This new release of dart_vlc adds:**
