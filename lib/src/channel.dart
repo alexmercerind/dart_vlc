@@ -1,10 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dart_vlc/src/player.dart';
 import 'package:dart_vlc/src/widgets/video.dart';
+import 'package:dart_vlc/src/widgets/controls.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';
 
 /// Internally used map to keep [Player] instances & manage event streams.
 Map<int, Player> players = {};
+
+/// Internally used map to keep [ControlState] keys.
+Map<int, GlobalKey<ControlState>> controls = {};
 
 /// Internally used map to keep [Media] instances & manage [Media.metas].
 Map<int, Map<String, String>> mediaMetas = {};
@@ -54,6 +59,7 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
                 players[id]!.playback.isSeekable =
                     methodCall.arguments['isSeekable'];
                 players[id]!.playbackController.add(players[id]!.playback);
+                controls[id]?.currentState?.setPlaybackMode(players[id]!.playback.isPlaying);
                 break;
               }
             case 'completeEvent':
@@ -61,6 +67,7 @@ final MethodChannel channel = new MethodChannel('dart_vlc')
                 players[id]!.playback.isCompleted =
                     methodCall.arguments['isCompleted'];
                 players[id]!.playbackController.add(players[id]!.playback);
+                controls[id]?.currentState?.setPlaybackMode(false);
                 break;
               }
             case 'volumeEvent':

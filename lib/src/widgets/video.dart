@@ -1,3 +1,4 @@
+import 'package:dart_vlc/src/channel.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
@@ -133,6 +134,7 @@ class Video extends StatefulWidget {
 
 class VideoState extends State<Video> {
   Widget? videoFrameRawImage;
+  GlobalKey<ControlState> controlKey = new GlobalKey<ControlState>();
 
   Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
     Completer<ui.Image> imageCompleter = new Completer<ui.Image>();
@@ -165,6 +167,7 @@ class VideoState extends State<Video> {
   @override
   void initState() {
     super.initState();
+    if (widget.showControls) controls[widget.playerId] = this.controlKey;
     videoStreamControllers[widget.playerId] =
         new StreamController<VideoFrame>.broadcast();
     videoStreamControllers[widget.playerId]
@@ -179,6 +182,7 @@ class VideoState extends State<Video> {
   Widget build(BuildContext context) {
     if (widget.showControls) {
       return Control(
+        key: this.controlKey,
         playerId: widget.playerId,
         height: widget.height,
         width: widget.width,

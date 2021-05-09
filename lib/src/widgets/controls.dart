@@ -45,13 +45,28 @@ class Control extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ControlState createState() => _ControlState();
+  ControlState createState() => ControlState();
 }
 
-class _ControlState extends State<Control> {
+class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   bool _hideControls = true;
   bool _displayTapped = false;
   Timer? _hideTimer;
+  late AnimationController playPauseController;
+
+  @override
+  void initState() { 
+    super.initState();
+    this.playPauseController = new AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 400)
+    );
+  }
+
+  void setPlaybackMode(bool isPlaying) {
+    if (isPlaying) this.playPauseController.forward();
+    else this.playPauseController.reverse();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,13 +203,22 @@ class _ControlState extends State<Control> {
                             IconButton(
                               color: Colors.white,
                               iconSize: 30,
-                              icon: Icon(
-                                  players[widget.playerId]!.playback.isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow),
-                              onPressed: () => players[widget.playerId]!
-                                  .playOrPause()
-                                  .then((_) => setState(() {})),
+                              icon: AnimatedIcon(
+                                icon: AnimatedIcons.play_pause,
+                                progress: this.playPauseController
+                              ),
+                              onPressed: () {
+                                if (players[widget.playerId]!.playback.isPlaying) {
+                                  players[widget.playerId]!
+                                  .pause()
+                                  .then((_) => this.playPauseController.reverse());
+                                }
+                                else {
+                                  players[widget.playerId]!
+                                  .play()
+                                  .then((_) => this.playPauseController.forward());
+                                }
+                              },
                             ),
                             SizedBox(width: 20),
                             IconButton(
