@@ -307,6 +307,7 @@ Done
 - `Broadcast` class for broadcasting `Media`.
 - `Record` class for recording `Media`.
 - `Chromecast` class.
+- Adding headers for `Media.network` (Not possible, added user agent).
 
 Under progress or planned features (irrespective of order)...
 
@@ -316,12 +317,13 @@ Under progress or planned features (irrespective of order)...
 - Making things more efficient.
 - Supporting native volume control/lock screen notifications (Maybe).
 - Bringing project on other platforms like Android/iOS (Maybe).
-- Adding headers for MRLs (Maybe).
 - D-Bus MPRIS controls for `Media` playback control (Maybe).
 
 ## Acknowledgements
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
+
+Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](http://flutter.dev) team to review code & help me fix the loopholes.
 
 Thanks to following members of libVLC community to give me bit of look & advice about how things work:
 
@@ -330,7 +332,6 @@ Thanks to following members of libVLC community to give me bit of look & advice 
 - [@mfkl](https://github.com/mfkl)
 - [@caprica](https://github.com/caprica)
 
-Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](http://flutter.dev) team to review code & help me fix the loopholes. 
 
 
 ## Contributions
