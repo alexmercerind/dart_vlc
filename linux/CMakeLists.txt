@@ -54,7 +54,7 @@ add_custom_command(
 target_link_libraries(${PLUGIN_NAME} PRIVATE
   flutter
   PkgConfig::GTK
-  "/usr/lib/x86_64-linux-gnu/libvlc.so"
+  vlc
 )
 set(
   dart_vlc_bundled_libraries
