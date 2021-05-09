@@ -274,6 +274,18 @@ class Player {
     );
   }
 
+  /// Sets user agent for dart_vlc player.
+  Future<void> setUserAgent(String userAgent) async {
+    await this._isInstanceCreated.future;
+    await channel.invokeMethod(
+      'Player.setUserAgent',
+      {
+        'id': this.id,
+        'userAgent': userAgent
+      },
+    );
+  }
+
   /// Appends [Media] to the [Playlist] of the [Player] instance.
   Future<void> add(Media source) async {
     await this._isInstanceCreated.future;

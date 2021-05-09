@@ -121,6 +121,10 @@ public:
 		);
 	}
 
+	void setUserAgent(std::string userAgent) {
+		this->instance.setUserAgent("Dart VLC", userAgent);
+	}
+
 	void add(Media* media) {
 		this->isPlaylistModified = true;
 		this->state->medias->medias.emplace_back(media);
