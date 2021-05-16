@@ -86,6 +86,7 @@ public:
 		this->metas["artist"]      = media.meta(libvlc_meta_Artist);
 		this->metas["genre"]       = media.meta(libvlc_meta_Genre);
 		this->metas["copyright"]   = media.meta(libvlc_meta_Copyright);
+		this->metas["album"]       = media.meta(libvlc_meta_Album);
 		this->metas["trackNumber"] = media.meta(libvlc_meta_TrackNumber);
 		this->metas["description"] = media.meta(libvlc_meta_Description);
 		this->metas["rating"]      = media.meta(libvlc_meta_Rating);
