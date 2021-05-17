@@ -153,6 +153,7 @@ abstract class Media extends MediaSource {
     this.metas['artist'] = metas['artist'];
     this.metas['genre'] = metas['genre'];
     this.metas['copyright'] = metas['copyright'];
+    this.metas['album'] = metas['album'];
     this.metas['trackNumber'] = metas['trackNumber'];
     this.metas['description'] = metas['description'];
     this.metas['rating'] = metas['rating'];

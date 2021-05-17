@@ -63,7 +63,7 @@ class Player {
   GeneralState general = new GeneralState();
 
   /// Stream to listen to volume & rate state of the [Player] instance.
-  late Stream<GeneralState> generateStream;
+  late Stream<GeneralState> generalStream;
 
   /// Creates a new [Player] instance.
   ///
@@ -88,7 +88,7 @@ class Player {
     this.playbackController = StreamController<PlaybackState>.broadcast();
     this.playbackStream = this.playbackController.stream;
     this.generalController = StreamController<GeneralState>.broadcast();
-    this.generateStream = this.generalController.stream;
+    this.generalStream = this.generalController.stream;
     players[id] = this;
     this._create();
   }

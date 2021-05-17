@@ -42,7 +42,7 @@ class _DartVLCState extends State<DartVLC> {
       this.player?.playbackStream.listen((playback) {
         this.setState(() => this.playback = playback);
       });
-      this.player?.generateStream.listen((general) {
+      this.player?.generalStream.listen((general) {
         this.setState(() => this.general = general);
       });
     }
