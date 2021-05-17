@@ -10,6 +10,7 @@
 
 #include "../mediasource/playlist.hpp"
 #include "../device.hpp"
+#include "../equalizer.hpp"
 
 
 class PlayerState {
@@ -27,4 +28,5 @@ public:
 	float rate = 1.0;
 	bool isPlaylist = false;
 	Device* device = nullptr;
+	Equalizer* equalizer = nullptr;
 };

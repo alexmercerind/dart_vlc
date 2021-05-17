@@ -121,6 +121,11 @@ public:
 		);
 	}
 
+	void setEqualizer(Equalizer* equalizer) {
+		this->mediaPlayer.setEqualizer(equalizer->equalizer);
+		this->state->equalizer = equalizer;
+	}
+
 	void setUserAgent(std::string userAgent) {
 		this->instance.setUserAgent("Dart VLC", userAgent);
 	}
