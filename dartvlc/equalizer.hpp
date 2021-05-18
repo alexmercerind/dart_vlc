@@ -46,7 +46,7 @@ public:
 
 	Equalizer() {
 		this->equalizer = VLC::Equalizer();
-		for (int index = 0; index < this->equalizer.bandCount(); index++) this->bands[this->equalizer.bandFrequency(index)] = index;
+		for (uint32_t index = 0; index < this->equalizer.bandCount(); index++) this->bands[this->equalizer.bandFrequency(index)] = index;
 		this->refresh();
 	}
 
@@ -54,7 +54,7 @@ public:
 		this->equalizer = VLC::Equalizer(
 			static_cast<int>(mode)
 		);
-		for (int index = 0; index < this->equalizer.bandCount(); index++) this->bands[this->equalizer.bandFrequency(index)] = index;
+		for (uint32_t index = 0; index < this->equalizer.bandCount(); index++) this->bands[this->equalizer.bandFrequency(index)] = index;
 		this->refresh();
 	}
 
@@ -76,7 +76,7 @@ private:
 	std::map<float, int> bands;
 
 	void refresh() {
-		for (int index = 0; index < this->equalizer.bandCount(); index++) this->bandAmps[this->equalizer.bandFrequency(index)] = this->equalizer.amp(index);
+		for (uint32_t index = 0; index < this->equalizer.bandCount(); index++) this->bandAmps[this->equalizer.bandFrequency(index)] = this->equalizer.amp(index);
 		this->preAmp = this->equalizer.preamp();
 	}
 
