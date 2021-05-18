@@ -84,5 +84,28 @@ private:
 };
 
 
+class Equalizers {
+public:
+	Equalizer* get(int id) {
+		return this->equalizers[id];
+	}
+
+	int createEmpty() {
+		this->equalizers[this->equalizers.size()] = new Equalizer();
+		return this->equalizers.size();
+	}
+
+	int createMode(EqualizerMode mode) {
+		this->equalizers[this->equalizers.size()] = new Equalizer(mode);
+		return this->equalizers.size();
+	}
+
+private:
+	std::map<int, Equalizer*> equalizers;
+};
+
+
+Equalizers* equalizers = new Equalizers();
+
 
 #endif

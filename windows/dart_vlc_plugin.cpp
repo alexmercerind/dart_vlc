@@ -901,6 +901,24 @@ namespace {
             player->setDevice(device);
             method->returnNull();
         }
+        /* Sets the playback device.
+         *
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'equalizerId': 0,
+         * }
+         * 
+         */
+        else if (method->name == "Player.setEqualizer") {
+            int id = method->getArgument<int>("id");
+            int equalizerId = method->getArgument<int>("equalizerId");
+            Equalizer* equalizer = equalizers->get(equalizerId);
+            Player* player = players->get(id);
+            player->setEqualizer(equalizer);
+            method->returnNull();
+        }
         /* Gets List of all available devices.
          *
          * Argument:
@@ -1166,7 +1184,119 @@ namespace {
             record->dispose();
             method->returnNull();
         }
-
+        /*
+         * Creates new empty [Equalizer] instance.
+         * 
+         * Return:
+         * 
+         * {
+         *      'id': 0,
+         *      'preAmp': 10.0,
+         *      'bandAmps': {
+         *          10.0: 20.0,
+         *          30.0, 240.0,
+         *          ...
+         *      }
+         * }
+         * 
+        */
+        else if (method->name == "Equalizer.createEmpty") {
+            int id = equalizers->createEmpty();
+            Equalizer* equalizer = equalizers->get(id);
+            flutter::EncodableMap _bandAmps = flutter::EncodableMap();
+            for (const auto &[band, amp]: equalizer->bandAmps) {
+                _bandAmps[flutter::EncodableValue(band)] = flutter::EncodableValue(amp);
+            }
+            return method->returnValue<flutter::EncodableValue>(
+                flutter::EncodableValue(
+                    flutter::EncodableMap(
+                        {
+                            {flutter::EncodableValue("id"), flutter::EncodableValue(id)},
+                            {flutter::EncodableValue("preAmp"), flutter::EncodableValue(equalizer->preAmp)},
+                            {flutter::EncodableValue("bandAmps"), flutter::EncodableValue(_bandAmps)},
+                        }
+                    )
+                )
+            );
+        }
+        /*
+         * Creates new empty [Equalizer] instance.
+         * 
+         * Argument: {
+         *      'mode': 0
+         * }
+         * 
+         * Return:
+         * 
+         * {
+         *      'id': 0,
+         *      'preAmp': 10.0,
+         *      'bandAmps': {
+         *          10.0: 20.0,
+         *          67.5, -20.0,
+         *          ...
+         *      }
+         * }
+         * 
+        */
+        else if (method->name == "Equalizer.createMode") {
+            int mode = method->getArgument<int>("mode");
+            int id = equalizers->createMode(
+                static_cast<EqualizerMode>(mode)
+            );
+            Equalizer* equalizer = equalizers->get(id);
+            flutter::EncodableMap _bandAmps = flutter::EncodableMap();
+            for (const auto &[band, amp]: equalizer->bandAmps) {
+                _bandAmps[flutter::EncodableValue(band)] = flutter::EncodableValue(amp);
+            }
+            return method->returnValue<flutter::EncodableValue>(
+                flutter::EncodableValue(
+                    flutter::EncodableMap(
+                        {
+                            {flutter::EncodableValue("id"), flutter::EncodableValue(id)},
+                            {flutter::EncodableValue("preAmp"), flutter::EncodableValue(equalizer->preAmp)},
+                            {flutter::EncodableValue("bandAmps"), flutter::EncodableValue(_bandAmps)},
+                        }
+                    )
+                )
+            );
+        }
+        /*
+         * Sets amp for particular band of a [Equalizer].
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'band': 10.0,
+         *      'amp': 20.0,
+         * }
+         * 
+        */
+        else if (method->name == "Equalizer.setBandAmp") {
+            float id = method->getArgument<float>("id");
+            float band = method->getArgument<float>("band");
+            float amp = method->getArgument<float>("amp");
+            equalizers->get(id)->setBandAmp(band, amp);
+            return method->returnNull();
+        }
+        /*
+         * Sets preamp of a [Equalizer].
+         * 
+         * Argument:
+         * 
+         * {
+         *      'id': 0,
+         *      'preAmp': 20.0,
+         * }
+         * 
+        */
+        else if (method->name == "Equalizer.setPreAmp") {
+            float id = method->getArgument<float>("id");
+            float preAmp = method->getArgument<float>("preAmp");
+            equalizers->get(id)->setPreAmp(preAmp);
+            return method->returnNull();
+        }
         else {
             method->returnNotImplemented();
         }

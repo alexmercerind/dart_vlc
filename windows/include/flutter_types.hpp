@@ -35,6 +35,11 @@ public:
     void returnValue(T value);
 
     template <>
+    void returnValue<flutter::EncodableValue>(flutter::EncodableValue value) {
+        this->result->Success(value);
+    }
+
+    template <>
     void returnValue<int>(int value) {
         this->result->Success(
             flutter::EncodableValue(value)
