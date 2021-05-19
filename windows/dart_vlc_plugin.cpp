@@ -1274,7 +1274,7 @@ namespace {
          * 
         */
         else if (method->name == "Equalizer.setBandAmp") {
-            float id = method->getArgument<float>("id");
+            int id = method->getArgument<int>("id");
             float band = method->getArgument<float>("band");
             float amp = method->getArgument<float>("amp");
             equalizers->get(id)->setBandAmp(band, amp);
@@ -1292,7 +1292,7 @@ namespace {
          * 
         */
         else if (method->name == "Equalizer.setPreAmp") {
-            float id = method->getArgument<float>("id");
+            int id = method->getArgument<int>("id");
             float preAmp = method->getArgument<float>("preAmp");
             equalizers->get(id)->setPreAmp(preAmp);
             return method->returnNull();

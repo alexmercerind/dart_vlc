@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/channel.dart';
+import 'package:dart_vlc/src/equalizer.dart';
 import 'package:dart_vlc/src/playerState/playerState.dart';
 import 'package:dart_vlc/src/mediaSource/media.dart';
 import 'package:dart_vlc/src/mediaSource/mediaSource.dart';
@@ -346,6 +347,18 @@ class Player {
       {
         'id': this.id,
         'device': device.toMap(),
+      },
+    );
+  }
+
+  /// Sets [Equalizer] for the [Player].
+  Future<void> setEqualizer(Equalizer equalizer) async {
+    await this._isInstanceCreated.future;
+    await channel.invokeMethod(
+      'Player.setEqualizer',
+      {
+        'id': this.id,
+        'equalizerId': equalizer.id,
       },
     );
   }
