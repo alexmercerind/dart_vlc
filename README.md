@@ -7,7 +7,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.0.6
+  dart_vlc: ^0.0.8
 ```
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
@@ -16,6 +16,8 @@ dependencies:
 
 
 ## Support
+
+Consider supporting the project by starring the repository or buying me a coffee.
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
@@ -77,6 +79,15 @@ player.pause();
 player.playOrPause();
 
 player.stop();
+```
+
+#### Traverse through the playlist.
+```dart
+player.next();
+
+player.back();
+
+player.jump(10);
 ```
 
 #### Manipulate an already playing playlist.
@@ -185,6 +196,32 @@ player.generalStream.listen((GeneralState state) {
   state.volume;
   state.rate;
 });
+```
+
+#### Set an equalizer.
+
+Create using preset.
+
+```dart
+Equalizer equalizer = await Equalizer.createMode(EqualizerMode.party);
+player.setEqualizer(equalizer);
+```
+
+Create custom equalizer.
+
+```dart
+Equalizer equalizer = await Equalizer.createEmpty();
+equalizer.setPreAmp(10.0);
+equalizer.setBandAmp(31.25, -10.0);
+equalizer.setBandAmp(100.0, -10.0);
+player.setEqualizer(equalizer);
+```
+
+Get equalizer state.
+
+```dart
+equalizer.preAmp;
+equalizer.bandAmps;
 ```
 
 #### Broadcast a media.
@@ -307,6 +344,7 @@ Done
 - `Broadcast` class for broadcasting `Media`.
 - `Record` class for recording `Media`.
 - `Chromecast` class.
+- `Equalizer` support.
 - Adding headers for `Media.network` (Not possible, added user agent).
 
 Under progress or planned features (irrespective of order)...
