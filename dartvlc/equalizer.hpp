@@ -91,13 +91,15 @@ public:
 	}
 
 	int createEmpty() {
-		this->equalizers[static_cast<int>(this->equalizers.size())] = new Equalizer();
-		return static_cast<int>(this->equalizers.size());
+		int id = static_cast<int>(this->equalizers.size());
+		this->equalizers[id] = new Equalizer();
+		return id;
 	}
 
 	int createMode(EqualizerMode mode) {
-		this->equalizers[static_cast<int>(this->equalizers.size())] = new Equalizer(mode);
-		return static_cast<int>(this->equalizers.size());
+		int id = static_cast<int>(this->equalizers.size());
+		this->equalizers[id] = new Equalizer(mode);
+		return id;
 	}
 
 private:
