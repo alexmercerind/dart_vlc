@@ -20,6 +20,8 @@
 #ifndef Media_HEADER
 #define Media_HEADER
 
+VLC::Instance instance = VLC::Instance(0, nullptr);
+
 
 class Media: public MediaSource {
 public:
@@ -69,7 +71,6 @@ public:
 	}
 
 	void parse(int timeout) {
-		VLC::Instance instance = VLC::Instance(0, nullptr);
 		VLC::Media media = VLC::Media(instance, this->location, VLC::Media::FromLocation);
 		std::promise<bool>* isParsed = new std::promise<bool>();
 		media.eventManager().onParsedChanged(
@@ -81,7 +82,7 @@ public:
 			VLC::Media::ParseFlags::Network,
 			timeout
 		);
-		isParsed->get_future().get();
+		isParsed->get_future().wait();
 		this->metas["title"]       = media.meta(libvlc_meta_Title);
 		this->metas["artist"]      = media.meta(libvlc_meta_Artist);
 		this->metas["genre"]       = media.meta(libvlc_meta_Genre);
@@ -106,6 +107,7 @@ public:
 		this->metas["discNumber"]  = media.meta(libvlc_meta_DiscNumber);
 		this->metas["discTotal"]   = media.meta(libvlc_meta_DiscTotal);
 		this->metas["duration"]    = std::to_string(media.duration());
+		delete isParsed;
 	}
 
 	std::string mediaSourceType() {
