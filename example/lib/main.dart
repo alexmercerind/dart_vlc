@@ -13,7 +13,7 @@ class DartVLC extends StatefulWidget {
 }
 
 class _DartVLCState extends State<DartVLC> {
-  Player? player = Player(
+  Player player = Player(
     id: 0,
     videoWidth: 480,
     videoHeight: 360,
@@ -33,16 +33,16 @@ class _DartVLCState extends State<DartVLC> {
   void initState() {
     super.initState();
     if (this.mounted) {
-      this.player?.currentStream.listen((current) {
+      this.player.currentStream.listen((current) {
         this.setState(() => this.current = current);
       });
-      this.player?.positionStream.listen((position) {
+      this.player.positionStream.listen((position) {
         this.setState(() => this.position = position);
       });
-      this.player?.playbackStream.listen((playback) {
+      this.player.playbackStream.listen((playback) {
         this.setState(() => this.playback = playback);
       });
-      this.player?.generalStream.listen((general) {
+      this.player.generalStream.listen((general) {
         this.setState(() => this.general = general);
       });
     }
@@ -52,6 +52,10 @@ class _DartVLCState extends State<DartVLC> {
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     this.devices = await Devices.all;
+    Equalizer equalizer = await Equalizer.createMode(EqualizerMode.live);
+    await equalizer.setPreAmp(10.0);
+    await equalizer.setBandAmp(31.25, 10.0);
+    player.setEqualizer(equalizer);
     this.setState(() {});
   }
 
@@ -238,7 +242,7 @@ class _DartVLCState extends State<DartVLC> {
                                     children: [
                                       ElevatedButton(
                                         onPressed: () => this.setState(() {
-                                          this.player?.open(
+                                          this.player.open(
                                             new Playlist(
                                               medias: this.medias,
                                               playlistMode:PlaylistMode.single
@@ -296,7 +300,7 @@ class _DartVLCState extends State<DartVLC> {
                                 max: this.position.duration?.inMilliseconds.toDouble() ?? 1.0,
                                 value: this.position.position?.inMilliseconds.toDouble() ?? 0.0,
                                 onChanged: (double position) =>
-                                  this.player?.seek(
+                                  this.player.seek(
                                     Duration(milliseconds: position.toInt())
                                   )
                               ),
@@ -387,7 +391,7 @@ class _DartVLCState extends State<DartVLC> {
                                           ),
                                         ),
                                         onTap: () =>
-                                            this.player?.setDevice(device),
+                                            this.player.setDevice(device),
                                       ),
                                     )
                                     .toList(),
@@ -530,7 +534,7 @@ class _DartVLCState extends State<DartVLC> {
                               Row(
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () => this.player?.play(),
+                                    onPressed: () => this.player.play(),
                                     child: Text(
                                       'play',
                                       style: TextStyle(
@@ -540,7 +544,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player?.pause(),
+                                    onPressed: () => this.player.pause(),
                                     child: Text(
                                       'pause',
                                       style: TextStyle(
@@ -550,7 +554,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player?.playOrPause(),
+                                    onPressed: () => this.player.playOrPause(),
                                     child: Text(
                                       'playOrPause',
                                       style: TextStyle(
@@ -560,7 +564,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player?.stop(),
+                                    onPressed: () => this.player.stop(),
                                     child: Text(
                                       'stop',
                                       style: TextStyle(
@@ -570,7 +574,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player?.next(),
+                                    onPressed: () => this.player.next(),
                                     child: Text(
                                       'next',
                                       style: TextStyle(
@@ -580,7 +584,7 @@ class _DartVLCState extends State<DartVLC> {
                                   ),
                                   SizedBox(width: 12.0),
                                   ElevatedButton(
-                                    onPressed: () => this.player?.back(),
+                                    onPressed: () => this.player.back(),
                                     child: Text(
                                       'back',
                                       style: TextStyle(
@@ -605,9 +609,9 @@ class _DartVLCState extends State<DartVLC> {
                               Slider(
                                 min: 0.0,
                                 max: 1.0,
-                                value: this.player?.general.volume ?? 0.5,
+                                value: this.player.general.volume,
                                 onChanged: (volume) {
-                                  this.player?.setVolume(volume);
+                                  this.player.setVolume(volume);
                                   this.setState(() {});
                                 },
                               ),
@@ -619,9 +623,9 @@ class _DartVLCState extends State<DartVLC> {
                               Slider(
                                 min: 0.5,
                                 max: 1.5,
-                                value: this.player?.general.rate ?? 0.5,
+                                value: this.player.general.rate,
                                 onChanged: (rate) {
-                                  this.player?.setRate(rate);
+                                  this.player.setRate(rate);
                                   this.setState(() {});
                                 },
                               ),
@@ -666,9 +670,7 @@ class _DartVLCState extends State<DartVLC> {
                                       finalIndex = this.current.medias.length;
                                     if (initialIndex < finalIndex) finalIndex--;
 
-                                    await this
-                                        .player
-                                        ?.move(initialIndex, finalIndex);
+                                    await this.player.move(initialIndex, finalIndex);
                                     this.setState(() {});
                                   },
                                   scrollDirection: Axis.vertical,
