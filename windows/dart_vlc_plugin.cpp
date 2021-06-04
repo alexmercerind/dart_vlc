@@ -382,7 +382,8 @@ namespace {
             int id = method->getArgument<int>("id");
             int videoWidth = method->getArgument<int>("videoWidth");
             int videoHeight = method->getArgument<int>("videoHeight");
-            Player* player = players->get(id);
+            std::vector<std::string> commandlineArguments = method->getArgument<std::vector<std::string>>("commandlineArguments");
+            Player* player = players->get(id, commandlineArguments);
             player->videoWidth = videoWidth;
             player->videoHeight = videoHeight;
             player->onPlay(

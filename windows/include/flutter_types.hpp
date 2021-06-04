@@ -114,6 +114,14 @@ public:
     }
 
     template <>
+    std::vector<std::string> getArgument<std::vector<std::string>>(const char* argument) {
+        std::vector<std::string> vector;
+        flutter::EncodableList list = std::get<flutter::EncodableList>(this->arguments[flutter::EncodableValue(argument)]);
+        for (const auto &value: list) vector.emplace_back(std::get<std::string>(value));
+        return vector;
+    }
+
+    template <>
     std::map<std::string, std::string> getArgument<std::map<std::string, std::string>>(const char* argument) {
         std::map<std::string, std::string> map;
         flutter::EncodableMap value = std::get<flutter::EncodableMap>(this->arguments[flutter::EncodableValue(argument)]);

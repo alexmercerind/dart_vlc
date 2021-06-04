@@ -99,7 +99,12 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self, FlMethodCall
         int id = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "id"));
         int videoWidth = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "videoWidth"));
         int videoHeight = fl_value_get_int(fl_value_lookup_string(fl_method_call_get_args(method_call), "videoHeight"));
-        Player* player = players->get(id);
+        auto commandline = fl_value_lookup_string(fl_method_call_get_args(method_call), "commandlineArguments");
+        std::vector<std::string> commandline;
+        for (int index = 0; index < fl_value_get_length(commandlineArguments); index++) {
+            commandline.emblace_back(fl_value_get_string(fl_value_get_list_value(commandlineArguments, index)));
+        }
+        Player* player = players->get(id, commandline);
         player->videoWidth = videoWidth;
         player->videoHeight = videoHeight;
         player->onOpen(
