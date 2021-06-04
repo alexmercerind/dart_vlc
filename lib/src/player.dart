@@ -34,13 +34,16 @@ import 'package:dart_vlc/src/device.dart';
 ///
 class Player {
   /// Id associated with the [Player] instance.
-  late int id;
+  final int id;
 
   /// Width of the [Video] frames to be extracted. Higher value may lead to degraded performance.
   late int videoWidth;
 
   /// Height of the [Video] frames to be extracted. Higher value may lead to degraded performance.
   late int videoHeight;
+
+  /// Commandline arguments passed to this instance of [Player].
+  List<String> commandlineArguments = <String>[];
 
   /// State of the current & opened [MediaSource] in [Player] instance.
   CurrentState current = new CurrentState();
@@ -74,12 +77,12 @@ class Player {
   /// Player player = await Player(id: 0);
   /// ```
   ///
-  Player({required int id, Device? device, int videoWidth: 0, int videoHeight: 0}) {
+  Player({required this.id, int videoWidth: 0, int videoHeight: 0, Device? device, List<String>? commandlineArguments}) {
     this._isInstanceCreated = new Completer<bool>();
-    if( device is Device ){
-      this.setDevice( device );
+    if (device is Device) {
+      this.setDevice(device);
     }
-    this.id = id;
+    if (commandlineArguments != null) this.commandlineArguments = commandlineArguments;
     this.videoWidth = videoWidth;
     this.videoHeight = videoHeight;
     this.currentController = StreamController<CurrentState>.broadcast();
@@ -384,9 +387,10 @@ class Player {
     await channel.invokeMethod(
       'Player.create',
       {
-        'id': id,
-        'videoWidth': videoWidth,
-        'videoHeight': videoHeight,
+        'id': this.id,
+        'videoWidth': this.videoWidth,
+        'videoHeight': this.videoHeight,
+        'commandlineArguments': this.commandlineArguments,
       },
     );
     this._isInstanceCreated.complete(true);
