@@ -24,7 +24,7 @@ public:
 	bool isCompleted = false;
 	int position = 0;
 	int duration = 0;
-	float volume = 0.5;
+	float volume = 1.0;
 	float rate = 1.0;
 	bool isPlaylist = false;
 	Device* device = nullptr;

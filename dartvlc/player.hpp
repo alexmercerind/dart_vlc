@@ -16,14 +16,22 @@
 
 class Player: public PlayerSetters {
 public:
-	Player(int id) {
-		this->instance = VLC::Instance(0, nullptr);
+	Player(int id, std::vector<std::string> commandlineArguments = {}) {
+		if (commandlineArguments.empty()) {
+			this->instance = VLC::Instance(0, nullptr);
+		}
+		else {
+			char** args = new char*[commandlineArguments.size()];
+			for (int index = 0; index < commandlineArguments.size(); index++)  args[index] = commandlineArguments[index].data();
+			this->instance = VLC::Instance(static_cast<int>(commandlineArguments.size()), args);
+		}
 		this->mediaPlayer = VLC::MediaPlayer(this->instance);
 		this->mediaListPlayer = VLC::MediaListPlayer(this->instance);
 		this->mediaList = VLC::MediaList(this->instance);
 		this->mediaListPlayer.setMediaPlayer(this->mediaPlayer);
 		this->state = new PlayerState();
 		this->state->id = id;
+		this->mediaPlayer.setVolume(100);
 	}
 
 	void onEvent(std::function<void(void)> callback) {
@@ -51,9 +59,9 @@ public:
 
 class Players {
 public:
-	Player* get(int id) {
+	Player* get(int id, std::vector<std::string> commandlineArguments = {}) {
 		if (this->players.find(id) == this->players.end()) {
-			this->players[id] = new Player(id);
+			this->players[id] = new Player(id, commandlineArguments);
 		}
 		return this->players[id];
 	}
