@@ -1,6 +1,6 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<h4 align="center">Bringing power of VLC to Flutter & Dart apps on Windows & Linux</h4>
-
+<h4 align="center">Flutter 🎞 media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
+<h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
 ## Installation
 
@@ -20,6 +20,8 @@ dependencies:
 Consider supporting the project by starring the repository or buying me a coffee.
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
+
+Looking for contributors for macOS port.
 
 ## Documentation
 
