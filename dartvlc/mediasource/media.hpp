@@ -55,7 +55,7 @@ public:
 		Media* media = new Media();
 		media->id = id;
 		media->resource = path;
-		media->location = "file:///" + std::filesystem::temp_directory_path().u8string() + path;
+		media->location = "file:///" + std::filesystem::temp_directory_path().u8string() + "/" + path;
 		media->mediaType = "MediaType.asset";
 		if (parse) media->parse(timeout);
 		return media;
