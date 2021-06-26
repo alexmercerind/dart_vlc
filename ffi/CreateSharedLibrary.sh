@@ -1,6 +1,6 @@
 # dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
 #
-# Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
+# Hitesh Kumar Saini & contributors.
 # https://github.com/alexmercerind
 # alexmercerind@gmail.com
 # GNU Lesser General Public License v2.1
@@ -13,7 +13,7 @@
 # Assuming include directory contains libVLC++ headers.
 # Setting C++ standard to 17 for std::filesystem.
 #
-g++ -c source/main.cpp -o main.o -fPIC -I./ -I./../linux/include -std=c++17
+g++ -c native/main.cpp -o main.o -fPIC -I./ -I./../linux/include -std=c++17
 
 # Create shared library from the generated object code.
 # Linking libVLC shared library.
