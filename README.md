@@ -57,6 +57,14 @@ Playlist playlist = new Playlist(
 ```
 
 #### Open a media or playlist into a player.
+
+```dart
+player.open(
+  await Media.file(new File('C:/music0.mp3')),
+  autoStart: true, // default
+);
+```
+
 ```dart
 player.open(
   new Playlist(
@@ -66,7 +74,7 @@ player.open(
       await Media.file(new File('C:/music2.mp3')),
     ],
   ),
-  autoStart: true, // default
+  autoStart: false,
 );
 ```
 
@@ -382,7 +390,7 @@ Contributions to the project are open, it will be appreciated if you discuss the
 
 ## License
 
-Copyright (C) 2021, Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
+Copyright (C) 2021, Hitesh Kumar Saini.
 
 This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
 
