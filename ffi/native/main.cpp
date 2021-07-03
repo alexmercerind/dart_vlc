@@ -1,7 +1,7 @@
 /*
  * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
  * 
- * Hitesh Kumar Saini & contributors.
+ * Hitesh Kumar Saini
  * https://github.com/alexmercerind
  * alexmercerind@gmail.com
  * 
@@ -78,7 +78,7 @@ EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceS
         else if (strcmp(type, "MediaType.network") == 0)
             media = Media::network(id, resource, false);
         else
-            media = Media::asset(id, resource, false);
+            media = Media::directShow(id, resource);
         medias.emplace_back(media);
     }
     player->open(
@@ -137,6 +137,11 @@ EXPORT void Player_setRate(int id, float rate) {
     player->setRate(rate);
 }
 
+EXPORT void Player_setUserAgent(int id, const char* userAgent) {
+    Player* player = players->get(id);
+    player->setUserAgent(userAgent);
+}
+
 EXPORT void Player_setPlaylistMode(int id, const char* mode) {
     Player* player = players->get(id);
     PlaylistMode playlistMode;
@@ -144,20 +149,20 @@ EXPORT void Player_setPlaylistMode(int id, const char* mode) {
         playlistMode = PlaylistMode::repeat;
     else if (strcmp(mode, "playlistMode.loop") == 0)
         playlistMode = PlaylistMode::loop;
-    else
+    else if (strcmp(mode, "playlistMode.single") == 0)
         playlistMode = PlaylistMode::single;
     player->setPlaylistMode(playlistMode);
 }
 
-EXPORT void Player_add(int id, int mediaId, const char* type, const char* resource) {
+EXPORT void Player_add(int id, const char* type, const char* resource) {
     Player* player = players->get(id);
     Media* media;
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(mediaId, resource, false);
+        media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(mediaId, resource, false);
-    else
-        media = Media::asset(mediaId, resource, false);
+        media = Media::network(0, resource, false);
+    else if (strcmp(type, "MediaType.directShow") == 0)
+        media = Media::directShow(0, resource);
     player->add(media);
 }
 
@@ -166,15 +171,15 @@ EXPORT void Player_remove(int id, int index) {
     player->remove(index);
 }
 
-EXPORT void Player_insert(int id, int index, int mediaId, const char* type, const char* resource) {
+EXPORT void Player_insert(int id, int index, const char* type, const char* resource) {
     Player* player = players->get(id);
     Media* media;
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(mediaId, resource, false);
+        media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(mediaId, resource, false);
-    else
-        media = Media::asset(mediaId, resource, false);
+        media = Media::network(0, resource, false);
+    else if (strcmp(type, "MediaType.directShow") == 0)
+        media = Media::directShow(0, resource);
     player->insert(index, media);
 }
 
@@ -186,11 +191,11 @@ EXPORT void Player_move(int id, int initialIndex, int finalIndex) {
 EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
     Media* media;
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, false, timeout);
+        media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, false, timeout);
-    else
-        media = Media::asset(0, resource, false, timeout);
+        media = Media::network(0, resource, false);
+    else if (strcmp(type, "MediaType.directShow") == 0)
+        media = Media::directShow(0, resource);
     char** metas = new char*[media->metas.size()];
     int index = 0;
     for (auto &meta: media->metas) {
@@ -198,6 +203,36 @@ EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
         index++;
     }
     return metas;
+}
+
+EXPORT void Broadcast_create(int id, const char* type, const char* resource, const char* access, const char* mux, const char* dst, const char* vcodec, int vb, const char* acodec, int ab) {
+    Media* media;
+    if (strcmp(type, "MediaType.file") == 0)
+        media = Media::file(0, resource, false);
+    else if (strcmp(type, "MediaType.network") == 0)
+        media = Media::network(0, resource, false);
+    else if (strcmp(type, "MediaType.directShow") == 0)
+        media = Media::directShow(0, resource);
+    BroadcastConfiguration configuration(
+        access,
+        mux,
+        dst,
+        vcodec,
+        vb,
+        acodec,
+        ab
+    );
+    Broadcast* broadcast = broadcasts->get(id, media, &configuration);
+}
+
+EXPORT void Broadcast_start(int id) {
+    Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
+    broadcast->start();
+}
+
+EXPORT void Broadcast_dispose(int id) {
+    Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
+    broadcast->dispose();
 }
 
 #endif

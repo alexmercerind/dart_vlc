@@ -1,21 +1,23 @@
-/*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
- * Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
- * https://github.com/alexmercerind
- * alexmercerind@gmail.com
- * 
- * GNU Lesser General Public License v2.1
- */
-
 import 'dart:ffi';
 import 'dart:isolate';
+import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
+import 'package:ffi/ffi.dart';
 
-import 'package:dart_vlc_ffi/source/internal/typedefs/player.dart';
-import 'package:dart_vlc_ffi/source/internal/typedefs/callback.dart';
-import 'package:dart_vlc_ffi/source/internal/dynamiclibrary.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/callback.dart';
+import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 
 
+extension NativeTypes on List<String> {
+  Pointer<Pointer<Utf8>> toNativeUtf8Array() {
+    final List<Pointer<Utf8>> listPointer = this.map((String string) => string.toNativeUtf8()).toList().cast<Pointer<Utf8>>();
+    final Pointer<Pointer<Utf8>> pointerPointer = calloc.allocate(this.join('').length);
+    for (int index = 0; index < this.length; index++) pointerPointer[index] = listPointer[index];
+    return pointerPointer;
+  }
+}
+
+bool isInitialized = false;
 final ReceivePort receiver = new ReceivePort();
 
 
@@ -45,6 +47,10 @@ abstract class PlayerFFI {
 
   static final PlayerSetRateDart setRate = dynamicLibrary.lookup<NativeFunction<PlayerSetRateCXX>>('Player_setRate').asFunction();
 
+  static final PlayerSetUserAgentDart setUserAgent = dynamicLibrary.lookup<NativeFunction<PlayerSetUserAgentCXX>>('Player_setUserAgent').asFunction();
+
+  static final PlayerSetPlaylistModeDart setPlaylistMode = dynamicLibrary.lookup<NativeFunction<PlayerSetPlaylistModeCXX>>('Player_setPlaylistMode').asFunction();
+  
   static final PlayerAddDart add = dynamicLibrary.lookup<NativeFunction<PlayerAddCXX>>('Player_add').asFunction();
 
   static final PlayerRemoveDart remove = dynamicLibrary.lookup<NativeFunction<PlayerRemoveCXX>>('Player_remove').asFunction();
@@ -55,12 +61,21 @@ abstract class PlayerFFI {
 }
 
 
-abstract class CallbackFFI {
+abstract class MediaFFI {
+  static final MediaParseDart parse = dynamicLibrary.lookup<NativeFunction<MediaParseCXX>>('Media_parse').asFunction();
+}
 
-  static void initialize() {
-    RegisterPostCObjectDart registerPostCObject = dynamicLibrary.lookup<NativeFunction<RegisterPostCObjectCXX>>('RegisterDart_PostCObject').asFunction();
-    RegisterCallbackPortDart registerCallbackPort = dynamicLibrary.lookup<NativeFunction<RegisterCallbackPortCXX>>('RegisterDart_CallbackPort').asFunction();
-    registerPostCObject(NativeApi.postCObject);
-    registerCallbackPort(receiver.sendPort.nativePort);
+
+abstract class DartVLC {
+
+  static void initialize(String dynamicLibraryPath) {
+    if (!isInitialized) {
+      dynamicLibrary = DynamicLibrary.open(dynamicLibraryPath);
+      RegisterPostCObjectDart registerPostCObject = dynamicLibrary.lookup<NativeFunction<RegisterPostCObjectCXX>>('RegisterDart_PostCObject').asFunction();
+      RegisterCallbackPortDart registerCallbackPort = dynamicLibrary.lookup<NativeFunction<RegisterCallbackPortCXX>>('RegisterDart_CallbackPort').asFunction();
+      registerPostCObject(NativeApi.postCObject);
+      registerCallbackPort(receiver.sendPort.nativePort);
+      isInitialized = true;
+    }
   }
 }

@@ -1,20 +1,10 @@
-/*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
- * Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
- * https://github.com/alexmercerind
- * alexmercerind@gmail.com
- * 
- * GNU Lesser General Public License v2.1
- */
-
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
 /// Following typedef is used for:
 /// Player::create
-typedef PlayerCreateCXX = Void Function(Int32 id, Int32 videoHeight, Int32 videoWidth);
-typedef PlayerCreateDart = void Function(int id, int videoHeight, int videoWidth);
+typedef PlayerCreateCXX = Void Function(Int32 id, Int32 videoHeight, Int32 videoWidth, Int32 commandlineArgumentsCount, Pointer<Pointer<Utf8>> commandlineArguments);
+typedef PlayerCreateDart = void Function(int id, int videoHeight, int videoWidth, int commandlineArgumentsCount, Pointer<Pointer<Utf8>> commandlineArguments);
 
 /// Following typedef is used for:
 /// Player::open
@@ -52,6 +42,11 @@ typedef PlayerSetRateCXX = Void Function(Int32 id, Float volume);
 typedef PlayerSetRateDart = void Function(int id, double volume);
 
 /// Following typedef is used for:
+/// Player::setUserAgent
+typedef PlayerSetUserAgentCXX = Void Function(Int32 id, Pointer<Utf8> userAgent);
+typedef PlayerSetUserAgentDart = void Function(int id, Pointer<Utf8> userAgent);
+
+/// Following typedef is used for:
 /// Player::setPlaylistMode
 /// Following typedef is used for:
 /// Player::setRate
@@ -60,8 +55,8 @@ typedef PlayerSetPlaylistModeDart = void Function(int id, Pointer<Utf8> mode);
 
 /// Following typedef is used for:
 /// Player::add
-typedef PlayerAddCXX = Void Function(Int32 id, Int32 mediaId, Pointer<Utf8> type, Pointer<Utf8> resource);
-typedef PlayerAddDart = void Function(int id, int mediaId, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerAddCXX = Void Function(Int32 id, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerAddDart = void Function(int id, Pointer<Utf8> type, Pointer<Utf8> resource);
 
 /// Following typedef is used for:
 /// Player::remove
@@ -70,8 +65,8 @@ typedef PlayerRemoveDart = void Function(int id, int index);
 
 /// Following typedef is used for:
 /// Player::jump
-typedef PlayerInsertCXX = Void Function(Int32 id, Int32 index, Int32 mediaId, Pointer<Utf8> type, Pointer<Utf8> resource);
-typedef PlayerInsertDart = void Function(int id, int index, int mediaId, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerInsertCXX = Void Function(Int32 id, Int32 index, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerInsertDart = void Function(int id, int index, Pointer<Utf8> type, Pointer<Utf8> resource);
 
 /// Following typedef is used for:
 /// Player::move

@@ -3,7 +3,7 @@
  * 
  * Hitesh Kumar Saini
  * https://github.com/alexmercerind
- * alexmercerind@gmail.com
+ * saini123hitesh@gmail.com; alexmercerind@gmail.com
  * 
  * GNU Lesser General Public License v2.1
  */
