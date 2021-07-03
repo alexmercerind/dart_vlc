@@ -1,3 +1,5 @@
+import 'package:ffi/ffi.dart';
+import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
 
 /// Internally used class to avoid direct creation of the object of a [Broadcast] class.
@@ -86,42 +88,36 @@ abstract class Broadcast {
   late BroadcastConfiguration configuration;
 
   /// Creates a new [Broadcast] instance.
-  static Future<Broadcast> create(
+  static Broadcast create(
       {required int id,
       required Media media,
-      required BroadcastConfiguration configuration}) async {
+      required BroadcastConfiguration configuration}) {
     Broadcast broadcast = new _Broadcast();
     broadcast.id = id;
     broadcast.media = media;
     broadcast.configuration = configuration;
-    await channel.invokeMethod(
-      'Broadcast.create',
-      {
-        'id': id,
-        'media': media.toMap(),
-        'configuration': configuration.toMap(),
-      },
+    BroadcastFFI.create(
+      id,
+      media.mediaType.toString().toNativeUtf8(),
+      media.resource.toNativeUtf8(),
+      configuration.access.toNativeUtf8(),
+      configuration.mux.toNativeUtf8(),
+      configuration.dst.toNativeUtf8(),
+      configuration.vcodec.toNativeUtf8(),
+      configuration.vb,
+      configuration.acodec.toNativeUtf8(),
+      configuration.ab
     );
     return broadcast;
   }
 
   /// Starts broadcasting the [Media].
   void start() {
-    await channel.invokeMethod(
-      'Broadcast.start',
-      {
-        'id': id,
-      },
-    );
+    BroadcastFFI.start(this.id);
   }
 
   /// Disposes this instance of [Broadcast].
   void dispose() {
-    await channel.invokeMethod(
-      'Broadcast.dispose',
-      {
-        'id': id,
-      },
-    );
+    BroadcastFFI.dispose(this.id);
   }
 }

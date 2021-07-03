@@ -1,11 +1,13 @@
 import 'dart:ffi';
 import 'dart:isolate';
-import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
 import 'package:ffi/ffi.dart';
 
+import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/callback.dart';
-import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/broadcast.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/chromecast.dart';
 
 
 extension NativeTypes on List<String> {
@@ -62,7 +64,29 @@ abstract class PlayerFFI {
 
 
 abstract class MediaFFI {
+
   static final MediaParseDart parse = dynamicLibrary.lookup<NativeFunction<MediaParseCXX>>('Media_parse').asFunction();
+
+}
+
+
+abstract class BroadcastFFI {
+
+  static final BroadcastCreateDart create = dynamicLibrary.lookup<NativeFunction<BroadcastCreateCXX>>('Broadcast_create').asFunction();
+  
+  static final BroadcastStartDart start = dynamicLibrary.lookup<NativeFunction<BroadcastStartCXX>>('Broadcast_start').asFunction();
+  
+  static final BroadcastDisposeDart dispose = dynamicLibrary.lookup<NativeFunction<BroadcastDisposeCXX>>('Broadcast_dispose').asFunction();
+}
+
+
+abstract class ChromecastFFI {
+
+  static final ChromecastCreateDart create = dynamicLibrary.lookup<NativeFunction<ChromecastCreateCXX>>('Chromecast_create').asFunction();
+  
+  static final ChromecastStartDart start = dynamicLibrary.lookup<NativeFunction<ChromecastStartCXX>>('Chromecast_start').asFunction();
+  
+  static final ChromecastDisposeDart dispose = dynamicLibrary.lookup<NativeFunction<ChromecastDisposeCXX>>('Chromecast_dispose').asFunction();
 }
 
 

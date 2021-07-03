@@ -235,6 +235,27 @@ EXPORT void Broadcast_dispose(int id) {
     broadcast->dispose();
 }
 
+EXPORT void Chromecast_create(int id, const char* type, const char* resource, const char* ipAddress) {
+    Media* media;
+    if (strcmp(type, "MediaType.file") == 0)
+        media = Media::file(0, resource, false);
+    else if (strcmp(type, "MediaType.network") == 0)
+        media = Media::network(0, resource, false);
+    else if (strcmp(type, "MediaType.directShow") == 0)
+        media = Media::directShow(0, resource);
+    Chromecast* chromecast = chromecasts->get(id, media, ipAddress);
+}
+
+EXPORT void Chromecast_start(int id) {
+    Chromecast* chromecast = chromecasts->get(id, nullptr, nullptr);
+    chromecast->start();
+}
+
+EXPORT void Chromecast_dispose(int id) {
+    Chromecast* chromecast = chromecasts->get(id, nullptr, nullptr);
+    chromecast->dispose();
+}
+
 #endif
 
 #ifdef __cplusplus
