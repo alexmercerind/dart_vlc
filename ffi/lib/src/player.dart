@@ -93,7 +93,6 @@ class Player {
     this.playbackStream = this.playbackController.stream;
     this.generalController = StreamController<GeneralState>.broadcast();
     this.generalStream = this.generalController.stream;
-    players[id] = this;
     PlayerFFI.create(
       this.id,
       this.videoWidth,
@@ -264,34 +263,24 @@ class Player {
   /// Device will be switched once a new [Media] is played.
   ///
   Future<void> setDevice(Device device) async {
-    await this._isInstanceCreated.future;
-    await channel.invokeMethod(
-      'Player.setDevice',
-      {
-        'id': this.id,
-        'device': device.toMap(),
-      },
+    PlayerFFI.setDevice(
+      this.id,
+      device.id.toNativeUtf8(),
+      device.name.toNativeUtf8()
     );
   }
 
   /// Sets [Equalizer] for the [Player].
-  Future<void> setEqualizer(Equalizer equalizer) async {
-    await this._isInstanceCreated.future;
-    await channel.invokeMethod(
-      'Player.setEqualizer',
-      {
-        'id': this.id,
-        'equalizerId': equalizer.id,
-      },
-    );
+  void setEqualizer(Equalizer equalizer) {
+    PlayerFFI.setEqualizer(this.id, equalizer.id);
   }
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.
-  Future<void> dispose() async {
-    await this.currentController.close();
-    await this.positionController.close();
-    await this.playbackController.close();
-    await this.generalController.close();
+  void dispose() {
+    this.currentController.close();
+    this.positionController.close();
+    this.playbackController.close();
+    this.generalController.close();
   }
 
   /// Internally used [StreamController]s,

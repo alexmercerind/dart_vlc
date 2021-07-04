@@ -142,6 +142,12 @@ EXPORT void Player_setUserAgent(int id, const char* userAgent) {
     player->setUserAgent(userAgent);
 }
 
+EXPORT void Player_setDevice(int id, const char* deviceId, const char* deviceName) {
+    Player* player = players->get(id);
+    Device device(deviceId, deviceName);
+    player->setDevice(&device);
+}
+
 EXPORT void Player_setEqualizer(int id, int equalizerId) {
     Player* player = players->get(id);
     Equalizer* equalizer = equalizers->get(equalizerId);

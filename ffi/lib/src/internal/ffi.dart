@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:isolate';
+import 'package:dart_vlc_ffi/src/internal/typedefs/devices.dart';
 import 'package:ffi/ffi.dart';
 
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
@@ -51,6 +52,10 @@ abstract class PlayerFFI {
 
   static final PlayerSetUserAgentDart setUserAgent = dynamicLibrary.lookup<NativeFunction<PlayerSetUserAgentCXX>>('Player_setUserAgent').asFunction();
 
+  static final PlayerSetEqualizerDart setEqualizer = dynamicLibrary.lookup<NativeFunction<PlayerSetEqualizerCXX>>('Player_setEqualizer').asFunction();
+
+  static final PlayerSetDeviceDart setDevice = dynamicLibrary.lookup<NativeFunction<PlayerSetDeviceCXX>>('Player_setDevice').asFunction();
+
   static final PlayerSetPlaylistModeDart setPlaylistMode = dynamicLibrary.lookup<NativeFunction<PlayerSetPlaylistModeCXX>>('Player_setPlaylistMode').asFunction();
   
   static final PlayerAddDart add = dynamicLibrary.lookup<NativeFunction<PlayerAddCXX>>('Player_add').asFunction();
@@ -87,6 +92,12 @@ abstract class ChromecastFFI {
   static final ChromecastStartDart start = dynamicLibrary.lookup<NativeFunction<ChromecastStartCXX>>('Chromecast_start').asFunction();
   
   static final ChromecastDisposeDart dispose = dynamicLibrary.lookup<NativeFunction<ChromecastDisposeCXX>>('Chromecast_dispose').asFunction();
+}
+
+
+abstract class DevicesFFI {
+
+  static final DevicesAllDart all = dynamicLibrary.lookup<NativeFunction<DevicesAllCXX>>('Devices_all').asFunction();
 }
 
 
