@@ -142,6 +142,12 @@ EXPORT void Player_setUserAgent(int id, const char* userAgent) {
     player->setUserAgent(userAgent);
 }
 
+EXPORT void Player_setEqualizer(int id, int equalizerId) {
+    Player* player = players->get(id);
+    Equalizer* equalizer = equalizers->get(equalizerId);
+    player->setEqualizer(equalizer);
+}
+
 EXPORT void Player_setPlaylistMode(int id, const char* mode) {
     Player* player = players->get(id);
     PlaylistMode playlistMode;
@@ -254,6 +260,75 @@ EXPORT void Chromecast_start(int id) {
 EXPORT void Chromecast_dispose(int id) {
     Chromecast* chromecast = chromecasts->get(id, nullptr, nullptr);
     chromecast->dispose();
+}
+
+EXPORT void Record_create(int id, const char* savingFile, const char* type, const char* resource) {
+    Media* media;
+    if (strcmp(type, "MediaType.file") == 0)
+        media = Media::file(0, resource, false);
+    else if (strcmp(type, "MediaType.network") == 0)
+        media = Media::network(0, resource, false);
+    else if (strcmp(type, "MediaType.directShow") == 0)
+        media = Media::directShow(0, resource);
+    records->get(id, media, savingFile);
+}
+
+EXPORT void Record_start(int id) {
+    records->get(id, nullptr, "")->start();
+}
+
+EXPORT void Record_dispose(int id) {
+    records->get(id, nullptr, "")->dispose();
+}
+
+EXPORT const char** Devices_all() {
+    devices->refresh();
+    char** _devices = new char*[(devices->all.size() * 2) + 1];
+    _devices[0] = std::to_string(devices->all.size()).data();
+    for (int i = 1; i < devices->all.size(); i += 2) {
+        _devices[i] = devices->all[i]->id.data();
+        _devices[i + 1] = devices->all[i + 1]->name.data();
+    }
+    devices->all.size();
+}
+
+
+EXPORT const char** Equalizer_createEmpty() {
+    int id = equalizers->createEmpty();
+    Equalizer* equalizer = equalizers->get(id);
+    char** _equalizer = new char*[2 * equalizer->bandAmps.size() + 2];
+    _equalizer[0] = std::to_string(id).data();
+    _equalizer[1] = std::to_string(equalizer->preAmp).data();
+    int index = 0;
+    for (const auto&[band, amp]: equalizer->bandAmps) {
+        _equalizer[index + 2] = std::to_string(band).data();
+        _equalizer[index + 3] = std::to_string(amp).data();
+    }
+    return _equalizer;
+}
+
+EXPORT const char** Equalizer_createMode(int mode) {
+    int id = equalizers->createMode(
+        static_cast<EqualizerMode>(mode)
+    );
+    Equalizer* equalizer = equalizers->get(id);
+    char** _equalizer = new char*[2 * equalizer->bandAmps.size() + 2];
+    _equalizer[0] = std::to_string(id).data();
+    _equalizer[1] = std::to_string(equalizer->preAmp).data();
+    int index = 0;
+    for (const auto&[band, amp]: equalizer->bandAmps) {
+        _equalizer[index + 2] = std::to_string(band).data();
+        _equalizer[index + 3] = std::to_string(amp).data();
+    }
+    return _equalizer;
+}
+
+EXPORT void Equalizer_setBandAmp(int id, float band, float amp) {
+    equalizers->get(id)->setBandAmp(band, amp);
+}
+
+EXPORT void Equalizer_setPreAmp(int id, float amp) {
+    equalizers->get(id)->setPreAmp(amp);
 }
 
 #endif
