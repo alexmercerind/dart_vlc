@@ -1,12 +1,13 @@
 import 'dart:ffi';
 import 'dart:isolate';
-import 'package:dart_vlc_ffi/src/internal/typedefs/devices.dart';
 import 'package:ffi/ffi.dart';
-
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/callback.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/devices.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/equalizer.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/record.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/broadcast.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/chromecast.dart';
 
@@ -95,9 +96,30 @@ abstract class ChromecastFFI {
 }
 
 
+abstract class RecordFFI {
+
+  static final RecordCreateDart create = dynamicLibrary.lookup<NativeFunction<RecordCreateCXX>>('Record_create').asFunction();
+  
+  static final RecordStartDart start = dynamicLibrary.lookup<NativeFunction<RecordStartCXX>>('Record_start').asFunction();
+  
+  static final RecordDisposeDart dispose = dynamicLibrary.lookup<NativeFunction<RecordDisposeCXX>>('Record_dispose').asFunction();
+}
+
+
 abstract class DevicesFFI {
 
   static final DevicesAllDart all = dynamicLibrary.lookup<NativeFunction<DevicesAllCXX>>('Devices_all').asFunction();
+}
+
+abstract class EqualizerFFI {
+
+  static final EqualizerCreateEmptyDart createEmpty = dynamicLibrary.lookup<NativeFunction<EqualizerCreateEmptyCXX>>('Equalizer_createEmpty').asFunction();
+  
+  static final EqualizerCreateModeDart createMode = dynamicLibrary.lookup<NativeFunction<EqualizerCreateModeCXX>>('Equalizer_createMode').asFunction();
+  
+  static final EqualizerSetBandAmpDart setBandAmp = dynamicLibrary.lookup<NativeFunction<EqualizerSetBandAmpCXX>>('Equalizer_setBandAmp').asFunction();
+
+  static final EqualizerSetPreAmpDart setPreAmp = dynamicLibrary.lookup<NativeFunction<EqualizerSetPreAmpCXX>>('Equalizer_setPreAmp').asFunction();
 }
 
 

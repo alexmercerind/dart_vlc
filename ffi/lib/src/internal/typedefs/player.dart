@@ -47,9 +47,17 @@ typedef PlayerSetUserAgentCXX = Void Function(Int32 id, Pointer<Utf8> userAgent)
 typedef PlayerSetUserAgentDart = void Function(int id, Pointer<Utf8> userAgent);
 
 /// Following typedef is used for:
-/// Player::setPlaylistMode
+/// Player::setEqualizer
+typedef PlayerSetEqualizerCXX = Void Function(Int32 id, Int32 equalizerId);
+typedef PlayerSetEqualizerDart = void Function(int id, int equalizerId);
+
 /// Following typedef is used for:
-/// Player::setRate
+/// Player::setDevice
+typedef PlayerSetDeviceCXX = Void Function(Int32 id, Pointer<Utf8> deviceId, Pointer<Utf8> deviceName);
+typedef PlayerSetDeviceDart = void Function(int id, Pointer<Utf8> deviceId, Pointer<Utf8> deviceName);
+
+/// Following typedef is used for:
+/// Player::setPlaylistMode
 typedef PlayerSetPlaylistModeCXX = Void Function(Int32 id, Pointer<Utf8> mode);
 typedef PlayerSetPlaylistModeDart = void Function(int id, Pointer<Utf8> mode);
 
