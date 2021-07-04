@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'package:ffi/ffi.dart';
+import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/enums/equalizerMode.dart';
 
 
@@ -28,31 +31,25 @@ class Equalizer {
   EqualizerMode? mode;
 
   /// Creates a default [Equalizer] instance with all values set to `0.0`.
-  static Future<Equalizer> createEmpty() async {
+  static Equalizer createEmpty() {
     Equalizer equalizer = new _Equalizer();
-    dynamic _equalizer = await channel.invokeMethod(
-      'Equalizer.createEmpty',
-       {},
-    );
-    equalizer.id = _equalizer['id'];
-    equalizer.preAmp = _equalizer['preAmp'];
-    equalizer.bandAmps = Map<double, double>.from(_equalizer['bandAmps']);
+    Pointer<Pointer<Utf8>> _equalizer = EqualizerFFI.createEmpty();
+    equalizer.id = int.parse(_equalizer.elementAt(0).value.toDartString());
+    equalizer.preAmp = double.parse(_equalizer.elementAt(1).value.toDartString());
+    /// TODO: Fix Equalizer.
+    /// equalizer.bandAmps = Map<double, double>.from(_equalizer['bandAmps']);
     return equalizer;
   }
 
   /// Creates an [Equalizer] instance with any preset from [EqualizerMode].
-  static Future<Equalizer> createMode(EqualizerMode mode) async {
+  static Equalizer createMode(EqualizerMode mode) {
     Equalizer equalizer = new _Equalizer();
-    dynamic _equalizer = await channel.invokeMethod(
-      'Equalizer.createMode',
-       {
-         'mode': mode.index,
-       },
-    );
-    equalizer.id = _equalizer['id'];
+    Pointer<Pointer<Utf8>> _equalizer = EqualizerFFI.createEmpty();
+    equalizer.id = int.parse(_equalizer.elementAt(0).value.toDartString());
+    equalizer.preAmp = double.parse(_equalizer.elementAt(1).value.toDartString());
     equalizer.mode = mode;
-    equalizer.preAmp = _equalizer['preAmp'];
-    equalizer.bandAmps = Map<double, double>.from(_equalizer['bandAmps']);
+    /// TODO: Fix Equalizer.
+    // equalizer.bandAmps = Map<double, double>.from(_equalizer['bandAmps']);
     return equalizer;
   }
 
@@ -61,14 +58,8 @@ class Equalizer {
   /// Constraints:
   /// `-20.0 < amp < 20.0`
   /// 
-  Future<void> setPreAmp(double amp) async {
-    await channel.invokeMethod(
-      'Equalizer.setPreAmp',
-       {
-         'id': this.id,
-         'preAmp': amp,
-       },
-    );
+  void setPreAmp(double amp) {
+    EqualizerFFI.setPreAmp(this.id, amp);
     this.preAmp = amp;
   }
 
@@ -78,15 +69,8 @@ class Equalizer {
   /// Constraints:
   /// `-20.0 < amp < 20.0`
   /// 
-  Future<void> setBandAmp(double band, double amp) async {
-    await channel.invokeMethod(
-      'Equalizer.setBandAmp',
-       {
-         'id': this.id,
-         'band': band,
-         'amp': amp,
-       },
-    );
+  void setBandAmp(double band, double amp) {
+    EqualizerFFI.setBandAmp(this.id, band, amp);
     this.bandAmps[band] = amp;
   }
 }

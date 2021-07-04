@@ -1,4 +1,7 @@
-import 'dart:io';
+import 'dart:ffi';
+import 'package:ffi/ffi.dart';
+import 'package:dart_vlc_ffi/src/internal/ffi.dart';
+
 
 /// Represents a playback [Device] for the [Player].
 class Device {
@@ -9,34 +12,23 @@ class Device {
   String name;
 
   Device(this.id, this.name);
-
-  /// Internally used method to easily transform data for sending through Platform channel.
-  static Device fromMap(dynamic map) => Device(
-        Platform.isWindows
-            ? (map['id'] != ''
-                ? '{0.0.0.00000000}.' + map['id'].toLowerCase()
-                : '')
-            : map['id'],
-        map['name'],
-      );
-
-  /// Internally used method to easily transform data for sending through Platform channel.
-  Map<String, String> toMap() => {
-        'id': this.id,
-        'name': this.name,
-      };
 }
 
 /// [Devices.all] getter is used to get [List] of all available [Device] for playback in the [Player].
 class Devices {
   /// Gets [List] of all available playback [Device].
-  static Future<List<Device>> get all async {
-    dynamic devices = await channel.invokeMethod('Devices.all', {});
-    return devices
-        .map(
-          (dynamic device) => Device.fromMap(device),
+  static List<Device> get all {
+    List<Device> devices = <Device>[];
+    Pointer<Pointer<Utf8>> devicesPtr = DevicesFFI.all();
+    int count = int.parse(devicesPtr.elementAt(0).value.toDartString());
+    for (int i = 1; i < count; i += 2) {
+      devices.add(
+        Device(
+          devicesPtr.elementAt(i).value.toDartString(),
+          devicesPtr.elementAt(i + 1).value.toDartString()
         )
-        .toList()
-        .cast<Device>();
+      );
+    }
+    return devices;
   }
 }

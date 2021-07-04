@@ -11,7 +11,6 @@
 export 'package:dart_vlc_ffi/src/player.dart';
 export 'package:dart_vlc_ffi/src/equalizer.dart';
 export 'package:dart_vlc_ffi/src/broadcast.dart';
-export 'package:dart_vlc_ffi/src/record.dart';
 export 'package:dart_vlc_ffi/src/chromecast.dart';
 export 'package:dart_vlc_ffi/src/device.dart';
 export 'package:dart_vlc_ffi/src/playerState/playerState.dart';

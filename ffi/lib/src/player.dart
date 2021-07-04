@@ -78,10 +78,7 @@ class Player {
   /// Player player = new Player(id: 0);
   /// ```
   ///
-  Player({required this.id, int videoWidth: 0, int videoHeight: 0, Device? device, List<String>? commandlineArguments}) {
-    if (device is Device) {
-      this.setDevice(device);
-    }
+  Player({required this.id, int videoWidth: 0, int videoHeight: 0, List<String>? commandlineArguments}) {
     if (commandlineArguments != null) this.commandlineArguments = commandlineArguments;
     this.videoWidth = videoWidth;
     this.videoHeight = videoHeight;
@@ -142,16 +139,21 @@ class Player {
       PlayerFFI.open(
         this.id,
         autoStart ? 1: 0,
-        <String>[ source.resource ].toNativeUtf8Array(),
+        <String>[ source.mediaType.toString(), source.resource ].toNativeUtf8Array(),
         1
       );
     }
     if (source is Playlist) {
+      List<String> medias = <String>[];
+      source.medias.forEach((media) {
+        medias.add(media.mediaType.toString());
+        medias.add(media.resource);
+      });
       PlayerFFI.open(
         this.id,
         autoStart ? 1: 0,
-        source.medias.map((media) => media.toString()).toList().toNativeUtf8Array(),
-        source.medias.length
+        medias.toNativeUtf8Array(),
+        source.medias.length * 2
       );
     }
   }

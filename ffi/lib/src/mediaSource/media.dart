@@ -31,32 +31,28 @@ class _Media extends Media {}
 abstract class Media extends MediaSource {
   MediaSourceType mediaSourceType = MediaSourceType.media;
   Map<String, String> metas = {};
-  Map<String, dynamic> extras = {};
   late MediaType mediaType;
   late String resource;
 
   /// Makes [Media] object from a [File].
-  static Future<Media> file(File file,
+  static Media file(File file,
       {bool parse: false,
       Map<String, dynamic>? extras,
-      Duration timeout: const Duration(seconds: 10)}) async {
+      Duration timeout: const Duration(seconds: 10)}) {
     Media media = new _Media();
     media.mediaType = MediaType.file;
     media.resource = file.path;
     if (parse) {
-      await media.parse(timeout);
-    }
-    if (extras != null) {
-      media.extras = extras;
+      media.parse(timeout);
     }
     return media;
   }
 
   /// Makes [Media] object from url.
-  static Future<Media> network(dynamic url,
+  static Media network(dynamic url,
       {bool parse: false,
       Map<String, dynamic>? extras,
-      Duration timeout: const Duration(seconds: 10)}) async {
+      Duration timeout: const Duration(seconds: 10)}) {
     Media media = new _Media();
     media.mediaType = MediaType.network;
     if (url is Uri)
@@ -64,17 +60,13 @@ abstract class Media extends MediaSource {
     else
       media.resource = url;
     if (parse) {
-      await media.parse(timeout);
-    }
-    if (extras != null) {
-      media.extras = extras;
+      media.parse(timeout);
     }
     return media;
   }
 
   /// Makes [Media] object from direct show.
-  static Future<Media> directShow(
-      {String vdev = '', String adev = '', required int liveCaching}) async {
+  static Media directShow({String vdev = '', String adev = '', required int liveCaching}) {
     Media media = new _Media();
     media.mediaType = MediaType.directShow;
     media.resource =
@@ -82,7 +74,7 @@ abstract class Media extends MediaSource {
     return media;
   }
 
-  Future<void> parse(Duration timeout) async {
+  void parse(Duration timeout) {
     Pointer<Pointer<Utf8>> metas = MediaFFI.parse(
       this.mediaType.toString().toNativeUtf8(),
       this.resource.toNativeUtf8(),

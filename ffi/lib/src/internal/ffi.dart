@@ -123,7 +123,7 @@ abstract class EqualizerFFI {
 }
 
 
-abstract class DartVLC {
+class DartVLC {
 
   static void initialize(String dynamicLibraryPath) {
     if (!isInitialized) {
