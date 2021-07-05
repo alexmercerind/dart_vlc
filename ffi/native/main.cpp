@@ -60,9 +60,11 @@ EXPORT void Player_create(int id, int videoWidth, int videoHeight, int commandLi
     player->onPlaylist([=]() -> void {
         Player_onOpen(player->state);
     });
-    player->onVideo([=](uint8_t* frame) -> void {
-        Player_onVideo(player->videoHeight * player->videoWidth * 4, frame);
-    });
+    if (player->videoHeight > 0 && player->videoWidth > 0) {
+        player->onVideo([=](uint8_t* frame) -> void {
+            Player_onVideo(player->videoHeight * player->videoWidth * 4, frame);
+        });
+    }
 }
 
 EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceSize) {
