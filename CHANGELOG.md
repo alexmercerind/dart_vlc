@@ -1,3 +1,14 @@
+## 0.0.8
+
+- Now using FFI (instead of Platform channels).
+- Better performance, being direct C <-> Dart interop with no Flutter involvement.
+- Added `Equalizer` class.
+- Support for Dart CLI. See package `dart_vlc_ffi`.
+- Added `commandlineArguments` to `Player` constructor to pass VLC commandline arguments.
+- BREAKING CHANGES
+  - Now plugin requires initialization in the `main` method, call `DartVLC.initialize()` to instantiate the plugin. 
+  - Now all the methods are synchronous & no longer require `await`. Please update your code.
+
 ## 0.0.7
 
 - Added `Player.setUserAgent`.
