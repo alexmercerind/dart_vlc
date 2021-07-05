@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-
+// ignore_for_file: implementation_imports
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
+import 'package:flutter/material.dart';
 import 'package:dart_vlc_ffi/src/player.dart';
-import 'controls.dart';
+import 'package:dart_vlc/src/widgets/controls.dart';
 
+/// Internally used map to keep [GlobalKey]s for [Video]'s [ControlState]s.
+Map<int, GlobalKey<ControlState>> controls = {};
 /// Internally used map to keep [StreamController]s for [Video] [Widget]s.
 Map<int, StreamController<VideoFrame>> videoStreamControllers = {};
 
@@ -166,16 +167,15 @@ class VideoState extends State<Video> {
   @override
   void initState() {
     super.initState();
-    // TODO: Fix frame callbacks.
-    // if (widget.showControls) controls[widget.playerId] = this.controlKey;
-    // videoStreamControllers[widget.playerId] =
-    //     new StreamController<VideoFrame>.broadcast();
-    // videoStreamControllers[widget.playerId]
-    //     ?.stream
-    //     .listen((VideoFrame videoFrame) async {
-    //   this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
-    //   this.setState(() {});
-    // });
+    if (widget.showControls) controls[widget.playerId] = this.controlKey;
+    videoStreamControllers[widget.playerId] =
+        new StreamController<VideoFrame>.broadcast();
+    videoStreamControllers[widget.playerId]
+        ?.stream
+        .listen((VideoFrame videoFrame) async {
+      this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
+      this.setState(() {});
+    });
   }
 
   @override

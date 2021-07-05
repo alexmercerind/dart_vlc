@@ -236,7 +236,9 @@ final ReceivePort receiver = new ReceivePort()
             players[playerId]!.current.medias = medias;
             players[playerId]!.current.media =
                 medias[players[playerId]!.current.index!];
-            players[playerId]!.currentController.add(players[playerId]!.current);
+            players[playerId]!
+                .currentController
+                .add(players[playerId]!.current);
             break;
           }
         case 'completeEvent':
@@ -251,18 +253,21 @@ final ReceivePort receiver = new ReceivePort()
         case 'volumeEvent':
           {
             players[playerId]!.general.volume = double.parse(event[2]);
-            players[playerId]!.generalController.add(players[playerId]!.general);
+            players[playerId]!
+                .generalController
+                .add(players[playerId]!.general);
             break;
           }
         case 'rateEvent':
           {
             players[playerId]!.general.rate = double.parse(event[2]);
-            players[playerId]!.generalController.add(players[playerId]!.general);
+            players[playerId]!
+                .generalController
+                .add(players[playerId]!.general);
             break;
           }
       }
-    }
-    else {
+    } else {
       // TODO: Remove hardcoded playerId.
       videoFrameCallback(0, event);
     }

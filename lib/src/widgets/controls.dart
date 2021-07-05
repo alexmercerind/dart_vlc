@@ -1,7 +1,7 @@
+// ignore_for_file: implementation_imports
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-
 import 'package:dart_vlc_ffi/src/device.dart';
 import 'package:dart_vlc_ffi/src/player.dart';
 import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
