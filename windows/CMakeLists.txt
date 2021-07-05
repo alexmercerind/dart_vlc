@@ -87,7 +87,7 @@ target_link_libraries("${PLUGIN_NAME}" PRIVATE
 set(
   dart_vlc_bundled_libraries
   # TODO: Make build type dynamic.
-  "plugins/dart_vlc/Debug/dart_vlc.dll"
+  "plugins/dart_vlc/$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>/dart_vlc.dll"
   "${LIBVLC_SOURCE}/libvlc.dll"
   "${LIBVLC_SOURCE}/libvlccore.dll"
   "${LIBVLC_SOURCE}/plugins"
