@@ -6,7 +6,6 @@ import 'package:dart_vlc_ffi/src/device.dart';
 import 'package:dart_vlc_ffi/src/player.dart';
 import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
 
-
 class Control extends StatefulWidget {
   final Widget child;
   final int playerId;
@@ -56,17 +55,17 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   late AnimationController playPauseController;
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     this.playPauseController = new AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 400)
-    );
+        vsync: this, duration: Duration(milliseconds: 400));
   }
 
   void setPlaybackMode(bool isPlaying) {
-    if (isPlaying) this.playPauseController.forward();
-    else this.playPauseController.reverse();
+    if (isPlaying)
+      this.playPauseController.forward();
+    else
+      this.playPauseController.reverse();
   }
 
   @override
@@ -195,7 +194,8 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                   if (!(positionInMilliseconds - 10000)
                                       .isNegative)
                                     positionInMilliseconds -= 10000;
-                                  players[widget.playerId]!.seek(Duration(milliseconds: positionInMilliseconds));
+                                  players[widget.playerId]!.seek(Duration(
+                                      milliseconds: positionInMilliseconds));
                                   setState(() {});
                                 }),
                             SizedBox(width: 20),
@@ -203,15 +203,15 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                               color: Colors.white,
                               iconSize: 30,
                               icon: AnimatedIcon(
-                                icon: AnimatedIcons.play_pause,
-                                progress: this.playPauseController
-                              ),
+                                  icon: AnimatedIcons.play_pause,
+                                  progress: this.playPauseController),
                               onPressed: () {
-                                if (players[widget.playerId]!.playback.isPlaying) {
+                                if (players[widget.playerId]!
+                                    .playback
+                                    .isPlaying) {
                                   players[widget.playerId]!.pause();
                                   this.playPauseController.reverse();
-                                }
-                                else {
+                                } else {
                                   players[widget.playerId]!.play();
                                   this.playPauseController.forward();
                                 }
@@ -238,10 +238,8 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                   if ((positionInMilliseconds + 10000) <=
                                       durationInMilliseconds) {
                                     positionInMilliseconds += 10000;
-                                    players[widget.playerId]!
-                                        .seek(Duration(
-                                            milliseconds:
-                                                positionInMilliseconds));
+                                    players[widget.playerId]!.seek(Duration(
+                                        milliseconds: positionInMilliseconds));
                                     setState(() {});
                                   }
                                 }),
@@ -276,16 +274,17 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                 setState(() {});
                               },
                               itemBuilder: (context) {
-                                return Devices.all.map(
-                                  (device) => PopupMenuItem(
-                                    child: Text(device.name,
-                                        style: TextStyle(
-                                          fontSize: 14.0,
-                                        )),
-                                    value: device,
-                                  ),
-                                )
-                                .toList();
+                                return Devices.all
+                                    .map(
+                                      (device) => PopupMenuItem(
+                                        child: Text(device.name,
+                                            style: TextStyle(
+                                              fontSize: 14.0,
+                                            )),
+                                        value: device,
+                                      ),
+                                    )
+                                    .toList();
                               },
                             ),
                           ],

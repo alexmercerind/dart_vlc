@@ -238,11 +238,11 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                       ElevatedButton(
                                         onPressed: () => this.setState(() {
                                           this.player.open(
-                                            new Playlist(
-                                              medias: this.medias,
-                                              playlistMode:PlaylistMode.single
-                                            ),
-                                          );
+                                                new Playlist(
+                                                    medias: this.medias,
+                                                    playlistMode:
+                                                        PlaylistMode.single),
+                                              );
                                         }),
                                         child: Text(
                                           'Open',
@@ -291,14 +291,23 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                 color: Colors.transparent,
                               ),
                               Slider(
-                                min: 0,
-                                max: this.position.duration?.inMilliseconds.toDouble() ?? 1.0,
-                                value: this.position.position?.inMilliseconds.toDouble() ?? 0.0,
-                                onChanged: (double position) =>
-                                  this.player.seek(
-                                    Duration(milliseconds: position.toInt())
-                                  )
-                              ),
+                                  min: 0,
+                                  max: this
+                                          .position
+                                          .duration
+                                          ?.inMilliseconds
+                                          .toDouble() ??
+                                      1.0,
+                                  value: this
+                                          .position
+                                          .position
+                                          ?.inMilliseconds
+                                          .toDouble() ??
+                                      0.0,
+                                  onChanged: (double position) => this
+                                      .player
+                                      .seek(Duration(
+                                          milliseconds: position.toInt()))),
                               Text('Event streams.'),
                               Divider(
                                 height: 8.0,
@@ -659,12 +668,12 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                     /// I ask all Flutter engineers to please fix this issue.
                                     /// Peace.
                                     /// 🙏🙏🙏
-                                    /// 
+                                    ///
                                     /// Issue:
                                     /// https://github.com/flutter/flutter/issues/24786
                                     /// Prevention:
                                     /// https://stackoverflow.com/a/54164333/12825435
-                                    /// 
+                                    ///
                                     if (finalIndex > this.current.medias.length)
                                       finalIndex = this.current.medias.length;
                                     if (initialIndex < finalIndex) finalIndex--;
