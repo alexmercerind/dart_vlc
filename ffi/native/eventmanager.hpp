@@ -110,7 +110,6 @@ void Player_onOpen(PlayerState* state) {
     event.emplace_back(std::to_string(state->index));
     event.emplace_back(std::to_string(state->isPlaylist));
     for (Media* media: state->medias->medias) {
-        event.emplace_back(std::to_string(media->id));
         event.emplace_back(media->mediaType);
         event.emplace_back(media->resource);
     }

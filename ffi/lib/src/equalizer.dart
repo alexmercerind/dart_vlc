@@ -36,20 +36,31 @@ class Equalizer {
     Pointer<Pointer<Utf8>> _equalizer = EqualizerFFI.createEmpty();
     equalizer.id = int.parse(_equalizer.elementAt(0).value.toDartString());
     equalizer.preAmp = double.parse(_equalizer.elementAt(1).value.toDartString());
-    /// TODO: Fix Equalizer.
-    /// equalizer.bandAmps = Map<double, double>.from(_equalizer['bandAmps']);
+    equalizer.mode = null;
+    equalizer.bandAmps = {
+      double.parse(_equalizer.elementAt(2).value.toDartString()): double.parse(_equalizer.elementAt(3).value.toDartString()),
+      double.parse(_equalizer.elementAt(4).value.toDartString()): double.parse(_equalizer.elementAt(5).value.toDartString()),
+      double.parse(_equalizer.elementAt(6).value.toDartString()): double.parse(_equalizer.elementAt(7).value.toDartString()),
+      double.parse(_equalizer.elementAt(8).value.toDartString()): double.parse(_equalizer.elementAt(9).value.toDartString()),
+      double.parse(_equalizer.elementAt(10).value.toDartString()): double.parse(_equalizer.elementAt(11).value.toDartString()),
+    };
     return equalizer;
   }
 
   /// Creates an [Equalizer] instance with any preset from [EqualizerMode].
   static Equalizer createMode(EqualizerMode mode) {
     Equalizer equalizer = new _Equalizer();
-    Pointer<Pointer<Utf8>> _equalizer = EqualizerFFI.createEmpty();
+    Pointer<Pointer<Utf8>> _equalizer = EqualizerFFI.createMode(mode.index);
     equalizer.id = int.parse(_equalizer.elementAt(0).value.toDartString());
     equalizer.preAmp = double.parse(_equalizer.elementAt(1).value.toDartString());
     equalizer.mode = mode;
-    /// TODO: Fix Equalizer.
-    // equalizer.bandAmps = Map<double, double>.from(_equalizer['bandAmps']);
+    equalizer.bandAmps = {
+      double.parse(_equalizer.elementAt(2).value.toDartString()): double.parse(_equalizer.elementAt(3).value.toDartString()),
+      double.parse(_equalizer.elementAt(4).value.toDartString()): double.parse(_equalizer.elementAt(5).value.toDartString()),
+      double.parse(_equalizer.elementAt(6).value.toDartString()): double.parse(_equalizer.elementAt(7).value.toDartString()),
+      double.parse(_equalizer.elementAt(8).value.toDartString()): double.parse(_equalizer.elementAt(9).value.toDartString()),
+      double.parse(_equalizer.elementAt(10).value.toDartString()): double.parse(_equalizer.elementAt(11).value.toDartString()),
+    };
     return equalizer;
   }
 

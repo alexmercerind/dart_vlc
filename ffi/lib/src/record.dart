@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/dart_vlc.dart';
+import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 
 
 /// Internally used class to avoid direct creation of the object of a [Record] class.

@@ -8,8 +8,8 @@ typedef EqualizerCreateEmptyDart = Pointer<Pointer<Utf8>> Function();
 
 /// Following typedef is used for:
 /// Equalizer::createMode
-typedef EqualizerCreateModeCXX = Pointer<Pointer<Utf8>> Function();
-typedef EqualizerCreateModeDart = Pointer<Pointer<Utf8>> Function();
+typedef EqualizerCreateModeCXX = Pointer<Pointer<Utf8>> Function(Int32 mode);
+typedef EqualizerCreateModeDart = Pointer<Pointer<Utf8>> Function(int mode);
 
 /// Following typedef is used for:
 /// Equalizer::setBandAmp

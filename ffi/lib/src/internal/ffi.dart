@@ -3,7 +3,6 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
-import 'package:dart_vlc_ffi/src/internal/typedefs/callback.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/devices.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/equalizer.dart';
@@ -120,19 +119,4 @@ abstract class EqualizerFFI {
   static final EqualizerSetBandAmpDart setBandAmp = dynamicLibrary.lookup<NativeFunction<EqualizerSetBandAmpCXX>>('Equalizer_setBandAmp').asFunction();
 
   static final EqualizerSetPreAmpDart setPreAmp = dynamicLibrary.lookup<NativeFunction<EqualizerSetPreAmpCXX>>('Equalizer_setPreAmp').asFunction();
-}
-
-
-class DartVLC {
-
-  static void initialize(String dynamicLibraryPath) {
-    if (!isInitialized) {
-      dynamicLibrary = DynamicLibrary.open(dynamicLibraryPath);
-      RegisterPostCObjectDart registerPostCObject = dynamicLibrary.lookup<NativeFunction<RegisterPostCObjectCXX>>('RegisterDart_PostCObject').asFunction();
-      RegisterCallbackPortDart registerCallbackPort = dynamicLibrary.lookup<NativeFunction<RegisterCallbackPortCXX>>('RegisterDart_CallbackPort').asFunction();
-      registerPostCObject(NativeApi.postCObject);
-      registerCallbackPort(receiver.sendPort.nativePort);
-      isInitialized = true;
-    }
-  }
 }

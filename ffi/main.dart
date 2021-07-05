@@ -1,13 +1,16 @@
-import 'package:dart_vlc_ffi/source/internal/dart_vlc.dart';
+import 'dart:io';
 
-Future main() async {
-  receiver.listen((event) => print(event));
-  CallbackFFI.initialize();
-  PlayerFFI.create(0, 320, 240, 0, <String>[].toNativeUtf8Array());
-  PlayerFFI.open(
-    0, 1,
-    ['0', 'MediaType.file', '/home/alexmercerind/video.mp4'].toNativeUtf8Array(),
-    1
+import 'package:dart_vlc_ffi/dart_vlc.dart';
+
+
+String get dynamicLibraryPath {
+  String directory = Platform.script.path.split('/').sublist(0, Platform.script.path.split('/').length - 1).join('/');
+  return directory + '/' + 'dart_vlc.so';
+}
+
+Future<void> main() async {
+  DartVLC.initialize(dynamicLibraryPath);
+  Equalizer.createMode(
+    EqualizerMode.live
   );
-  await Future.delayed(Duration(seconds: 5));
 }

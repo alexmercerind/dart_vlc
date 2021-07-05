@@ -68,17 +68,16 @@ EXPORT void Player_create(int id, int videoWidth, int videoHeight, int commandLi
 EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceSize) {
     std::vector<Media*> medias;
     Player* player = players->get(id);
-    for (int index = 0; index < 3 * sourceSize; index += 3) {
+    for (int index = 0; index < 2 * sourceSize; index += 2) {
         Media* media;
-        int id = atoi(source[index]);
-        const char* type = source[index + 1];
-        const char* resource = source[index + 2];
+        const char* type = source[index];
+        const char* resource = source[index + 1];
         if (strcmp(type, "MediaType.file") == 0)
-            media = Media::file(id, resource, false);
+            media = Media::file(0, resource, false);
         else if (strcmp(type, "MediaType.network") == 0)
-            media = Media::network(id, resource, false);
+            media = Media::network(0, resource, false);
         else
-            media = Media::directShow(id, resource);
+            media = Media::directShow(0, resource);
         medias.emplace_back(media);
     }
     player->open(
@@ -203,9 +202,9 @@ EXPORT void Player_move(int id, int initialIndex, int finalIndex) {
 EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
     Media* media;
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, false);
+        media = Media::file(0, resource, true);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, false);
+        media = Media::network(0, resource, true);
     else if (strcmp(type, "MediaType.directShow") == 0)
         media = Media::directShow(0, resource);
     char** metas = new char*[media->metas.size()];
@@ -287,7 +286,7 @@ EXPORT void Record_dispose(int id) {
     records->get(id, nullptr, "")->dispose();
 }
 
-EXPORT const char** Devices_all() {
+EXPORT char** Devices_all() {
     devices->refresh();
     char** _devices = new char*[(devices->all.size() * 2) + 1];
     _devices[0] = std::to_string(devices->all.size()).data();
@@ -296,35 +295,45 @@ EXPORT const char** Devices_all() {
         _devices[i + 1] = devices->all[i + 1]->name.data();
     }
     devices->all.size();
+    return _devices;
 }
 
-
-EXPORT const char** Equalizer_createEmpty() {
+EXPORT char** Equalizer_createEmpty() {
     int id = equalizers->createEmpty();
     Equalizer* equalizer = equalizers->get(id);
     char** _equalizer = new char*[2 * equalizer->bandAmps.size() + 2];
-    _equalizer[0] = std::to_string(id).data();
-    _equalizer[1] = std::to_string(equalizer->preAmp).data();
+    _equalizer[0] = new char[200];
+    strncpy(_equalizer[0], std::to_string(id).data(), 200);
+    _equalizer[1] = new char[200];
+    strncpy(_equalizer[1], std::to_string(equalizer->preAmp).data(), 200);
     int index = 0;
     for (const auto&[band, amp]: equalizer->bandAmps) {
-        _equalizer[index + 2] = std::to_string(band).data();
-        _equalizer[index + 3] = std::to_string(amp).data();
+        _equalizer[index + 2] = new char[200];
+        strncpy(_equalizer[index + 2], std::to_string(band).data(), 200);
+        _equalizer[index + 3] = new char[200];
+        strncpy(_equalizer[index + 3], std::to_string(amp).data(), 200);
+        index += 2;
     }
     return _equalizer;
 }
 
-EXPORT const char** Equalizer_createMode(int mode) {
+EXPORT char** Equalizer_createMode(int mode) {
     int id = equalizers->createMode(
         static_cast<EqualizerMode>(mode)
     );
     Equalizer* equalizer = equalizers->get(id);
     char** _equalizer = new char*[2 * equalizer->bandAmps.size() + 2];
-    _equalizer[0] = std::to_string(id).data();
-    _equalizer[1] = std::to_string(equalizer->preAmp).data();
+    _equalizer[0] = new char[200];
+    strncpy(_equalizer[0], std::to_string(id).data(), 200);
+    _equalizer[1] = new char[200];
+    strncpy(_equalizer[1], std::to_string(equalizer->preAmp).data(), 200);
     int index = 0;
     for (const auto&[band, amp]: equalizer->bandAmps) {
-        _equalizer[index + 2] = std::to_string(band).data();
-        _equalizer[index + 3] = std::to_string(amp).data();
+        _equalizer[index + 2] = new char[200];
+        strncpy(_equalizer[index + 2], std::to_string(band).data(), 200);
+        _equalizer[index + 3] = new char[200];
+        strncpy(_equalizer[index + 3], std::to_string(amp).data(), 200);
+        index += 2;
     }
     return _equalizer;
 }
@@ -338,7 +347,6 @@ EXPORT void Equalizer_setPreAmp(int id, float amp) {
 }
 
 #endif
-
 #ifdef __cplusplus
 }
 #endif

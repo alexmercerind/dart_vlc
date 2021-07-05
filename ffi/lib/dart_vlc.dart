@@ -21,4 +21,4 @@ export 'package:dart_vlc_ffi/src/enums/equalizerMode.dart';
 export 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
 export 'package:dart_vlc_ffi/src/enums/mediaType.dart';
 export 'package:dart_vlc_ffi/src/enums/playlistMode.dart';
-export 'package:dart_vlc_ffi/src/internal/ffi.dart';
+export 'package:dart_vlc_ffi/src/internal/initializer.dart';
