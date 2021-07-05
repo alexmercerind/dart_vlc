@@ -114,8 +114,7 @@ abstract class EqualizerFFI {
 }
 
 bool isInitialized = false;
-final ReceivePort receiver = new ReceivePort();
-final Stream<dynamic> receiverStream = receiver.asBroadcastStream()..listen(
+final ReceivePort receiver = new ReceivePort()..asBroadcastStream()..listen(
   (event) {
     int playerId = int.parse(event[0]);
     String playerEvent = event[1];

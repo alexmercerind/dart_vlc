@@ -4,11 +4,23 @@
 
 ## Installation
 
+**Flutter**
+
 ```yaml
 dependencies:
   ...
   dart_vlc: ^0.0.8
 ```
+
+**Dart CLI**
+
+```yaml
+dependencies:
+  ...
+  dart_vlc_ffi: ^0.0.1
+```
+
+More on Dart CLI implementation [here](./ffi/README.md).
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
 
