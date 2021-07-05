@@ -36,6 +36,13 @@ packages:
       relative: true
     source: path
     version: "0.0.8"
+  dart_vlc_ffi:
+    dependency: transitive
+    description:
+      name: dart_vlc_ffi
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   ffi:
     dependency: transitive
     description:

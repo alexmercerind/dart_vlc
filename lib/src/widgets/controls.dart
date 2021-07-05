@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
-import 'package:dart_vlc/src/device.dart';
-import 'package:dart_vlc/src/channel.dart';
-import 'package:dart_vlc/src/playerState/playerState.dart';
+import 'package:dart_vlc_ffi/src/device.dart';
+import 'package:dart_vlc_ffi/src/player.dart';
+import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
+
 
 class Control extends StatefulWidget {
   final Widget child;
@@ -194,10 +195,8 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                   if (!(positionInMilliseconds - 10000)
                                       .isNegative)
                                     positionInMilliseconds -= 10000;
-                                  players[widget.playerId]!
-                                      .seek(Duration(
-                                          milliseconds: positionInMilliseconds))
-                                      .then((_) => setState(() {}));
+                                  players[widget.playerId]!.seek(Duration(milliseconds: positionInMilliseconds));
+                                  setState(() {});
                                 }),
                             SizedBox(width: 20),
                             IconButton(
@@ -209,14 +208,12 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                               ),
                               onPressed: () {
                                 if (players[widget.playerId]!.playback.isPlaying) {
-                                  players[widget.playerId]!
-                                  .pause()
-                                  .then((_) => this.playPauseController.reverse());
+                                  players[widget.playerId]!.pause();
+                                  this.playPauseController.reverse();
                                 }
                                 else {
-                                  players[widget.playerId]!
-                                  .play()
-                                  .then((_) => this.playPauseController.forward());
+                                  players[widget.playerId]!.play();
+                                  this.playPauseController.forward();
                                 }
                               },
                             ),
@@ -244,8 +241,8 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                     players[widget.playerId]!
                                         .seek(Duration(
                                             milliseconds:
-                                                positionInMilliseconds))
-                                        .then((_) => setState(() {}));
+                                                positionInMilliseconds));
+                                    setState(() {});
                                   }
                                 }),
                             SizedBox(width: 50),
@@ -271,33 +268,24 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                               activeColor: widget.volumeActiveColor,
                               backgroundColor: widget.volumeBackgroundColor,
                             ),
-                            FutureBuilder(
-                              future: Devices.all,
-                              builder: (context,
-                                  AsyncSnapshot<List<Device>> snapshot) {
-                                return PopupMenuButton(
-                                  iconSize: 30,
-                                  icon:
-                                      Icon(Icons.speaker, color: Colors.white),
-                                  onSelected: (Device device) async {
-                                    await players[widget.playerId]!
-                                        .setDevice(device);
-                                    setState(() {});
-                                  },
-                                  itemBuilder: (context) {
-                                    return snapshot.data!
-                                        .map(
-                                          (device) => PopupMenuItem(
-                                            child: Text(device.name,
-                                                style: TextStyle(
-                                                  fontSize: 14.0,
-                                                )),
-                                            value: device,
-                                          ),
-                                        )
-                                        .toList();
-                                  },
-                                );
+                            PopupMenuButton(
+                              iconSize: 30,
+                              icon: Icon(Icons.speaker, color: Colors.white),
+                              onSelected: (Device device) {
+                                players[widget.playerId]!.setDevice(device);
+                                setState(() {});
+                              },
+                              itemBuilder: (context) {
+                                return Devices.all.map(
+                                  (device) => PopupMenuItem(
+                                    child: Text(device.name,
+                                        style: TextStyle(
+                                          fontSize: 14.0,
+                                        )),
+                                    value: device,
+                                  ),
+                                )
+                                .toList();
                               },
                             ),
                           ],
@@ -434,12 +422,12 @@ class _VolumeControlState extends State<VolumeControl> {
       return Icons.volume_off_sharp;
   }
 
-  void muteUnmute() async {
+  void muteUnmute() {
     if (players[widget.playerId]!.general.volume > 0) {
       unmutedVolume = players[widget.playerId]!.general.volume;
-      await players[widget.playerId]!.setVolume(0);
+      players[widget.playerId]!.setVolume(0);
     } else {
-      await players[widget.playerId]!.setVolume(unmutedVolume);
+      players[widget.playerId]!.setVolume(unmutedVolume);
     }
     setState(() {});
   }

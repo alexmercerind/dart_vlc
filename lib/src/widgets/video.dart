@@ -1,11 +1,10 @@
-import 'package:dart_vlc/src/channel.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:dart_vlc/src/player.dart';
+import 'package:dart_vlc_ffi/src/player.dart';
 import 'controls.dart';
 
 /// Internally used map to keep [StreamController]s for [Video] [Widget]s.
@@ -167,15 +166,16 @@ class VideoState extends State<Video> {
   @override
   void initState() {
     super.initState();
-    if (widget.showControls) controls[widget.playerId] = this.controlKey;
-    videoStreamControllers[widget.playerId] =
-        new StreamController<VideoFrame>.broadcast();
-    videoStreamControllers[widget.playerId]
-        ?.stream
-        .listen((VideoFrame videoFrame) async {
-      this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
-      this.setState(() {});
-    });
+    // TODO: Fix frame callbacks.
+    // if (widget.showControls) controls[widget.playerId] = this.controlKey;
+    // videoStreamControllers[widget.playerId] =
+    //     new StreamController<VideoFrame>.broadcast();
+    // videoStreamControllers[widget.playerId]
+    //     ?.stream
+    //     .listen((VideoFrame videoFrame) async {
+    //   this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
+    //   this.setState(() {});
+    // });
   }
 
   @override
