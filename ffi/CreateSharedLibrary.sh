@@ -13,7 +13,7 @@
 # Assuming include directory contains libVLC++ headers.
 # Setting C++ standard to 17 for std::filesystem.
 #
-g++ -c native/main.cpp -o main.o -fPIC -I./ -I./../linux/include -std=c++17
+g++ -c native/dart_vlc.cpp -o main.o -fPIC -I./ -I./../linux/include -std=c++17
 
 # Create shared library from the generated object code.
 # Linking libVLC shared library.

@@ -157,8 +157,7 @@ class Player {
         medias.add(media.mediaType.toString());
         medias.add(media.resource);
       });
-      PlayerFFI.open(this.id, autoStart ? 1 : 0, medias.toNativeUtf8Array(),
-          source.medias.length * 2);
+      PlayerFFI.open(this.id, autoStart ? 1 : 0, medias.toNativeUtf8Array(), source.medias.length);
     }
   }
 
@@ -256,7 +255,7 @@ class Player {
   /// A playback [Device] for a [Player] instance cannot be changed in the middle of playback.
   /// Device will be switched once a new [Media] is played.
   ///
-  Future<void> setDevice(Device device) async {
+  void setDevice(Device device) {
     PlayerFFI.setDevice(
         this.id, device.id.toNativeUtf8(), device.name.toNativeUtf8());
   }

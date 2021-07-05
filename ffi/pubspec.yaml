@@ -1,6 +1,6 @@
 name: dart_vlc_ffi
 description: FFI based binding to dart_vlc wrapper (Based on libVLC & libVLC++).
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/alexmercerind/dart_vlc
 repository: https://github.com/alexmercerind/dart_vlc
 documentation: https://github.com/alexmercerind/dart_vlc/blob/master/README.md

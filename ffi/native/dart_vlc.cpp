@@ -162,7 +162,7 @@ EXPORT void Player_setPlaylistMode(int id, const char* mode) {
         playlistMode = PlaylistMode::repeat;
     else if (strcmp(mode, "playlistMode.loop") == 0)
         playlistMode = PlaylistMode::loop;
-    else if (strcmp(mode, "playlistMode.single") == 0)
+    else
         playlistMode = PlaylistMode::single;
     player->setPlaylistMode(playlistMode);
 }
@@ -174,7 +174,7 @@ EXPORT void Player_add(int id, const char* type, const char* resource) {
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
         media = Media::network(0, resource, false);
-    else if (strcmp(type, "MediaType.directShow") == 0)
+    else
         media = Media::directShow(0, resource);
     player->add(media);
 }
@@ -191,7 +191,7 @@ EXPORT void Player_insert(int id, int index, const char* type, const char* resou
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
         media = Media::network(0, resource, false);
-    else if (strcmp(type, "MediaType.directShow") == 0)
+    else
         media = Media::directShow(0, resource);
     player->insert(index, media);
 }
@@ -207,7 +207,7 @@ EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
         media = Media::file(0, resource, true);
     else if (strcmp(type, "MediaType.network") == 0)
         media = Media::network(0, resource, true);
-    else if (strcmp(type, "MediaType.directShow") == 0)
+    else
         media = Media::directShow(0, resource);
     char** metas = new char*[media->metas.size()];
     int index = 0;
@@ -224,7 +224,7 @@ EXPORT void Broadcast_create(int id, const char* type, const char* resource, con
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
         media = Media::network(0, resource, false);
-    else if (strcmp(type, "MediaType.directShow") == 0)
+    else
         media = Media::directShow(0, resource);
     BroadcastConfiguration configuration(
         access,
@@ -235,7 +235,7 @@ EXPORT void Broadcast_create(int id, const char* type, const char* resource, con
         acodec,
         ab
     );
-    Broadcast* broadcast = broadcasts->get(id, media, &configuration);
+    broadcasts->get(id, media, &configuration);
 }
 
 EXPORT void Broadcast_start(int id) {
@@ -254,9 +254,9 @@ EXPORT void Chromecast_create(int id, const char* type, const char* resource, co
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
         media = Media::network(0, resource, false);
-    else if (strcmp(type, "MediaType.directShow") == 0)
+    else
         media = Media::directShow(0, resource);
-    Chromecast* chromecast = chromecasts->get(id, media, ipAddress);
+    chromecasts->get(id, media, ipAddress);
 }
 
 EXPORT void Chromecast_start(int id) {
@@ -275,7 +275,7 @@ EXPORT void Record_create(int id, const char* savingFile, const char* type, cons
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
         media = Media::network(0, resource, false);
-    else if (strcmp(type, "MediaType.directShow") == 0)
+    else
         media = Media::directShow(0, resource);
     records->get(id, media, savingFile);
 }
