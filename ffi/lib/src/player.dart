@@ -8,6 +8,9 @@ import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
 import 'package:dart_vlc_ffi/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc_ffi/src/device.dart';
 
+/// Keeps various [Player] instances to manage event callbacks.
+Map<int, Player> players = {};
+
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
@@ -90,6 +93,7 @@ class Player {
     this.playbackStream = this.playbackController.stream;
     this.generalController = StreamController<GeneralState>.broadcast();
     this.generalStream = this.generalController.stream;
+    players[this.id] = this;
     PlayerFFI.create(
       this.id,
       this.videoWidth,

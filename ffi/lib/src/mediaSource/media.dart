@@ -28,7 +28,7 @@ class _Media extends Media {}
 /// ```
 /// 
 ///
-abstract class Media extends MediaSource {
+class Media extends MediaSource {
   MediaSourceType mediaSourceType = MediaSourceType.media;
   Map<String, String> metas = {};
   late MediaType mediaType;
