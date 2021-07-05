@@ -2,7 +2,13 @@
 <h4 align="center">Flutter 🎞 media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
+
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_7.png?raw=true)
+
 ## Installation
+
+**Flutter**
 
 ```yaml
 dependencies:
@@ -10,9 +16,15 @@ dependencies:
   dart_vlc: ^0.0.8
 ```
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
+**Dart CLI**
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_7.png?raw=true)
+```yaml
+dependencies:
+  ...
+  dart_vlc_ffi: ^0.0.1
+```
+
+More on Dart CLI implementation [here](./ffi/README.md).
 
 
 ## Support
@@ -21,9 +33,27 @@ Consider supporting the project by starring the repository or buying me a coffee
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
+**Donate in Crypto**
+
+- ETH (Ethereum)
+  - `0x92f92BC204cDFDAB655e6A69e5Aa4bA5476D7661`
+- BTC (Bitcoin)
+  - `1M3DNwnX1GDauPoPr7VywojMRWygje8ctq`
+
+Thanks a lot for your support.
+
 Looking for contributors for macOS port.
 
 ## Documentation
+
+#### Initialize the library
+
+```dart
+void main() {
+  DartVLC.initialize();
+  runApp(MyApp());
+}
+```
 
 #### Create a new player instance.
 ```dart
@@ -32,15 +62,15 @@ Player player = new Player(id: 69420);
 
 #### Create a media for playback.
 ```dart
-Media media0 = await Media.file(
+Media media0 = Media.file(
   new File('C:/music.mp3')
 );
 
-Media media1 = await Media.network(
+Media media1 = Media.network(
   'https://www.example.com/music.aac'
 );
 
-Media media2 = await Media.asset(
+Media media2 = Media.asset(
   'assets/music.ogg'
 );
 ```
@@ -49,24 +79,32 @@ Media media2 = await Media.asset(
 ```dart
 Playlist playlist = new Playlist(
   medias: [
-    await Media.file(new File('C:/music.mp3')),
-    await Media.asset('assets/music.ogg'),
-    await Media.network('https://www.example.com/music.aac'),
+    Media.file(new File('C:/music.mp3')),
+    Media.asset('assets/music.ogg'),
+    Media.network('https://www.example.com/music.aac'),
   ],
 );
 ```
 
 #### Open a media or playlist into a player.
+
+```dart
+player.open(
+  Media.file(new File('C:/music0.mp3')),
+  autoStart: true, // default
+);
+```
+
 ```dart
 player.open(
   new Playlist(
     medias: [
-      await Media.file(new File('C:/music0.mp3')),
-      await Media.file(new File('C:/music1.mp3')),
-      await Media.file(new File('C:/music2.mp3')),
+      Media.file(new File('C:/music0.mp3')),
+      Media.file(new File('C:/music1.mp3')),
+      Media.file(new File('C:/music2.mp3')),
     ],
   ),
-  autoStart: true, // default
+  autoStart: false,
 );
 ```
 
@@ -95,14 +133,14 @@ player.jump(10);
 #### Manipulate an already playing playlist.
 ```dart
 player.add(
-  await Media.file(new File('C:/music0.mp3')),
+  Media.file(new File('C:/music0.mp3')),
 );
 
 player.remove(4);
 
 player.insert(
   2,
-  await Media.file(new File('C:/music0.mp3')),
+  Media.file(new File('C:/music0.mp3')),
 );
 
 player.move(0, 4);
@@ -117,7 +155,7 @@ player.setRate(1.25);
 
 #### Get & change playback device.
 ```dart
-List<Device> devices = await Devices.all;
+List<Device> devices = Devices.all;
 
 player.setDevice(
   devices[0],
@@ -156,7 +194,7 @@ Thanks to [@tomassasovsky](https://github.com/tomassasovsky) for adding visual c
 
 #### Retrieve metadata of media.
 ```dart
-Media media = await Media.network(
+Media media = Media.network(
   'https://www.example.com/media.mp3',
   parse: true,
   timeout: new Duration(seconds: 10),
@@ -205,14 +243,14 @@ player.generalStream.listen((GeneralState state) {
 Create using preset.
 
 ```dart
-Equalizer equalizer = await Equalizer.createMode(EqualizerMode.party);
+Equalizer equalizer = Equalizer.createMode(EqualizerMode.party);
 player.setEqualizer(equalizer);
 ```
 
 Create custom equalizer.
 
 ```dart
-Equalizer equalizer = await Equalizer.createEmpty();
+Equalizer equalizer = Equalizer.createEmpty();
 equalizer.setPreAmp(10.0);
 equalizer.setBandAmp(31.25, -10.0);
 equalizer.setBandAmp(100.0, -10.0);
@@ -231,9 +269,9 @@ equalizer.bandAmps;
 Broadcasting to localhost.
 
 ```dart
-Broadcast broadcast = await Broadcast.create(
+Broadcast broadcast = Broadcast.create(
   id: 0,
-  media: await Media.file(new File('C:/video.mp4')),
+  media: Media.file(new File('C:/video.mp4')),
   configuration: new BroadcastConfiguration(
     access: 'http',
     mux: 'mpeg1',
@@ -257,9 +295,9 @@ broadcast.dispose();
 Thanks to [@DomingoMG](https://github.com/DomingoMG) for adding `Record` and `Chromecast` classes.
 
 ```dart
-Record record = await Record.create(
+Record record = Record.create(
   id: 205, 
-  media: await Media.network('https://www.example.com/streaming-media.MP3'), 
+  media: Media.network('https://www.example.com/streaming-media.MP3'), 
   pathFile: '/home/alexmercerind/recording.MP3',
 );
 record.start();
@@ -298,12 +336,10 @@ Windows
 
 
 ## Workings
+The repository contains a [C++ wrapper](https://github.com/alexmercerind/dart_vlc/tree/master/dartvlc) based on libVLC++. This makes handling of events and controls a lot easier & has additional features in it.
+I preferred to do majority of handling in C++ itself, thus Dart code is minimal & very slight mapping to it.
 
-The internal wrapper used in the plugin is [here](https://github.com/alexmercerind/dart_vlc/tree/master/dartvlc) in the repository (Based on libVLC++). It makes handling of events and controls a lot easier & has additional features to it.
-
-Same wrapper will be used for upcoming FFI version.
-
-I preferred to do majority of plugin handling in C++ itself, thus Dart code is minimal & very slight mapping to it.
+This project might seem like a Flutter plugin, but it is based on FFI instead. [Here](https://github.com/alexmercerind/dart_vlc/tree/master/ffi) are the FFI bindings to [C++ wrapper](https://github.com/alexmercerind/dart_vlc/tree/master/dartvlc), which are shared by all platforms & same can be used in Dart CLI apps aswell.
 
 ## Progress
 
@@ -348,10 +384,10 @@ Done
 - `Chromecast` class.
 - `Equalizer` support.
 - Adding headers for `Media.network` (Not possible, added user agent).
+- Switching to FFI for more cross platform freedom.
 
 Under progress or planned features (irrespective of order)...
 
-- FFI version of the library for plain Dart applications.
 - Removing [libVLC++](https://github.com/videolan/libvlcpp) dependency. (Maybe).
 - Writing metadata tags.
 - Making things more efficient.
@@ -363,7 +399,7 @@ Under progress or planned features (irrespective of order)...
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
 
-Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](http://flutter.dev) team to review code & help me fix the loopholes.
+Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](http://flutter.dev) team to my review code & help me fix the loopholes.
 
 Thanks to following members of libVLC community to give me bit of look & advice about how things work:
 
@@ -382,15 +418,15 @@ Contributions to the project are open, it will be appreciated if you discuss the
 
 ## License
 
-Copyright (C) 2021, Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
+Copyright (C) 2021, Hitesh Kumar Saini <saini123hitesh@gmail.com>.
 
 This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
 
 ## Vision
 
-There aren't any media (audio or video) playback libraries for Flutter on Windows/Linux yet. So, this project is all about that.
+There aren't any media (audio or video) playback libraries for Flutter or Dart on Windows/Linux yet. So, this project is all about that.
 As one might be already aware, VLC is one of the best media playback tools out there.
 
-So, now you can use it to play audio or video files from Flutter Desktop apps.
+So, now you can use it to play audio or video files from Flutter or Dart apps.
 
-Although, the mentioned repositories above are for audio playback, video playback is also a part of consideration for this project.
+Support for other platforms is also under progress.

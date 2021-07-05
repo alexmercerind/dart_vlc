@@ -1,5 +1,6 @@
-import 'package:dart_vlc/src/channel.dart';
-import 'package:dart_vlc/src/mediaSource/media.dart';
+import 'package:ffi/ffi.dart';
+import 'package:dart_vlc_ffi/src/internal/ffi.dart';
+import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
 
 /// Internally used class to avoid direct creation of the object of a [Broadcast] class.
 class _Broadcast extends Broadcast {}
@@ -50,16 +51,6 @@ class BroadcastConfiguration {
     required this.acodec,
     required this.ab,
   });
-
-  Map<String, dynamic> toMap() => {
-        'access': this.access,
-        'mux': this.mux,
-        'dst': this.dst,
-        'vcodec': this.vcodec,
-        'vb': this.vb,
-        'acodec': this.acodec,
-        'ab': this.ab,
-      };
 }
 
 /// Creates new [Broadcast] for a [Media].
@@ -67,7 +58,7 @@ class BroadcastConfiguration {
 /// Example creation can be as follows.
 ///
 /// ```dart
-/// Broadcast broadcast = await Broadcast.create(
+/// Broadcast broadcast = Broadcast.create(
 ///   id: 0,
 ///   media: await Media.file(new File('C:/music.ogg')),
 ///   configuration: new BroadcastConfiguration(
@@ -97,42 +88,35 @@ abstract class Broadcast {
   late BroadcastConfiguration configuration;
 
   /// Creates a new [Broadcast] instance.
-  static Future<Broadcast> create(
+  static Broadcast create(
       {required int id,
       required Media media,
-      required BroadcastConfiguration configuration}) async {
+      required BroadcastConfiguration configuration}) {
     Broadcast broadcast = new _Broadcast();
     broadcast.id = id;
     broadcast.media = media;
     broadcast.configuration = configuration;
-    await channel.invokeMethod(
-      'Broadcast.create',
-      {
-        'id': id,
-        'media': media.toMap(),
-        'configuration': configuration.toMap(),
-      },
-    );
+    BroadcastFFI.create(
+        id,
+        media.mediaType.toString().toNativeUtf8(),
+        media.resource.toNativeUtf8(),
+        configuration.access.toNativeUtf8(),
+        configuration.mux.toNativeUtf8(),
+        configuration.dst.toNativeUtf8(),
+        configuration.vcodec.toNativeUtf8(),
+        configuration.vb,
+        configuration.acodec.toNativeUtf8(),
+        configuration.ab);
     return broadcast;
   }
 
   /// Starts broadcasting the [Media].
-  Future<void> start() async {
-    await channel.invokeMethod(
-      'Broadcast.start',
-      {
-        'id': id,
-      },
-    );
+  void start() {
+    BroadcastFFI.start(this.id);
   }
 
   /// Disposes this instance of [Broadcast].
-  Future<void> dispose() async {
-    await channel.invokeMethod(
-      'Broadcast.dispose',
-      {
-        'id': id,
-      },
-    );
+  void dispose() {
+    BroadcastFFI.dispose(this.id);
   }
 }

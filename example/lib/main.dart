@@ -4,15 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 
 void main() {
-  runApp(DartVLC());
+  DartVLC.initialize();
+  runApp(DartVLCExample());
 }
 
-class DartVLC extends StatefulWidget {
+class DartVLCExample extends StatefulWidget {
   @override
-  _DartVLCState createState() => _DartVLCState();
+  DartVLCExampleState createState() => DartVLCExampleState();
 }
 
-class _DartVLCState extends State<DartVLC> {
+class DartVLCExampleState extends State<DartVLCExample> {
   Player player = Player(
     id: 0,
     videoWidth: 480,
@@ -51,10 +52,10 @@ class _DartVLCState extends State<DartVLC> {
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
-    this.devices = await Devices.all;
-    Equalizer equalizer = await Equalizer.createMode(EqualizerMode.live);
-    await equalizer.setPreAmp(10.0);
-    await equalizer.setBandAmp(31.25, 10.0);
+    this.devices = Devices.all;
+    Equalizer equalizer = Equalizer.createMode(EqualizerMode.live);
+    equalizer.setPreAmp(10.0);
+    equalizer.setBandAmp(31.25, 10.0);
     player.setEqualizer(equalizer);
     this.setState(() {});
   }
@@ -177,19 +178,13 @@ class _DartVLCState extends State<DartVLC> {
                                             if (this.mediaType ==
                                                 MediaType.file) {
                                               this.medias.add(
-                                                    await Media.file(new File(
+                                                    Media.file(new File(
                                                         controller.text)),
                                                   );
                                             } else if (this.mediaType ==
                                                 MediaType.network) {
                                               this.medias.add(
-                                                    await Media.network(
-                                                        controller.text),
-                                                  );
-                                            } else if (this.mediaType ==
-                                                MediaType.asset) {
-                                              this.medias.add(
-                                                    await Media.asset(
+                                                    Media.network(
                                                         controller.text),
                                                   );
                                             }
@@ -243,11 +238,11 @@ class _DartVLCState extends State<DartVLC> {
                                       ElevatedButton(
                                         onPressed: () => this.setState(() {
                                           this.player.open(
-                                            new Playlist(
-                                              medias: this.medias,
-                                              playlistMode:PlaylistMode.single
-                                            ),
-                                          );
+                                                new Playlist(
+                                                    medias: this.medias,
+                                                    playlistMode:
+                                                        PlaylistMode.single),
+                                              );
                                         }),
                                         child: Text(
                                           'Open',
@@ -296,14 +291,23 @@ class _DartVLCState extends State<DartVLC> {
                                 color: Colors.transparent,
                               ),
                               Slider(
-                                min: 0,
-                                max: this.position.duration?.inMilliseconds.toDouble() ?? 1.0,
-                                value: this.position.position?.inMilliseconds.toDouble() ?? 0.0,
-                                onChanged: (double position) =>
-                                  this.player.seek(
-                                    Duration(milliseconds: position.toInt())
-                                  )
-                              ),
+                                  min: 0,
+                                  max: this
+                                          .position
+                                          .duration
+                                          ?.inMilliseconds
+                                          .toDouble() ??
+                                      1.0,
+                                  value: this
+                                          .position
+                                          .position
+                                          ?.inMilliseconds
+                                          .toDouble() ??
+                                      0.0,
+                                  onChanged: (double position) => this
+                                      .player
+                                      .seek(Duration(
+                                          milliseconds: position.toInt()))),
                               Text('Event streams.'),
                               Divider(
                                 height: 8.0,
@@ -468,18 +472,13 @@ class _DartVLCState extends State<DartVLC> {
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         if (this.mediaType == MediaType.file) {
-                                          this.metasMedia = await Media.file(
+                                          this.metasMedia = Media.file(
                                               new File(
                                                   this.metasController.text),
                                               parse: true);
                                         } else if (this.mediaType ==
                                             MediaType.network) {
-                                          this.metasMedia = await Media.network(
-                                              this.metasController.text,
-                                              parse: true);
-                                        } else if (this.mediaType ==
-                                            MediaType.asset) {
-                                          this.metasMedia = await Media.asset(
+                                          this.metasMedia = Media.network(
                                               this.metasController.text,
                                               parse: true);
                                         }
@@ -664,13 +663,22 @@ class _DartVLCState extends State<DartVLC> {
                                   onReorder:
                                       (int initialIndex, int finalIndex) async {
                                     /// 🙏🙏🙏
+                                    /// In the name of God,
+                                    /// With all due respect,
+                                    /// I ask all Flutter engineers to please fix this issue.
+                                    /// Peace.
+                                    /// 🙏🙏🙏
+                                    ///
+                                    /// Issue:
                                     /// https://github.com/flutter/flutter/issues/24786
+                                    /// Prevention:
                                     /// https://stackoverflow.com/a/54164333/12825435
+                                    ///
                                     if (finalIndex > this.current.medias.length)
                                       finalIndex = this.current.medias.length;
                                     if (initialIndex < finalIndex) finalIndex--;
 
-                                    await this.player.move(initialIndex, finalIndex);
+                                    this.player.move(initialIndex, finalIndex);
                                     this.setState(() {});
                                   },
                                   scrollDirection: Axis.vertical,

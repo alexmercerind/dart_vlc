@@ -1,35 +1,22 @@
 # dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
 #
-# Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
+# Hitesh Kumar Saini
 # https://github.com/alexmercerind
 # alexmercerind@gmail.com
 # GNU Lesser General Public License v2.1
 # 
-
 cmake_minimum_required(VERSION 3.15)
-
 set (CMAKE_CXX_STANDARD 17)
 
-set(PROJECT_NAME dart_vlc)
-project(${PROJECT_NAME} LANGUAGES CXX)
-set(PLUGIN_NAME dart_vlc_plugin)
+set(PACKAGE dartvlc)
 
-set(LIBVLC_VERSION 3.0.9.2)
-
-include_directories(${PLUGIN_NAME} INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
+add_library(${PACKAGE} SHARED
+  ../ffi/native/dart_vlc.cpp
 )
-add_library(${PLUGIN_NAME} SHARED
-  dart_vlc_plugin.cc
-)
-
-apply_standard_settings(${PLUGIN_NAME})
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
-target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
-target_include_directories(${PLUGIN_NAME} INTERFACE
+target_include_directories(${PACKAGE} INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native
 )
 
 set(LIBVLC_BINARIES ${CMAKE_CURRENT_SOURCE_DIR}/bin)
@@ -51,12 +38,41 @@ add_custom_command(
   DEPENDS ${LIBVLC_ARCHIVE}
 )
 
+target_link_libraries(${PACKAGE} PRIVATE
+  vlc
+)
+
+
+# Not used Flutter plugin template.
+
+set(PROJECT_NAME dart_vlc)
+project(${PROJECT_NAME} LANGUAGES CXX)
+set(PLUGIN_NAME dart_vlc_plugin)
+include_directories(${PLUGIN_NAME} INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+add_library(${PLUGIN_NAME} SHARED
+  dart_vlc_plugin.cc
+)
+
+apply_standard_settings(${PLUGIN_NAME})
+set_target_properties(${PLUGIN_NAME} PROPERTIES
+  CXX_VISIBILITY_PRESET hidden)
+target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
+target_include_directories(${PLUGIN_NAME} INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc
+)
+
 target_link_libraries(${PLUGIN_NAME} PRIVATE
   flutter
   PkgConfig::GTK
-  vlc
 )
+
+# Add generated shared library.
+
 set(
   dart_vlc_bundled_libraries
+  "plugins/dart_vlc/libdartvlc.so"
   PARENT_SCOPE
 )

@@ -1,9 +1,9 @@
 /*
  * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
  * 
- * Hitesh Kumar Saini, Domingo Montesdeoca Gonzalez & contributors.
+ * Hitesh Kumar Saini
  * https://github.com/alexmercerind
- * alexmercerind@gmail.com
+ * saini123hitesh@gmail.com; alexmercerind@gmail.com
  * 
  * GNU Lesser General Public License v2.1
 */
@@ -29,7 +29,7 @@ public:
         this->instance = VLC::Instance(0, nullptr);
     }
 
-    void send() {
+    void start() {
         std::stringstream sout;
         sout << "#chromecast{ip="<< this->ipAddress <<", demux-filter=demux_chromecast, conversion-quality=0}";
         libvlc_vlm_add_broadcast(
@@ -59,9 +59,9 @@ private:
 
 class Chromecasts {
 public:
-	Chromecast* get(int id, Media* media, std::string pathFile) {
+	Chromecast* get(int id, Media* media, std::string ipAddress) {
 		if (this->chromecasts.find(id) == this->chromecasts.end()) {
-			this->chromecasts[id] = new Chromecast(id, media, pathFile);
+			this->chromecasts[id] = new Chromecast(id, media, ipAddress);
 		}
 		return this->chromecasts[id];
 	}

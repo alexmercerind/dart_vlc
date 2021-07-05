@@ -1,12 +1,13 @@
-import 'package:dart_vlc/src/channel.dart';
-import 'package:flutter/material.dart';
-
+// ignore_for_file: implementation_imports
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:flutter/material.dart';
+import 'package:dart_vlc_ffi/src/player.dart';
+import 'package:dart_vlc/src/widgets/controls.dart';
 
-import 'package:dart_vlc/src/player.dart';
-import 'controls.dart';
+/// Internally used map to keep [GlobalKey]s for [Video]'s [ControlState]s.
+Map<int, GlobalKey<ControlState>> controls = {};
 
 /// Internally used map to keep [StreamController]s for [Video] [Widget]s.
 Map<int, StreamController<VideoFrame>> videoStreamControllers = {};

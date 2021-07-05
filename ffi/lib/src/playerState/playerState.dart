@@ -1,4 +1,4 @@
-import 'package:dart_vlc/src/mediaSource/media.dart';
+import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
 
 /// State of a [Player] instance.
 class CurrentState {
