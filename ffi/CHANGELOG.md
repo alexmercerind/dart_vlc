@@ -1,3 +1,7 @@
+## 0.0.4
+
+- Fixed incorrect `Devices.all` list.
+
 ## 0.0.3
 
 - Fixed video frame callbacks.

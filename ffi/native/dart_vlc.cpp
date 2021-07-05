@@ -293,15 +293,14 @@ EXPORT char** Devices_all() {
     char** _devices = new char*[(devices->all.size() * 2) + 1];
     _devices[0] = new char[200];
     strncpy(_devices[0], std::to_string(devices->all.size()).data(), 200);
-    int index = 1;
+    int index = 0;
     for (Device* device: devices->all) {
-        _devices[index] = new char[200];
-        strncpy(_devices[index], device->id.data(), 200);
         _devices[index + 1] = new char[200];
-        strncpy(_devices[index + 1], device->name.data(), 200);
+        strncpy(_devices[index + 1], device->id.data(), 200);
+        _devices[index + 2] = new char[200];
+        strncpy(_devices[index + 2], device->name.data(), 200);
         index += 2;
     }
-    devices->all.size();
     return _devices;
 }
 

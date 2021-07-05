@@ -21,8 +21,8 @@ class Devices {
     Pointer<Pointer<Utf8>> devicesPtr = DevicesFFI.all();
     int count = int.parse(devicesPtr.elementAt(0).value.toDartString());
     for (int i = 1; i < 2 * count; i += 2) {
-      devices.add(Device(devicesPtr.elementAt(1).value.toDartString(),
-          devicesPtr.elementAt(2).value.toDartString()));
+      devices.add(Device(devicesPtr.elementAt(i).value.toDartString(),
+          devicesPtr.elementAt(i + 1).value.toDartString()));
     }
     return devices;
   }
