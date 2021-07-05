@@ -157,7 +157,8 @@ class Player {
         medias.add(media.mediaType.toString());
         medias.add(media.resource);
       });
-      PlayerFFI.open(this.id, autoStart ? 1 : 0, medias.toNativeUtf8Array(), source.medias.length);
+      PlayerFFI.open(this.id, autoStart ? 1 : 0, medias.toNativeUtf8Array(),
+          source.medias.length);
     }
   }
 
