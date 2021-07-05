@@ -289,10 +289,15 @@ EXPORT void Record_dispose(int id) {
 EXPORT char** Devices_all() {
     devices->refresh();
     char** _devices = new char*[(devices->all.size() * 2) + 1];
-    _devices[0] = std::to_string(devices->all.size()).data();
-    for (int i = 1; i < devices->all.size(); i += 2) {
-        _devices[i] = devices->all[i]->id.data();
-        _devices[i + 1] = devices->all[i + 1]->name.data();
+    _devices[0] = new char[200];
+    strncpy(_devices[0], std::to_string(devices->all.size()).data(), 200);
+    int index = 1;
+    for (Device* device: devices->all) {
+        _devices[index] = new char[200];
+        strncpy(_devices[index], device->id.data(), 200);
+        _devices[index + 1] = new char[200];
+        strncpy(_devices[index + 1], device->name.data(), 200);
+        index += 2;
     }
     devices->all.size();
     return _devices;

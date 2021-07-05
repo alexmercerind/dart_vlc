@@ -8,9 +8,6 @@ String get dynamicLibraryPath {
   return directory + '/' + 'dart_vlc.so';
 }
 
-Future<void> main() async {
+void main() {
   DartVLC.initialize(dynamicLibraryPath);
-  Equalizer.createMode(
-    EqualizerMode.live
-  );
 }
