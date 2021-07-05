@@ -97,17 +97,16 @@ abstract class Broadcast {
     broadcast.media = media;
     broadcast.configuration = configuration;
     BroadcastFFI.create(
-      id,
-      media.mediaType.toString().toNativeUtf8(),
-      media.resource.toNativeUtf8(),
-      configuration.access.toNativeUtf8(),
-      configuration.mux.toNativeUtf8(),
-      configuration.dst.toNativeUtf8(),
-      configuration.vcodec.toNativeUtf8(),
-      configuration.vb,
-      configuration.acodec.toNativeUtf8(),
-      configuration.ab
-    );
+        id,
+        media.mediaType.toString().toNativeUtf8(),
+        media.resource.toNativeUtf8(),
+        configuration.access.toNativeUtf8(),
+        configuration.mux.toNativeUtf8(),
+        configuration.dst.toNativeUtf8(),
+        configuration.vcodec.toNativeUtf8(),
+        configuration.vb,
+        configuration.acodec.toNativeUtf8(),
+        configuration.ab);
     return broadcast;
   }
 

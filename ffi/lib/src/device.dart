@@ -2,7 +2,6 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 
-
 /// Represents a playback [Device] for the [Player].
 class Device {
   /// ID corresponding to the [Device].
@@ -23,12 +22,8 @@ class Devices {
     int count = int.parse(devicesPtr.elementAt(0).value.toDartString());
     print(count);
     for (int i = 1; i < 2 * count; i += 2) {
-      devices.add(
-        Device(
-          devicesPtr.elementAt(1).value.toDartString(),
-          devicesPtr.elementAt(2).value.toDartString()
-        )
-      );
+      devices.add(Device(devicesPtr.elementAt(1).value.toDartString(),
+          devicesPtr.elementAt(2).value.toDartString()));
     }
     return devices;
   }

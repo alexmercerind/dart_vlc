@@ -14,7 +14,8 @@ typedef EqualizerCreateModeDart = Pointer<Pointer<Utf8>> Function(int mode);
 /// Following typedef is used for:
 /// Equalizer::setBandAmp
 typedef EqualizerSetBandAmpCXX = Void Function(Int32 id, Float band, Float amp);
-typedef EqualizerSetBandAmpDart = void Function(int id, double band, double amp);
+typedef EqualizerSetBandAmpDart = void Function(
+    int id, double band, double amp);
 
 /// Following typedef is used for:
 /// Equalizer::setPreAmp

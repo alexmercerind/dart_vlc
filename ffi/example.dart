@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_vlc_ffi/dart_vlc.dart';
-
+import 'package:dart_vlc_ffi/dart_vlc_ffi.dart';
 
 void main(List<String> args) {
   // Initialize the library.
@@ -55,10 +54,10 @@ void main(List<String> args) {
 
   // Create a new media using a URL.
   Media media = Media.network(
-    Uri.parse('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
-    // Pass parse as true for accessing the metadata.
-    parse: true
-  );
+      Uri.parse(
+          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
+      // Pass parse as true for accessing the metadata.
+      parse: true);
   // Get media's metadata.
   print(media.metas);
 
@@ -71,14 +70,13 @@ void main(List<String> args) {
     // Alter playback volume.
     player.setVolume(0.5);
   });
-  
+
   Timer(Duration(seconds: 20), () {
     // Pause the player.
     player.pause();
     Timer(Duration(seconds: 2), () {
       // Resume the player.
       player.play();
-      
     });
   });
 
@@ -87,6 +85,9 @@ void main(List<String> args) {
 
 // Path to the dart_vlc.so
 String get dynamicLibraryPath {
-  String directory = Platform.script.path.split('/').sublist(0, Platform.script.path.split('/').length - 1).join('/');
+  String directory = Platform.script.path
+      .split('/')
+      .sublist(0, Platform.script.path.split('/').length - 1)
+      .join('/');
   return directory + '/' + 'dart_vlc.so';
 }

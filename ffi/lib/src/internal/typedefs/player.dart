@@ -3,13 +3,25 @@ import 'package:ffi/ffi.dart';
 
 /// Following typedef is used for:
 /// Player::create
-typedef PlayerCreateCXX = Void Function(Int32 id, Int32 videoHeight, Int32 videoWidth, Int32 commandlineArgumentsCount, Pointer<Pointer<Utf8>> commandlineArguments);
-typedef PlayerCreateDart = void Function(int id, int videoHeight, int videoWidth, int commandlineArgumentsCount, Pointer<Pointer<Utf8>> commandlineArguments);
+typedef PlayerCreateCXX = Void Function(
+    Int32 id,
+    Int32 videoHeight,
+    Int32 videoWidth,
+    Int32 commandlineArgumentsCount,
+    Pointer<Pointer<Utf8>> commandlineArguments);
+typedef PlayerCreateDart = void Function(
+    int id,
+    int videoHeight,
+    int videoWidth,
+    int commandlineArgumentsCount,
+    Pointer<Pointer<Utf8>> commandlineArguments);
 
 /// Following typedef is used for:
 /// Player::open
-typedef PlayerOpenCXX = Void Function(Int32 id, Int32 autoStart, Pointer<Pointer<Utf8>> source, Int32 sourceSize);
-typedef PlayerOpenDart = void Function(int id, int autoStart, Pointer<Pointer<Utf8>> source, int sourceSize);
+typedef PlayerOpenCXX = Void Function(
+    Int32 id, Int32 autoStart, Pointer<Pointer<Utf8>> source, Int32 sourceSize);
+typedef PlayerOpenDart = void Function(
+    int id, int autoStart, Pointer<Pointer<Utf8>> source, int sourceSize);
 
 /// Following typedef is used for:
 /// Player::play
@@ -43,7 +55,8 @@ typedef PlayerSetRateDart = void Function(int id, double volume);
 
 /// Following typedef is used for:
 /// Player::setUserAgent
-typedef PlayerSetUserAgentCXX = Void Function(Int32 id, Pointer<Utf8> userAgent);
+typedef PlayerSetUserAgentCXX = Void Function(
+    Int32 id, Pointer<Utf8> userAgent);
 typedef PlayerSetUserAgentDart = void Function(int id, Pointer<Utf8> userAgent);
 
 /// Following typedef is used for:
@@ -53,8 +66,10 @@ typedef PlayerSetEqualizerDart = void Function(int id, int equalizerId);
 
 /// Following typedef is used for:
 /// Player::setDevice
-typedef PlayerSetDeviceCXX = Void Function(Int32 id, Pointer<Utf8> deviceId, Pointer<Utf8> deviceName);
-typedef PlayerSetDeviceDart = void Function(int id, Pointer<Utf8> deviceId, Pointer<Utf8> deviceName);
+typedef PlayerSetDeviceCXX = Void Function(
+    Int32 id, Pointer<Utf8> deviceId, Pointer<Utf8> deviceName);
+typedef PlayerSetDeviceDart = void Function(
+    int id, Pointer<Utf8> deviceId, Pointer<Utf8> deviceName);
 
 /// Following typedef is used for:
 /// Player::setPlaylistMode
@@ -63,8 +78,10 @@ typedef PlayerSetPlaylistModeDart = void Function(int id, Pointer<Utf8> mode);
 
 /// Following typedef is used for:
 /// Player::add
-typedef PlayerAddCXX = Void Function(Int32 id, Pointer<Utf8> type, Pointer<Utf8> resource);
-typedef PlayerAddDart = void Function(int id, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerAddCXX = Void Function(
+    Int32 id, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerAddDart = void Function(
+    int id, Pointer<Utf8> type, Pointer<Utf8> resource);
 
 /// Following typedef is used for:
 /// Player::remove
@@ -73,10 +90,14 @@ typedef PlayerRemoveDart = void Function(int id, int index);
 
 /// Following typedef is used for:
 /// Player::jump
-typedef PlayerInsertCXX = Void Function(Int32 id, Int32 index, Pointer<Utf8> type, Pointer<Utf8> resource);
-typedef PlayerInsertDart = void Function(int id, int index, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerInsertCXX = Void Function(
+    Int32 id, Int32 index, Pointer<Utf8> type, Pointer<Utf8> resource);
+typedef PlayerInsertDart = void Function(
+    int id, int index, Pointer<Utf8> type, Pointer<Utf8> resource);
 
 /// Following typedef is used for:
 /// Player::move
-typedef PlayerMoveCXX = Void Function(Int32 id, Int32 initialIndex, Int32 finalIndex);
-typedef PlayerMoveDart = void Function(int id, int initialIndex, int finalIndex);
+typedef PlayerMoveCXX = Void Function(
+    Int32 id, Int32 initialIndex, Int32 finalIndex);
+typedef PlayerMoveDart = void Function(
+    int id, int initialIndex, int finalIndex);

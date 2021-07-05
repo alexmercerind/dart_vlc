@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:ffi/ffi.dart';
-import 'package:dart_vlc_ffi/dart_vlc.dart';
+import 'package:dart_vlc_ffi/dart_vlc_ffi.dart';
 import 'package:dart_vlc_ffi/src/equalizer.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
@@ -10,7 +10,6 @@ import 'package:dart_vlc_ffi/src/device.dart';
 
 /// Keeps various [Player] instances to manage event callbacks.
 Map<int, Player> players = {};
-
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
@@ -81,8 +80,13 @@ class Player {
   /// Player player = new Player(id: 0);
   /// ```
   ///
-  Player({required this.id, int videoWidth: 0, int videoHeight: 0, List<String>? commandlineArguments}) {
-    if (commandlineArguments != null) this.commandlineArguments = commandlineArguments;
+  Player(
+      {required this.id,
+      int videoWidth: 0,
+      int videoHeight: 0,
+      List<String>? commandlineArguments}) {
+    if (commandlineArguments != null)
+      this.commandlineArguments = commandlineArguments;
     this.videoWidth = videoWidth;
     this.videoHeight = videoHeight;
     this.currentController = StreamController<CurrentState>.broadcast();
@@ -141,11 +145,11 @@ class Player {
   void open(MediaSource source, {bool autoStart: true}) {
     if (source is Media) {
       PlayerFFI.open(
-        this.id,
-        autoStart ? 1: 0,
-        <String>[ source.mediaType.toString(), source.resource ].toNativeUtf8Array(),
-        1
-      );
+          this.id,
+          autoStart ? 1 : 0,
+          <String>[source.mediaType.toString(), source.resource]
+              .toNativeUtf8Array(),
+          1);
     }
     if (source is Playlist) {
       List<String> medias = <String>[];
@@ -153,12 +157,8 @@ class Player {
         medias.add(media.mediaType.toString());
         medias.add(media.resource);
       });
-      PlayerFFI.open(
-        this.id,
-        autoStart ? 1: 0,
-        medias.toNativeUtf8Array(),
-        source.medias.length * 2
-      );
+      PlayerFFI.open(this.id, autoStart ? 1 : 0, medias.toNativeUtf8Array(),
+          source.medias.length * 2);
     }
   }
 
@@ -217,7 +217,6 @@ class Player {
     PlayerFFI.setRate(this.id, rate);
   }
 
-
   /// Sets user agent for dart_vlc player.
   void setUserAgent(String userAgent) {
     PlayerFFI.setUserAgent(this.id, userAgent.toNativeUtf8());
@@ -230,11 +229,8 @@ class Player {
 
   /// Appends [Media] to the [Playlist] of the [Player] instance.
   void add(Media source) {
-    PlayerFFI.add(
-      this.id,
-      source.mediaType.toString().toNativeUtf8(),
-      source.resource.toString().toNativeUtf8()
-    );
+    PlayerFFI.add(this.id, source.mediaType.toString().toNativeUtf8(),
+        source.resource.toString().toNativeUtf8());
   }
 
   /// Removes [Media] from the [Playlist] at a specific index.
@@ -244,21 +240,13 @@ class Player {
 
   /// Inserts [Media] to the [Playlist] of the [Player] instance at specific index.
   void insert(int index, Media source) {
-    PlayerFFI.insert(
-      this.id,
-      index,
-      source.mediaType.toString().toNativeUtf8(),
-      source.resource.toString().toNativeUtf8()
-    );
+    PlayerFFI.insert(this.id, index, source.mediaType.toString().toNativeUtf8(),
+        source.resource.toString().toNativeUtf8());
   }
 
   /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
   void move(int initialIndex, int finalIndex) {
-    PlayerFFI.move(
-      this.id,
-      initialIndex,
-      finalIndex
-    );
+    PlayerFFI.move(this.id, initialIndex, finalIndex);
   }
 
   /// Sets playback [Device] for the instance of [Player].
@@ -270,10 +258,7 @@ class Player {
   ///
   Future<void> setDevice(Device device) async {
     PlayerFFI.setDevice(
-      this.id,
-      device.id.toNativeUtf8(),
-      device.name.toNativeUtf8()
-    );
+        this.id, device.id.toNativeUtf8(), device.name.toNativeUtf8());
   }
 
   /// Sets [Equalizer] for the [Player].

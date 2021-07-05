@@ -24,7 +24,6 @@ import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
 /// ```
 ///
 class Playlist extends MediaSource {
-
   /// [List] of [Media] present in the playlist.
   List<Media> medias;
   MediaSourceType mediaSourceType = MediaSourceType.playlist;

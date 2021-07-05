@@ -26,7 +26,7 @@ class _Media extends Media {}
 /// ```dart
 /// Media media = await Media.network('http://alexmercerind.github.io/music.mp3');
 /// ```
-/// 
+///
 ///
 class Media extends MediaSource {
   MediaSourceType mediaSourceType = MediaSourceType.media;
@@ -66,7 +66,8 @@ class Media extends MediaSource {
   }
 
   /// Makes [Media] object from direct show.
-  static Media directShow({String vdev = '', String adev = '', required int liveCaching}) {
+  static Media directShow(
+      {String vdev = '', String adev = '', required int liveCaching}) {
     Media media = new _Media();
     media.mediaType = MediaType.directShow;
     media.resource =
@@ -76,10 +77,9 @@ class Media extends MediaSource {
 
   void parse(Duration timeout) {
     Pointer<Pointer<Utf8>> metas = MediaFFI.parse(
-      this.mediaType.toString().toNativeUtf8(),
-      this.resource.toNativeUtf8(),
-      timeout.inSeconds
-    );
+        this.mediaType.toString().toNativeUtf8(),
+        this.resource.toNativeUtf8(),
+        timeout.inSeconds);
     this.metas['title'] = metas.elementAt(0).value.toDartString();
     this.metas['artist'] = metas.elementAt(1).value.toDartString();
     this.metas['genre'] = metas.elementAt(2).value.toDartString();
