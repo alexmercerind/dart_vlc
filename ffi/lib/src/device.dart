@@ -20,7 +20,6 @@ class Devices {
     List<Device> devices = <Device>[];
     Pointer<Pointer<Utf8>> devicesPtr = DevicesFFI.all();
     int count = int.parse(devicesPtr.elementAt(0).value.toDartString());
-    print(count);
     for (int i = 1; i < 2 * count; i += 2) {
       devices.add(Device(devicesPtr.elementAt(1).value.toDartString(),
           devicesPtr.elementAt(2).value.toDartString()));

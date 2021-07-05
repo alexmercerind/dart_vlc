@@ -1,10 +1,11 @@
-<h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
+<h1 align="center"><a href="https:///github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
 <h4 align="center">Flutter & Dart 🎞 media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
-A dependency package for [dart_vlc](https://github.com/alexmercerind/dart_vlc).
 
-Contains FFI bindings & NativePort event callback handling for `dart_vlc.so`.
+FFI bindings & NativePort event callback handling for `dart_vlc.so`.
+
+Dependency package for [dart_vlc](https:///github.com/alexmercerind/dart_vlc).
 
 ## Example
 
@@ -16,41 +17,41 @@ import 'package:dart_vlc_ffi/dart_vlc.dart';
 
 
 void main(List<String> args) {
-  // Initialize the library, pass path to dart_vlc.so or dart_vlc.dll
+  /// Initialize the library, pass path to dart_vlc.so or dart_vlc.dll
   DartVLC.initialize(dynamicLibraryPath);
 
-  // Create a new player. Provide an ID to handle multiple players.
+  /// Create a new player. Provide an ID to handle multiple players.
   Player player = Player(
     id: 0,
-    // Pass commandline VLC arguments.
+    /// Pass commandline VLC arguments.
     commandlineArguments: [],
   );
 
-  // Listen to events on the player e.g. position, rate, volume etc.
-  // Same can be accessed directly in the class without having to use the stream.
+  /// Listen to events on the player e.g. position, rate, volume etc.
+  /// Same can be accessed directly in the class without having to use the stream.
 
   player.generalStream.listen((event) {
-    // Player's rate.
+    /// Player's rate.
     print('Rate of the player is ${event.rate}');
-    // Player's volume.
+    /// Player's volume.
     print('Volume of the player is ${event.volume}');
   });
 
   player.positionStream.listen((event) {
-    // Player's current media playback position.
+    /// Player's current media playback position.
     print('Position of the player is ${event.position}');
-    // Player's current media playback duration.
+    /// Player's current media playback duration.
     print('Duration of the player is ${event.duration}');
   });
 
   player.currentStream.listen((event) {
-    // Index of the currently playing media.
+    /// Index of the currently playing media.
     print('Current media index of the player is ${event.index}');
-    // Currently playing media.
+    /// Currently playing media.
     print('Current playing media is ${event.media}');
-    // All the medias in the playlist.
+    /// All the medias in the playlist.
     print('Current playing media is ${event.medias}');
-    // Whether current playback is a playlist or not.
+    /// Whether current playback is a playlist or not.
     print('Current playing media is ${event.isPlaylist}');
   });
 
@@ -64,36 +65,36 @@ void main(List<String> args) {
 
   player.setVolume(1.0);
 
-  // Create a new media using a URL.
+  /// Create a new media using a URL.
   Media media = Media.network(
-    Uri.parse('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
-    // Pass parse as true for accessing the metadata.
+    Uri.parse('https:///www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
+    /// Pass parse as true for accessing the metadata.
     parse: true
   );
-  // Get media's metadata.
+  /// Get media's metadata.
   print(media.metas);
 
-  // Open the media into the player. You can also open a Playlist instead of a media.
+  /// Open the media into the player. You can also open a Playlist instead of a media.
   player.open(media);
 
   Timer(Duration(seconds: 10), () {
-    // Alter playback rate.
+    /// Alter playback rate.
     player.setRate(1.25);
-    // Alter playback volume.
+    /// Alter playback volume.
     player.setVolume(0.5);
   });
   
   Timer(Duration(seconds: 20), () {
-    // Pause the player.
+    /// Pause the player.
     player.pause();
     Timer(Duration(seconds: 2), () {
-      // Resume the player.
+      /// Resume the player.
       player.play();
       
     });
   });
 
-  // A lot lot of other options like device enumeration & changing, equalizer, recording, broadcasting, chromecasting etc. are also available.
+  /// A lot lot of other options like device enumeration & changing, equalizer, recording, broadcasting, chromecasting etc. are also available.
 }
 ```
 

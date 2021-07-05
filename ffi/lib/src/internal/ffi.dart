@@ -1,8 +1,9 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'package:dart_vlc_ffi/src/enums/mediaType.dart';
+import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
+import 'package:dart_vlc_ffi/src/enums/mediaType.dart';
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
@@ -172,91 +173,98 @@ abstract class EqualizerFFI {
 }
 
 bool isInitialized = false;
+void Function(int playerId, Uint8List frame) videoFrameCallback = (_, __) {};
 final ReceivePort receiver = new ReceivePort()
   ..asBroadcastStream()
   ..listen((event) {
-    int playerId = int.parse(event[0]);
-    String playerEvent = event[1];
-    switch (playerEvent) {
-      case 'playbackEvent':
-        {
-          players[playerId]!.playback.isPlaying =
-              event[2] == '1' ? true : false;
-          players[playerId]!.playback.isSeekable =
-              event[3] == '1' ? true : false;
-          players[playerId]!.playback.isCompleted = false;
-          players[playerId]!
-              .playbackController
-              .add(players[playerId]!.playback);
-          break;
-        }
-      case 'positionEvent':
-        {
-          players[playerId]!.position.position =
-              Duration(milliseconds: int.parse(event[3]));
-          players[playerId]!.position.duration =
-              Duration(milliseconds: int.parse(event[4]));
-          players[playerId]!
-              .positionController
-              .add(players[playerId]!.position);
-          break;
-        }
-      case 'openEvent':
-        {
-          players[playerId]!.current.index = int.parse(event[2]);
-          players[playerId]!.current.isPlaylist =
-              event[3] == '1' ? true : false;
-          int mediasLength = event.length - 4;
-          List<Media> medias = [];
-          for (int index = 4; index < 4 + mediasLength; index++) {
-            switch (event[index]) {
-              case 'MediaType.file':
-                {
-                  medias.add(Media.file(File(event[index + 1])));
-                  break;
-                }
-              case 'MediaType.network':
-                {
-                  medias.add(Media.network(Uri.parse(event[index + 1])));
-                  break;
-                }
-              case 'MediaType.directShow':
-                {
-                  Media media = Media();
-                  media.mediaType = MediaType.directShow;
-                  media.resource = event[index + 1];
-                  medias.add(media);
-                  break;
-                }
-            }
+    if (event[0] is String) {
+      int playerId = int.parse(event[0]);
+      String playerEvent = event[1];
+      switch (playerEvent) {
+        case 'playbackEvent':
+          {
+            players[playerId]!.playback.isPlaying =
+                event[2] == '1' ? true : false;
+            players[playerId]!.playback.isSeekable =
+                event[3] == '1' ? true : false;
+            players[playerId]!.playback.isCompleted = false;
+            players[playerId]!
+                .playbackController
+                .add(players[playerId]!.playback);
+            break;
           }
-          players[playerId]!.current.medias = medias;
-          players[playerId]!.current.media =
-              medias[players[playerId]!.current.index!];
-          players[playerId]!.currentController.add(players[playerId]!.current);
-          break;
-        }
-      case 'completeEvent':
-        {
-          players[playerId]!.playback.isCompleted =
-              event[2] == '1' ? true : false;
-          players[playerId]!
-              .playbackController
-              .add(players[playerId]!.playback);
-          break;
-        }
-      case 'volumeEvent':
-        {
-          players[playerId]!.general.volume = double.parse(event[2]);
-          players[playerId]!.generalController.add(players[playerId]!.general);
-          break;
-        }
-      case 'rateEvent':
-        {
-          players[playerId]!.general.rate = double.parse(event[2]);
-          players[playerId]!.generalController.add(players[playerId]!.general);
-          break;
-        }
+        case 'positionEvent':
+          {
+            players[playerId]!.position.position =
+                Duration(milliseconds: int.parse(event[3]));
+            players[playerId]!.position.duration =
+                Duration(milliseconds: int.parse(event[4]));
+            players[playerId]!
+                .positionController
+                .add(players[playerId]!.position);
+            break;
+          }
+        case 'openEvent':
+          {
+            players[playerId]!.current.index = int.parse(event[2]);
+            players[playerId]!.current.isPlaylist =
+                event[3] == '1' ? true : false;
+            int mediasLength = event.length - 4;
+            List<Media> medias = [];
+            for (int index = 4; index < 4 + mediasLength; index++) {
+              switch (event[index]) {
+                case 'MediaType.file':
+                  {
+                    medias.add(Media.file(File(event[index + 1])));
+                    break;
+                  }
+                case 'MediaType.network':
+                  {
+                    medias.add(Media.network(Uri.parse(event[index + 1])));
+                    break;
+                  }
+                case 'MediaType.directShow':
+                  {
+                    Media media = Media();
+                    media.mediaType = MediaType.directShow;
+                    media.resource = event[index + 1];
+                    medias.add(media);
+                    break;
+                  }
+              }
+            }
+            players[playerId]!.current.medias = medias;
+            players[playerId]!.current.media =
+                medias[players[playerId]!.current.index!];
+            players[playerId]!.currentController.add(players[playerId]!.current);
+            break;
+          }
+        case 'completeEvent':
+          {
+            players[playerId]!.playback.isCompleted =
+                event[2] == '1' ? true : false;
+            players[playerId]!
+                .playbackController
+                .add(players[playerId]!.playback);
+            break;
+          }
+        case 'volumeEvent':
+          {
+            players[playerId]!.general.volume = double.parse(event[2]);
+            players[playerId]!.generalController.add(players[playerId]!.general);
+            break;
+          }
+        case 'rateEvent':
+          {
+            players[playerId]!.general.rate = double.parse(event[2]);
+            players[playerId]!.generalController.add(players[playerId]!.general);
+            break;
+          }
+      }
+    }
+    else {
+      // TODO: Remove hardcoded playerId.
+      videoFrameCallback(0, event);
     }
   });
 

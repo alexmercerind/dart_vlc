@@ -1,3 +1,7 @@
+## 0.0.3
+
+- Fixed video frame callbacks.
+
 ## 0.0.2
 
 - Fixed segmentation fault open calling `Player::open` with `Playlist` as argument.

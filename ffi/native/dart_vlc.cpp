@@ -62,7 +62,7 @@ EXPORT void Player_create(int id, int videoWidth, int videoHeight, int commandLi
     });
     if (player->videoHeight > 0 && player->videoWidth > 0) {
         player->onVideo([=](uint8_t* frame) -> void {
-            Player_onVideo(player->videoHeight * player->videoWidth * 4, frame);
+            Player_onVideo(player->videoHeight * player->videoWidth * 4, player->state, frame);
         });
     }
 }

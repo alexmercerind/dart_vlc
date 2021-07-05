@@ -8,8 +8,8 @@
 
 #include <iostream>
 
-#ifndef CallbackManager_h
-#define CallbackManager_h
+#ifndef CALLBACK_MANAGER
+#define CALLBACK_MANAGER
 
 
 typedef int64_t Dart_Port;
@@ -135,23 +135,13 @@ EXPORT void callbackStringArray(int length, char** values) {
     delete[] valueObjects;
 }
 
-EXPORT void callbackByteArray(int length, uint8_t* values) {
-    Dart_CObject** valueObjects = new Dart_CObject*[length];
-    for (int i = 0; i < length; i++) {
-        Dart_CObject* valueObject = new Dart_CObject;
-        valueObject->type = Dart_CObject_kInt32;
-        valueObject->value.as_int32 = static_cast<int32_t>(values[i]);
-        valueObjects[i] = valueObject;
-    }
+EXPORT void callbackByteArray(int length, int playerId, uint8_t* values) {
     Dart_CObject dart_object;
-    dart_object.type = Dart_CObject_kArray;
-    dart_object.value.as_array.length = length;
-    dart_object.value.as_array.values = valueObjects;
+    dart_object.type = Dart_CObject_kTypedData;
+    dart_object.value.as_typed_data.type = Dart_TypedData_kUint8;
+    dart_object.value.as_typed_data.length = length;
+    dart_object.value.as_typed_data.values = values;
     dartPostCObject(callbackPort, &dart_object);
-    for (int i = 0; i < length; i++) {
-        delete valueObjects[i];
-    }
-    delete[] valueObjects;
 }
 
 #ifdef __cplusplus

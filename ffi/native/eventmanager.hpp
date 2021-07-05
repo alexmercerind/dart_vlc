@@ -125,9 +125,10 @@ void Player_onOpen(PlayerState* state) {
     delete[] _event;
 }
 
-void Player_onVideo(int size, uint8_t* frame) {
+void Player_onVideo(int size, PlayerState* state, uint8_t* frame) {
     callbackByteArray(
         size,
+        state->id,
         frame
     );
 }
