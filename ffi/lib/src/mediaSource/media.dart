@@ -80,29 +80,30 @@ class Media extends MediaSource {
         this.mediaType.toString().toNativeUtf8(),
         this.resource.toNativeUtf8(),
         timeout.inSeconds);
-    this.metas['title'] = metas.elementAt(0).value.toDartString();
-    this.metas['artist'] = metas.elementAt(1).value.toDartString();
-    this.metas['genre'] = metas.elementAt(2).value.toDartString();
-    this.metas['copyright'] = metas.elementAt(3).value.toDartString();
-    this.metas['album'] = metas.elementAt(4).value.toDartString();
-    this.metas['trackNumber'] = metas.elementAt(5).value.toDartString();
-    this.metas['description'] = metas.elementAt(6).value.toDartString();
-    this.metas['rating'] = metas.elementAt(7).value.toDartString();
-    this.metas['date'] = metas.elementAt(8).value.toDartString();
-    this.metas['settings'] = metas.elementAt(9).value.toDartString();
-    this.metas['url'] = metas.elementAt(10).value.toDartString();
-    this.metas['language'] = metas.elementAt(11).value.toDartString();
-    this.metas['nowPlaying'] = metas.elementAt(12).value.toDartString();
-    this.metas['encodedBy'] = metas.elementAt(13).value.toDartString();
-    this.metas['artworkUrl'] = metas.elementAt(14).value.toDartString();
-    this.metas['trackTotal'] = metas.elementAt(15).value.toDartString();
-    this.metas['director'] = metas.elementAt(16).value.toDartString();
-    this.metas['season'] = metas.elementAt(17).value.toDartString();
-    this.metas['episode'] = metas.elementAt(18).value.toDartString();
-    this.metas['actors'] = metas.elementAt(19).value.toDartString();
-    this.metas['albumArtist'] = metas.elementAt(20).value.toDartString();
-    this.metas['discNumber'] = metas.elementAt(21).value.toDartString();
-    this.metas['discTotal'] = metas.elementAt(22).value.toDartString();
-    this.metas['duration'] = metas.elementAt(23).value.toDartString();
+    // Keep this sorted alphabetically by key.
+    this.metas['actors'] = metas.elementAt(0).value.toDartString();
+    this.metas['album'] = metas.elementAt(1).value.toDartString();
+    this.metas['albumArtist'] = metas.elementAt(2).value.toDartString();
+    this.metas['artist'] = metas.elementAt(3).value.toDartString();
+    this.metas['artworkUrl'] = metas.elementAt(4).value.toDartString();
+    this.metas['copyright'] = metas.elementAt(5).value.toDartString();
+    this.metas['date'] = metas.elementAt(6).value.toDartString();
+    this.metas['description'] = metas.elementAt(7).value.toDartString();
+    this.metas['director'] = metas.elementAt(8).value.toDartString();
+    this.metas['discNumber'] = metas.elementAt(9).value.toDartString();
+    this.metas['discTotal'] = metas.elementAt(10).value.toDartString();
+    this.metas['duration'] = metas.elementAt(11).value.toDartString();
+    this.metas['encodedBy'] = metas.elementAt(12).value.toDartString();
+    this.metas['episode'] = metas.elementAt(13).value.toDartString();
+    this.metas['genre'] = metas.elementAt(14).value.toDartString();
+    this.metas['language'] = metas.elementAt(15).value.toDartString();
+    this.metas['nowPlaying'] = metas.elementAt(16).value.toDartString();
+    this.metas['rating'] = metas.elementAt(17).value.toDartString();
+    this.metas['season'] = metas.elementAt(18).value.toDartString();
+    this.metas['settings'] = metas.elementAt(19).value.toDartString();
+    this.metas['title'] = metas.elementAt(20).value.toDartString();
+    this.metas['trackNumber'] = metas.elementAt(21).value.toDartString();
+    this.metas['trackTotal'] = metas.elementAt(22).value.toDartString();
+    this.metas['url'] = metas.elementAt(23).value.toDartString();
   }
 }
