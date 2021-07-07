@@ -86,7 +86,7 @@ target_link_libraries("${PLUGIN_NAME}" PRIVATE
 
 set(
   dart_vlc_bundled_libraries
-  "plugins/dart_vlc/$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>/dart_vlc.dll"
+  "$<TARGET_FILE:dart_vlc>"
   "${LIBVLC_SOURCE}/libvlc.dll"
   "${LIBVLC_SOURCE}/libvlccore.dll"
   "${LIBVLC_SOURCE}/plugins"
