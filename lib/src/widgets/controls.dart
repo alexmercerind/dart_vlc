@@ -52,6 +52,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   bool _hideControls = true;
   bool _displayTapped = false;
   Timer? _hideTimer;
+  late StreamSubscription<PlaybackState> playPauseStream;
   late AnimationController playPauseController;
 
   @override
@@ -59,6 +60,13 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
     super.initState();
     this.playPauseController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 400));
+    this.playPauseStream = players[widget.playerId]!.playbackStream.listen((event) => this.setPlaybackMode(event.isPlaying));
+  }
+
+  @override
+  void dispose() {
+    this.playPauseStream.cancel();
+    super.dispose();
   }
 
   void setPlaybackMode(bool isPlaying) {
@@ -66,6 +74,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
       this.playPauseController.forward();
     else
       this.playPauseController.reverse();
+    this.setState(() {});
   }
 
   @override
