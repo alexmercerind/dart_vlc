@@ -1,3 +1,9 @@
+## 0.0.9
+
+- Fixed multiple `Video` widgets not working after FFI migration.
+- Fixed `Player::setPlaylistMode`.
+- Fixed built-in play/pause button in Video widget.
+
 ## 0.0.8
 
 - Now using FFI (instead of Platform channels).
