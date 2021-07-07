@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:path/path.dart' as path;
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
@@ -75,6 +76,36 @@ class Media extends MediaSource {
     return media;
   }
 
+  /// Makes [Media] object from assets.
+  ///
+  /// **WARNING**
+  ///
+  /// This method only works for Flutter.
+  /// Might result in an exception on Dart CLI.
+  ///
+  static Media asset(String asset) {
+    Media media = new _Media();
+    media.mediaType = MediaType.directShow;
+    late String directory;
+    if (Platform.isWindows) {
+      directory = Platform.resolvedExecutable
+          .split('\\')
+          .sublist(0, Platform.resolvedExecutable.split('\\').length - 1)
+          .join('\\');
+      directory.replaceAll('\\', '/');
+    }
+    if (Platform.isLinux) {
+      directory = Platform.resolvedExecutable
+          .split('/')
+          .sublist(0, Platform.resolvedExecutable.split('/').length - 1)
+          .join('/');
+    }
+    media.resource =
+        path.join('file://' + directory, 'data', 'flutter_assets', asset);
+    return media;
+  }
+
+  /// Parses the [Media] to retrieve [Media.metas].
   void parse(Duration timeout) {
     Pointer<Pointer<Utf8>> metas = MediaFFI.parse(
         this.mediaType.toString().toNativeUtf8(),

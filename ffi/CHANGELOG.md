@@ -1,3 +1,7 @@
+## 0.0.6
+
+- Added back `Media.asset` for Flutter.
+
 ## 0.0.5
 
 - Sending player ID along frame `uint8_t*` through native port.
