@@ -13,7 +13,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.0.8
+  dart_vlc: ^0.0.9
 ```
 
 **Dart CLI**
@@ -57,21 +57,17 @@ void main() {
 
 #### Create a new player instance.
 ```dart
-Player player = new Player(id: 69420);
+Player player = Player(id: 69420);
 ```
 
 #### Create a media for playback.
 ```dart
 Media media0 = Media.file(
-  new File('C:/music.mp3')
+  File('C:/music.mp3')
 );
 
 Media media1 = Media.network(
   'https://www.example.com/music.aac'
-);
-
-Media media2 = Media.asset(
-  'assets/music.ogg'
 );
 ```
 
@@ -79,8 +75,8 @@ Media media2 = Media.asset(
 ```dart
 Playlist playlist = new Playlist(
   medias: [
-    Media.file(new File('C:/music.mp3')),
-    Media.asset('assets/music.ogg'),
+    Media.file(File('C:/music.mp3')),
+    Media.file(File('C:/audio.mp3')),
     Media.network('https://www.example.com/music.aac'),
   ],
 );
@@ -90,14 +86,14 @@ Playlist playlist = new Playlist(
 
 ```dart
 player.open(
-  Media.file(new File('C:/music0.mp3')),
+  Media.file(File('C:/music0.mp3')),
   autoStart: true, // default
 );
 ```
 
 ```dart
 player.open(
-  new Playlist(
+  Playlist(
     medias: [
       Media.file(new File('C:/music0.mp3')),
       Media.file(new File('C:/music1.mp3')),
@@ -133,14 +129,14 @@ player.jump(10);
 #### Manipulate an already playing playlist.
 ```dart
 player.add(
-  Media.file(new File('C:/music0.mp3')),
+  Media.file(File('C:/music0.mp3')),
 );
 
 player.remove(4);
 
 player.insert(
   2,
-  Media.file(new File('C:/music0.mp3')),
+  Media.file(File('C:/music0.mp3')),
 );
 
 player.move(0, 4);
@@ -166,7 +162,7 @@ player.setDevice(
 
 Instanciate `Player` as follows.
 ```dart
-Player player = new Player(
+Player player = Player(
   id: 69420,
   videoWidth: 480,
   videoHeight: 320,
@@ -197,7 +193,7 @@ Thanks to [@tomassasovsky](https://github.com/tomassasovsky) for adding visual c
 Media media = Media.network(
   'https://www.example.com/media.mp3',
   parse: true,
-  timeout: new Duration(seconds: 10),
+  timeout: Duration(seconds: 10),
 );
 
 Map<String, String> metas = media.metas;
@@ -271,8 +267,8 @@ Broadcasting to localhost.
 ```dart
 Broadcast broadcast = Broadcast.create(
   id: 0,
-  media: Media.file(new File('C:/video.mp4')),
-  configuration: new BroadcastConfiguration(
+  media: Media.file(File('C:/video.mp4')),
+  configuration: BroadcastConfiguration(
     access: 'http',
     mux: 'mpeg1',
     dst: '127.0.0.1:8080',
@@ -399,7 +395,7 @@ Under progress or planned features (irrespective of order)...
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
 
-Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](http://flutter.dev) team to my review code & help me fix the loopholes.
+Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](https://flutter.dev) team to my review code & help me fix the loopholes.
 
 Thanks to following members of libVLC community to give me bit of look & advice about how things work:
 
