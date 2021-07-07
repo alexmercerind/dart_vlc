@@ -8,7 +8,7 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "../include/vlcpp/vlc.hpp"
+#include <vlcpp/vlc.hpp>
 
 
 class PlayerInternal {
