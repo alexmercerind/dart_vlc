@@ -92,16 +92,15 @@ class Media extends MediaSource {
           .split('\\')
           .sublist(0, Platform.resolvedExecutable.split('\\').length - 1)
           .join('\\');
-      directory.replaceAll('\\', '/');
+      media.resource = path.join('file:///' + directory, 'data', 'flutter_assets', asset);
     }
     if (Platform.isLinux) {
       directory = Platform.resolvedExecutable
           .split('/')
           .sublist(0, Platform.resolvedExecutable.split('/').length - 1)
           .join('/');
+      media.resource = path.join('file://' + directory, 'data', 'flutter_assets', asset);
     }
-    media.resource =
-        path.join('file://' + directory, 'data', 'flutter_assets', asset);
     return media;
   }
 

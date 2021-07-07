@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Fixed `Media.asset` for Windows.
+
 ## 0.0.6
 
 - Added back `Media.asset` for Flutter.
