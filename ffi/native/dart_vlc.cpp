@@ -158,9 +158,9 @@ EXPORT void Player_setEqualizer(int id, int equalizerId) {
 EXPORT void Player_setPlaylistMode(int id, const char* mode) {
     Player* player = players->get(id);
     PlaylistMode playlistMode;
-    if (strcmp(mode, "playlistMode.repeat") == 0)
+    if (strcmp(mode, "PlaylistMode.repeat") == 0)
         playlistMode = PlaylistMode::repeat;
-    else if (strcmp(mode, "playlistMode.loop") == 0)
+    else if (strcmp(mode, "PlaylistMode.loop") == 0)
         playlistMode = PlaylistMode::loop;
     else
         playlistMode = PlaylistMode::single;
