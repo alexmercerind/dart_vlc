@@ -8,8 +8,11 @@
  * GNU Lesser General Public License v2.1
  */
 
+#ifdef _WIN32
 #include <vlcpp/vlc.hpp>
-
+#else
+#include "vlcpp/vlc.hpp"
+#endif
 
 class PlayerInternal {
 protected:
