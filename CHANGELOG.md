@@ -6,6 +6,7 @@
   - No more build errors for developers in China.
 - Fixed `Player::setPlaylistMode`.
 - Fixed built-in play/pause button in Video widget.
+- Added back `Media.asset` for Flutter.
 
 ## 0.0.8
 
