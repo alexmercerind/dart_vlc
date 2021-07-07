@@ -126,7 +126,7 @@ void Player_onOpen(PlayerState* state) {
 }
 
 void Player_onVideo(int size, PlayerState* state, uint8_t* frame) {
-    callbackByteArray(
+    callbackFrame(
         size,
         state->id,
         frame

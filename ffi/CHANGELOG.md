@@ -1,3 +1,7 @@
+## 0.0.5
+
+- Sending player ID along frame `uint8_t*` through native port.
+
 ## 0.0.4
 
 - Fixed incorrect `Devices.all` list.

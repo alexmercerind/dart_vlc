@@ -268,8 +268,7 @@ final ReceivePort receiver = new ReceivePort()
           }
       }
     } else {
-      // TODO: Remove hardcoded playerId.
-      videoFrameCallback(0, event);
+      videoFrameCallback(event[0], event[1]);
     }
   });
 

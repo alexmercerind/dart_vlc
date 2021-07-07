@@ -135,13 +135,24 @@ EXPORT void callbackStringArray(int length, char** values) {
     delete[] valueObjects;
 }
 
-EXPORT void callbackByteArray(int length, int playerId, uint8_t* values) {
-    Dart_CObject dart_object;
-    dart_object.type = Dart_CObject_kTypedData;
-    dart_object.value.as_typed_data.type = Dart_TypedData_kUint8;
-    dart_object.value.as_typed_data.length = length;
-    dart_object.value.as_typed_data.values = values;
-    dartPostCObject(callbackPort, &dart_object);
+EXPORT void callbackFrame(int length, int playerId, uint8_t* frame) {
+    Dart_CObject idObject;
+    idObject.type = Dart_CObject_kInt32;
+    idObject.value.as_int32 = playerId;
+    Dart_CObject frameObject;
+    frameObject.type = Dart_CObject_kTypedData;
+    frameObject.value.as_typed_data.type = Dart_TypedData_kUint8;
+    frameObject.value.as_typed_data.values = frame;
+    frameObject.value.as_typed_data.length = length;
+    Dart_CObject** values = new Dart_CObject*[2];
+    values[0] = &idObject;
+    values[1] = &frameObject;
+    Dart_CObject valueObject;
+    valueObject.type = Dart_CObject_kArray;
+    valueObject.value.as_array.length = 2;
+    valueObject.value.as_array.values = values;
+    dartPostCObject(callbackPort, &valueObject);
+    delete values;
 }
 
 #ifdef __cplusplus
