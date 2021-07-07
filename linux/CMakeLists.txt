@@ -38,6 +38,8 @@ include_directories(${PACKAGE} INTERFACE
 target_include_directories(${PACKAGE} INTERFACE
   # DartVLC Headers.
   ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native
+  # libVLC++ Headers.
+  ${LIBVLCPP_SOURCE}
 )
 target_link_libraries(${PACKAGE} PRIVATE
   vlc
