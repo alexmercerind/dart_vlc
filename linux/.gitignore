@@ -1,8 +1,4 @@
 
-# libVLC++ Binaries
+# libVLC++ Source
 
-bin
-
-# libVLC++ Headers
-
-include/vlcpp
+external/libvlcpp-master

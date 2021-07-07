@@ -9,35 +9,36 @@ cmake_minimum_required(VERSION 3.15)
 set (CMAKE_CXX_STANDARD 17)
 
 set(PACKAGE dartvlc)
-
 add_library(${PACKAGE} SHARED
   ../ffi/native/dart_vlc.cpp
 )
-target_include_directories(${PACKAGE} INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc
-  ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native
-)
 
-set(LIBVLC_BINARIES ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(LIBVLC_BINARIES ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 
-set(LIBVLCPP_URL https://github.com/videolan/libvlcpp/archive/master.zip)
 set(LIBVLCPP_ARCHIVE ${LIBVLC_BINARIES}/libvlcpp.zip)
-set(LIBVLCPP_SOURCE ${LIBVLC_BINARIES}/libvlcpp-master)
 
-if (NOT EXISTS ${LIBVLCPP_ARCHIVE})
-  file(DOWNLOAD ${LIBVLCPP_URL} ${LIBVLCPP_ARCHIVE})
-endif()
+set(LIBVLCPP_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/external/libvlcpp-master)
 
 add_custom_target(LIBVLC_EXTRACT ALL)
-add_custom_command(
-  TARGET LIBVLC_EXTRACT PRE_BUILD
-  COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIBVLCPP_SOURCE}/vlcpp ${CMAKE_CURRENT_SOURCE_DIR}/include/vlcpp
-  WORKING_DIRECTORY ${LIBVLC_BINARIES}
-  DEPENDS ${LIBVLC_ARCHIVE}
+
+if (NOT EXISTS ${LIBVLCPP_SOURCE})
+  add_custom_command(
+    TARGET LIBVLC_EXTRACT PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external
+    DEPENDS ${LIBVLC_ARCHIVE}
+  )
+endif()
+
+include_directories(${PACKAGE} INTERFACE
+  # libVLC++ Headers.
+  ${LIBVLCPP_SOURCE}
 )
 
+target_include_directories(${PACKAGE} INTERFACE
+  # DartVLC Headers.
+  ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native
+)
 target_link_libraries(${PACKAGE} PRIVATE
   vlc
 )
@@ -73,6 +74,7 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE
 
 set(
   dart_vlc_bundled_libraries
-  "plugins/dart_vlc/libdartvlc.so"
+  # libdartvlc.so
+  plugins/dart_vlc/libdartvlc.so
   PARENT_SCOPE
 )
