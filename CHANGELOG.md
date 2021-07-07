@@ -1,6 +1,9 @@
 ## 0.0.9
 
 - Fixed multiple `Video` widgets not working after FFI migration.
+- Now package contains complete libVLC & libVLC++ source inside.
+  - No longer fetching from videoLAN & GitHub servers required.
+  - No more build errors for developers in China.
 - Fixed `Player::setPlaylistMode`.
 - Fixed built-in play/pause button in Video widget.
 
