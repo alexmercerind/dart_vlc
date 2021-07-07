@@ -8,11 +8,7 @@ x86/
 *.[Cc]ache
 !*.[Cc]ache/
 
-# libVLC & libVLC++ Binaries
+# libVLC & libVLC++ Source
 
-bin
-
-# libVLC & libVLC++ Headers
-
-include/vlc
-include/vlcpp
+external/vlc-*
+external/libvlcpp-master

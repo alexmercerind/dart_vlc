@@ -13,40 +13,38 @@ set(PACKAGE "dart_vlc")
 add_library(${PACKAGE} SHARED
   "../ffi/native/dart_vlc.cpp"
 )
-target_include_directories(${PACKAGE} INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc
-  ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native
-)
 
-set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
 
-set(LIBVLC_URL "http://download.videolan.org/pub/videolan/vlc/${LIBVLC_VERSION}/win64/vlc-${LIBVLC_VERSION}-win64.7z")
-set(LIBVLCPP_URL "https://github.com/videolan/libvlcpp/archive/master.zip")
 set(LIBVLC_ARCHIVE "${LIBVLC_BINARIES}/vlc-${LIBVLC_VERSION}.7z")
 set(LIBVLCPP_ARCHIVE "${LIBVLC_BINARIES}/libvlcpp.zip")
-set(LIBVLC_SOURCE "${LIBVLC_BINARIES}/vlc-${LIBVLC_VERSION}")
-set(LIBVLCPP_SOURCE "${LIBVLC_BINARIES}/libvlcpp-master")
 
-if (NOT EXISTS "${LIBVLC_ARCHIVE}")
-  file(DOWNLOAD "${LIBVLC_URL}" "${LIBVLC_ARCHIVE}")
-endif()
-
-if (NOT EXISTS "${LIBVLCPP_ARCHIVE}")
-  file(DOWNLOAD "${LIBVLCPP_URL}" "${LIBVLCPP_ARCHIVE}")
-endif()
+set(LIBVLC_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/vlc-${LIBVLC_VERSION}")
+set(LIBVLCPP_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/libvlcpp-master")
 
 add_custom_target(LIBVLC_EXTRACT ALL)
-add_custom_command(
-  TARGET LIBVLC_EXTRACT PRE_BUILD
-  COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLC_ARCHIVE}\"
-  COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIBVLC_SOURCE}/sdk/include/vlc ${CMAKE_CURRENT_SOURCE_DIR}/include/vlc
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIBVLCPP_SOURCE}/vlcpp ${CMAKE_CURRENT_SOURCE_DIR}/include/vlcpp
-  WORKING_DIRECTORY "${LIBVLC_BINARIES}"
-  DEPENDS "${LIBVLC_ARCHIVE}"
+
+if (NOT EXISTS "${LIBVLC_SOURCE}" AND NOT EXISTS "${LIBVLCPP_SOURCE}")
+  add_custom_command(
+    TARGET LIBVLC_EXTRACT PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLC_ARCHIVE}\"
+    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/external"
+    DEPENDS "${LIBVLC_ARCHIVE}"
+  )
+endif()
+
+include_directories(${PACKAGE} INTERFACE
+  # libVLC++ Headers.
+  ${LIBVLCPP_SOURCE}
+  # libVLC Headers.
+  ${LIBVLC_SOURCE}/sdk/include
 )
 
+target_include_directories(${PACKAGE} INTERFACE
+  # DartVLC Headers.
+  ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native
+)
 target_link_libraries("${PACKAGE}" PRIVATE
   "${LIBVLC_SOURCE}/sdk/lib/libvlc.lib"
   "${LIBVLC_SOURCE}/sdk/lib/libvlccore.lib"
@@ -86,6 +84,7 @@ target_link_libraries("${PLUGIN_NAME}" PRIVATE
 
 set(
   dart_vlc_bundled_libraries
+  # dart_vlc.dll
   "$<TARGET_FILE:dart_vlc>"
   "${LIBVLC_SOURCE}/libvlc.dll"
   "${LIBVLC_SOURCE}/libvlccore.dll"
