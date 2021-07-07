@@ -85,7 +85,7 @@ class Media extends MediaSource {
   ///
   static Media asset(String asset) {
     Media media = new _Media();
-    media.mediaType = MediaType.directShow;
+    media.mediaType = MediaType.asset;
     late String directory;
     if (Platform.isWindows) {
       directory = Platform.resolvedExecutable
