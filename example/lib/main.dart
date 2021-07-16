@@ -102,7 +102,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                     children: [
                       Card(
                         elevation: 2.0,
-                        margin: EdgeInsets.all(10.0),
+                        margin: EdgeInsets.all(4.0),
                         child: Container(
                           margin: EdgeInsets.all(16.0),
                           child: Column(
@@ -129,7 +129,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                               fontSize: 14.0,
                                             ),
                                             hintText:
-                                                'Media resource location.',
+                                                'Enter Media path.',
                                           ),
                                         ),
                                       ),
@@ -191,7 +191,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                             this.setState(() {});
                                           },
                                           child: Text(
-                                            'Add',
+                                            'Add to Playlist',
                                             style: TextStyle(
                                               fontSize: 14.0,
                                             ),
@@ -245,7 +245,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                               );
                                         }),
                                         child: Text(
-                                          'Open',
+                                          'Open into Player',
                                           style: TextStyle(
                                             fontSize: 14.0,
                                           ),
@@ -257,7 +257,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                           this.medias.clear();
                                         }),
                                         child: Text(
-                                          'Clear',
+                                          'Clear the list',
                                           style: TextStyle(
                                             fontSize: 14.0,
                                           ),
@@ -426,7 +426,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                         hintStyle: TextStyle(
                                           fontSize: 14.0,
                                         ),
-                                        hintText: 'Media resource location.',
+                                        hintText: 'Enter Media path.',
                                       ),
                                     ),
                                   ),
