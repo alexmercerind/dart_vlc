@@ -61,6 +61,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
     this.playPauseController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 400));
     this.playPauseStream = players[widget.playerId]!.playbackStream.listen((event) => this.setPlaybackMode(event.isPlaying));
+    if (players[widget.playerId]!.playback.isPlaying) this.playPauseController.forward();
   }
 
   @override
@@ -276,7 +277,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                               backgroundColor: widget.volumeBackgroundColor,
                             ),
                             PopupMenuButton(
-                              iconSize: 30,
+                              iconSize: 24,
                               icon: Icon(Icons.speaker, color: Colors.white),
                               onSelected: (Device device) {
                                 players[widget.playerId]!.setDevice(device);
@@ -311,12 +312,12 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   }
 
   void _cancelAndRestartTimer() {
-    _hideTimer?.cancel();
+    this._hideTimer?.cancel();
 
     if (this.mounted) {
-      _startHideTimer();
+      this._startHideTimer();
 
-      setState(() {
+      this.setState(() {
         _hideControls = false;
         _displayTapped = true;
       });
@@ -324,10 +325,12 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   }
 
   void _startHideTimer() {
-    _hideTimer = Timer(const Duration(seconds: 3), () {
-      setState(() {
-        _hideControls = true;
-      });
+    this._hideTimer = Timer(const Duration(seconds: 3), () {
+      if (this.mounted) {
+        this.setState(() {
+          _hideControls = true;
+        });
+      }
     });
   }
 }

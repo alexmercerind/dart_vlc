@@ -31,11 +31,13 @@ abstract class DartVLC {
     FFI.videoFrameCallback = (int playerId, Uint8List videoFrame) {
       if (videoStreamControllers[playerId] != null &&
           FFI.players[playerId] != null) {
-        videoStreamControllers[playerId]!.add(new VideoFrame(
-            playerId: playerId,
-            videoWidth: FFI.players[playerId]!.videoWidth,
-            videoHeight: FFI.players[playerId]!.videoHeight,
-            byteArray: videoFrame));
+            if (!videoStreamControllers[playerId]!.isClosed) {
+              videoStreamControllers[playerId]!.add(new VideoFrame(
+              playerId: playerId,
+              videoWidth: FFI.players[playerId]!.videoWidth,
+              videoHeight: FFI.players[playerId]!.videoHeight,
+              byteArray: videoFrame));
+            }
       }
     };
     if (Platform.isWindows) {
