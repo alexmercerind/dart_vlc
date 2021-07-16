@@ -24,6 +24,7 @@ class Devices {
       devices.add(Device(devicesPtr.elementAt(i).value.toDartString(),
           devicesPtr.elementAt(i + 1).value.toDartString()));
     }
+    calloc.free(devicesPtr);
     return devices;
   }
 }

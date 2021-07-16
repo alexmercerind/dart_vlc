@@ -83,7 +83,7 @@ EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceS
         medias.emplace_back(media);
     }
     player->open(
-        new Playlist(medias),
+        &Playlist(medias),
         autoStart
     );
 }
