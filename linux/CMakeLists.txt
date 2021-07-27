@@ -5,7 +5,7 @@
 # alexmercerind@gmail.com
 # GNU Lesser General Public License v2.1
 # 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
 set (CMAKE_CXX_STANDARD 17)
 
 set(PACKAGE dartvlc)
