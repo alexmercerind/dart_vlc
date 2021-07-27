@@ -152,7 +152,7 @@ EXPORT void callbackFrame(int length, int playerId, uint8_t* frame) {
     valueObject.value.as_array.length = 2;
     valueObject.value.as_array.values = values;
     dartPostCObject(callbackPort, &valueObject);
-    delete values;
+    delete[] values;
 }
 
 #ifdef __cplusplus

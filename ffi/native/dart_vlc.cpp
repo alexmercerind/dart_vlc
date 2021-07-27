@@ -82,8 +82,9 @@ EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceS
             media = Media::directShow(0, resource);
         medias.emplace_back(media);
     }
+    Playlist playlist = Playlist(medias);
     player->open(
-        &Playlist(medias),
+        &playlist,
         autoStart
     );
 }
