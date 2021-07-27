@@ -1,3 +1,7 @@
+## 0.0.8
+
+- Fixed build warnings on Linux.
+
 ## 0.0.7
 
 - Fixed `Media.asset` for Windows.
