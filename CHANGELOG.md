@@ -1,3 +1,13 @@
+## 0.1.0
+
+- Fixed build on Linux.
+- Changed cmake minimum required version to 3.10 for fixing use with snap installation.
+- Fixed vlc header not being located in Flutter on Linux version 2.2.4.
+- Fixed few memory leaks.
+- Fixed calling setState after dispose & other Video widget issues.
+- Fixed build warnings on Linux.
+- Changed required CMake version to 3.10 on Linux.
+
 ## 0.0.9
 
 - Fixed multiple `Video` widgets not working after FFI migration.
