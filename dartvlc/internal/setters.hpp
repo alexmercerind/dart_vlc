@@ -18,6 +18,10 @@
 class PlayerSetters: public PlayerEvents {
 public:
 	void open(MediaSource* mediaSource, bool autoStart = true) {
+		/* Freed the previous `Media` objects when a new `Playlist` or `Media` is opened. */
+		for (Media* media: this->state->medias->medias) {
+			delete media;
+		}
 		this->stop();
 		this->state->medias->medias = {};
 		this->mediaList = VLC::MediaList(this->instance);

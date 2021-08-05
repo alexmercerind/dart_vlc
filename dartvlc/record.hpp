@@ -48,8 +48,9 @@ public:
         );
     }
 
-    void dispose() {
+    ~Record() {
         libvlc_vlm_release(this->instance.get());
+        delete this->media;
     }
 
 private:

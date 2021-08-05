@@ -71,8 +71,9 @@ public:
         );
     }
 
-    void dispose() {
+    ~Broadcast() {
         libvlc_vlm_release(this->instance.get());
+        delete this->media;
     }
 
 private:

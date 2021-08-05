@@ -48,8 +48,9 @@ public:
         );
     }
 
-    void dispose() {
+    ~Chromecast() {
         libvlc_vlm_release(this->instance.get());
+        delete this->media;
     }
 
 private:
