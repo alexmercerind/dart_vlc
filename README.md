@@ -13,7 +13,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.0.9
+  dart_vlc: ^0.1.1
 ```
 
 **Dart CLI**
@@ -21,7 +21,7 @@ dependencies:
 ```yaml
 dependencies:
   ...
-  dart_vlc_ffi: ^0.0.1
+  dart_vlc_ffi: ^0.1.0
 ```
 
 More on Dart CLI implementation [here](./ffi/README.md).
