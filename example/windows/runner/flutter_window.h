@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "run_loop.h"
 #include "win32_window.h"
 
 // A window that does nothing but host a Flutter view.
@@ -14,8 +13,7 @@ class FlutterWindow : public Win32Window {
  public:
   // Creates a new FlutterWindow driven by the |run_loop|, hosting a
   // Flutter view running |project|.
-  explicit FlutterWindow(RunLoop* run_loop,
-                         const flutter::DartProject& project);
+  explicit FlutterWindow(const flutter::DartProject& project);
   virtual ~FlutterWindow();
 
  protected:
@@ -26,9 +24,6 @@ class FlutterWindow : public Win32Window {
                          LPARAM const lparam) noexcept override;
 
  private:
-  // The run loop driving events for this window.
-  RunLoop* run_loop_;
-
   // The project to run.
   flutter::DartProject project_;
 

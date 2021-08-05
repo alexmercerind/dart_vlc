@@ -63,6 +63,8 @@ class DartVLCExampleState extends State<DartVLCExample> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      themeMode: ThemeMode.dark,
+      darkTheme: ThemeData.dark(),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('dart_vlc'),
@@ -179,7 +181,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                                 MediaType.file) {
                                               this.medias.add(
                                                     Media.file(new File(
-                                                        controller.text)),
+                                                        controller.text.replaceAll('"', ''))),
                                                   );
                                             } else if (this.mediaType ==
                                                 MediaType.network) {
