@@ -18,33 +18,30 @@
 class PlayerSetters: public PlayerEvents {
 public:
 	void open(MediaSource* mediaSource, bool autoStart = true) {
-		if (this->state->device == nullptr)
-			this->stop();
-		this->state->medias = new Playlist({}, PlaylistMode::single);
+		this->stop();
+		this->state->medias->medias = {};
 		this->mediaList = VLC::MediaList(this->instance);
 		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
 			Media* media = dynamic_cast<Media*>(mediaSource);
 			VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
 			this->mediaList.addMedia(_);
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->state->medias = new Playlist({ media }, PlaylistMode::single);
+			this->state->medias->medias = { media };
 			this->state->isPlaylist = false;
-
 		}
 		else if (mediaSource->mediaSourceType() == "MediaSourceType.playlist") {
 			Playlist* playlist = dynamic_cast<Playlist*>(mediaSource);
 			if (playlist->medias.empty())
 				return;
-			for (Media* _ : playlist->medias) {
-				VLC::Media media = VLC::Media(this->instance, _->location, VLC::Media::FromLocation);
-				this->mediaList.addMedia(media);
+			for (Media* media : playlist->medias) {
+				VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
+				this->mediaList.addMedia(_);
 			}
 			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->state->medias = playlist;
+			this->state->medias->medias = playlist->medias;
 			this->state->isPlaylist = true;
 		}
 		this->_onOpenCallback(this->mediaList.itemAtIndex(0));
-		
 		this->mediaListPlayer.playItemAtIndex(0);
 		this->state->index = 0;
 		this->state->isPlaying = this->mediaListPlayer.isPlaying();
@@ -123,7 +120,6 @@ public:
 
 	void setEqualizer(Equalizer* equalizer) {
 		this->mediaPlayer.setEqualizer(equalizer->equalizer);
-		this->state->equalizer = equalizer;
 	}
 
 	void setUserAgent(std::string userAgent) {
@@ -173,7 +169,12 @@ public:
 	}
 
 	void move(int initial, int final) {
-		if (initial < 0 || initial >= this->state->medias->medias.size() || final < 0 || final >= this->state->medias->medias.size()) return;
+		if (
+			initial < 0 ||
+			initial >= this->state->medias->medias.size() ||
+			final < 0 ||
+			final >= this->state->medias->medias.size()
+		) return;
 		if (initial == final) return;
 		this->isPlaylistModified = true;
 		Media* _ = this->state->medias->medias[initial];

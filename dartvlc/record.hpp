@@ -66,6 +66,11 @@ public:
 		return this->records[id];
 	}
 
+    void dispose(int id, std::function<void()> callback = []() -> void {}) {
+        delete this->records[id];
+        callback();
+    }
+
 private:
 	std::map<int, Record*> records;
 };

@@ -66,6 +66,11 @@ public:
 		return this->chromecasts[id];
 	}
 
+    void dispose(int id, std::function<void()> callback = []() -> void {}) {
+        delete this->chromecasts[id];
+        callback();
+    }
+
 private:
 	std::map<int, Chromecast*> chromecasts;
 };

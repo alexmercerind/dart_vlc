@@ -21,9 +21,10 @@ public:
 			this->instance = VLC::Instance(0, nullptr);
 		}
 		else {
-			char** args = new char*[commandlineArguments.size()];
-			for (int index = 0; index < commandlineArguments.size(); index++)  args[index] = commandlineArguments[index].data();
-			this->instance = VLC::Instance(static_cast<int>(commandlineArguments.size()), args);
+			this->argsSize = commandlineArguments.size();
+			this->args = new char*[commandlineArguments.size()];
+			for (int index = 0; index < commandlineArguments.size(); index++)  this->args[index] = commandlineArguments[index].data();
+			this->instance = VLC::Instance(static_cast<int>(commandlineArguments.size()), this->args);
 		}
 		this->mediaPlayer = VLC::MediaPlayer(this->instance);
 		this->mediaListPlayer = VLC::MediaListPlayer(this->instance);
@@ -54,6 +55,18 @@ public:
 	void onException(std::function<void(void)> callback) {
 		this->mediaPlayer.eventManager().onEncounteredError(callback);
 	}
+
+	~Player() {
+		this->mediaPlayer.stop();
+		delete this->state;
+		delete this->_videoFrameBuffer;
+		for (size_t i = 0; i < argsSize; i++) delete this->args[i];
+		delete[] this->args;
+	}
+
+private:
+	char** args;
+	size_t argsSize;
 };
 
 
@@ -65,6 +78,11 @@ public:
 		}
 		return this->players[id];
 	}
+
+	void dispose(int id, std::function<void()> callback = []() -> void {}) {
+        delete this->players[id];
+		callback();
+    }
 
 private:
 	std::map<int, Player*> players;

@@ -41,6 +41,9 @@ public:
 	std::vector<Device*> all;
 
     void refresh() {
+		for (Device* device: this->all) {
+			delete device;
+		}
 		this->all.clear();
         VLC::Instance _ = VLC::Instance(0, nullptr);
 		VLC::MediaPlayer __ = VLC::MediaPlayer(_);

@@ -106,7 +106,7 @@ protected:
 		if (this->isPlaylistModified) {
 			this->mediaListPlayer.setMediaList(this->mediaList);
 			if (!this->mediaList.count()) {
-				this->state = new PlayerState();
+				this->state->reset();
 				this->mediaListPlayer.stop();
 				return;
 			}
