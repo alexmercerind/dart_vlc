@@ -5,3 +5,7 @@ import 'package:ffi/ffi.dart';
 /// Devices::all
 typedef DevicesAllCXX = Pointer<Pointer<Utf8>> Function();
 typedef DevicesAllDart = Pointer<Pointer<Utf8>> Function();
+
+/// Following typedef is used for cleaning memory used by char**.
+typedef DevicesClearCXX = Void Function();
+typedef DevicesClearDart = void Function();

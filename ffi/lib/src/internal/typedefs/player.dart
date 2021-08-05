@@ -17,6 +17,12 @@ typedef PlayerCreateDart = void Function(
     Pointer<Pointer<Utf8>> commandlineArguments);
 
 /// Following typedef is used for:
+/// Player::~Player
+typedef PlayerDisposeCXX = Void Function(Int32 id);
+typedef PlayerDisposeDart = void Function(int id);
+
+
+/// Following typedef is used for:
 /// Player::open
 typedef PlayerOpenCXX = Void Function(
     Int32 id, Int32 autoStart, Pointer<Pointer<Utf8>> source, Int32 sourceSize);
