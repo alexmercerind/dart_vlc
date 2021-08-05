@@ -1,6 +1,10 @@
+## 0.1.0
+
+- Added new native methods for handling with memory leaks.
+
 ## 0.0.9
 
-Fixed `Devices.all` & `Media.parse` causing crash on Windows. 
+- Fixed `Devices.all` & `Media.parse` causing crash on Windows. 
 
 ## 0.0.8
 
