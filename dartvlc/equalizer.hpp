@@ -102,6 +102,11 @@ public:
 		return id;
 	}
 
+	void dispose(int id, std::function<void()> callback = []() -> void {}) {
+		delete this->equalizers[id];
+		callback();
+	}
+
 private:
 	std::map<int, Equalizer*> equalizers;
 };

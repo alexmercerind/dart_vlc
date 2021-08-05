@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(flutter_vlc_example LANGUAGES CXX)
+project(dart_vlc_example LANGUAGES CXX)
 
-set(BINARY_NAME "flutter_vlc_example")
+set(BINARY_NAME "dart_vlc_example")
 
 cmake_policy(SET CMP0063 NEW)
 

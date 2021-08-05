@@ -2,9 +2,9 @@
 <h4 align="center">Flutter 🎞 media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_1.PNG?raw=true)
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_7.png?raw=true)
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_2.PNG?raw=true)
 
 ## Installation
 
@@ -13,7 +13,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.0.9
+  dart_vlc: ^0.1.1
 ```
 
 **Dart CLI**
@@ -21,24 +21,18 @@ dependencies:
 ```yaml
 dependencies:
   ...
-  dart_vlc_ffi: ^0.0.1
+  dart_vlc_ffi: ^0.1.0
 ```
 
 More on Dart CLI implementation [here](./ffi/README.md).
 
+Feel free to open issue, incase you find something to be not working.
 
 ## Support
 
 Consider supporting the project by starring the repository or buying me a coffee.
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
-
-**Donate in Crypto**
-
-- ETH (Ethereum)
-  - `0x92f92BC204cDFDAB655e6A69e5Aa4bA5476D7661`
-- BTC (Bitcoin)
-  - `1M3DNwnX1GDauPoPr7VywojMRWygje8ctq`
 
 Thanks a lot for your support.
 
@@ -328,7 +322,7 @@ You can see an example project [here](https://github.com/alexmercerind/dart_vlc/
 
 Windows
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_0.PNG?raw=true)
+![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
 
 
 ## Workings

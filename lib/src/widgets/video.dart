@@ -172,9 +172,9 @@ class VideoState extends State<Video> {
     videoStreamControllers[widget.playerId] =
         new StreamController<VideoFrame>.broadcast();
     videoStreamControllers[widget.playerId]?.stream
-        ?.listen((VideoFrame videoFrame) async {
+        .listen((VideoFrame videoFrame) async {
+      this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
       if (this.mounted) {
-        this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
         this.setState(() {});
       }
     });

@@ -272,6 +272,7 @@ class Player {
     this.positionController.close();
     this.playbackController.close();
     this.generalController.close();
+    PlayerFFI.dispose(this.id);
   }
 
   /// Internally used [StreamController]s,

@@ -28,6 +28,10 @@ jobs:
       - run: flutter config --enable-windows-desktop
       - run: flutter pub get
       - run: flutter build windows --verbose
+      - uses: actions/upload-artifact@v1
+        with:
+          name: dart_vlc_example
+          path: example/build/windows/runner/Release
 
   build_linux:
     name: Build Linux

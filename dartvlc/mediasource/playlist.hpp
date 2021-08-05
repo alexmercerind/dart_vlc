@@ -35,15 +35,7 @@ public:
 		this->medias = medias;
 		this->playlistMode = playlistMode;
 	};
-
-	std::vector<std::map<std::string, std::string>> get() {
-		std::vector<std::map<std::string, std::string>> _medias;
-		for (Media* audio : this->medias) {
-			_medias.emplace_back(audio->get());
-		}
-		return _medias;
-	}
-
+	
 	std::string mediaSourceType() {
 		return "MediaSourceType.playlist";
 	}

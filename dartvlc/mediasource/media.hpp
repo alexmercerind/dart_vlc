@@ -23,6 +23,7 @@
 VLC::Instance instance = VLC::Instance(0, nullptr);
 
 
+/* Media object is cleared inside PlayerSetters::open. */
 class Media: public MediaSource {
 public:
 	int id;
@@ -51,6 +52,16 @@ public:
 		return media;
 	}
 
+	static Media* directShow(int id, std::string resource) {
+		Media* media = new Media();
+		media->id = id;
+		media->resource = resource;
+		media->location = resource;
+		media->mediaType = "MediaType.directShow";
+		return media;
+	}
+
+	/* Now done directly from dart_vlc.
 	static Media* asset(int id, std::string path, bool parse = false, int timeout = 10000) {
 		Media* media = new Media();
 		media->id = id;
@@ -60,15 +71,7 @@ public:
 		if (parse) media->parse(timeout);
 		return media;
 	}
-
-	static Media* directShow(int id, std::string resource) {
-		Media* media = new Media();
-		media->id = id;
-		media->resource = resource;
-		media->location = resource;
-		media->mediaType = "MediaType.directShow";
-		return media;
-	}
+	*/
 
 	void parse(int timeout) {
 		VLC::Media media = VLC::Media(instance, this->location, VLC::Media::FromLocation);
@@ -112,14 +115,6 @@ public:
 
 	std::string mediaSourceType() {
 		return "MediaSourceType.media";
-	}
-
-	std::map<std::string, std::string> get() {
-		std::map<std::string, std::string> media;
-		media["id"] = this->id;
-		media["mediaType"] = this->mediaType;
-		media["resource"] = this->resource;
-		return media;
 	}
 };
 

@@ -67,11 +67,16 @@ EXPORT void Player_create(int id, int videoWidth, int videoHeight, int commandLi
     }
 }
 
+EXPORT void Player_dispose(int id) {
+    players->dispose(id);
+}
+
 EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceSize) {
     std::vector<Media*> medias;
     Player* player = players->get(id);
     for (int index = 0; index < 2 * sourceSize; index += 2) {
         Media* media;
+        /* Freed inside PlayerSetters::open */
         const char* type = source[index];
         const char* resource = source[index + 1];
         if (strcmp(type, "MediaType.file") == 0)
@@ -171,6 +176,7 @@ EXPORT void Player_setPlaylistMode(int id, const char* mode) {
 EXPORT void Player_add(int id, const char* type, const char* resource) {
     Player* player = players->get(id);
     Media* media;
+    /* Freed inside PlayerSetters::open */
     if (strcmp(type, "MediaType.file") == 0)
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
@@ -202,6 +208,9 @@ EXPORT void Player_move(int id, int initialIndex, int finalIndex) {
     player->move(initialIndex, finalIndex);
 }
 
+char** _metasPointer = nullptr;
+size_t _metasSize = 0;
+
 EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
     Media* media;
     if (strcmp(type, "MediaType.file") == 0)
@@ -210,17 +219,32 @@ EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
         media = Media::network(0, resource, true);
     else
         media = Media::directShow(0, resource);
-    char** metas = new char*[media->metas.size()];
+    _metasPointer = new char*[media->metas.size()];
+    _metasSize = media->metas.size();
     int index = 0;
     for (auto &meta: media->metas) {
-        metas[index] = meta.second.data();
+        _metasPointer[index] = new char[200];
+        strncpy(_metasPointer[index], meta.second.data(), 200);
         index++;
     }
-    return metas;
+    delete media;
+    return _metasPointer;
+}
+
+EXPORT void Media_clear() {
+    if (_metasPointer != nullptr) {
+        for (size_t i = 0; i < _metasSize; i++) {
+            delete _metasPointer[i];
+        }
+        delete[] _metasPointer;
+        _metasPointer = nullptr;
+        _metasSize = 0;
+    }
 }
 
 EXPORT void Broadcast_create(int id, const char* type, const char* resource, const char* access, const char* mux, const char* dst, const char* vcodec, int vb, const char* acodec, int ab) {
     Media* media;
+    /* Freed inside ~Broadcast (Broadcasts::dispose) */
     if (strcmp(type, "MediaType.file") == 0)
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
@@ -245,12 +269,12 @@ EXPORT void Broadcast_start(int id) {
 }
 
 EXPORT void Broadcast_dispose(int id) {
-    Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
-    broadcast->dispose();
+    broadcasts->dispose(id);
 }
 
 EXPORT void Chromecast_create(int id, const char* type, const char* resource, const char* ipAddress) {
     Media* media;
+    /* Freed inside ~Chromecast (Chromecasts::dispose) */
     if (strcmp(type, "MediaType.file") == 0)
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
@@ -266,12 +290,12 @@ EXPORT void Chromecast_start(int id) {
 }
 
 EXPORT void Chromecast_dispose(int id) {
-    Chromecast* chromecast = chromecasts->get(id, nullptr, nullptr);
-    chromecast->dispose();
+    chromecasts->dispose(id);
 }
 
 EXPORT void Record_create(int id, const char* savingFile, const char* type, const char* resource) {
     Media* media;
+    /* Freed inside ~Record (Records::dispose) */
     if (strcmp(type, "MediaType.file") == 0)
         media = Media::file(0, resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
@@ -286,42 +310,61 @@ EXPORT void Record_start(int id) {
 }
 
 EXPORT void Record_dispose(int id) {
-    records->get(id, nullptr, "")->dispose();
+    records->dispose(id);
 }
+
+char** _devicesPointer = nullptr;
+size_t _devicesSize = 0;
 
 EXPORT char** Devices_all() {
     devices->refresh();
-    char** _devices = new char*[(devices->all.size() * 2) + 1];
-    _devices[0] = new char[200];
-    strncpy(_devices[0], std::to_string(devices->all.size()).data(), 200);
+    _devicesPointer = new char*[(devices->all.size() * 2) + 1];
+    _devicesSize = (devices->all.size() * 2) + 1;
+    _devicesPointer[0] = new char[200];
+    strncpy(_devicesPointer[0], std::to_string(devices->all.size()).data(), 200);
     int index = 0;
     for (Device* device: devices->all) {
-        _devices[index + 1] = new char[200];
-        strncpy(_devices[index + 1], device->id.data(), 200);
-        _devices[index + 2] = new char[200];
-        strncpy(_devices[index + 2], device->name.data(), 200);
+        _devicesPointer[index + 1] = new char[200];
+        strncpy(_devicesPointer[index + 1], device->id.data(), 200);
+        _devicesPointer[index + 2] = new char[200];
+        strncpy(_devicesPointer[index + 2], device->name.data(), 200);
         index += 2;
     }
-    return _devices;
+    return _devicesPointer;
 }
+
+EXPORT void Devices_clear() {
+    if (_devicesPointer != nullptr) {
+        for (size_t i = 0; i < _devicesSize; i++) {
+            delete _devicesPointer[i];
+        }
+        delete[] _devicesPointer;
+        _devicesPointer = nullptr;
+        _devicesSize = 0;
+    }
+}
+
+char** _equalizerPointer = nullptr;
+size_t _equalizerSize = 0;
 
 EXPORT char** Equalizer_createEmpty() {
     int id = equalizers->createEmpty();
     Equalizer* equalizer = equalizers->get(id);
-    char** _equalizer = new char*[2 * equalizer->bandAmps.size() + 2];
-    _equalizer[0] = new char[200];
-    strncpy(_equalizer[0], std::to_string(id).data(), 200);
-    _equalizer[1] = new char[200];
-    strncpy(_equalizer[1], std::to_string(equalizer->preAmp).data(), 200);
+    _equalizerPointer = new char*[2 * equalizer->bandAmps.size() + 2];
+    _equalizerSize = 2 * equalizer->bandAmps.size() + 2;
+    _equalizerPointer[0] = new char[200];
+    strncpy(_equalizerPointer[0], std::to_string(id).data(), 200);
+    _equalizerPointer[1] = new char[200];
+    strncpy(_equalizerPointer[1], std::to_string(equalizer->preAmp).data(), 200);
     int index = 0;
     for (const auto&[band, amp]: equalizer->bandAmps) {
-        _equalizer[index + 2] = new char[200];
-        strncpy(_equalizer[index + 2], std::to_string(band).data(), 200);
-        _equalizer[index + 3] = new char[200];
-        strncpy(_equalizer[index + 3], std::to_string(amp).data(), 200);
+        _equalizerPointer[index + 2] = new char[200];
+        strncpy(_equalizerPointer[index + 2], std::to_string(band).data(), 200);
+        _equalizerPointer[index + 3] = new char[200];
+        strncpy(_equalizerPointer[index + 3], std::to_string(amp).data(), 200);
         index += 2;
     }
-    return _equalizer;
+    return _equalizerPointer;
 }
 
 EXPORT char** Equalizer_createMode(int mode) {
@@ -329,20 +372,32 @@ EXPORT char** Equalizer_createMode(int mode) {
         static_cast<EqualizerMode>(mode)
     );
     Equalizer* equalizer = equalizers->get(id);
-    char** _equalizer = new char*[2 * equalizer->bandAmps.size() + 2];
-    _equalizer[0] = new char[200];
-    strncpy(_equalizer[0], std::to_string(id).data(), 200);
-    _equalizer[1] = new char[200];
-    strncpy(_equalizer[1], std::to_string(equalizer->preAmp).data(), 200);
+    _equalizerPointer = new char*[2 * equalizer->bandAmps.size() + 2];
+    _equalizerSize = 2 * equalizer->bandAmps.size() + 2;
+    _equalizerPointer[0] = new char[200];
+    strncpy(_equalizerPointer[0], std::to_string(id).data(), 200);
+    _equalizerPointer[1] = new char[200];
+    strncpy(_equalizerPointer[1], std::to_string(equalizer->preAmp).data(), 200);
     int index = 0;
     for (const auto&[band, amp]: equalizer->bandAmps) {
-        _equalizer[index + 2] = new char[200];
-        strncpy(_equalizer[index + 2], std::to_string(band).data(), 200);
-        _equalizer[index + 3] = new char[200];
-        strncpy(_equalizer[index + 3], std::to_string(amp).data(), 200);
+        _equalizerPointer[index + 2] = new char[200];
+        strncpy(_equalizerPointer[index + 2], std::to_string(band).data(), 200);
+        _equalizerPointer[index + 3] = new char[200];
+        strncpy(_equalizerPointer[index + 3], std::to_string(amp).data(), 200);
         index += 2;
     }
-    return _equalizer;
+    return _equalizerPointer;
+}
+
+EXPORT void Equalizer_clear() {
+    if (_equalizerPointer != nullptr) {
+        for (size_t i = 0; i < _equalizerSize; i++) {
+            delete _equalizerPointer[i];
+        }
+        delete[] _equalizerPointer;
+        _equalizerPointer = nullptr;
+        _equalizerSize = 0;
+    }
 }
 
 EXPORT void Equalizer_setBandAmp(int id, float band, float amp) {

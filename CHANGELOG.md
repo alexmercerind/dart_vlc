@@ -1,3 +1,10 @@
+## 0.1.1
+
+- Fixed setState being called after dispose (#75) (Finally)
+- Improved memory management.
+- Fixed ton of memory leaks.
+- Fixed `Devices::all` & `Media::parse` causing crash on Windows.
+
 ## 0.1.0
 
 - Fixed build on Linux.
