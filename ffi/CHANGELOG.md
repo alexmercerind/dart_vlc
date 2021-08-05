@@ -1,3 +1,7 @@
+## 0.0.9
+
+Fixed `Devices.all` & `Media.parse` causing crash on Windows. 
+
 ## 0.0.8
 
 - Fixed build warnings on Linux.
