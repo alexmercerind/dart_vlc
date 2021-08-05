@@ -71,7 +71,7 @@ public:
 
 	void next() {
 		this->_onPlaylistCallback();
-		if (this->state->index < this->mediaList.count())
+		if (this->state->index + 1 < this->mediaList.count())
 			this->mediaListPlayer.playItemAtIndex(
 				++this->state->index
 			);
