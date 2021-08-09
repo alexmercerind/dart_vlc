@@ -17,6 +17,7 @@
 class MediaSource {
 public:
 	int _;
+        virtual ~MediaSource() = default;
 	virtual std::string mediaSourceType() = 0;
 };
 
