@@ -320,16 +320,16 @@ sudo dnf install vlc-devel
 
 You can see an example project [here](https://github.com/alexmercerind/dart_vlc/blob/master/example/lib/main.dart).
 
-Windows
-
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_6.png?raw=true)
 
+dart_vlc running on Ubuntu Linux.
 
 ## Workings
+
 The repository contains a [C++ wrapper](https://github.com/alexmercerind/dart_vlc/tree/master/dartvlc) based on libVLC++. This makes handling of events and controls a lot easier & has additional features in it.
 I preferred to do majority of handling in C++ itself, thus Dart code is minimal & very slight mapping to it.
 
-This project might seem like a Flutter plugin, but it is based on FFI instead. [Here](https://github.com/alexmercerind/dart_vlc/tree/master/ffi) are the FFI bindings to [C++ wrapper](https://github.com/alexmercerind/dart_vlc/tree/master/dartvlc), which are shared by all platforms & same can be used in Dart CLI apps aswell.
+This project might seem like a Flutter plugin, but it is based on FFI instead. [Here](https://github.com/alexmercerind/dart_vlc/tree/master/ffi) are the FFI bindings to [C++ wrapper](https://github.com/alexmercerind/dart_vlc/tree/master/dartvlc), which are shared by all platforms & same can be used in Dart CLI apps aswell. Platform channel interface is only used for [flutter]
 
 ## Progress
 
@@ -379,6 +379,8 @@ Done
 Under progress or planned features (irrespective of order)...
 
 - Removing [libVLC++](https://github.com/videolan/libvlcpp) dependency. (Maybe).
+- Subtitle control.
+- Audio track control.
 - Writing metadata tags.
 - Making things more efficient.
 - Supporting native volume control/lock screen notifications (Maybe).
@@ -389,9 +391,7 @@ Under progress or planned features (irrespective of order)...
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
 
-Massive thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [Flutter](https://flutter.dev) team to my review code & help me fix the loopholes.
-
-Thanks to following members of libVLC community to give me bit of look & advice about how things work:
+Thanks to following members of libVLC community (irrespective of the order) to give me bit of look & advice about how things work:
 
 - [@jeremyVignelles](https://github.com/jeremyVignelles)
 - [@chouquette](https://github.com/chouquette)
