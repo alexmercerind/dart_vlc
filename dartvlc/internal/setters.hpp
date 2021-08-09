@@ -46,7 +46,9 @@ public:
 			this->state->isPlaylist = true;
 		}
 		this->_onOpenCallback(this->mediaList.itemAtIndex(0));
-		this->mediaListPlayer.playItemAtIndex(0);
+		if (autoStart) {
+			this->mediaListPlayer.playItemAtIndex(0);
+		}
 		this->state->index = 0;
 		this->state->isPlaying = this->mediaListPlayer.isPlaying();
 		this->state->isValid = this->mediaListPlayer.isValid();
