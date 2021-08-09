@@ -60,7 +60,6 @@ public:
 		this->mediaPlayer.stop();
 		delete this->state;
 		delete this->_videoFrameBuffer;
-		for (size_t i = 0; i < argsSize; i++) delete this->args[i];
 		delete[] this->args;
 	}
 
@@ -81,6 +80,7 @@ public:
 
 	void dispose(int id, std::function<void()> callback = []() -> void {}) {
         delete this->players[id];
+		this->players.erase(id);
 		callback();
     }
 
