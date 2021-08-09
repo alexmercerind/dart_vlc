@@ -1,6 +1,6 @@
 name: dart_vlc
 description: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/alexmercerind/dart_vlc
 repository: https://github.com/alexmercerind/dart_vlc
 documentation: https://github.com/alexmercerind/dart_vlc/blob/master/README.md
@@ -12,12 +12,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dart_vlc_ffi: ^0.0.6
+  dart_vlc_ffi: ^0.0.9
   path: ^1.8.0
   path_provider: ^2.0.1
   audio_video_progress_bar: ^0.4.0
 
 flutter:
+  # No platform channel implementation after migration to FFI.
   plugin:
     platforms:
       windows:

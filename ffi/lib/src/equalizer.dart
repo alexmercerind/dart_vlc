@@ -51,6 +51,7 @@ class Equalizer {
       double.parse(_equalizer.elementAt(10).value.toDartString()):
           double.parse(_equalizer.elementAt(11).value.toDartString()),
     };
+    CleanupFFI.equalizer();
     return equalizer;
   }
 
@@ -74,6 +75,7 @@ class Equalizer {
       double.parse(_equalizer.elementAt(10).value.toDartString()):
           double.parse(_equalizer.elementAt(11).value.toDartString()),
     };
+    CleanupFFI.equalizer();
     return equalizer;
   }
 

@@ -28,5 +28,29 @@ public:
 	float rate = 1.0;
 	bool isPlaylist = false;
 	Device* device = nullptr;
+	/* TODO: Not used yet.
 	Equalizer* equalizer = nullptr;
+	*/
+
+	void reset() {
+		this->index = 0;
+		this->medias->medias = {};
+		this->isPlaying = false;
+		this->isValid = true;
+		this->isSeekable = true;
+		this->isCompleted = false;
+		this->position = 0;
+		this->duration = 0;
+		this->volume = 1.0;
+		this->rate = 1.0;
+		this->isPlaylist = false;
+		this->device = nullptr;
+		/*
+		this->equalizer = nullptr;
+		*/
+	}
+
+	~PlayerState() {
+		delete this->medias;
+	}
 };

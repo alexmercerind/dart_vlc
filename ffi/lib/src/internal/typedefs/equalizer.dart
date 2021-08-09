@@ -21,3 +21,7 @@ typedef EqualizerSetBandAmpDart = void Function(
 /// Equalizer::setPreAmp
 typedef EqualizerSetPreAmpCXX = Void Function(Int32 id, Float amp);
 typedef EqualizerSetPreAmpDart = void Function(int id, double amp);
+
+/// Following typedef is used for cleaning memory used by char**.
+typedef EqualizerClearCXX = Void Function();
+typedef EqualizerClearDart = void Function();

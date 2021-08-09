@@ -71,8 +71,9 @@ public:
         );
     }
 
-    void dispose() {
+    ~Broadcast() {
         libvlc_vlm_release(this->instance.get());
+        delete this->media;
     }
 
 private:
@@ -88,6 +89,11 @@ public:
 		}
 		return this->broadcasts[id];
 	}
+
+    void dispose(int id, std::function<void()> callback = []() -> void {}) {
+        delete this->broadcasts[id];
+        callback();
+    }
 
 private:
 	std::map<int, Broadcast*> broadcasts;

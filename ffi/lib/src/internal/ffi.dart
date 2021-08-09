@@ -22,6 +22,10 @@ abstract class PlayerFFI {
       .lookup<NativeFunction<PlayerCreateCXX>>('Player_create')
       .asFunction();
 
+  static final PlayerDisposeDart dispose = dynamicLibrary
+      .lookup<NativeFunction<PlayerDisposeCXX>>('Player_dispose')
+      .asFunction();
+
   static final PlayerOpenDart open = dynamicLibrary
       .lookup<NativeFunction<PlayerOpenCXX>>('Player_open')
       .asFunction();
@@ -171,6 +175,23 @@ abstract class EqualizerFFI {
       .lookup<NativeFunction<EqualizerSetPreAmpCXX>>('Equalizer_setPreAmp')
       .asFunction();
 }
+
+
+abstract class CleanupFFI {
+
+  static final MediaClearDart media = dynamicLibrary
+      .lookup<NativeFunction<MediaClearCXX>>('Media_clear')
+      .asFunction();
+
+  static final DevicesClearDart devices = dynamicLibrary
+      .lookup<NativeFunction<DevicesClearCXX>>('Devices_clear')
+      .asFunction();
+
+  static final EqualizerClearDart equalizer = dynamicLibrary
+      .lookup<NativeFunction<EqualizerClearCXX>>('Equalizer_clear')
+      .asFunction();
+}
+
 
 bool isInitialized = false;
 void Function(int playerId, Uint8List frame) videoFrameCallback = (_, __) {};
