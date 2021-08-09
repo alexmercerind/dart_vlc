@@ -37,7 +37,7 @@ Map<int, Player> players = {};
 ///
 class Player {
   /// Id associated with the [Player] instance.
-  final int id;
+  int id;
 
   /// Width of the [Video] frames to be extracted. Higher value may lead to degraded performance.
   late int videoWidth;

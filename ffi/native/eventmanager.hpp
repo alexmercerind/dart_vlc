@@ -21,12 +21,12 @@ void Player_onPlayPauseStop(PlayerState* state) {
     event.emplace_back("playbackEvent");
     event.emplace_back(std::to_string(state->isPlaying));
     event.emplace_back(std::to_string(state->isSeekable));
-    int _size = event.size();
+    size_t _size = event.size();
     char** _event = new char*[_size];
     for (int index = 0; index < _size; index++)
         _event[index] = const_cast<char*>(event[index].c_str());
     callbackStringArray(
-        _size,
+        static_cast<int>(_size),
         _event
     );
     
@@ -40,12 +40,12 @@ void Player_onPosition(PlayerState* state) {
     event.emplace_back(std::to_string(state->index));
     event.emplace_back(std::to_string(state->position));
     event.emplace_back(std::to_string(state->duration));
-    int _size = event.size();
+    size_t _size = event.size();
     char** _event = new char*[_size];
     for (int index = 0; index < _size; index++)
         _event[index] = const_cast<char*>(event[index].c_str());
     callbackStringArray(
-        _size,
+        static_cast<int>(_size),
         _event
     );
     
@@ -57,12 +57,12 @@ void Player_onComplete(PlayerState* state) {
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("completeEvent");
     event.emplace_back(std::to_string(state->isCompleted));
-    int _size = event.size();
+    size_t _size = event.size();
     char** _event = new char*[_size];
     for (int index = 0; index < _size; index++)
         _event[index] = const_cast<char*>(event[index].c_str());
     callbackStringArray(
-        _size,
+        static_cast<int>(_size),
         _event
     );
     
@@ -74,12 +74,12 @@ void Player_onVolume(PlayerState* state) {
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("volumeEvent");
     event.emplace_back(std::to_string(state->volume));
-    int _size = event.size();
+    size_t _size = event.size();
     char** _event = new char*[_size];
     for (int index = 0; index < _size; index++)
         _event[index] = const_cast<char*>(event[index].c_str());
     callbackStringArray(
-        _size,
+        static_cast<int>(_size),
         _event
     );
     
@@ -91,12 +91,12 @@ void Player_onRate(PlayerState* state) {
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("rateEvent");
     event.emplace_back(std::to_string(state->rate));
-    int _size = event.size();
+    size_t _size = event.size();
     char** _event = new char*[_size];
     for (int index = 0; index < _size; index++)
         _event[index] = const_cast<char*>(event[index].c_str());
     callbackStringArray(
-        _size,
+        static_cast<int>(_size),
         _event
     );
     
@@ -113,12 +113,12 @@ void Player_onOpen(PlayerState* state) {
         event.emplace_back(media->mediaType);
         event.emplace_back(media->resource);
     }
-    int _size = event.size();
+    size_t _size = event.size();
     char** _event = new char*[_size];
     for (int index = 0; index < _size; index++)
         _event[index] = const_cast<char*>(event[index].c_str());
     callbackStringArray(
-        _size,
+        static_cast<int>(_size),
         _event
     );
     
