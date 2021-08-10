@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Removed `Player::onVideo` callbacks for win32.
+
 ## 0.1.0
 
 - Added new native methods for handling with memory leaks.

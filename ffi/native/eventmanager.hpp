@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-void Player_onPlayPauseStop(PlayerState* state) {
+inline void Player_onPlayPauseStop(PlayerState* state) {
     std::vector<std::string> event;
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("playbackEvent");
@@ -33,7 +33,7 @@ void Player_onPlayPauseStop(PlayerState* state) {
     delete[] _event;
 }
 
-void Player_onPosition(PlayerState* state) {
+inline void Player_onPosition(PlayerState* state) {
     std::vector<std::string> event;
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("positionEvent");
@@ -52,7 +52,7 @@ void Player_onPosition(PlayerState* state) {
     delete[] _event;
 }
 
-void Player_onComplete(PlayerState* state) {
+inline void Player_onComplete(PlayerState* state) {
     std::vector<std::string> event;
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("completeEvent");
@@ -69,7 +69,7 @@ void Player_onComplete(PlayerState* state) {
     delete[] _event;
 }
 
-void Player_onVolume(PlayerState* state) {
+inline void Player_onVolume(PlayerState* state) {
     std::vector<std::string> event;
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("volumeEvent");
@@ -86,7 +86,7 @@ void Player_onVolume(PlayerState* state) {
     delete[] _event;
 }
 
-void Player_onRate(PlayerState* state) {
+inline void Player_onRate(PlayerState* state) {
     std::vector<std::string> event;
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("rateEvent");
@@ -103,7 +103,7 @@ void Player_onRate(PlayerState* state) {
     delete[] _event;
 }
 
-void Player_onOpen(PlayerState* state) {
+inline void Player_onOpen(PlayerState* state) {
     std::vector<std::string> event;
     event.emplace_back(std::to_string(state->id));
     event.emplace_back("openEvent");
@@ -125,7 +125,7 @@ void Player_onOpen(PlayerState* state) {
     delete[] _event;
 }
 
-void Player_onVideo(int size, PlayerState* state, uint8_t* frame) {
+inline void Player_onVideo(int size, PlayerState* state, uint8_t* frame) {
     callbackFrame(
         size,
         state->id,
