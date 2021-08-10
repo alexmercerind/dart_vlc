@@ -20,10 +20,7 @@ export 'package:dart_vlc_ffi/dart_vlc_ffi.dart' hide DartVLC, Player;
 export 'package:dart_vlc/src/widgets/video.dart';
 
 /// Platform channel for using [Texture] & flutter::TextureRegistrar on Windows.
-final MethodChannel _channel = MethodChannel('dart_vlc')
-..setMethodCallHandler((call) async {
-  print(call.method);
-});
+final MethodChannel _channel = MethodChannel('dart_vlc');
 
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
@@ -72,19 +69,6 @@ class Player extends FFI.Player {
       }();
     }
   }
-  
-  @override
-  void dispose() {
-    super.dispose();
-    if (this.videoHeight > 0 && this.videoWidth > 0 && Platform.isWindows) {
-      _channel.invokeMethod(
-        'Player.dispose',
-        {
-          'playerId', this.id
-        }
-      );
-    }
-  }
 }
 
 
@@ -116,7 +100,7 @@ abstract class DartVLC {
           .split('\\')
           .sublist(0, Platform.resolvedExecutable.split('\\').length - 1)
           .join('\\');
-      FFI.DartVLC.initialize(directory + '\\' + 'dart_vlc.dll');
+      FFI.DartVLC.initialize(directory + '\\' + 'dart_vlc_plugin.dll');
     }
     if (Platform.isLinux) {
       String directory = Platform.resolvedExecutable

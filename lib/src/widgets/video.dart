@@ -143,7 +143,7 @@ class VideoState extends State<Video> {
       videoFrame.byteArray,
       videoFrame.videoWidth,
       videoFrame.videoHeight,
-      ui.PixelFormat.bgra8888,
+      ui.PixelFormat.rgba8888,
       (ui.Image _image) => imageCompleter.complete(_image),
       rowBytes: 4 * videoFrame.videoWidth,
       targetWidth: widget.width.toInt(),
