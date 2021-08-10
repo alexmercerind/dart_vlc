@@ -25,9 +25,9 @@ packages:
   dart_vlc_ffi:
     dependency: "direct main"
     description:
-      path: ffi
-      relative: true
-    source: path
+      name: dart_vlc_ffi
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.1"
   ffi:
     dependency: transitive
