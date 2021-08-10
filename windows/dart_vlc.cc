@@ -38,7 +38,7 @@ namespace {
         void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &method_call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
         flutter::TextureRegistrar *textureRegistrar = nullptr;
         std::unordered_map<int, uint8_t*> frames;
-        std::unordered_map<int, std::unique_ptr<FlutterDesktopPixelBuffer>> buffers;
+        std::unordered_map<int, FlutterDesktopPixelBuffer*> buffers;
         std::unordered_map<int, std::unique_ptr<flutter::TextureVariant>> textures;
     };
 
@@ -61,40 +61,44 @@ namespace {
     void DartVlcPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
         /* No platform channel implementation after migration to FFI except Player::onVideo callbacks for Texture. */
 
-        /* Sets lambda for Player::onVideo callbacks. Invoked when creating new instance of Player. */
+        /* Sets lambda for Player::onVideo callbacks. Called after creating new instance of Player. */
         if (methodCall.method_name() == "Player.onVideo") {
-            // flutter::EncodableMap arguments = std::get<flutter::EncodableMap>(*methodCall.arguments());
-            // int playerId = std::get<int>(arguments[flutter::EncodableValue("playerId")]);
-            // Player* player = players->get(playerId);
-            // if (this->frames[playerId] == nullptr) {
-            //     this->frames[playerId] = new uint8_t[player->videoHeight * player->videoWidth * 4];
-            //     memset(this->frames[playerId], 0, player->videoHeight * player->videoWidth * 4 * sizeof(uint8_t));
-            // }
-            // this->buffers[playerId] = std::make_unique<FlutterDesktopPixelBuffer>();
-            // this->buffers[playerId]->width = player->videoWidth;
-            // this->buffers[playerId]->height = player->videoHeight;
-            // this->buffers[playerId]->buffer = this->frames[playerId];
-            // player->onVideo(
-            //     [=](uint8_t* frame) -> void {
-            //         memcpy(this->frames[playerId], frame, player->videoHeight * player->videoWidth * 4 * sizeof(uint8_t));
-            //         this->textures[playerId] = std::make_unique<flutter::TextureVariant>(
-            //             flutter::PixelBufferTexture(
-            //                 [=](size_t width, size_t height) -> const FlutterDesktopPixelBuffer* {
-            //                     return this->buffers[playerId].get();
-            //                 }
-            //             )
-            //         );
-            //     }
-            // );
-            // int64_t textureId = this->textureRegistrar->RegisterTexture(this->textures[playerId].get());
-            result->Success(flutter::EncodableValue(-1));
+            flutter::EncodableMap arguments = std::get<flutter::EncodableMap>(*methodCall.arguments());
+            int playerId = std::get<int>(arguments[flutter::EncodableValue("playerId")]);
+            Player* player = players->get(playerId);
+            this->frames.insert(
+                std::make_pair(playerId, new uint8_t[player->videoHeight * player->videoWidth * 4])
+            );
+            memset(this->frames.at(playerId), 0, player->videoHeight * player->videoWidth * 4 * sizeof(uint8_t));
+            this->buffers.insert(
+                std::make_pair(playerId, new FlutterDesktopPixelBuffer())
+            );
+            this->buffers.at(playerId)->width = player->videoWidth;
+            this->buffers.at(playerId)->height = player->videoHeight;
+            this->buffers.at(playerId)->buffer = this->frames.at(playerId);
+            this->textures[playerId] = std::make_unique<flutter::TextureVariant>(
+                flutter::PixelBufferTexture(
+                    [=](size_t width, size_t height) -> const FlutterDesktopPixelBuffer* {
+                        return this->buffers.at(playerId);
+                    }
+                )
+            );
+            int64_t textureId = this->textureRegistrar->RegisterTexture(this->textures[playerId].get());
+            this->textureRegistrar->MarkTextureFrameAvailable(textureId);
+            player->onVideo(
+                [=](uint8_t* frame) -> void {
+                    memcpy(this->frames.at(playerId), frame, player->videoHeight * player->videoWidth * 4 * sizeof(uint8_t));
+                    this->textureRegistrar->MarkTextureFrameAvailable(textureId);
+                }
+            );
+            result->Success(flutter::EncodableValue(textureId));
         }
         /* Called after disposing a Player instance. */
         else if (methodCall.method_name() == "Player.dispose") {
             flutter::EncodableMap arguments = std::get<flutter::EncodableMap>(*methodCall.arguments());
             int playerId = std::get<int>(arguments[flutter::EncodableValue("playerId")]);
-            delete this->frames[playerId];
-            this->frames[playerId] = nullptr;
+            delete this->frames.at(playerId);
+            delete this->buffers.at(playerId);
             result->Success(flutter::EncodableValue(nullptr));
         }
         else {
