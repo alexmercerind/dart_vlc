@@ -28,6 +28,8 @@ public:
 	float rate = 1.0;
 	bool isPlaylist = false;
 	Device* device = nullptr;
+	/* NOTE: Used for autoStart. */
+	bool isStarted = false;
 	/* TODO: Not used yet.
 	Equalizer* equalizer = nullptr;
 	*/
