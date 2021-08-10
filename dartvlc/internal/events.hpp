@@ -86,7 +86,7 @@ public:
 		);
 		this->mediaPlayer.setVideoFormatCallbacks(
 			[=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p, uint32_t* l) -> int {
-				strcpy(chroma, "RV32");
+				strcpy(chroma, "RGBA");
 				*w = this->videoWidth;
 				*h = this->videoHeight;
 				*p = pitch;
@@ -95,7 +95,7 @@ public:
 			},
 			nullptr
 		);
-		this->mediaPlayer.setVideoFormat("RV32", this->videoWidth, this->videoHeight, pitch);
+		this->mediaPlayer.setVideoFormat("RGBA", this->videoWidth, this->videoHeight, pitch);
 	}
 
 protected:
