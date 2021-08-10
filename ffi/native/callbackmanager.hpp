@@ -1,6 +1,6 @@
 #ifndef EXPORT
-#ifdef __WIN32
-#define EXPORT declspec(__dllexport)
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
@@ -109,14 +109,14 @@ EXPORT void RegisterDart_CallbackPort(Dart_Port _callbackPort) {
     callbackPort = _callbackPort;
 }
 
-EXPORT void callbackInt32(int32_t value) {
+void callbackInt32(int32_t value) {
     Dart_CObject dart_object;
     dart_object.type = Dart_CObject_kInt32;
     dart_object.value.as_int32 = value;
     dartPostCObject(callbackPort, &dart_object);
 }
 
-EXPORT void callbackStringArray(int length, char** values) {
+void callbackStringArray(int length, char** values) {
     Dart_CObject** valueObjects = new Dart_CObject*[length];
     for (int i = 0; i < length; i++) {
         Dart_CObject* valueObject = new Dart_CObject;
@@ -135,7 +135,7 @@ EXPORT void callbackStringArray(int length, char** values) {
     delete[] valueObjects;
 }
 
-EXPORT void callbackFrame(int length, int playerId, uint8_t* frame) {
+void callbackFrame(int length, int playerId, uint8_t* frame) {
     Dart_CObject idObject;
     idObject.type = Dart_CObject_kInt32;
     idObject.value.as_int32 = playerId;

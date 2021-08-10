@@ -3,7 +3,7 @@
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
 
-FFI bindings & NativePort event callback handling for `dart_vlc.so`.
+FFI bindings & NativePort event callback handling for `dart_vlc.dll`.
 
 Dependency package for [dart_vlc](https:///github.com/alexmercerind/dart_vlc).
 

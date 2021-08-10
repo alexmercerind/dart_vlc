@@ -19,10 +19,11 @@ class PlayerSetters: public PlayerEvents {
 public:
 	void open(MediaSource* mediaSource, bool autoStart = true) {
 		/* Freed the previous `Media` objects when a new `Playlist` or `Media` is opened. */
+		this->state->isStarted = false;
+		this->stop();
 		for (Media* media: this->state->medias->medias) {
 			delete media;
 		}
-		this->stop();
 		this->state->medias->medias = {};
 		this->mediaList = VLC::MediaList(this->instance);
 		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
@@ -46,14 +47,20 @@ public:
 			this->state->isPlaylist = true;
 		}
 		this->_onOpenCallback(this->mediaList.itemAtIndex(0));
-		this->mediaListPlayer.playItemAtIndex(0);
 		this->state->index = 0;
 		this->state->isPlaying = this->mediaListPlayer.isPlaying();
 		this->state->isValid = this->mediaListPlayer.isValid();
+		if (autoStart) this->play();
 	}
 
 	void play() {
-        this->mediaListPlayer.play();
+		if (!this->state->isStarted) {
+			this->mediaListPlayer.playItemAtIndex(0);
+			this->state->isStarted = true;
+		}
+        else {
+			this->mediaListPlayer.play();
+		}
 	}
 
     void pause() {
@@ -63,7 +70,13 @@ public:
     }
 
 	void playOrPause() {
-		this->mediaListPlayer.pause();
+		if (!this->state->isStarted) {
+			this->mediaListPlayer.playItemAtIndex(0);
+			this->state->isStarted = true;
+		}
+		else {
+			this->mediaListPlayer.pause();
+		}
 	}
 
     void stop() {

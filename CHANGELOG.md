@@ -1,3 +1,10 @@
+## 0.1.2
+
+- Now using `flutter::TextureRegistrar` for performant `Video` on Windows. (#54).
+- Fixed `autoStart` in `Player.open`.
+- Fixed other crashes for Windows.
+- Improved stability.
+
 ## 0.1.1
 
 - Fixed setState being called after dispose (#75) (Finally)
