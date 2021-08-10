@@ -60,8 +60,11 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
     super.initState();
     this.playPauseController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 400));
-    this.playPauseStream = players[widget.playerId]!.playbackStream.listen((event) => this.setPlaybackMode(event.isPlaying));
-    if (players[widget.playerId]!.playback.isPlaying) this.playPauseController.forward();
+    this.playPauseStream = players[widget.playerId]!
+        .playbackStream
+        .listen((event) => this.setPlaybackMode(event.isPlaying));
+    if (players[widget.playerId]!.playback.isPlaying)
+      this.playPauseController.forward();
   }
 
   @override

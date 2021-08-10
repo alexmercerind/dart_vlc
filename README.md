@@ -391,6 +391,8 @@ Under progress or planned features (irrespective of order)...
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
 
+[@jnschulze](https://github.com/jnschulze) for his awesome contributions to Flutter engine like adding texture support.
+
 Thanks to following members of libVLC community (irrespective of the order) to give me bit of look & advice about how things work:
 
 - [@jeremyVignelles](https://github.com/jeremyVignelles)

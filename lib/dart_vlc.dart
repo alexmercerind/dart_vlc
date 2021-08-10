@@ -22,7 +22,6 @@ export 'package:dart_vlc/src/widgets/video.dart';
 /// Platform channel for using [Texture] & flutter::TextureRegistrar on Windows.
 final MethodChannel _channel = MethodChannel('dart_vlc');
 
-
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
 /// Use [Player] constructor to create a new instance of a [Player].
@@ -50,27 +49,27 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 class Player extends FFI.Player {
   int? textureId;
 
-  Player({
-    required int id,
-    int videoWidth: 0,
-    int videoHeight: 0,
-    List<String>? commandlineArguments
-  }) : super(id: id, videoWidth: videoWidth, videoHeight: videoHeight, commandlineArguments: commandlineArguments) {
+  Player(
+      {required int id,
+      int videoWidth: 0,
+      int videoHeight: 0,
+      List<String>? commandlineArguments})
+      : super(
+            id: id,
+            videoWidth: videoWidth,
+            videoHeight: videoHeight,
+            commandlineArguments: commandlineArguments) {
     if (this.videoHeight > 0 && this.videoWidth > 0 && Platform.isWindows) {
       () async {
-        this.textureId = await _channel.invokeMethod(
-          'Player.onVideo',
-          {
-            'playerId': this.id,
-            'videoWidth': this.videoWidth,
-            'videoHeight': this.videoHeight
-          }
-        );
+        this.textureId = await _channel.invokeMethod('Player.onVideo', {
+          'playerId': this.id,
+          'videoWidth': this.videoWidth,
+          'videoHeight': this.videoHeight
+        });
       }();
     }
   }
 }
-
 
 /// Initializes the DartVLC plugin.
 ///
@@ -86,13 +85,13 @@ abstract class DartVLC {
     FFI.videoFrameCallback = (int playerId, Uint8List videoFrame) {
       if (videoStreamControllers[playerId] != null &&
           FFI.players[playerId] != null) {
-            if (!videoStreamControllers[playerId]!.isClosed) {
-              videoStreamControllers[playerId]!.add(new VideoFrame(
+        if (!videoStreamControllers[playerId]!.isClosed) {
+          videoStreamControllers[playerId]!.add(new VideoFrame(
               playerId: playerId,
               videoWidth: FFI.players[playerId]!.videoWidth,
               videoHeight: FFI.players[playerId]!.videoHeight,
               byteArray: videoFrame));
-            }
+        }
       }
     };
     if (Platform.isWindows) {

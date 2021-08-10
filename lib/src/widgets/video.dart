@@ -1,9 +1,11 @@
 // ignore_for_file: implementation_imports
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:dart_vlc_ffi/src/player.dart';
+import 'package:dart_vlc_ffi/src/player.dart' hide Player;
+import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/widgets/controls.dart';
 
 /// Internally used map to keep [GlobalKey]s for [Video]'s [ControlState]s.
@@ -69,6 +71,9 @@ class Video extends StatefulWidget {
   /// Scale.
   final double scale;
 
+  /// Filter quality.
+  final FilterQuality filterQuality;
+
   // Built-In video controls.
   final bool showControls;
 
@@ -127,6 +132,7 @@ class Video extends StatefulWidget {
     this.progressBarThumbGlowRadius = 15.0,
     this.showTimeLeft = false,
     this.progressBarTextStyle = const TextStyle(),
+    this.filterQuality = FilterQuality.low,
     Key? key,
   }) : super(key: key);
 
@@ -155,58 +161,85 @@ class VideoState extends State<Video> {
       height: widget.height,
       width: widget.width,
       scale: widget.scale,
-      filterQuality: FilterQuality.low,
+      filterQuality: widget.filterQuality,
     );
   }
 
   @override
   Future<void> dispose() async {
     super.dispose();
-    await videoStreamControllers[widget.playerId]?.close();
+    if (Platform.isWindows) {
+    } else {
+      await videoStreamControllers[widget.playerId]?.close();
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.showControls) controls[widget.playerId] = this.controlKey;
-    videoStreamControllers[widget.playerId] =
-        new StreamController<VideoFrame>.broadcast();
-    videoStreamControllers[widget.playerId]?.stream
-        .listen((VideoFrame videoFrame) async {
-      this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
-      if (this.mounted) {
-        this.setState(() {});
-      }
-    });
+    if (Platform.isWindows) {
+    } else {
+      if (widget.showControls) controls[widget.playerId] = this.controlKey;
+      videoStreamControllers[widget.playerId] =
+          new StreamController<VideoFrame>.broadcast();
+      videoStreamControllers[widget.playerId]
+          ?.stream
+          .listen((VideoFrame videoFrame) async {
+        this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
+        if (this.mounted) {
+          this.setState(() {});
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.showControls) {
       return Control(
-        key: this.controlKey,
-        playerId: widget.playerId,
-        height: widget.height,
-        width: widget.width,
-        progressBarThumbRadius: widget.progressBarThumbRadius,
-        progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
-        progressBarActiveColor: widget.progressBarActiveColor,
-        progressBarInactiveColor: widget.progressBarInactiveColor,
-        progressBarThumbColor: widget.progressBarThumbColor,
-        progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
-        volumeActiveColor: widget.volumeActiveColor,
-        volumeInactiveColor: widget.volumeInactiveColor,
-        volumeBackgroundColor: widget.volumeBackgroundColor,
-        volumeThumbColor: widget.volumeThumbColor,
-        showTimeLeft: widget.showTimeLeft,
-        progressBarTextStyle: widget.progressBarTextStyle,
-        child: this.videoFrameRawImage ??
-            Container(
-              color: Colors.black,
-              height: widget.height,
-              width: widget.width,
-            ),
-      );
+          key: this.controlKey,
+          playerId: widget.playerId,
+          height: widget.height,
+          width: widget.width,
+          progressBarThumbRadius: widget.progressBarThumbRadius,
+          progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
+          progressBarActiveColor: widget.progressBarActiveColor,
+          progressBarInactiveColor: widget.progressBarInactiveColor,
+          progressBarThumbColor: widget.progressBarThumbColor,
+          progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+          volumeActiveColor: widget.volumeActiveColor,
+          volumeInactiveColor: widget.volumeInactiveColor,
+          volumeBackgroundColor: widget.volumeBackgroundColor,
+          volumeThumbColor: widget.volumeThumbColor,
+          showTimeLeft: widget.showTimeLeft,
+          progressBarTextStyle: widget.progressBarTextStyle,
+          child: Platform.isWindows
+              ? (
+                  /* Using flutter::TextureRegistrar for Windows. */
+                  ((players[widget.playerId]! as Player).textureId != null)
+                      ? Container(
+                          width: widget.width,
+                          height: widget.height,
+                          color: Colors.black,
+                          child: Texture(
+                            textureId: (players[widget.playerId]! as Player)
+                                .textureId!,
+                            filterQuality: widget.filterQuality,
+                          ),
+                        )
+                      : Container(
+                          width: widget.width,
+                          height: widget.height,
+                          color: Colors.black,
+                        ))
+              : (
+                  /* Using NativePorts for Linux. */
+                  this.videoFrameRawImage ??
+                      Container(
+                        color: Colors.black,
+                        height: widget.height,
+                        width: widget.width,
+                      )));
     } else {
       return this.videoFrameRawImage ??
           Container(
