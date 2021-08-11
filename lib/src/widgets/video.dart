@@ -59,8 +59,8 @@ class VideoFrame {
 /// A global [Key] may be used for this purpose.
 ///
 class Video extends StatefulWidget {
-  /// Id of the [Player] whose [Video] output should be shown.
-  final int playerId;
+  /// The [Player] whose [Video] output should be shown.
+  final Player player;
 
   /// Width of the viewport.
   final double width;
@@ -115,7 +115,8 @@ class Video extends StatefulWidget {
   final bool showTimeLeft;
 
   Video({
-    required this.playerId,
+    @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
+    Player? player,
     required this.width,
     required this.height,
     this.scale: 1.0,
@@ -134,71 +135,30 @@ class Video extends StatefulWidget {
     this.progressBarTextStyle = const TextStyle(),
     this.filterQuality = FilterQuality.low,
     Key? key,
-  }) : super(key: key);
+  })  : player = player ?? players[playerId]! as Player,
+        super(key: key);
 
-  VideoState createState() => VideoState();
+  _VideoStateBase createState() =>
+      Platform.isWindows ? _VideoStateTexture() : _VideoStateFallback();
 }
 
-class VideoState extends State<Video> {
-  Widget? videoFrameRawImage;
+abstract class _VideoStateBase extends State<Video> {
   GlobalKey<ControlState> controlKey = new GlobalKey<ControlState>();
 
-  Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
-    Completer<ui.Image> imageCompleter = new Completer<ui.Image>();
-    ui.decodeImageFromPixels(
-      videoFrame.byteArray,
-      videoFrame.videoWidth,
-      videoFrame.videoHeight,
-      ui.PixelFormat.rgba8888,
-      (ui.Image _image) => imageCompleter.complete(_image),
-      rowBytes: 4 * videoFrame.videoWidth,
-      targetWidth: widget.width.toInt(),
-      targetHeight: widget.height.toInt(),
-    );
-    ui.Image image = await imageCompleter.future;
-    return new RawImage(
-      image: image,
-      height: widget.height,
-      width: widget.width,
-      scale: widget.scale,
-      filterQuality: widget.filterQuality,
-    );
-  }
-
-  @override
-  Future<void> dispose() async {
-    super.dispose();
-    if (Platform.isWindows) {
-    } else {
-      await videoStreamControllers[widget.playerId]?.close();
-    }
-  }
+  int get playerId => widget.player.id;
 
   @override
   void initState() {
+    if (widget.showControls) controls[playerId] = controlKey;
     super.initState();
-    if (Platform.isWindows) {
-    } else {
-      if (widget.showControls) controls[widget.playerId] = this.controlKey;
-      videoStreamControllers[widget.playerId] =
-          new StreamController<VideoFrame>.broadcast();
-      videoStreamControllers[widget.playerId]
-          ?.stream
-          .listen((VideoFrame videoFrame) async {
-        this.videoFrameRawImage = await this.getVideoFrameRawImage(videoFrame);
-        if (this.mounted) {
-          this.setState(() {});
-        }
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.showControls) {
       return Control(
-          key: this.controlKey,
-          playerId: widget.playerId,
+          key: controlKey,
+          playerId: playerId,
           height: widget.height,
           width: widget.width,
           progressBarThumbRadius: widget.progressBarThumbRadius,
@@ -213,40 +173,86 @@ class VideoState extends State<Video> {
           volumeThumbColor: widget.volumeThumbColor,
           showTimeLeft: widget.showTimeLeft,
           progressBarTextStyle: widget.progressBarTextStyle,
-          child: Platform.isWindows
-              ? (
-                  /* Using flutter::TextureRegistrar for Windows. */
-                  ((players[widget.playerId]! as Player).textureId != null)
-                      ? Container(
-                          width: widget.width,
-                          height: widget.height,
-                          color: Colors.black,
-                          child: Texture(
-                            textureId: (players[widget.playerId]! as Player)
-                                .textureId!,
-                            filterQuality: widget.filterQuality,
-                          ),
-                        )
-                      : Container(
-                          width: widget.width,
-                          height: widget.height,
-                          color: Colors.black,
-                        ))
-              : (
-                  /* Using NativePorts for Linux. */
-                  this.videoFrameRawImage ??
-                      Container(
-                        color: Colors.black,
-                        height: widget.height,
-                        width: widget.width,
-                      )));
-    } else {
-      return this.videoFrameRawImage ??
-          Container(
-            color: Colors.black,
-            height: widget.height,
-            width: widget.width,
-          );
+          child: present());
     }
+    return present();
+  }
+
+  Widget present();
+}
+
+class _VideoStateTexture extends _VideoStateBase {
+  Widget present() {
+    return ValueListenableBuilder<int?>(
+        valueListenable: widget.player.textureId,
+        builder: (context, textureId, _) {
+          return Container(
+              width: widget.width,
+              height: widget.height,
+              color: Colors.black,
+              child: textureId != null
+                  ? Texture(
+                      textureId: textureId,
+                      filterQuality: widget.filterQuality,
+                    )
+                  : null);
+        });
+  }
+}
+
+class _VideoStateFallback extends _VideoStateBase {
+  Widget? videoFrameRawImage;
+
+  Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
+    Completer<ui.Image> imageCompleter = new Completer<ui.Image>();
+    ui.decodeImageFromPixels(
+      videoFrame.byteArray,
+      videoFrame.videoWidth,
+      videoFrame.videoHeight,
+      ui.PixelFormat.rgba8888,
+      (ui.Image _image) => imageCompleter.complete(_image),
+      rowBytes: 4 * videoFrame.videoWidth,
+      targetWidth: widget.width.toInt(),
+      targetHeight: widget.height.toInt(),
+    );
+    ui.Image image = await imageCompleter.future;
+    return RawImage(
+      image: image,
+      height: widget.height,
+      width: widget.width,
+      scale: widget.scale,
+      filterQuality: widget.filterQuality,
+    );
+  }
+
+  @override
+  Future<void> dispose() async {
+    await videoStreamControllers[playerId]?.close();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    videoStreamControllers[playerId] = StreamController<VideoFrame>.broadcast();
+    videoStreamControllers[playerId]
+        ?.stream
+        .listen((VideoFrame videoFrame) async {
+      videoFrameRawImage = await getVideoFrameRawImage(videoFrame);
+    });
+
+    super.initState();
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Widget present() {
+    return videoFrameRawImage ??
+        Container(
+          color: Colors.black,
+          height: widget.height,
+          width: widget.width,
+        );
   }
 }
