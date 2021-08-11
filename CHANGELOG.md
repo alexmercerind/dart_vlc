@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Fixed libVLC shared libraries not being copied on Windows (thanks to @jnschulze).
+
 ## 0.1.2
 
 - Now using `flutter::TextureRegistrar` for performant `Video` on Windows. (#54).
