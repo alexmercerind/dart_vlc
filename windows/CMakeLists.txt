@@ -8,6 +8,11 @@
 
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 17)
+
+set(PROJECT_NAME "dart_vlc")
+set(PLUGIN_NAME "dart_vlc_plugin")
+project(${PROJECT_NAME} LANGUAGES CXX)
+
 set(LIBVLC_VERSION "3.0.9.2")
 
 set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
@@ -15,24 +20,22 @@ set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
 set(LIBVLC_ARCHIVE "${LIBVLC_BINARIES}/vlc-${LIBVLC_VERSION}.7z")
 set(LIBVLCPP_ARCHIVE "${LIBVLC_BINARIES}/libvlcpp.zip")
 
-set(LIBVLC_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/vlc-${LIBVLC_VERSION}")
-set(LIBVLCPP_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/libvlcpp-master")
+set(LIBVLC_PACKAGE_DIR "${CMAKE_BINARY_DIR}/${PLUGIN_NAME}_packages")
+set(LIBVLC_SOURCE "${LIBVLC_PACKAGE_DIR}/vlc-${LIBVLC_VERSION}")
+set(LIBVLCPP_SOURCE "${LIBVLC_PACKAGE_DIR}/libvlcpp-master")
 
 add_custom_target(LIBVLC_EXTRACT ALL)
 
-if (NOT EXISTS "${LIBVLC_SOURCE}" AND NOT EXISTS "${LIBVLCPP_SOURCE}")
+if (NOT EXISTS "${LIBVLC_SOURCE}" OR NOT EXISTS "${LIBVLCPP_SOURCE}")
+  file(MAKE_DIRECTORY ${LIBVLC_PACKAGE_DIR})
   add_custom_command(
     TARGET LIBVLC_EXTRACT PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLC_ARCHIVE}\"
     COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/external"
-    DEPENDS "${LIBVLC_ARCHIVE}"
+    WORKING_DIRECTORY "${LIBVLC_PACKAGE_DIR}"
+    DEPENDS "${LIBVLC_ARCHIVE}" "${LIBVLCPP_ARCHIVE}"
   )
 endif()
-
-set(PROJECT_NAME "dart_vlc")
-set(PLUGIN_NAME "dart_vlc_plugin")
-project(${PROJECT_NAME} LANGUAGES CXX)
 
 # dart_vlc.dll
 add_library("${PLUGIN_NAME}" SHARED
@@ -88,7 +91,7 @@ target_link_libraries("${PLUGIN_NAME}" PRIVATE
 
 # Add generated shared library & libVLC DLLs.
 set(
-  "${dart_vlc_bundled_libraries}"
+  dart_vlc_bundled_libraries
   "${LIBVLC_SOURCE}/libvlc.dll"
   "${LIBVLC_SOURCE}/libvlccore.dll"
   "${LIBVLC_SOURCE}/plugins"
