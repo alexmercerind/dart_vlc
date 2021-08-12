@@ -47,6 +47,7 @@ class Media : public MediaSource {
       return std::unique_ptr<Media>(Media::directShow(url));
   }
 
+  // TODO: Return std::unique_ptr<Media>
   static Media* file(std::string path, bool parse = false,
                      int timeout = 10000) {
     Media* media = new Media();
@@ -57,6 +58,7 @@ class Media : public MediaSource {
     return media;
   }
 
+  // TODO: Return std::unique_ptr<Media>
   static Media* network(std::string url, bool parse = false,
                         int timeout = 10000) {
     Media* media = new Media();
@@ -67,6 +69,7 @@ class Media : public MediaSource {
     return media;
   }
 
+  // TODO: Return std::unique_ptr<Media>
   static Media* directShow(std::string resource) {
     Media* media = new Media();
     media->resource = resource;
