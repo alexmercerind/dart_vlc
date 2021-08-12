@@ -84,12 +84,13 @@ EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceS
         /* Freed inside PlayerSetters::open */
         const char* type = source[index];
         const char* resource = source[index + 1];
+    
         if (strcmp(type, "MediaType.file") == 0)
-            media = Media::file(0, resource, false);
+            media = Media::file(resource, false);
         else if (strcmp(type, "MediaType.network") == 0)
-            media = Media::network(0, resource, false);
+            media = Media::network(resource, false);
         else
-            media = Media::directShow(0, resource);
+            media = Media::directShow(resource);
         medias.emplace_back(media);
     }
     Playlist playlist = Playlist(medias);
@@ -183,11 +184,11 @@ EXPORT void Player_add(int id, const char* type, const char* resource) {
     Media* media;
     /* Freed inside PlayerSetters::open */
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, false);
+        media = Media::file(resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, false);
+        media = Media::network(resource, false);
     else
-        media = Media::directShow(0, resource);
+        media = Media::directShow(resource);
     player->add(media);
 }
 
@@ -200,11 +201,11 @@ EXPORT void Player_insert(int id, int index, const char* type, const char* resou
     Player* player = players->get(id);
     Media* media;
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, false);
+        media = Media::file(resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, false);
+        media = Media::network(resource, false);
     else
-        media = Media::directShow(0, resource);
+        media = Media::directShow(resource);
     player->insert(index, media);
 }
 
@@ -216,14 +217,9 @@ EXPORT void Player_move(int id, int initialIndex, int finalIndex) {
 char** _metasPointer = nullptr;
 size_t _metasSize = 0;
 
+// TODO: respect timeout
 EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
-    Media* media;
-    if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, true);
-    else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, true);
-    else
-        media = Media::directShow(0, resource);
+    auto media = Media::create(type, resource, true);
     _metasPointer = new char*[media->metas.size()];
     _metasSize = media->metas.size();
     int index = 0;
@@ -232,7 +228,6 @@ EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
         strncpy(_metasPointer[index], meta.second.data(), 200);
         index++;
     }
-    delete media;
     return _metasPointer;
 }
 
@@ -248,14 +243,8 @@ EXPORT void Media_clear() {
 }
 
 EXPORT void Broadcast_create(int id, const char* type, const char* resource, const char* access, const char* mux, const char* dst, const char* vcodec, int vb, const char* acodec, int ab) {
-    Media* media;
-    /* Freed inside ~Broadcast (Broadcasts::dispose) */
-    if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, false);
-    else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, false);
-    else
-        media = Media::directShow(0, resource);
+    auto media = Media::create(type, resource);
+
     BroadcastConfiguration configuration(
         access,
         mux,
@@ -265,12 +254,14 @@ EXPORT void Broadcast_create(int id, const char* type, const char* resource, con
         acodec,
         ab
     );
-    broadcasts->get(id, media, &configuration);
+    broadcasts->create(id, std::move(media), &configuration);
 }
 
 EXPORT void Broadcast_start(int id) {
-    Broadcast* broadcast = broadcasts->get(id, nullptr, nullptr);
-    broadcast->start();
+    Broadcast* broadcast = broadcasts->get(id);
+    if(broadcast) {
+        broadcast->start();
+    }
 }
 
 EXPORT void Broadcast_dispose(int id) {
@@ -278,20 +269,15 @@ EXPORT void Broadcast_dispose(int id) {
 }
 
 EXPORT void Chromecast_create(int id, const char* type, const char* resource, const char* ipAddress) {
-    Media* media;
-    /* Freed inside ~Chromecast (Chromecasts::dispose) */
-    if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, false);
-    else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, false);
-    else
-        media = Media::directShow(0, resource);
-    chromecasts->get(id, media, ipAddress);
+    auto media = Media::create(type, resource);
+    chromecasts->create(id, std::move(media), ipAddress);
 }
 
 EXPORT void Chromecast_start(int id) {
-    Chromecast* chromecast = chromecasts->get(id, nullptr, nullptr);
-    chromecast->start();
+    Chromecast* chromecast = chromecasts->get(id);
+    if(chromecast) {
+        chromecast->start();
+    }
 }
 
 EXPORT void Chromecast_dispose(int id) {
@@ -302,11 +288,11 @@ EXPORT void Record_create(int id, const char* savingFile, const char* type, cons
     Media* media;
     /* Freed inside ~Record (Records::dispose) */
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(0, resource, false);
+        media = Media::file(resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(0, resource, false);
+        media = Media::network(resource, false);
     else
-        media = Media::directShow(0, resource);
+        media = Media::directShow(resource);
     records->get(id, media, savingFile);
 }
 

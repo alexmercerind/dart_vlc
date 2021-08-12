@@ -19,23 +19,21 @@
 class Chromecast {
 public:
     int id;
-    Media* media;
     std::string ipAddress;
 
-    Chromecast(int id, Media* media, std::string ipAddress) {
-        this->id = id;
-        this->media = media;
-        this->ipAddress = ipAddress;
-        this->instance = VLC::Instance(0, nullptr);
+    Chromecast(int id, std::unique_ptr<Media> media, std::string ipAddress) : media_(std::move(media)) {
+        id = id;
+        ipAddress = ipAddress;
+        instance = VLC::Instance(0, nullptr);
     }
 
     void start() {
         std::stringstream sout;
         sout << "#chromecast{ip="<< this->ipAddress <<", demux-filter=demux_chromecast, conversion-quality=0}";
         libvlc_vlm_add_broadcast(
-            this->instance.get(),
-            this->media->location.c_str(),
-            this->media->location.c_str(),
+            instance_.get(),
+            media_->location.c_str(),
+            media_->location.c_str(),
             sout.str().c_str(),
             0,
             nullptr,
@@ -43,37 +41,46 @@ public:
             false
         );
         libvlc_vlm_play_media(
-            this->instance.get(),
-            this->media->location.c_str()
+            instance_.get(),
+            media_->location.c_str()
         );
     }
 
     ~Chromecast() {
-        libvlc_vlm_release(this->instance.get());
-        delete this->media;
+        libvlc_vlm_release(instance_.get());
     }
 
 private:
-    VLC::Instance instance;
+    VLC::Instance instance_;
+    std::unique_ptr<Media> media_;
 };
 
 
 class Chromecasts {
 public:
-	Chromecast* get(int id, Media* media, std::string ipAddress) {
-		if (this->chromecasts.find(id) == this->chromecasts.end()) {
-			this->chromecasts[id] = new Chromecast(id, media, ipAddress);
+    // TODO: The id should be determined automatically.
+    Chromecast* create(int id, std::unique_ptr<Media> media, std::string ipAddress) {
+		if (chromecasts_.find(id) == chromecasts_.end()) {
+			chromecasts_[id] = std::make_unique<Chromecast>(id, std::move(media), ipAddress);
 		}
-		return this->chromecasts[id];
+		return chromecasts_[id].get();
+    }
+
+	Chromecast* get(int id) {
+        auto it = chromecasts_.find(id);
+        if(it != chromecasts_.end()) {
+            return it->second.get();
+        }
+        return nullptr;
 	}
 
     void dispose(int id, std::function<void()> callback = []() -> void {}) {
-        delete this->chromecasts[id];
+        chromecasts_.erase(id);
         callback();
     }
 
 private:
-	std::map<int, Chromecast*> chromecasts;
+	std::map<int, std::unique_ptr<Chromecast>> chromecasts_;
 };
 
 

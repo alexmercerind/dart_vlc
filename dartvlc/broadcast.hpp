@@ -42,23 +42,23 @@ public:
 class Broadcast {
 public:
     int id;
-    Media* media;
     BroadcastConfiguration* configuration;
 
-    Broadcast(int id, Media* media, BroadcastConfiguration* configuration) {
+    Media* media() const { return media_.get(); }
+
+    Broadcast(int id, std::unique_ptr<Media> media, BroadcastConfiguration* configuration) : media_(std::move(media)) {
         this->id = id;
-        this->media = media;
         this->configuration = configuration;
-        this->instance = VLC::Instance(0, nullptr);
+        instance_ = VLC::Instance(0, nullptr);
     }
 
     void start() {
         std::stringstream sout;
         sout << "#transcode{vcodec=" << configuration->vcodec << ", vb=" << configuration->vb << ", acodec=" << configuration->acodec << ", ab=" << configuration->ab << "}:std{access=" << configuration->access << ", mux=" << configuration->mux << ", dst=" << configuration->dst << "}";
         libvlc_vlm_add_broadcast(
-            this->instance.get(),
-            this->media->location.c_str(),
-            this->media->location.c_str(),
+            instance_.get(),
+            media_->location.c_str(),
+            media_->location.c_str(),
             sout.str().c_str(),
             0,
             nullptr,
@@ -66,37 +66,46 @@ public:
             false
         );
         libvlc_vlm_play_media(
-            this->instance.get(),
-            this->media->location.c_str()
+            instance.get(),
+            media_->location.c_str()
         );
     }
 
     ~Broadcast() {
-        libvlc_vlm_release(this->instance.get());
-        delete this->media;
+        libvlc_vlm_release(instance_.get());
     }
 
 private:
-    VLC::Instance instance;
+    VLC::Instance instance_;
+    std::unique_ptr<Media> media_;
 };
 
 
 class Broadcasts {
 public:
-	Broadcast* get(int id, Media* media, BroadcastConfiguration* configuration) {
-		if (this->broadcasts.find(id) == this->broadcasts.end()) {
-			this->broadcasts[id] = new Broadcast(id, media, configuration);
+    // TODO: The id should be determined automatically.
+    Broadcast* create(int id, std::unique_ptr<Media> media, BroadcastConfiguration* configuration) {
+		if (broadcasts_.find(id) == broadcasts_.end()) {
+			broadcasts_[id] = std::make_unique<Broadcast>(id, std::move(media), configuration);
 		}
-		return this->broadcasts[id];
+		return broadcasts_[id].get();
+    }
+
+	Broadcast* get(int id) const {
+        auto it = broadcasts_.find(id);
+        if(it != broadcasts_.end()) {
+            return it->second.get();
+        }
+        return nullptr;
 	}
 
     void dispose(int id, std::function<void()> callback = []() -> void {}) {
-        delete this->broadcasts[id];
+        broadcasts_.erase(id);
         callback();
     }
 
 private:
-	std::map<int, Broadcast*> broadcasts;
+	std::map<int, std::unique_ptr<Broadcast>> broadcasts_;
 };
 
 
