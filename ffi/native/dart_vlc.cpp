@@ -289,7 +289,7 @@ DLLEXPORT char** DevicesAll() {
     g_devices_ptr[index + 1] = new char[200];
     strncpy(g_devices_ptr[index + 1], device.id().data(), 200);
     g_devices_ptr[index + 2] = new char[200];
-    strncpy(g_devices_ptr[index + 2], device.id().data(), 200);
+    strncpy(g_devices_ptr[index + 2], device.name().data(), 200);
     index += 2;
   }
   return g_devices_ptr;
