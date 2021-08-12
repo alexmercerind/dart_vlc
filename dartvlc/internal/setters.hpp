@@ -17,7 +17,7 @@
 
 class PlayerSetters : public PlayerEvents {
  public:
-  void Open(std::shared_ptr<MediaSource> media_source, bool autoStart = true) {
+  void Open(std::shared_ptr<MediaSource> media_source, bool auto_start = true) {
     state()->is_started_ = false;
     state()->Reset();
     Stop();
@@ -36,7 +36,7 @@ class PlayerSetters : public PlayerEvents {
       std::shared_ptr<Playlist> playlist =
           std::dynamic_pointer_cast<Playlist>(media_source);
       if (playlist->medias().empty()) return;
-      for (std::shared_ptr<Media> media : playlist->medias()) {
+      for (std::shared_ptr<Media>& media : playlist->medias()) {
         VLC::Media vlc_media = VLC::Media(vlc_instance_, media->location(),
                                           VLC::Media::FromLocation);
         vlc_media_list_.addMedia(vlc_media);
@@ -46,7 +46,7 @@ class PlayerSetters : public PlayerEvents {
       state()->is_playlist_ = true;
     }
     OnOpenCallback(vlc_media_list_.itemAtIndex(0));
-    if (autoStart) Play();
+    if (auto_start) Play();
   }
 
   void Play() {

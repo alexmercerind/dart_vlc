@@ -29,7 +29,7 @@ class Playlist : public MediaSource {
 
   Playlist(std::vector<std::shared_ptr<Media>> medias,
            PlaylistMode playlist_mode = PlaylistMode::single)
-      : medias_(medias_), playlist_mode_(playlist_mode){};
+      : medias_(medias), playlist_mode_(playlist_mode){};
 
   std::string Type() { return "MediaSourceType.playlist"; }
 
