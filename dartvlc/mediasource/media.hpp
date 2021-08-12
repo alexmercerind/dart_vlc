@@ -25,16 +25,14 @@ VLC::Instance g_vlc_instance = VLC::Instance(0, nullptr);
 
 class Media : public MediaSource {
  public:
-  std::string media_type_;
-  std::string resource_;
-  std::string location_;
-  std::map<std::string, std::string> metas_;
-
   static constexpr auto kMediaTypeFile = "MediaType.file";
   static constexpr auto kMediaTypeNetwork = "MediaType.network";
   static constexpr auto kMediaTypeDirectShow = "MediaType.directShow";
 
-  int64_t id() const { return reinterpret_cast<int64_t>(this); }
+  std::string& media_type() { return media_type_; };
+  std::string& resource() { return resource_; };
+  std::string& location() { return location_; };
+  std::map<std::string, std::string>& metas() { return metas_; };
 
   static std::shared_ptr<Media> create(std::string_view type,
                                        const std::string& url,
@@ -78,13 +76,14 @@ class Media : public MediaSource {
   void parse(int timeout) {
     VLC::Media media =
         VLC::Media(g_vlc_instance, location_, VLC::Media::FromLocation);
-    std::promise<bool>* is_parsed_ = &std::promise<bool>();
+    std::promise<bool> is_parsed = std::promise<bool>();
+    auto is_parsed_ptr = &is_parsed;
     media.eventManager().onParsedChanged(
-        [is_parsed_](VLC::Media::ParsedStatus status) -> void {
-          is_parsed_->set_value(true);
+        [is_parsed_ptr](VLC::Media::ParsedStatus status) -> void {
+          is_parsed_ptr->set_value(true);
         });
     media.parseWithOptions(VLC::Media::ParseFlags::Network, timeout);
-    is_parsed_->get_future().wait();
+    is_parsed_ptr->get_future().wait();
     metas_["title"] = media.meta(libvlc_meta_Title);
     metas_["artist"] = media.meta(libvlc_meta_Artist);
     metas_["genre"] = media.meta(libvlc_meta_Genre);
@@ -112,6 +111,12 @@ class Media : public MediaSource {
   }
 
   std::string Type() { return "MediaSourceType.media"; }
+
+ private:
+  std::string media_type_;
+  std::string resource_;
+  std::string location_;
+  std::map<std::string, std::string> metas_;
 };
 
 #endif

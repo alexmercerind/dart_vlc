@@ -23,7 +23,7 @@ auto TO_CHARARRAY = [](std::vector<std::string>* vector) -> char** {
 
 class Player : public PlayerSetters {
  public:
-  Player(int32_t id, std::vector<std::string> cmd_arguments = {}) {
+  Player(std::vector<std::string> cmd_arguments = {}) {
     if (cmd_arguments.empty()) {
       vlc_instance_ = VLC::Instance(0, nullptr);
     } else {
@@ -37,7 +37,6 @@ class Player : public PlayerSetters {
     vlc_media_list_ = VLC::MediaList(vlc_instance_);
     vlc_media_list_player_.setMediaPlayer(vlc_media_player_);
     state_ = std::make_unique<PlayerState>();
-    state_->id_ = id;
     vlc_media_player_.setVolume(100);
   }
 
@@ -49,15 +48,12 @@ class Players {
   Player* Get(int32_t id, std::vector<std::string> cmd_arguments = {}) {
     auto it = players_.find(id);
     if (it == players_.end()) {
-      players_[id] = std::make_unique<Player>(id, cmd_arguments);
+      players_[id] = std::make_unique<Player>(cmd_arguments);
     }
     return players_[id].get();
   }
 
-  void Dispose(int32_t id, std::function<void()> callback = []() -> void {}) {
-    players_.erase(id);
-    callback();
-  }
+  void Dispose(int32_t id) { players_.erase(id); }
 
  private:
   std::map<int32_t, std::unique_ptr<Player>> players_;

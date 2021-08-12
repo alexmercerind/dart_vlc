@@ -10,29 +10,29 @@
  */
 
 #include "internal.hpp"
-#include "state.hpp"
 
-class PlayerGetters : protected PlayerInternal {
+class PlayerGetters : public PlayerInternal {
  public:
-  std::unique_ptr<PlayerState> state_;
+  int32_t video_width() const { return video_width_; }
 
-  int32_t Duration() {
+  int32_t video_height() const { return video_height_; }
+
+  PlayerState* state() const { return state_.get(); }
+
+  int32_t duration() {
     return static_cast<int32_t>(vlc_media_player_.length());
   }
 
-  int32_t Position() {
+  int32_t position() {
     return static_cast<int32_t>(vlc_media_player_.length() *
                                 vlc_media_player_.position());
   }
 
-  float Volume() {
-    float volume = vlc_media_player_.volume() / 100.0f;
-    return volume;
-  }
+  float volume() { return vlc_media_player_.volume() / 100.0f; }
 
-  float Rate() { return vlc_media_player_.rate(); }
+  float rate() { return vlc_media_player_.rate(); }
 
-  bool IsPlaying() { return vlc_media_player_.isPlaying(); }
+  bool is_playing() { return vlc_media_player_.isPlaying(); }
 
-  bool IsPaused() { return !vlc_media_player_.isPlaying(); }
+  bool is_paused() { return !vlc_media_player_.isPlaying(); }
 };
