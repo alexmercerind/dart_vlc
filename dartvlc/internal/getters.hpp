@@ -1,49 +1,38 @@
 /*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
+ * libVLC++.
+ *
  * Hitesh Kumar Saini
  * https://github.com/alexmercerind
  * saini123hitesh@gmail.com; alexmercerind@gmail.com
- * 
+ *
  * GNU Lesser General Public License v2.1
  */
 
 #include "internal.hpp"
 #include "state.hpp"
 
+class PlayerGetters : protected PlayerInternal {
+ public:
+  std::unique_ptr<PlayerState> state_;
 
-class PlayerGetters: protected PlayerInternal {
-public:
-	PlayerState* state;
-	int videoWidth = 0;
-	int videoHeight = 0;
+  int32_t Duration() {
+    return static_cast<int32_t>(vlc_media_player_.length());
+  }
 
-	int getDuration() {
-		return static_cast<int>(
-			this->mediaPlayer.length()
-		);
-	}
+  int32_t Position() {
+    return static_cast<int32_t>(vlc_media_player_.length() *
+                                vlc_media_player_.position());
+  }
 
-	int getPosition() {
-		return static_cast<int>(
-			this->mediaPlayer.length() * this->mediaPlayer.position()
-		);
-	}
+  float Volume() {
+    float volume = vlc_media_player_.volume() / 100.0f;
+    return volume;
+  }
 
-	float getVolume() {
-		float volume = this->mediaPlayer.volume() / 100.0f;
-		return volume;
-	}
+  float Rate() { return vlc_media_player_.rate(); }
 
-	float getRate() {
-		return this->mediaPlayer.rate();
-	}
+  bool IsPlaying() { return vlc_media_player_.isPlaying(); }
 
-	bool isPlaying() {
-		return this->mediaPlayer.isPlaying();
-	}
-
-	bool isPaused() {
-		return !this->mediaPlayer.isPlaying();
-	}
+  bool IsPaused() { return !vlc_media_player_.isPlaying(); }
 };

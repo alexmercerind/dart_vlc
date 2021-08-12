@@ -1,10 +1,11 @@
 /*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
+ * libVLC++.
+ *
  * Hitesh Kumar Saini
  * https://github.com/alexmercerind
  * saini123hitesh@gmail.com; alexmercerind@gmail.com
- * 
+ *
  * GNU Lesser General Public License v2.1
  */
 
@@ -18,28 +19,18 @@
 #ifndef Playlist_HEADER
 #define Playlist_HEADER
 
-
-enum PlaylistMode {
-	single,
-	loop,
-	repeat
-};
-
+enum PlaylistMode { single, loop, repeat };
 
 class Playlist : public MediaSource {
-public:
-	std::vector<Media*> medias;
-	PlaylistMode playlistMode;
+ public:
+  std::vector<std::shared_ptr<Media>> medias_;
+  PlaylistMode playlist_mode_;
 
-	Playlist(std::vector<Media*> medias, PlaylistMode playlistMode = PlaylistMode::single) {
-		this->medias = medias;
-		this->playlistMode = playlistMode;
-	};
-	
-	std::string mediaSourceType() {
-		return "MediaSourceType.playlist";
-	}
+  Playlist(std::vector<std::shared_ptr<Media>> medias,
+           PlaylistMode playlist_mode = PlaylistMode::single)
+      : medias_(medias_), playlist_mode_(playlist_mode){};
+
+  std::string Type() { return "MediaSourceType.playlist"; }
 };
-
 
 #endif

@@ -1,10 +1,11 @@
 /*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
+ * libVLC++.
+ *
  * Hitesh Kumar Saini
  * https://github.com/alexmercerind
  * saini123hitesh@gmail.com; alexmercerind@gmail.com
- * 
+ *
  * GNU Lesser General Public License v2.1
  */
 
@@ -13,83 +14,55 @@
 #ifndef Player_HEADER
 #define Player_HEADER
 
-
-class Player: public PlayerSetters {
-public:
-	Player(int id, std::vector<std::string> commandlineArguments = {}) {
-		if (commandlineArguments.empty()) {
-			this->instance = VLC::Instance(0, nullptr);
-		}
-		else {
-			this->argsSize = commandlineArguments.size();
-			this->args = new char*[commandlineArguments.size()];
-			for (int index = 0; index < commandlineArguments.size(); index++)  this->args[index] = commandlineArguments[index].data();
-			this->instance = VLC::Instance(static_cast<int>(commandlineArguments.size()), this->args);
-		}
-		this->mediaPlayer = VLC::MediaPlayer(this->instance);
-		this->mediaListPlayer = VLC::MediaListPlayer(this->instance);
-		this->mediaList = VLC::MediaList(this->instance);
-		this->mediaListPlayer.setMediaPlayer(this->mediaPlayer);
-		this->state = new PlayerState();
-		this->state->id = id;
-		this->mediaPlayer.setVolume(100);
-	}
-
-	void onEvent(std::function<void(void)> callback) {
-		this->onPlay(callback);
-		this->onPause(callback);
-		this->onStop(callback);
-		this->onComplete(callback);
-		this->onSeekable(
-			[callback](bool _) -> void { callback(); }
-		);
-		this->onOpen(
-			[callback](VLC::Media _) -> void { callback(); }
-		);
-		this->onPosition(
-			[callback](int _) -> void { callback(); }
-		);
-		this->onPlaylist(callback);
-	}
-
-	void onException(std::function<void(void)> callback) {
-		this->mediaPlayer.eventManager().onEncounteredError(callback);
-	}
-
-	~Player() {
-		this->mediaPlayer.stop();
-		delete this->state;
-		delete this->_videoFrameBuffer;
-		delete[] this->args;
-	}
-
-private:
-	char** args;
-	size_t argsSize;
+auto TO_CHARARRAY = [](std::vector<std::string>* vector) -> char** {
+  size_t size = vector->size();
+  char** array = new char*[size];
+  for (int32_t i = 0; i < size; i++) array[i] = (*vector)[i].data();
+  return array;
 };
 
+class Player : public PlayerSetters {
+ public:
+  Player(int32_t id, std::vector<std::string> cmd_arguments = {}) {
+    if (cmd_arguments.empty()) {
+      vlc_instance_ = VLC::Instance(0, nullptr);
+    } else {
+      char** args = TO_CHARARRAY(&cmd_arguments);
+      vlc_instance_ =
+          VLC::Instance(static_cast<int32_t>(cmd_arguments.size()), args);
+      delete[] args;
+    }
+    vlc_media_player_ = VLC::MediaPlayer(vlc_instance_);
+    vlc_media_list_player_ = VLC::MediaListPlayer(vlc_instance_);
+    vlc_media_list_ = VLC::MediaList(vlc_instance_);
+    vlc_media_list_player_.setMediaPlayer(vlc_media_player_);
+    state_ = std::make_unique<PlayerState>();
+    state_->id_ = id;
+    vlc_media_player_.setVolume(100);
+  }
+
+  ~Player() { vlc_media_player_.stop(); }
+};
 
 class Players {
-public:
-	Player* get(int id, std::vector<std::string> commandlineArguments = {}) {
-		if (this->players.find(id) == this->players.end()) {
-			this->players[id] = new Player(id, commandlineArguments);
-		}
-		return this->players[id];
-	}
-
-	void dispose(int id, std::function<void()> callback = []() -> void {}) {
-        delete this->players[id];
-		this->players.erase(id);
-		callback();
+ public:
+  Player* Get(int32_t id, std::vector<std::string> cmd_arguments = {}) {
+    auto it = players_.find(id);
+    if (it == players_.end()) {
+      players_[id] = std::make_unique<Player>(id, cmd_arguments);
     }
+    return players_[id].get();
+  }
 
-private:
-	std::map<int, Player*> players;
+  void Dispose(int32_t id, std::function<void()> callback = []() -> void {}) {
+    players_.erase(id);
+    callback();
+  }
+
+ private:
+  std::map<int32_t, std::unique_ptr<Player>> players_;
 };
 
-
-Players* players = new Players();
-
+std::unique_ptr<Players> g_players = std::make_unique<Players>();
 
 #endif
