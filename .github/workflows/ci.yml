@@ -4,10 +4,12 @@ on:
       branches:
         - stable
         - master
+        - macos-support
     push:
       branches:
         - stable
         - master
+        - macos-support
 
 defaults:
   run:
@@ -49,3 +51,18 @@ jobs:
       - run: flutter config --enable-linux-desktop
       - run: flutter pub get
       - run: flutter build linux --verbose
+
+  build_macos:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "beta"
+      - run: flutter config --enable-macos-desktop
+      - run: flutter pub get
+      - run: flutter build macos --verbose

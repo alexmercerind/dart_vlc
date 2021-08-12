@@ -54,5 +54,8 @@ abstract class DartVLC {
           .join('/');
       FFI.DartVLC.initialize(directory + '/lib/' + 'libdartvlc.so');
     }
+    if (Platform.isMacOS) {
+      FFI.DartVLC.initializeWithCurrentProcess();
+    }
   }
 }
