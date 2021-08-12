@@ -245,7 +245,7 @@ EXPORT void Media_clear() {
 EXPORT void Broadcast_create(int id, const char* type, const char* resource, const char* access, const char* mux, const char* dst, const char* vcodec, int vb, const char* acodec, int ab) {
     auto media = Media::create(type, resource);
 
-    BroadcastConfiguration configuration(
+    auto configuration = std::make_unique<BroadcastConfiguration>(
         access,
         mux,
         dst,
@@ -254,7 +254,7 @@ EXPORT void Broadcast_create(int id, const char* type, const char* resource, con
         acodec,
         ab
     );
-    broadcasts->create(id, std::move(media), &configuration);
+    broadcasts->create(id, std::move(media), std::move(configuration));
 }
 
 EXPORT void Broadcast_start(int id) {

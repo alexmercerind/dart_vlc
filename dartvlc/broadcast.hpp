@@ -8,53 +8,58 @@
  * GNU Lesser General Public License v2.1
  */
 
+#ifndef Broadcast_HEADER
+#define Broadcast_HEADER
+
 #include <string>
 #include <sstream>
 
 #include "mediasource/media.hpp"
 
-#ifndef Broadcast_HEADER
-#define Broadcast_HEADER
-
-
 class BroadcastConfiguration {
-public:
-    std::string access;
-    std::string mux;
-    std::string dst;
-    std::string vcodec;
-    int vb;
-    std::string acodec;
-    int ab;
+ public:
+  BroadcastConfiguration(std::string access, std::string mux, std::string dst,
+                         std::string vcodec, int vb, std::string acodec, int ab)
+      : access_(access),
+        mux_(mux),
+        dst_(dst),
+        vcodec_(vcodec),
+        vb_(vb),
+        acodec_(acodec),
+        ab_(ab) {}
 
-    BroadcastConfiguration(std::string access, std::string mux, std::string dst, std::string vcodec, int vb, std::string acodec, int ab) {
-        this->access = access;
-        this->mux = mux;
-        this->dst = dst;
-        this->vcodec = vcodec;
-        this->vb = vb;
-        this->acodec = acodec;
-        this->ab = ab;
-    }
+  const std::string& access() const { return access_; }
+  const std::string& mux() const { return mux_; }
+  const std::string& dst() const { return dst_; }
+  const std::string& vcodec() const { return vcodec_; }
+  const std::string& acodec() const { return acodec_; }
+  int vb() const { return vb_; }
+  int ab() const { return ab_; }
+
+ private:
+  const std::string access_;
+  const std::string mux_;
+  const std::string dst_;
+  const std::string vcodec_;
+  const std::string acodec_;
+  int vb_;
+  int ab_;
 };
-
 
 class Broadcast {
 public:
     int id;
-    BroadcastConfiguration* configuration;
 
     Media* media() const { return media_.get(); }
 
-    Broadcast(int id, std::unique_ptr<Media> media, BroadcastConfiguration* configuration) : media_(std::move(media)) {
+    Broadcast(int id, std::unique_ptr<Media> media, std::unique_ptr<BroadcastConfiguration> configuration) : media_(std::move(media)), configuration_(std::move(configuration)) {
         this->id = id;
-        this->configuration = configuration;
         instance_ = VLC::Instance(0, nullptr);
     }
 
     void start() {
         std::stringstream sout;
-        sout << "#transcode{vcodec=" << configuration->vcodec << ", vb=" << configuration->vb << ", acodec=" << configuration->acodec << ", ab=" << configuration->ab << "}:std{access=" << configuration->access << ", mux=" << configuration->mux << ", dst=" << configuration->dst << "}";
+        sout << "#transcode{vcodec=" << configuration_->vcodec() << ", vb=" << configuration_->vb() << ", acodec=" << configuration_->acodec() << ", ab=" << configuration_->ab() << "}:std{access=" << configuration_->access() << ", mux=" << configuration_->mux() << ", dst=" << configuration_->dst() << "}";
         libvlc_vlm_add_broadcast(
             instance_.get(),
             media_->location.c_str(),
@@ -78,15 +83,16 @@ public:
 private:
     VLC::Instance instance_;
     std::unique_ptr<Media> media_;
+    std::unique_ptr<BroadcastConfiguration> configuration_;
 };
 
 
 class Broadcasts {
 public:
     // TODO: The id should be determined automatically.
-    Broadcast* create(int id, std::unique_ptr<Media> media, BroadcastConfiguration* configuration) {
+    Broadcast* create(int id, std::unique_ptr<Media> media, std::unique_ptr<BroadcastConfiguration> configuration) {
 		if (broadcasts_.find(id) == broadcasts_.end()) {
-			broadcasts_[id] = std::make_unique<Broadcast>(id, std::move(media), configuration);
+			broadcasts_[id] = std::make_unique<Broadcast>(id, std::move(media), std::move(configuration));
 		}
 		return broadcasts_[id].get();
     }
