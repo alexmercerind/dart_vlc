@@ -21,7 +21,8 @@
 /* Main FFI __declspec(dllexport) methods. */
 #include "native/dart_vlc.cpp"
 
-std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel;
+static std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>>
+    g_channel = nullptr;
 
 namespace {
 
@@ -87,14 +88,14 @@ class DartVlcPlugin : public flutter::Plugin {
 
 void DartVlcPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows* registrar) {
-  channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+  g_channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
       registrar->messenger(), "dart_vlc",
       &flutter::StandardMethodCodec::GetInstance());
   auto plugin = std::make_unique<DartVlcPlugin>(registrar->texture_registrar());
-  channel->SetMethodCallHandler(
-      [plugin_pointer = plugin.get()](const auto& call, auto result) {
-        plugin_pointer->HandleMethodCall(call, std::move(result));
-      });
+  g_channel->SetMethodCallHandler([plugin_pointer = plugin.get()](
+      const auto& call, auto result) {
+    plugin_pointer->HandleMethodCall(call, std::move(result));
+  });
   registrar->AddPlugin(std::move(plugin));
 }
 
@@ -106,7 +107,7 @@ DartVlcPlugin::~DartVlcPlugin() {}
 void DartVlcPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue>& methodCall,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  /* No platform channel implementation after migration to FFI except
+  /* No platform g_channel implementation after migration to FFI except
    * Player::onVideo callbacks for Texture. */
 
   /* Sets lambda for Player::onVideo callbacks. Called after creating new
@@ -117,30 +118,32 @@ void DartVlcPlugin::HandleMethodCall(
     int player_id =
         std::get<int>(arguments[flutter::EncodableValue("playerId")]);
 
-    auto [it, added] =
+    auto[it, added] =
         outlets.try_emplace(player_id, std::make_pair(0, nullptr));
     if (added) {
-      auto player = players->get(player_id);
-      auto outlet = std::make_shared<VideoOutlet>(player->videoWidth,
-                                                  player->videoHeight);
+      auto player = g_players->Get(player_id);
+      auto outlet = std::make_shared<VideoOutlet>(player->video_width(),
+                                                  player->video_height());
       auto texture_id = textureRegistrar->RegisterTexture(outlet->texture());
 
       it->second = std::make_pair(texture_id, std::move(outlet));
       // TODO: The weak_ptr might not be needed anymore once callbacks can be
       // unregistered.
-      player->onVideo([=, weak_outlet = std::weak_ptr<VideoOutlet>(
-                              it->second.second)](uint8_t* frame) -> void {
-        if (auto outlet = weak_outlet.lock()) {
-          outlet->OnFrame(frame);
-          textureRegistrar->MarkTextureFrameAvailable(texture_id);
-        }
-      });
+      player->OnVideo(
+          [ =, weak_outlet = std::weak_ptr<VideoOutlet>(it->second.second) ](
+              uint8_t * frame)
+              ->void {
+                if (auto outlet = weak_outlet.lock()) {
+                  outlet->OnFrame(frame);
+                  textureRegistrar->MarkTextureFrameAvailable(texture_id);
+                }
+              });
 
       textureRegistrar->MarkTextureFrameAvailable(texture_id);
       return result->Success(flutter::EncodableValue(texture_id));
     }
 
-    result->Error("Texture was already registered");
+    result->Error("Texture was already registered.");
   }
   /* Called after disposing a Player instance. */
   else if (methodCall.method_name() == "disposeTexture") {
