@@ -21,9 +21,6 @@ public:
 		/* Freed the previous `Media` objects when a new `Playlist` or `Media` is opened. */
 		this->state->isStarted = false;
 		this->stop();
-		for (Media* media: this->state->medias->medias) {
-			delete media;
-		}
 		this->state->medias->medias = {};
 		this->mediaList = VLC::MediaList(this->instance);
 		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
@@ -54,7 +51,7 @@ public:
 	}
 
 	void play() {
-		if (!this->state->isStarted) {
+		if (!this->state->isStarted && !this->state->medias->medias.empty()) {
 			this->mediaListPlayer.playItemAtIndex(0);
 			this->state->isStarted = true;
 		}
@@ -70,7 +67,7 @@ public:
     }
 
 	void playOrPause() {
-		if (!this->state->isStarted) {
+		if (!this->state->isStarted && !this->state->medias->medias.empty()) {
 			this->mediaListPlayer.playItemAtIndex(0);
 			this->state->isStarted = true;
 		}
@@ -124,8 +121,9 @@ public:
 		this->_rateCallback(rate);
 	}
 
-	void setDevice(Device* device) {
-		this->state->device = device->id != "" ? device: nullptr;
+	void setDevice(std::unique_ptr<Device> device) {
+		if (device->id != "") this->state->device = std::move(device);
+		else this->state->device = std::move(nullptr);
 		this->mediaPlayer.outputDeviceSet(device->id);
 	}
 
@@ -140,7 +138,7 @@ public:
 	}
 
 	void setUserAgent(std::string userAgent) {
-		this->instance.setUserAgent("Dart VLC", userAgent);
+		this->instance.setUserAgent("dart_vlc", userAgent);
 	}
 
 	void add(Media* media) {
