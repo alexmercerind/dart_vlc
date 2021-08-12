@@ -19,179 +19,175 @@ import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
 
 abstract class PlayerFFI {
   static final PlayerCreateDart create = dynamicLibrary
-      .lookup<NativeFunction<PlayerCreateCXX>>('Player_create')
+      .lookup<NativeFunction<PlayerCreateCXX>>('PlayerCreate')
       .asFunction();
 
   static final PlayerDisposeDart dispose = dynamicLibrary
-      .lookup<NativeFunction<PlayerDisposeCXX>>('Player_dispose')
+      .lookup<NativeFunction<PlayerDisposeCXX>>('PlayerDispose')
       .asFunction();
 
   static final PlayerOpenDart open = dynamicLibrary
-      .lookup<NativeFunction<PlayerOpenCXX>>('Player_open')
+      .lookup<NativeFunction<PlayerOpenCXX>>('PlayerOpen')
       .asFunction();
 
   static final PlayerTriggerDart play = dynamicLibrary
-      .lookup<NativeFunction<PlayerTriggerCXX>>('Player_play')
+      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerPlay')
       .asFunction();
 
   static final PlayerTriggerDart pause = dynamicLibrary
-      .lookup<NativeFunction<PlayerTriggerCXX>>('Player_pause')
+      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerPause')
       .asFunction();
 
   static final PlayerTriggerDart playOrPause = dynamicLibrary
-      .lookup<NativeFunction<PlayerTriggerCXX>>('Player_playOrPause')
+      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerPlayOrPause')
       .asFunction();
 
   static final PlayerTriggerDart stop = dynamicLibrary
-      .lookup<NativeFunction<PlayerTriggerCXX>>('Player_stop')
+      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerStop')
       .asFunction();
 
   static final PlayerTriggerDart next = dynamicLibrary
-      .lookup<NativeFunction<PlayerTriggerCXX>>('Player_next')
+      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerNext')
       .asFunction();
 
   static final PlayerTriggerDart back = dynamicLibrary
-      .lookup<NativeFunction<PlayerTriggerCXX>>('Player_back')
+      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerBack')
       .asFunction();
 
   static final PlayerJumpDart jump = dynamicLibrary
-      .lookup<NativeFunction<PlayerJumpCXX>>('Player_jump')
+      .lookup<NativeFunction<PlayerJumpCXX>>('PlayerJump')
       .asFunction();
 
   static final PlayerSeekDart seek = dynamicLibrary
-      .lookup<NativeFunction<PlayerJumpCXX>>('Player_seek')
+      .lookup<NativeFunction<PlayerJumpCXX>>('PlayerSeek')
       .asFunction();
 
   static final PlayerSetVolumeDart setVolume = dynamicLibrary
-      .lookup<NativeFunction<PlayerSetVolumeCXX>>('Player_setVolume')
+      .lookup<NativeFunction<PlayerSetVolumeCXX>>('PlayerSetVolume')
       .asFunction();
 
   static final PlayerSetRateDart setRate = dynamicLibrary
-      .lookup<NativeFunction<PlayerSetRateCXX>>('Player_setRate')
+      .lookup<NativeFunction<PlayerSetRateCXX>>('PlayerSetRate')
       .asFunction();
 
   static final PlayerSetUserAgentDart setUserAgent = dynamicLibrary
-      .lookup<NativeFunction<PlayerSetUserAgentCXX>>('Player_setUserAgent')
+      .lookup<NativeFunction<PlayerSetUserAgentCXX>>('PlayerSetUserAgent')
       .asFunction();
 
   static final PlayerSetEqualizerDart setEqualizer = dynamicLibrary
-      .lookup<NativeFunction<PlayerSetEqualizerCXX>>('Player_setEqualizer')
+      .lookup<NativeFunction<PlayerSetEqualizerCXX>>('PlayerSetEqualizer')
       .asFunction();
 
   static final PlayerSetDeviceDart setDevice = dynamicLibrary
-      .lookup<NativeFunction<PlayerSetDeviceCXX>>('Player_setDevice')
+      .lookup<NativeFunction<PlayerSetDeviceCXX>>('PlayerSetDevice')
       .asFunction();
 
   static final PlayerSetPlaylistModeDart setPlaylistMode = dynamicLibrary
-      .lookup<NativeFunction<PlayerSetPlaylistModeCXX>>(
-          'Player_setPlaylistMode')
+      .lookup<NativeFunction<PlayerSetPlaylistModeCXX>>('PlayerSetPlaylistMode')
       .asFunction();
 
   static final PlayerAddDart add = dynamicLibrary
-      .lookup<NativeFunction<PlayerAddCXX>>('Player_add')
+      .lookup<NativeFunction<PlayerAddCXX>>('PlayerAdd')
       .asFunction();
 
   static final PlayerRemoveDart remove = dynamicLibrary
-      .lookup<NativeFunction<PlayerRemoveCXX>>('Player_remove')
+      .lookup<NativeFunction<PlayerRemoveCXX>>('PlayerRemove')
       .asFunction();
 
   static final PlayerInsertDart insert = dynamicLibrary
-      .lookup<NativeFunction<PlayerInsertCXX>>('Player_insert')
+      .lookup<NativeFunction<PlayerInsertCXX>>('PlayerInsert')
       .asFunction();
 
   static final PlayerMoveDart move = dynamicLibrary
-      .lookup<NativeFunction<PlayerMoveCXX>>('Player_move')
+      .lookup<NativeFunction<PlayerMoveCXX>>('PlayerMove')
       .asFunction();
 }
 
 abstract class MediaFFI {
   static final MediaParseDart parse = dynamicLibrary
-      .lookup<NativeFunction<MediaParseCXX>>('Media_parse')
+      .lookup<NativeFunction<MediaParseCXX>>('MediaParse')
       .asFunction();
 }
 
 abstract class BroadcastFFI {
   static final BroadcastCreateDart create = dynamicLibrary
-      .lookup<NativeFunction<BroadcastCreateCXX>>('Broadcast_create')
+      .lookup<NativeFunction<BroadcastCreateCXX>>('BroadcastCreate')
       .asFunction();
 
   static final BroadcastStartDart start = dynamicLibrary
-      .lookup<NativeFunction<BroadcastStartCXX>>('Broadcast_start')
+      .lookup<NativeFunction<BroadcastStartCXX>>('BroadcastStart')
       .asFunction();
 
   static final BroadcastDisposeDart dispose = dynamicLibrary
-      .lookup<NativeFunction<BroadcastDisposeCXX>>('Broadcast_dispose')
+      .lookup<NativeFunction<BroadcastDisposeCXX>>('BroadcastDispose')
       .asFunction();
 }
 
 abstract class ChromecastFFI {
   static final ChromecastCreateDart create = dynamicLibrary
-      .lookup<NativeFunction<ChromecastCreateCXX>>('Chromecast_create')
+      .lookup<NativeFunction<ChromecastCreateCXX>>('ChromecastCreate')
       .asFunction();
 
   static final ChromecastStartDart start = dynamicLibrary
-      .lookup<NativeFunction<ChromecastStartCXX>>('Chromecast_start')
+      .lookup<NativeFunction<ChromecastStartCXX>>('ChromecastStart')
       .asFunction();
 
   static final ChromecastDisposeDart dispose = dynamicLibrary
-      .lookup<NativeFunction<ChromecastDisposeCXX>>('Chromecast_dispose')
+      .lookup<NativeFunction<ChromecastDisposeCXX>>('ChromecastDispose')
       .asFunction();
 }
 
 abstract class RecordFFI {
   static final RecordCreateDart create = dynamicLibrary
-      .lookup<NativeFunction<RecordCreateCXX>>('Record_create')
+      .lookup<NativeFunction<RecordCreateCXX>>('RecordCreate')
       .asFunction();
 
   static final RecordStartDart start = dynamicLibrary
-      .lookup<NativeFunction<RecordStartCXX>>('Record_start')
+      .lookup<NativeFunction<RecordStartCXX>>('RecordStart')
       .asFunction();
 
   static final RecordDisposeDart dispose = dynamicLibrary
-      .lookup<NativeFunction<RecordDisposeCXX>>('Record_dispose')
+      .lookup<NativeFunction<RecordDisposeCXX>>('RecordDispose')
       .asFunction();
 }
 
 abstract class DevicesFFI {
   static final DevicesAllDart all = dynamicLibrary
-      .lookup<NativeFunction<DevicesAllCXX>>('Devices_all')
+      .lookup<NativeFunction<DevicesAllCXX>>('DevicesAll')
       .asFunction();
 }
 
 abstract class EqualizerFFI {
   static final EqualizerCreateEmptyDart createEmpty = dynamicLibrary
-      .lookup<NativeFunction<EqualizerCreateEmptyCXX>>('Equalizer_createEmpty')
+      .lookup<NativeFunction<EqualizerCreateEmptyCXX>>('EqualizerCreateEmpty')
       .asFunction();
 
   static final EqualizerCreateModeDart createMode = dynamicLibrary
-      .lookup<NativeFunction<EqualizerCreateModeCXX>>('Equalizer_createMode')
+      .lookup<NativeFunction<EqualizerCreateModeCXX>>('EqualizerCreateMode')
       .asFunction();
 
   static final EqualizerSetBandAmpDart setBandAmp = dynamicLibrary
-      .lookup<NativeFunction<EqualizerSetBandAmpCXX>>('Equalizer_setBandAmp')
+      .lookup<NativeFunction<EqualizerSetBandAmpCXX>>('EqualizerSetBandAmp')
       .asFunction();
 
   static final EqualizerSetPreAmpDart setPreAmp = dynamicLibrary
-      .lookup<NativeFunction<EqualizerSetPreAmpCXX>>('Equalizer_setPreAmp')
+      .lookup<NativeFunction<EqualizerSetPreAmpCXX>>('EqualizerSetPreAmp')
       .asFunction();
 }
 
-
 abstract class CleanupFFI {
-
   static final MediaClearDart media = dynamicLibrary
-      .lookup<NativeFunction<MediaClearCXX>>('Media_clear')
+      .lookup<NativeFunction<MediaClearCXX>>('MediaClear')
       .asFunction();
 
   static final DevicesClearDart devices = dynamicLibrary
-      .lookup<NativeFunction<DevicesClearCXX>>('Devices_clear')
+      .lookup<NativeFunction<DevicesClearCXX>>('DevicesClear')
       .asFunction();
 
   static final EqualizerClearDart equalizer = dynamicLibrary
-      .lookup<NativeFunction<EqualizerClearCXX>>('Equalizer_clear')
+      .lookup<NativeFunction<EqualizerClearCXX>>('EqualizerClear')
       .asFunction();
 }
-
 
 bool isInitialized = false;
 void Function(int playerId, Uint8List frame) videoFrameCallback = (_, __) {};

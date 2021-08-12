@@ -1,8 +1,6 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
-/// Following typedef is used for:
-/// Broadcast::create
 typedef BroadcastCreateCXX = Void Function(
     Int32 id,
     Pointer<Utf8> type,
@@ -25,13 +23,7 @@ typedef BroadcastCreateDart = void Function(
     int vb,
     Pointer<Utf8> acodec,
     int ab);
-
-/// Following typedef is used for:
-/// Broadcast::start
 typedef BroadcastStartCXX = Void Function(Int32 id);
 typedef BroadcastStartDart = void Function(int id);
-
-/// Following typedef is used for:
-/// Broadcast::dispose
 typedef BroadcastDisposeCXX = Void Function(Int32 id);
 typedef BroadcastDisposeDart = void Function(int id);

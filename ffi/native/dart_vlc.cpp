@@ -1,20 +1,23 @@
 /*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
+ * libVLC++.
+ *
  * Hitesh Kumar Saini
  * https://github.com/alexmercerind
  * alexmercerind@gmail.com
- * 
+ *
  * GNU Lesser General Public License v2.1
  */
 
-#ifndef EXPORT
+#ifndef DLLEXPORT
 #ifdef _WIN32
-#define EXPORT __declspec(dllexport)
+#define DLLEXPORT __declspec(dllexport)
 #else
-#define EXPORT
+#define DLLEXPORT
 #endif
 #endif
+
+#include <memory>
 
 #include "eventmanager.hpp"
 
@@ -25,374 +28,344 @@ extern "C" {
 #ifndef DART_VLC_FFI
 #define DART_VLC_FFI
 
-
-EXPORT void Player_create(int id, int videoWidth, int videoHeight, int commandLineArgumentsCount, const char** commandLineArguments) {
-    std::vector<std::string> args;
-    for (int index = 0; index < commandLineArgumentsCount; index++) args.emplace_back(commandLineArguments[index]);
-    Player* player = players->get(id, args);
-    player->videoWidth = videoWidth;
-    player->videoHeight = videoHeight;
-    player->onPlay([=]() -> void {
-        Player_onPlayPauseStop(player->state);
+DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
+                            int32_t video_height,
+                            int32_t commandLineArgumentsCount,
+                            const char** commandLineArguments) {
+  std::vector<std::string> args{};
+  for (int32_t index = 0; index < commandLineArgumentsCount; index++)
+    args.emplace_back(commandLineArguments[index]);
+  Player* player = g_players->Get(id, args);
+  player->SetVideoWidth(video_width);
+  player->SetVideoHeight(video_height);
+  player->OnPlay([=]() -> void { OnPlayPauseStop(id, player->state()); });
+  player->OnPause([=]() -> void { OnPlayPauseStop(id, player->state()); });
+  player->OnStop([=]() -> void {
+    OnPlayPauseStop(id, player->state());
+    OnPosition(id, player->state());
+  });
+  player->OnComplete([=]() -> void { OnComplete(id, player->state()); });
+  player->OnVolume([=](float) -> void { OnVolume(id, player->state()); });
+  player->OnRate([=](float) -> void { OnRate(id, player->state()); });
+  player->OnPosition([=](int32_t) -> void { OnPosition(id, player->state()); });
+  player->OnOpen([=](VLC::Media) -> void { OnOpen(id, player->state()); });
+  player->OnPlaylist([=]() -> void { OnOpen(id, player->state()); });
+#ifdef _WIN32
+/* Windows: Texture & flutter::TextureRegistrar */
+#else
+  /* Linux: decodeImageFromPixels & NativePorts */
+  if (player->video_width() > 0 && player->video_height() > 0) {
+    player->OnVideo([=](uint8_t* frame) -> void {
+      OnVideo(player->video_width() * player->video_height() * 4,
+              player->state(), frame);
     });
-    player->onPause([=]() -> void {
-        Player_onPlayPauseStop(player->state);
-    });
-    player->onStop([=]() -> void {
-        Player_onPlayPauseStop(player->state);
-        Player_onPosition(player->state);
-    });
-    player->onComplete([=]() -> void {
-        Player_onComplete(player->state);
-    });
-    player->onVolume([=](float _) -> void {
-        Player_onVolume(player->state);
-    });
-    player->onRate([=](float _) -> void {
-        Player_onRate(player->state);
-    });
-    player->onPosition([=](int _) -> void {
-        Player_onPosition(player->state);
-    });
-    player->onOpen([=](VLC::Media _) -> void {
-        Player_onOpen(player->state);
-    });
-    player->onPlaylist([=]() -> void {
-        Player_onOpen(player->state);
-    });
-    #ifdef _WIN32
-    /* Using Texture & flutter::TextureRegistrar for Windows. */
-    #else
-    /* Using decodeImageFromPixels & NativePorts for Linux. */
-    if (player->videoHeight > 0 && player->videoWidth > 0) {
-        player->onVideo([=](uint8_t* frame) -> void {
-            Player_onVideo(player->videoHeight * player->videoWidth * 4, player->state, frame);
-        });
-    }
-    #endif
+  }
+#endif
 }
 
-EXPORT void Player_dispose(int id) {
-    players->dispose(id);
-}
+DLLEXPORT void PlayerDispose(int32_t id) { g_players->Dispose(id); }
 
-EXPORT void Player_open(int id, bool autoStart, const char** source, int sourceSize) {
-    std::vector<Media*> medias;
-    Player* player = players->get(id);
-    for (int index = 0; index < 2 * sourceSize; index += 2) {
-        Media* media;
-        /* Freed inside PlayerSetters::open */
-        const char* type = source[index];
-        const char* resource = source[index + 1];
-    
-        if (strcmp(type, "MediaType.file") == 0)
-            media = Media::file(resource, false);
-        else if (strcmp(type, "MediaType.network") == 0)
-            media = Media::network(resource, false);
-        else
-            media = Media::directShow(resource);
-        medias.emplace_back(media);
-    }
-    Playlist playlist = Playlist(medias);
-    player->open(
-        &playlist,
-        autoStart
-    );
-}
-
-EXPORT void Player_play(int id) {
-    Player* player = players->get(id);
-    player->play();
-}
-
-EXPORT void Player_pause(int id) {
-    Player* player = players->get(id);
-    player->pause();
-}
-
-EXPORT void Player_playOrPause(int id) {
-    Player* player = players->get(id);
-    player->playOrPause();
-}
-
-EXPORT void Player_stop(int id) {
-    Player* player = players->get(id);
-    player->stop();
-}
-
-EXPORT void Player_next(int id) {
-    Player* player = players->get(id);
-    player->next();
-}
-
-EXPORT void Player_back(int id) {
-    Player* player = players->get(id);
-    player->back();
-}
-
-EXPORT void Player_jump(int id, int index) {
-    Player* player = players->get(id);
-    player->jump(index);
-}
-
-EXPORT void Player_seek(int id, int position) {
-    Player* player = players->get(id);
-    player->seek(position);
-}
-
-EXPORT void Player_setVolume(int id, float volume) {
-    Player* player = players->get(id);
-    player->setVolume(volume);
-}
-
-EXPORT void Player_setRate(int id, float rate) {
-    Player* player = players->get(id);
-    player->setRate(rate);
-}
-
-EXPORT void Player_setUserAgent(int id, const char* userAgent) {
-    Player* player = players->get(id);
-    player->setUserAgent(userAgent);
-}
-
-EXPORT void Player_setDevice(int id, const char* deviceId, const char* deviceName) {
-    Player* player = players->get(id);
-    Device device(deviceId, deviceName);
-    player->setDevice(&device);
-}
-
-EXPORT void Player_setEqualizer(int id, int equalizerId) {
-    Player* player = players->get(id);
-    Equalizer* equalizer = equalizers->get(equalizerId);
-    player->setEqualizer(equalizer);
-}
-
-EXPORT void Player_setPlaylistMode(int id, const char* mode) {
-    Player* player = players->get(id);
-    PlaylistMode playlistMode;
-    if (strcmp(mode, "PlaylistMode.repeat") == 0)
-        playlistMode = PlaylistMode::repeat;
-    else if (strcmp(mode, "PlaylistMode.loop") == 0)
-        playlistMode = PlaylistMode::loop;
-    else
-        playlistMode = PlaylistMode::single;
-    player->setPlaylistMode(playlistMode);
-}
-
-EXPORT void Player_add(int id, const char* type, const char* resource) {
-    Player* player = players->get(id);
-    Media* media;
-    /* Freed inside PlayerSetters::open */
+DLLEXPORT void PlayerOpen(int32_t id, bool auto_start, const char** source,
+                          int32_t source_size) {
+  std::vector<std::shared_ptr<Media>> medias{};
+  Player* player = g_players->Get(id);
+  for (int32_t index = 0; index < 2 * source_size; index += 2) {
+    std::shared_ptr<Media> media;
+    const char* type = source[index];
+    const char* resource = source[index + 1];
     if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(resource, false);
+      media = Media::file(resource, false);
     else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(resource, false);
+      media = Media::network(resource, false);
     else
-        media = Media::directShow(resource);
-    player->add(media);
+      media = Media::directShow(resource);
+    medias.emplace_back(media);
+  }
+  player->Open(std::make_shared<Playlist>(medias), auto_start);
 }
 
-EXPORT void Player_remove(int id, int index) {
-    Player* player = players->get(id);
-    player->remove(index);
+DLLEXPORT void PlayerPlay(int32_t id) {
+  Player* player = g_players->Get(id);
+  player->Play();
 }
 
-EXPORT void Player_insert(int id, int index, const char* type, const char* resource) {
-    Player* player = players->get(id);
-    Media* media;
-    if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(resource, false);
-    else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(resource, false);
-    else
-        media = Media::directShow(resource);
-    player->insert(index, media);
+DLLEXPORT void PlayerPause(int32_t id) {
+  Player* player = g_players->Get(id);
+  player->Pause();
 }
 
-EXPORT void Player_move(int id, int initialIndex, int finalIndex) {
-    Player* player = players->get(id);
-    player->move(initialIndex, finalIndex);
+DLLEXPORT void PlayerPlayOrPause(int32_t id) {
+  Player* player = g_players->Get(id);
+  player->PlayOrPause();
 }
 
-char** _metasPointer = nullptr;
-size_t _metasSize = 0;
+DLLEXPORT void PlayerStop(int32_t id) {
+  Player* player = g_players->Get(id);
+  player->Stop();
+}
+
+DLLEXPORT void PlayerNext(int32_t id) {
+  Player* player = g_players->Get(id);
+  player->Next();
+}
+
+DLLEXPORT void PlayerBack(int32_t id) {
+  Player* player = g_players->Get(id);
+  player->Back();
+}
+
+DLLEXPORT void PlayerJump(int32_t id, int32_t index) {
+  Player* player = g_players->Get(id);
+  player->Jump(index);
+}
+
+DLLEXPORT void PlayerSeek(int32_t id, int32_t position) {
+  Player* player = g_players->Get(id);
+  player->Seek(position);
+}
+
+DLLEXPORT void PlayerSetVolume(int32_t id, float volume) {
+  Player* player = g_players->Get(id);
+  player->SetVolume(volume);
+}
+
+DLLEXPORT void PlayerSetRate(int32_t id, float rate) {
+  Player* player = g_players->Get(id);
+  player->SetRate(rate);
+}
+
+DLLEXPORT void PlayerSetUserAgent(int32_t id, const char* userAgent) {
+  Player* player = g_players->Get(id);
+  player->SetUserAgent(userAgent);
+}
+
+DLLEXPORT void PlayerSetDevice(int32_t id, const char* device_id,
+                               const char* device_name) {
+  Player* player = g_players->Get(id);
+  Device device(device_id, device_name);
+  player->SetDevice(device);
+}
+
+DLLEXPORT void PlayerSetEqualizer(int32_t id, int32_t equalizer_id) {
+  Player* player = g_players->Get(id);
+  Equalizer* equalizer = g_equalizers->Get(equalizer_id);
+  player->SetEqualizer(*equalizer);
+}
+
+DLLEXPORT void PlayerSetPlaylistMode(int32_t id, const char* mode) {
+  Player* player = g_players->Get(id);
+  PlaylistMode playlistMode;
+  if (strcmp(mode, "PlaylistMode.repeat") == 0)
+    playlistMode = PlaylistMode::repeat;
+  else if (strcmp(mode, "PlaylistMode.loop") == 0)
+    playlistMode = PlaylistMode::loop;
+  else
+    playlistMode = PlaylistMode::single;
+  player->SetPlaylistMode(playlistMode);
+}
+
+DLLEXPORT void PlayerAdd(int32_t id, const char* type, const char* resource) {
+  Player* player = g_players->Get(id);
+  std::shared_ptr<Media> media;
+  if (strcmp(type, "MediaType.file") == 0)
+    media = Media::file(resource, false);
+  else if (strcmp(type, "MediaType.network") == 0)
+    media = Media::network(resource, false);
+  else
+    media = Media::directShow(resource);
+  player->Add(media);
+}
+
+DLLEXPORT void PlayerRemove(int32_t id, int32_t index) {
+  Player* player = g_players->Get(id);
+  player->Remove(index);
+}
+
+DLLEXPORT void PlayerInsert(int32_t id, int32_t index, const char* type,
+                            const char* resource) {
+  Player* player = g_players->Get(id);
+  std::shared_ptr<Media> media;
+  if (strcmp(type, "MediaType.file") == 0)
+    media = Media::file(resource, false);
+  else if (strcmp(type, "MediaType.network") == 0)
+    media = Media::network(resource, false);
+  else
+    media = Media::directShow(resource);
+  player->Insert(index, media);
+}
+
+DLLEXPORT void Player_move(int32_t id, int32_t initial_index,
+                           int32_t final_index) {
+  Player* player = g_players->Get(id);
+  player->Move(initial_index, final_index);
+}
+
+char** g_metas_ptr = nullptr;
+size_t g_metas_size = 0;
 
 // TODO: respect timeout
-EXPORT char** Media_parse(const char* type, const char* resource, int timeout) {
-    auto media = Media::create(type, resource, true);
-    _metasPointer = new char*[media->metas.size()];
-    _metasSize = media->metas.size();
-    int index = 0;
-    for (auto &meta: media->metas) {
-        _metasPointer[index] = new char[200];
-        strncpy(_metasPointer[index], meta.second.data(), 200);
-        index++;
+DLLEXPORT char** MediaParse(const char* type, const char* resource,
+                            int32_t timeout) {
+  std::shared_ptr<Media> media = Media::create(type, resource, true);
+  g_metas_ptr = new char*[media->metas().size()];
+  g_metas_size = media->metas().size();
+  int32_t index = 0;
+  for (const auto & [ key, value ] : media->metas()) {
+    g_metas_ptr[index] = new char[200];
+    strncpy(g_metas_ptr[index], value.data(), 200);
+    index++;
+  }
+  return g_metas_ptr;
+}
+
+DLLEXPORT void MediaClear() {
+  if (g_metas_ptr != nullptr) {
+    for (size_t i = 0; i < g_metas_size; i++) {
+      delete g_metas_ptr[i];
     }
-    return _metasPointer;
+    delete[] g_metas_ptr;
+    g_metas_ptr = nullptr;
+    g_metas_size = 0;
+  }
 }
 
-EXPORT void Media_clear() {
-    if (_metasPointer != nullptr) {
-        for (size_t i = 0; i < _metasSize; i++) {
-            delete _metasPointer[i];
-        }
-        delete[] _metasPointer;
-        _metasPointer = nullptr;
-        _metasSize = 0;
+DLLEXPORT void BroadcastCreate(int32_t id, const char* type,
+                               const char* resource, const char* access,
+                               const char* mux, const char* dst,
+                               const char* vcodec, int32_t vb,
+                               const char* acodec, int32_t ab) {
+  std::shared_ptr<Media> media = Media::create(type, resource);
+
+  std::unique_ptr<BroadcastConfiguration> configuration =
+      std::make_unique<BroadcastConfiguration>(access, mux, dst, vcodec, vb,
+                                               acodec, ab);
+  g_broadcasts->Get(id, std::move(media), std::move(configuration));
+}
+
+DLLEXPORT void BroadcastStart(int32_t id) {
+  Broadcast* broadcast = g_broadcasts->Get(id, nullptr, nullptr);
+  broadcast->Start();
+}
+
+DLLEXPORT void BroadcastDispose(int32_t id) { g_broadcasts->Dispose(id); }
+
+DLLEXPORT void ChromecastCreate(int32_t id, const char* type,
+                                const char* resource, const char* ip_address) {
+  std::shared_ptr<Media> media = Media::create(type, resource);
+  chromecasts->Get(id, std::move(media), ip_address);
+}
+
+DLLEXPORT void ChromecastStart(int32_t id) {
+  Chromecast* chromecast = chromecasts->Get(id, nullptr, "");
+  chromecast->Start();
+}
+
+DLLEXPORT void ChromecastDispose(int32_t id) { chromecasts->Dispose(id); }
+
+DLLEXPORT void RecordCreate(int32_t id, const char* saving_file,
+                            const char* type, const char* resource) {
+  std::shared_ptr<Media> media = Media::create(type, resource);
+  g_records->Get(id, media, saving_file);
+}
+
+DLLEXPORT void RecordStart(int32_t id) {
+  Record* record = g_records->Get(id, nullptr, "");
+  record->Start();
+}
+
+DLLEXPORT void RecordDispose(int32_t id) { g_records->Dispose(id); }
+
+char** g_devices_ptr = nullptr;
+size_t g_devices_size = 0;
+
+DLLEXPORT char** DevicesAll() {
+  std::vector<Device> devices = Devices::All();
+  g_devices_ptr = new char*[(devices.size() * 2) + 1];
+  g_devices_size = (devices.size() * 2) + 1;
+  g_devices_ptr[0] = new char[200];
+  strncpy(g_devices_ptr[0], std::to_string(devices.size()).data(), 200);
+  int32_t index = 0;
+  for (Device& device : devices) {
+    g_devices_ptr[index + 1] = new char[200];
+    strncpy(g_devices_ptr[index + 1], device.id().data(), 200);
+    g_devices_ptr[index + 2] = new char[200];
+    strncpy(g_devices_ptr[index + 2], device.id().data(), 200);
+    index += 2;
+  }
+  return g_devices_ptr;
+}
+
+DLLEXPORT void DevicesClear() {
+  if (g_devices_ptr != nullptr) {
+    for (size_t i = 0; i < g_devices_size; i++) {
+      delete g_devices_ptr[i];
     }
+    delete[] g_devices_ptr;
+    g_devices_ptr = nullptr;
+    g_devices_size = 0;
+  }
 }
 
-EXPORT void Broadcast_create(int id, const char* type, const char* resource, const char* access, const char* mux, const char* dst, const char* vcodec, int vb, const char* acodec, int ab) {
-    auto media = Media::create(type, resource);
+char** g_equalizer_ptr = nullptr;
+size_t g_equalizer_size = 0;
 
-    auto configuration = std::make_unique<BroadcastConfiguration>(
-        access,
-        mux,
-        dst,
-        vcodec,
-        vb,
-        acodec,
-        ab
-    );
-    broadcasts->create(id, std::move(media), std::move(configuration));
+DLLEXPORT char** EqualizerCreateEmpty() {
+  int32_t id = g_equalizers->CreateEmpty();
+  Equalizer* equalizer = g_equalizers->Get(id);
+  g_equalizer_ptr = new char*[2 * equalizer->band_amps().size() + 2];
+  g_equalizer_size = 2 * equalizer->band_amps().size() + 2;
+  g_equalizer_ptr[0] = new char[200];
+  strncpy(g_equalizer_ptr[0], std::to_string(id).data(), 200);
+  g_equalizer_ptr[1] = new char[200];
+  strncpy(g_equalizer_ptr[1], std::to_string(equalizer->pre_amp()).data(), 200);
+  int32_t index = 0;
+  for (const auto & [ band, amp ] : equalizer->band_amps()) {
+    g_equalizer_ptr[index + 2] = new char[200];
+    strncpy(g_equalizer_ptr[index + 2], std::to_string(band).data(), 200);
+    g_equalizer_ptr[index + 3] = new char[200];
+    strncpy(g_equalizer_ptr[index + 3], std::to_string(amp).data(), 200);
+    index += 2;
+  }
+  return g_equalizer_ptr;
 }
 
-EXPORT void Broadcast_start(int id) {
-    Broadcast* broadcast = broadcasts->get(id);
-    if(broadcast) {
-        broadcast->start();
+DLLEXPORT char** EqualizerCreateMode(int32_t mode) {
+  int32_t id = g_equalizers->CreateMode(static_cast<EqualizerMode>(mode));
+  Equalizer* equalizer = g_equalizers->Get(id);
+  g_equalizer_ptr = new char*[2 * equalizer->band_amps().size() + 2];
+  g_equalizer_size = 2 * equalizer->band_amps().size() + 2;
+  g_equalizer_ptr[0] = new char[200];
+  strncpy(g_equalizer_ptr[0], std::to_string(id).data(), 200);
+  g_equalizer_ptr[1] = new char[200];
+  strncpy(g_equalizer_ptr[1], std::to_string(equalizer->pre_amp()).data(), 200);
+  int32_t index = 0;
+  for (const auto & [ band, amp ] : equalizer->band_amps()) {
+    g_equalizer_ptr[index + 2] = new char[200];
+    strncpy(g_equalizer_ptr[index + 2], std::to_string(band).data(), 200);
+    g_equalizer_ptr[index + 3] = new char[200];
+    strncpy(g_equalizer_ptr[index + 3], std::to_string(amp).data(), 200);
+    index += 2;
+  }
+  return g_equalizer_ptr;
+}
+
+DLLEXPORT void EqualizerClear() {
+  if (g_equalizer_ptr != nullptr) {
+    for (size_t i = 0; i < g_equalizer_size; i++) {
+      delete g_equalizer_ptr[i];
     }
+    delete[] g_equalizer_ptr;
+    g_equalizer_ptr = nullptr;
+    g_equalizer_size = 0;
+  }
 }
 
-EXPORT void Broadcast_dispose(int id) {
-    broadcasts->dispose(id);
+DLLEXPORT void EqualizerSetBandAmp(int32_t id, float band, float amp) {
+  g_equalizers->Get(id)->SetBandAmp(band, amp);
 }
 
-EXPORT void Chromecast_create(int id, const char* type, const char* resource, const char* ipAddress) {
-    auto media = Media::create(type, resource);
-    chromecasts->create(id, std::move(media), ipAddress);
-}
-
-EXPORT void Chromecast_start(int id) {
-    Chromecast* chromecast = chromecasts->get(id);
-    if(chromecast) {
-        chromecast->start();
-    }
-}
-
-EXPORT void Chromecast_dispose(int id) {
-    chromecasts->dispose(id);
-}
-
-EXPORT void Record_create(int id, const char* savingFile, const char* type, const char* resource) {
-    auto media = Media::create(type, resource);
-    records->create(id, std::move(media), savingFile);
-}
-
-EXPORT void Record_start(int id) {
-    auto record = records->get(id);
-    if(record) {
-        record->start();
-    }
-}
-
-EXPORT void Record_dispose(int id) {
-    records->dispose(id);
-}
-
-char** _devicesPointer = nullptr;
-size_t _devicesSize = 0;
-
-EXPORT char** Devices_all() {
-    devices->refresh();
-    _devicesPointer = new char*[(devices->all.size() * 2) + 1];
-    _devicesSize = (devices->all.size() * 2) + 1;
-    _devicesPointer[0] = new char[200];
-    strncpy(_devicesPointer[0], std::to_string(devices->all.size()).data(), 200);
-    int index = 0;
-    for (Device* device: devices->all) {
-        _devicesPointer[index + 1] = new char[200];
-        strncpy(_devicesPointer[index + 1], device->id.data(), 200);
-        _devicesPointer[index + 2] = new char[200];
-        strncpy(_devicesPointer[index + 2], device->name.data(), 200);
-        index += 2;
-    }
-    return _devicesPointer;
-}
-
-EXPORT void Devices_clear() {
-    if (_devicesPointer != nullptr) {
-        for (size_t i = 0; i < _devicesSize; i++) {
-            delete _devicesPointer[i];
-        }
-        delete[] _devicesPointer;
-        _devicesPointer = nullptr;
-        _devicesSize = 0;
-    }
-}
-
-char** _equalizerPointer = nullptr;
-size_t _equalizerSize = 0;
-
-EXPORT char** Equalizer_createEmpty() {
-    int id = equalizers->createEmpty();
-    Equalizer* equalizer = equalizers->get(id);
-    _equalizerPointer = new char*[2 * equalizer->bandAmps.size() + 2];
-    _equalizerSize = 2 * equalizer->bandAmps.size() + 2;
-    _equalizerPointer[0] = new char[200];
-    strncpy(_equalizerPointer[0], std::to_string(id).data(), 200);
-    _equalizerPointer[1] = new char[200];
-    strncpy(_equalizerPointer[1], std::to_string(equalizer->preAmp).data(), 200);
-    int index = 0;
-    for (const auto&[band, amp]: equalizer->bandAmps) {
-        _equalizerPointer[index + 2] = new char[200];
-        strncpy(_equalizerPointer[index + 2], std::to_string(band).data(), 200);
-        _equalizerPointer[index + 3] = new char[200];
-        strncpy(_equalizerPointer[index + 3], std::to_string(amp).data(), 200);
-        index += 2;
-    }
-    return _equalizerPointer;
-}
-
-EXPORT char** Equalizer_createMode(int mode) {
-    int id = equalizers->createMode(
-        static_cast<EqualizerMode>(mode)
-    );
-    Equalizer* equalizer = equalizers->get(id);
-    _equalizerPointer = new char*[2 * equalizer->bandAmps.size() + 2];
-    _equalizerSize = 2 * equalizer->bandAmps.size() + 2;
-    _equalizerPointer[0] = new char[200];
-    strncpy(_equalizerPointer[0], std::to_string(id).data(), 200);
-    _equalizerPointer[1] = new char[200];
-    strncpy(_equalizerPointer[1], std::to_string(equalizer->preAmp).data(), 200);
-    int index = 0;
-    for (const auto&[band, amp]: equalizer->bandAmps) {
-        _equalizerPointer[index + 2] = new char[200];
-        strncpy(_equalizerPointer[index + 2], std::to_string(band).data(), 200);
-        _equalizerPointer[index + 3] = new char[200];
-        strncpy(_equalizerPointer[index + 3], std::to_string(amp).data(), 200);
-        index += 2;
-    }
-    return _equalizerPointer;
-}
-
-EXPORT void Equalizer_clear() {
-    if (_equalizerPointer != nullptr) {
-        for (size_t i = 0; i < _equalizerSize; i++) {
-            delete _equalizerPointer[i];
-        }
-        delete[] _equalizerPointer;
-        _equalizerPointer = nullptr;
-        _equalizerSize = 0;
-    }
-}
-
-EXPORT void Equalizer_setBandAmp(int id, float band, float amp) {
-    equalizers->get(id)->setBandAmp(band, amp);
-}
-
-EXPORT void Equalizer_setPreAmp(int id, float amp) {
-    equalizers->get(id)->setPreAmp(amp);
+DLLEXPORT void EqualizerSetPreAmp(int32_t id, float amp) {
+  g_equalizers->Get(id)->SetPreAmp(amp);
 }
 
 #endif

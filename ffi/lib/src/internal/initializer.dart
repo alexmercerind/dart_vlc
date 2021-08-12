@@ -9,11 +9,11 @@ class DartVLC {
       dynamicLibrary = DynamicLibrary.open(dynamicLibraryPath);
       RegisterPostCObjectDart registerPostCObject = dynamicLibrary
           .lookup<NativeFunction<RegisterPostCObjectCXX>>(
-              'RegisterDart_PostCObject')
+              'RegisterDartPostCObject')
           .asFunction();
       RegisterCallbackPortDart registerCallbackPort = dynamicLibrary
           .lookup<NativeFunction<RegisterCallbackPortCXX>>(
-              'RegisterDart_CallbackPort')
+              'RegisterDartCallbackPort')
           .asFunction();
       registerPostCObject(NativeApi.postCObject);
       registerCallbackPort(receiver.sendPort.nativePort);
