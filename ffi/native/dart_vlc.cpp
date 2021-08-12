@@ -285,19 +285,15 @@ EXPORT void Chromecast_dispose(int id) {
 }
 
 EXPORT void Record_create(int id, const char* savingFile, const char* type, const char* resource) {
-    Media* media;
-    /* Freed inside ~Record (Records::dispose) */
-    if (strcmp(type, "MediaType.file") == 0)
-        media = Media::file(resource, false);
-    else if (strcmp(type, "MediaType.network") == 0)
-        media = Media::network(resource, false);
-    else
-        media = Media::directShow(resource);
-    records->get(id, media, savingFile);
+    auto media = Media::create(type, resource);
+    records->create(id, std::move(media), savingFile);
 }
 
 EXPORT void Record_start(int id) {
-    records->get(id, nullptr, "")->start();
+    auto record = records->get(id);
+    if(record) {
+        record->start();
+    }
 }
 
 EXPORT void Record_dispose(int id) {

@@ -9,6 +9,9 @@
  * GNU Lesser General Public License v2.1
  */
 
+#ifndef Media_HEADER
+#define Media_HEADER
+
 #include <filesystem>
 #include <future>
 #include <map>
@@ -17,9 +20,6 @@
 #include <vlcpp/vlc.hpp>
 
 #include "mediasource.hpp"
-
-#ifndef Media_HEADER
-#define Media_HEADER
 
 VLC::Instance instance = VLC::Instance(0, nullptr);
 

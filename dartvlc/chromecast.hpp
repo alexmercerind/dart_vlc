@@ -8,13 +8,13 @@
  * GNU Lesser General Public License v2.1
 */
 
+#ifndef Chromecast_HEADER
+#define Chromecast_HEADER
+
 #include <string>
 #include <sstream>
 
 #include "mediasource/media.hpp"
-
-#ifndef Chromecast_HEADER
-#define Chromecast_HEADER
 
 class Chromecast {
 public:
