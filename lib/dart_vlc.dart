@@ -11,6 +11,7 @@
 // ignore_for_file: implementation_imports
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'package:dart_vlc/src/widgets/video.dart';
@@ -47,7 +48,7 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 /// Use various methods & event streams avaiable to control & listen to events of the playback.
 ///
 class Player extends FFI.Player {
-  int? textureId;
+  final ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
 
   Player(
       {required int id,
@@ -59,15 +60,25 @@ class Player extends FFI.Player {
             videoWidth: videoWidth,
             videoHeight: videoHeight,
             commandlineArguments: commandlineArguments) {
-    if (this.videoHeight > 0 && this.videoWidth > 0 && Platform.isWindows) {
+    if (videoHeight > 0 && videoWidth > 0 && Platform.isWindows) {
       () async {
-        this.textureId = await _channel.invokeMethod('Player.onVideo', {
-          'playerId': this.id,
-          'videoWidth': this.videoWidth,
-          'videoHeight': this.videoHeight
+        textureId.value = await _channel.invokeMethod('createTexture', {
+          'playerId': id,
+          'videoWidth': videoWidth,
+          'videoHeight': videoHeight
         });
       }();
     }
+  }
+
+  @override
+  void dispose() async {
+    if (textureId.value != null) {
+      await _channel.invokeMethod('disposeTexture', {'playerId': id});
+      textureId.value = null;
+    }
+
+    super.dispose();
   }
 }
 
