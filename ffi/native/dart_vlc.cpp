@@ -64,7 +64,7 @@ DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
   if (player->video_width() > 0 && player->video_height() > 0) {
     player->OnVideo([=](uint8_t* frame) -> void {
       OnVideo(player->video_width() * player->video_height() * 4,
-              player->state(), frame);
+              id, player->state(), frame);
     });
   }
 #endif
