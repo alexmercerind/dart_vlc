@@ -9,7 +9,7 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "../../dartvlc/main.cpp"
+#include "../../dartvlc/main.hpp"
 #include "callbackmanager.hpp"
 
 #ifdef __cplusplus

@@ -20,4 +20,4 @@
 
 /* libVLC++ wrapper for dart_vlc */
 
-int32_t main() { return EXIT_SUCCESS; }
+// int main() { return EXIT_SUCCESS; }

@@ -13,7 +13,7 @@
 #ifdef _WIN32
 #define DLLEXPORT __declspec(dllexport)
 #else
-#define DLLEXPORT
+#define DLLEXPORT __attribute__((used))
 #endif
 #endif
 
@@ -370,3 +370,4 @@ DLLEXPORT void EqualizerSetPreAmp(int32_t id, float amp) {
 #ifdef __cplusplus
 }
 #endif
+
