@@ -107,12 +107,10 @@ DartVlcPlugin::~DartVlcPlugin() {}
 void DartVlcPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue>& methodCall,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  /* No platform g_channel implementation after migration to FFI except
-   * Player::onVideo callbacks for Texture. */
+  // No platform channel implementation after migration to FFI except
+  // Player::OnVideo callbacks for Texture.
 
-  /* Sets lambda for Player::onVideo callbacks. Called after creating new
-   * instance of Player. */
-  if (methodCall.method_name() == "createTexture") {
+  if (methodCall.method_name() == "PlayerRegisterTexture") {
     flutter::EncodableMap arguments =
         std::get<flutter::EncodableMap>(*methodCall.arguments());
     int player_id =
@@ -138,29 +136,22 @@ void DartVlcPlugin::HandleMethodCall(
                   textureRegistrar->MarkTextureFrameAvailable(texture_id);
                 }
               });
-
       textureRegistrar->MarkTextureFrameAvailable(texture_id);
       return result->Success(flutter::EncodableValue(texture_id));
     }
-
-    result->Error("Texture was already registered.");
-  }
-  /* Called after disposing a Player instance. */
-  else if (methodCall.method_name() == "disposeTexture") {
+    result->Error("-1", "Texture was already registered.");
+  } else if (methodCall.method_name() == "PlayerUnregisterTexture") {
     flutter::EncodableMap arguments =
         std::get<flutter::EncodableMap>(*methodCall.arguments());
     int player_id =
         std::get<int>(arguments[flutter::EncodableValue("playerId")]);
-
     auto it = outlets.find(player_id);
     if (it != outlets.end()) {
       auto texture_id = it->second.first;
       textureRegistrar->UnregisterTexture(texture_id);
       outlets.erase(it);
     }
-
     result->Success(flutter::EncodableValue(nullptr));
-
   } else {
     result->NotImplemented();
   }
