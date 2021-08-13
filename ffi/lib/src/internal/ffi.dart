@@ -205,9 +205,10 @@ final ReceivePort receiver = new ReceivePort()
             players[playerId]!.playback.isSeekable =
                 event[3] == '1' ? true : false;
             players[playerId]!.playback.isCompleted = false;
-            players[playerId]!
-                .playbackController
-                .add(players[playerId]!.playback);
+            if (!players[playerId]!.playbackController.isClosed)
+              players[playerId]!
+                  .playbackController
+                  .add(players[playerId]!.playback);
             break;
           }
         case 'positionEvent':
@@ -216,9 +217,10 @@ final ReceivePort receiver = new ReceivePort()
                 Duration(milliseconds: int.parse(event[3]));
             players[playerId]!.position.duration =
                 Duration(milliseconds: int.parse(event[4]));
-            players[playerId]!
-                .positionController
-                .add(players[playerId]!.position);
+            if (!players[playerId]!.positionController.isClosed)
+              players[playerId]!
+                  .positionController
+                  .add(players[playerId]!.position);
             break;
           }
         case 'openEvent':
@@ -253,34 +255,38 @@ final ReceivePort receiver = new ReceivePort()
             players[playerId]!.current.medias = medias;
             players[playerId]!.current.media =
                 medias[players[playerId]!.current.index!];
-            players[playerId]!
-                .currentController
-                .add(players[playerId]!.current);
+            if (!players[playerId]!.currentController.isClosed)
+              players[playerId]!
+                  .currentController
+                  .add(players[playerId]!.current);
             break;
           }
         case 'completeEvent':
           {
             players[playerId]!.playback.isCompleted =
                 event[2] == '1' ? true : false;
-            players[playerId]!
-                .playbackController
-                .add(players[playerId]!.playback);
+            if (!players[playerId]!.playbackController.isClosed)
+              players[playerId]!
+                  .playbackController
+                  .add(players[playerId]!.playback);
             break;
           }
         case 'volumeEvent':
           {
             players[playerId]!.general.volume = double.parse(event[2]);
-            players[playerId]!
-                .generalController
-                .add(players[playerId]!.general);
+            if (!players[playerId]!.generalController.isClosed)
+              players[playerId]!
+                  .generalController
+                  .add(players[playerId]!.general);
             break;
           }
         case 'rateEvent':
           {
             players[playerId]!.general.rate = double.parse(event[2]);
-            players[playerId]!
-                .generalController
-                .add(players[playerId]!.general);
+            if (!players[playerId]!.generalController.isClosed)
+              players[playerId]!
+                  .generalController
+                  .add(players[playerId]!.general);
             break;
           }
       }
