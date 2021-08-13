@@ -103,6 +103,10 @@ DLLEXPORT void RegisterDartCallbackPort(Dart_Port callback_port) {
   g_callback_port = callback_port;
 }
 
+#ifdef __cplusplus
+}
+#endif
+
 void CallbackInt32(int32_t value) {
   Dart_CObject dart_object;
   dart_object.type = Dart_CObject_kInt32;
@@ -111,22 +115,41 @@ void CallbackInt32(int32_t value) {
 }
 
 void CallbackStringArray(int32_t length, char** values) {
-  Dart_CObject** value_objects = new Dart_CObject*[length];
+  auto value_objects = std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
+  auto value_object_refs =
+       std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[length]);
+
   for (int32_t i = 0; i < length; i++) {
-    Dart_CObject* value_object = new Dart_CObject;
+    Dart_CObject* value_object = &value_objects[i];
     value_object->type = Dart_CObject_kString;
     value_object->value.as_string = values[i];
-    value_objects[i] = value_object;
+    value_object_refs[i] = value_object;
   }
   Dart_CObject dart_object;
   dart_object.type = Dart_CObject_kArray;
   dart_object.value.as_array.length = length;
-  dart_object.value.as_array.values = value_objects;
+  dart_object.value.as_array.values = value_object_refs.get();
   g_dart_post_C_object(g_callback_port, &dart_object);
+}
+
+void CallbackStringArray(const std::vector<std::string>& values) {
+  auto length = values.size();
+  auto value_objects = std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
+  auto value_object_refs =
+       std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[length]);
+
   for (int32_t i = 0; i < length; i++) {
-    delete value_objects[i];
+    Dart_CObject* value_object = &value_objects[i];
+    value_object->type = Dart_CObject_kString;
+    value_object->value.as_string = const_cast<char*>(values[i].c_str());
+    value_object_refs[i] = value_object;
   }
-  delete[] value_objects;
+  Dart_CObject dart_object;
+  dart_object.type = Dart_CObject_kArray;
+  dart_object.value.as_array.length = length;
+  dart_object.value.as_array.values = value_object_refs.get();
+  g_dart_post_C_object(g_callback_port, &dart_object);
+
 }
 
 void CallbackFrame(int32_t id, int32_t length, uint8_t* frame) {
@@ -138,19 +161,12 @@ void CallbackFrame(int32_t id, int32_t length, uint8_t* frame) {
   frame_object.value.as_typed_data.type = Dart_TypedData_kUint8;
   frame_object.value.as_typed_data.values = frame;
   frame_object.value.as_typed_data.length = length;
-  Dart_CObject** values = new Dart_CObject*[2];
-  values[0] = &idObject;
-  values[1] = &frame_object;
+  Dart_CObject* values[2] = {&idObject, &frame_object};
   Dart_CObject value_object;
   value_object.type = Dart_CObject_kArray;
   value_object.value.as_array.length = 2;
   value_object.value.as_array.values = values;
   g_dart_post_C_object(g_callback_port, &value_object);
-  delete[] values;
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -17,95 +17,58 @@ extern "C" {
 #endif
 
 inline void OnPlayPauseStop(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{};
-  event.emplace_back(std::to_string(id));
-  event.emplace_back("playbackEvent");
-  event.emplace_back(std::to_string(state->is_playing()));
-  event.emplace_back(std::to_string(state->is_seekable()));
-  size_t size = event.size();
-  char** event_data = new char*[size];
-  for (int index = 0; index < size; index++)
-    event_data[index] = const_cast<char*>(event[index].c_str());
-  CallbackStringArray(static_cast<int>(size), event_data);
+  std::vector<std::string> event{std::to_string(id), "playbackEvent",
+                                 std::to_string(state->is_playing()),
+                                 std::to_string(state->is_seekable())};
 
-  delete[] event_data;
+  CallbackStringArray(event);
 }
 
 inline void OnPosition(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{};
-  event.emplace_back(std::to_string(id));
-  event.emplace_back("positionEvent");
-  event.emplace_back(std::to_string(state->index()));
-  event.emplace_back(std::to_string(state->position()));
-  event.emplace_back(std::to_string(state->duration()));
-  size_t size = event.size();
-  char** event_data = new char*[size];
-  for (int index = 0; index < size; index++)
-    event_data[index] = const_cast<char*>(event[index].c_str());
-  CallbackStringArray(static_cast<int>(size), event_data);
-
-  delete[] event_data;
+  std::vector<std::string> event{
+      std::to_string(id), "positionEvent", std::to_string(state->index()),
+      std::to_string(state->position()), std::to_string(state->duration())};
+  CallbackStringArray(event);
 }
 
 inline void OnComplete(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{};
-  event.emplace_back(std::to_string(id));
-  event.emplace_back("completeEvent");
-  event.emplace_back(std::to_string(state->is_completed()));
-  size_t size = event.size();
-  char** event_data = new char*[size];
-  for (int index = 0; index < size; index++)
-    event_data[index] = const_cast<char*>(event[index].c_str());
-  CallbackStringArray(static_cast<int>(size), event_data);
-
-  delete[] event_data;
+  std::vector<std::string> event{
+      std::to_string(id),
+      "completeEvent",
+      std::to_string(state->is_completed()),
+  };
+  CallbackStringArray(event);
 }
 
 inline void OnVolume(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{};
-  event.emplace_back(std::to_string(id));
-  event.emplace_back("volumeEvent");
-  event.emplace_back(std::to_string(state->volume()));
-  size_t size = event.size();
-  char** event_data = new char*[size];
-  for (int index = 0; index < size; index++)
-    event_data[index] = const_cast<char*>(event[index].c_str());
-  CallbackStringArray(static_cast<int>(size), event_data);
-
-  delete[] event_data;
+  std::vector<std::string> event{std::to_string(id), "volumeEvent",
+                                 std::to_string(state->volume())};
+  CallbackStringArray(event);
 }
 
 inline void OnRate(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{};
-  event.emplace_back(std::to_string(id));
-  event.emplace_back("rateEvent");
-  event.emplace_back(std::to_string(state->rate()));
-  size_t size = event.size();
-  char** event_data = new char*[size];
-  for (int index = 0; index < size; index++)
-    event_data[index] = const_cast<char*>(event[index].c_str());
-  CallbackStringArray(static_cast<int>(size), event_data);
-
-  delete[] event_data;
+  std::vector<std::string> event{std::to_string(id), "rateEvent",
+                                 std::to_string(state->rate())};
+  CallbackStringArray(event);
 }
 
 inline void OnOpen(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{};
+  const auto& media_items = state->medias()->medias();
+
+  std::vector<std::string> event;
+  event.reserve(4 + media_items.size() * 2);
+
   event.emplace_back(std::to_string(id));
   event.emplace_back("openEvent");
   event.emplace_back(std::to_string(state->index()));
   event.emplace_back(std::to_string(state->is_playlist()));
-  for (std::shared_ptr<Media> media : state->medias()->medias()) {
+
+  for (const auto& media : media_items) {
     event.emplace_back(media->media_type());
     event.emplace_back(media->resource());
   }
-  size_t size = event.size();
-  char** event_data = new char*[size];
-  for (int index = 0; index < size; index++)
-    event_data[index] = const_cast<char*>(event[index].c_str());
-  CallbackStringArray(static_cast<int>(size), event_data);
 
-  delete[] event_data;
+  CallbackStringArray(event);
 }
 
 inline void OnVideo(int32_t id, int size, PlayerState* state, uint8_t* frame) {
