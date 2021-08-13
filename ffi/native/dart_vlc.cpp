@@ -28,6 +28,13 @@ extern "C" {
 #ifndef DART_VLC_FFI
 #define DART_VLC_FFI
 
+static char** g_metas_ptr = nullptr;
+static size_t g_metas_size = 0;
+static char** g_devices_ptr = nullptr;
+static size_t g_devices_size = 0;
+static char** g_equalizer_ptr = nullptr;
+static size_t g_equalizer_size = 0;
+
 DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
                             int32_t video_height,
                             int32_t commandLineArgumentsCount,
@@ -200,9 +207,6 @@ DLLEXPORT void Player_move(int32_t id, int32_t initial_index,
   player->Move(initial_index, final_index);
 }
 
-char** g_metas_ptr = nullptr;
-size_t g_metas_size = 0;
-
 // TODO: respect timeout
 DLLEXPORT char** MediaParse(const char* type, const char* resource,
                             int32_t timeout) {
@@ -275,9 +279,6 @@ DLLEXPORT void RecordStart(int32_t id) {
 
 DLLEXPORT void RecordDispose(int32_t id) { g_records->Dispose(id); }
 
-char** g_devices_ptr = nullptr;
-size_t g_devices_size = 0;
-
 DLLEXPORT char** DevicesAll() {
   std::vector<Device> devices = Devices::All();
   g_devices_ptr = new char*[(devices.size() * 2) + 1];
@@ -305,9 +306,6 @@ DLLEXPORT void DevicesClear() {
     g_devices_size = 0;
   }
 }
-
-char** g_equalizer_ptr = nullptr;
-size_t g_equalizer_size = 0;
 
 DLLEXPORT char** EqualizerCreateEmpty() {
   int32_t id = g_equalizers->CreateEmpty();
