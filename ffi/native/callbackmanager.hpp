@@ -110,9 +110,9 @@ void CallbackInt32(int32_t value) {
   g_dart_post_C_object(g_callback_port, &dart_object);
 }
 
-void CallbackStringArray(int length, char** values) {
+void CallbackStringArray(int32_t length, char** values) {
   Dart_CObject** value_objects = new Dart_CObject*[length];
-  for (int i = 0; i < length; i++) {
+  for (int32_t i = 0; i < length; i++) {
     Dart_CObject* value_object = new Dart_CObject;
     value_object->type = Dart_CObject_kString;
     value_object->value.as_string = values[i];
@@ -123,16 +123,16 @@ void CallbackStringArray(int length, char** values) {
   dart_object.value.as_array.length = length;
   dart_object.value.as_array.values = value_objects;
   g_dart_post_C_object(g_callback_port, &dart_object);
-  for (int i = 0; i < length; i++) {
+  for (int32_t i = 0; i < length; i++) {
     delete value_objects[i];
   }
   delete[] value_objects;
 }
 
-void CallbackFrame(int length, int playerId, uint8_t* frame) {
+void CallbackFrame(int32_t id, int32_t length, uint8_t* frame) {
   Dart_CObject idObject;
   idObject.type = Dart_CObject_kInt32;
-  idObject.value.as_int32 = playerId;
+  idObject.value.as_int32 = id;
   Dart_CObject frame_object;
   frame_object.type = Dart_CObject_kTypedData;
   frame_object.value.as_typed_data.type = Dart_TypedData_kUint8;

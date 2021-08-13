@@ -108,8 +108,8 @@ inline void OnOpen(int32_t id, PlayerState* state) {
   delete[] event_data;
 }
 
-inline void OnVideo(int size, int32_t id, PlayerState* state, uint8_t* frame) {
-  CallbackFrame(size, id, frame);
+inline void OnVideo(int32_t id, int size, PlayerState* state, uint8_t* frame) {
+  CallbackFrame(id, size, frame);
 }
 
 #ifdef __cplusplus

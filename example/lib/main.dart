@@ -63,8 +63,6 @@ class DartVLCExampleState extends State<DartVLCExample> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      themeMode: ThemeMode.dark,
-      darkTheme: ThemeData.dark(),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('dart_vlc'),
@@ -83,7 +81,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                   clipBehavior: Clip.antiAlias,
                   elevation: 2.0,
                   child: Video(
-                    playerId: 0,
+                    player: player,
                     width: 640,
                     height: 480,
                     volumeThumbColor: Colors.blue,

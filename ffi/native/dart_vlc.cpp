@@ -63,8 +63,8 @@ DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
   /* Linux: decodeImageFromPixels & NativePorts */
   if (player->video_width() > 0 && player->video_height() > 0) {
     player->OnVideo([=](uint8_t* frame) -> void {
-      OnVideo(player->video_width() * player->video_height() * 4,
-              id, player->state(), frame);
+      OnVideo(id, player->video_width() * player->video_height() * 4,
+              player->state(), frame);
     });
   }
 #endif
@@ -214,7 +214,7 @@ DLLEXPORT char** MediaParse(const char* type, const char* resource,
   g_metas_ptr = new char*[media->metas().size()];
   g_metas_size = media->metas().size();
   int32_t index = 0;
-  for (const auto & [ key, value ] : media->metas()) {
+  for (const auto& [key, value] : media->metas()) {
     g_metas_ptr[index] = new char[200];
     strncpy(g_metas_ptr[index], value.data(), 200);
     index++;
@@ -317,7 +317,7 @@ DLLEXPORT char** EqualizerCreateEmpty() {
   g_equalizer_ptr[1] = new char[200];
   strncpy(g_equalizer_ptr[1], std::to_string(equalizer->pre_amp()).data(), 200);
   int32_t index = 0;
-  for (const auto & [ band, amp ] : equalizer->band_amps()) {
+  for (const auto& [band, amp] : equalizer->band_amps()) {
     g_equalizer_ptr[index + 2] = new char[200];
     strncpy(g_equalizer_ptr[index + 2], std::to_string(band).data(), 200);
     g_equalizer_ptr[index + 3] = new char[200];
@@ -337,7 +337,7 @@ DLLEXPORT char** EqualizerCreateMode(int32_t mode) {
   g_equalizer_ptr[1] = new char[200];
   strncpy(g_equalizer_ptr[1], std::to_string(equalizer->pre_amp()).data(), 200);
   int32_t index = 0;
-  for (const auto & [ band, amp ] : equalizer->band_amps()) {
+  for (const auto& [band, amp] : equalizer->band_amps()) {
     g_equalizer_ptr[index + 2] = new char[200];
     strncpy(g_equalizer_ptr[index + 2], std::to_string(band).data(), 200);
     g_equalizer_ptr[index + 3] = new char[200];
