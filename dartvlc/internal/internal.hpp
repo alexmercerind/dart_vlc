@@ -9,6 +9,8 @@
  * GNU Lesser General Public License v2.1
  */
 
+#include <optional>
+
 #include <vlcpp/vlc.hpp>
 
 #include "state.hpp"
@@ -23,5 +25,7 @@ class PlayerInternal {
   std::unique_ptr<uint8_t> video_frame_buffer_ = nullptr;
   int32_t video_width_ = 0;
   int32_t video_height_ = 0;
+  std::optional<int32_t> preferred_video_width_ = std::nullopt;
+  std::optional<int32_t> preferred_video_height_ = std::nullopt;
   bool is_playlist_modified_ = false;
 };
