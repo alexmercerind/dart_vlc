@@ -62,7 +62,7 @@ class Player extends FFI.Player {
             commandlineArguments: commandlineArguments) {
     if (videoHeight > 0 && videoWidth > 0 && Platform.isWindows) {
       () async {
-        textureId.value = await _channel.invokeMethod('createTexture', {
+        textureId.value = await _channel.invokeMethod('PlayerRegisterTexture', {
           'playerId': id,
           'videoWidth': videoWidth,
           'videoHeight': videoHeight
@@ -74,7 +74,7 @@ class Player extends FFI.Player {
   @override
   void dispose() async {
     if (textureId.value != null) {
-      await _channel.invokeMethod('disposeTexture', {'playerId': id});
+      await _channel.invokeMethod('PlayerUnegisterTexture', {'playerId': id});
       textureId.value = null;
     }
 
