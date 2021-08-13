@@ -289,6 +289,16 @@ final ReceivePort receiver = new ReceivePort()
                   .add(players[playerId]!.general);
             break;
           }
+        case 'videoDimensionEvent':
+          {
+            players[playerId]!.videoDimensions =
+                VideoDimensions(int.parse(event[2]), int.parse(event[3]));
+            if (!players[playerId]!.videoDimensionsController.isClosed)
+              players[playerId]!
+                  .videoDimensionsController
+                  .add(players[playerId]!.videoDimensions);
+            break;
+          }
       }
     } else {
       videoFrameCallback(event[0], event[1]);

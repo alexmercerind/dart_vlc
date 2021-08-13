@@ -111,35 +111,35 @@ void DartVlcPlugin::HandleMethodCall(
   // Player::OnVideo callbacks for Texture.
 
   if (methodCall.method_name() == "PlayerRegisterTexture") {
-    flutter::EncodableMap arguments =
-        std::get<flutter::EncodableMap>(*methodCall.arguments());
-    int player_id =
-        std::get<int>(arguments[flutter::EncodableValue("playerId")]);
+    // TODO: Resize frame buffer.
+    // flutter::EncodableMap arguments =
+    //     std::get<flutter::EncodableMap>(*methodCall.arguments());
+    // int player_id =
+    //     std::get<int>(arguments[flutter::EncodableValue("playerId")]);
+    // auto[it, added] =
+    //     outlets.try_emplace(player_id, std::make_pair(0, nullptr));
+    // if (added) {
+    //   auto player = g_players->Get(player_id);
+    //   auto outlet = std::make_shared<VideoOutlet>(player->video_width(),
+    //                                               player->video_height());
+    //   auto texture_id = textureRegistrar->RegisterTexture(outlet->texture());
 
-    auto[it, added] =
-        outlets.try_emplace(player_id, std::make_pair(0, nullptr));
-    if (added) {
-      auto player = g_players->Get(player_id);
-      auto outlet = std::make_shared<VideoOutlet>(player->video_width(),
-                                                  player->video_height());
-      auto texture_id = textureRegistrar->RegisterTexture(outlet->texture());
-
-      it->second = std::make_pair(texture_id, std::move(outlet));
-      // TODO: The weak_ptr might not be needed anymore once callbacks can be
-      // unregistered.
-      player->OnVideo(
-          [ =, weak_outlet = std::weak_ptr<VideoOutlet>(it->second.second) ](
-              uint8_t * frame)
-              ->void {
-                if (auto outlet = weak_outlet.lock()) {
-                  outlet->OnFrame(frame);
-                  textureRegistrar->MarkTextureFrameAvailable(texture_id);
-                }
-              });
-      textureRegistrar->MarkTextureFrameAvailable(texture_id);
-      return result->Success(flutter::EncodableValue(texture_id));
-    }
-    result->Error("-1", "Texture was already registered.");
+    //   it->second = std::make_pair(texture_id, std::move(outlet));
+    //   // TODO: The weak_ptr might not be needed anymore once callbacks can be
+    //   // unregistered.
+    //   player->OnVideo(
+    //       [ =, weak_outlet = std::weak_ptr<VideoOutlet>(it->second.second) ](
+    //           uint8_t * frame, int32_t, int32_t)
+    //           ->void {
+    //             if (auto outlet = weak_outlet.lock()) {
+    //               outlet->OnFrame(frame);
+    //               textureRegistrar->MarkTextureFrameAvailable(texture_id);
+    //             }
+    //           });
+    //   textureRegistrar->MarkTextureFrameAvailable(texture_id);
+    return result->Success(flutter::EncodableValue(0));
+    // }
+    // result->Error("-1", "Texture was already registered.");
   } else if (methodCall.method_name() == "PlayerUnregisterTexture") {
     flutter::EncodableMap arguments =
         std::get<flutter::EncodableMap>(*methodCall.arguments());

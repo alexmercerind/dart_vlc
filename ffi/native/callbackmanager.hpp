@@ -115,9 +115,10 @@ void CallbackInt32(int32_t value) {
 }
 
 void CallbackStringArray(int32_t length, char** values) {
-  auto value_objects = std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
+  auto value_objects =
+      std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
   auto value_object_refs =
-       std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[length]);
+      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[length]);
 
   for (int32_t i = 0; i < length; i++) {
     Dart_CObject* value_object = &value_objects[i];
@@ -134,9 +135,10 @@ void CallbackStringArray(int32_t length, char** values) {
 
 void CallbackStringArray(const std::vector<std::string>& values) {
   auto length = values.size();
-  auto value_objects = std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
+  auto value_objects =
+      std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
   auto value_object_refs =
-       std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[length]);
+      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[length]);
 
   for (int32_t i = 0; i < length; i++) {
     Dart_CObject* value_object = &value_objects[i];
@@ -149,7 +151,6 @@ void CallbackStringArray(const std::vector<std::string>& values) {
   dart_object.value.as_array.length = length;
   dart_object.value.as_array.values = value_object_refs.get();
   g_dart_post_C_object(g_callback_port, &dart_object);
-
 }
 
 void CallbackFrame(int32_t id, int32_t length, uint8_t* frame) {
