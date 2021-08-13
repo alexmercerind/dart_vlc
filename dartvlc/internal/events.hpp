@@ -71,7 +71,7 @@ class PlayerEvents : public PlayerGetters {
     video_callback_ = callback;
     int32_t pitch = video_width_ * 4;
     int32_t size = video_height_ * pitch;
-    video_frame_buffer_ = std::make_unique<uint8_t>(size);
+    video_frame_buffer_.reset(new uint8_t[size]);
     vlc_media_player_.setVideoCallbacks(
         std::bind(&PlayerEvents::OnVideoLockCallback, this,
                   std::placeholders::_1),
