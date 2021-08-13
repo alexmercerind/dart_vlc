@@ -13,7 +13,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.1.1
+  dart_vlc: ^0.1.4
 ```
 
 **Dart CLI**
@@ -21,7 +21,7 @@ dependencies:
 ```yaml
 dependencies:
   ...
-  dart_vlc_ffi: ^0.1.0
+  dart_vlc_ffi: ^0.1.2
 ```
 
 More on Dart CLI implementation [here](./ffi/README.md).
@@ -396,7 +396,7 @@ Thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributio
 Thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [The Flutter Team](https://flutter.dev) for helping out the project.
 
 
-Thanks to following members of libVLC community (irrespective of the order) to give me bit of look & advice about how things work:
+Thanks to following members of libVLC community (irrespective of the order) for giving general ideas about libVLC APIs:
 
 - [@jeremyVignelles](https://github.com/jeremyVignelles)
 - [@chouquette](https://github.com/chouquette)
