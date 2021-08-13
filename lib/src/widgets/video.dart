@@ -44,7 +44,7 @@ class VideoFrame {
 ///     return Scaffold(
 ///       body: Center(
 ///         child: Video(
-///           playerId: 0,
+///           player: player,
 ///           height: 420.0,
 ///           width: 320.0
 ///         ),

@@ -1,230 +1,223 @@
 /*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
+ * libVLC++.
+ *
  * Hitesh Kumar Saini
  * https://github.com/alexmercerind
  * saini123hitesh@gmail.com; alexmercerind@gmail.com
- * 
+ *
  * GNU Lesser General Public License v2.1
  */
 
 #include "getters.hpp"
 
-
 class PlayerEvents : public PlayerGetters {
-public:
-	void onOpen(std::function<void(VLC::Media)> callback) {
-		this->_openCallback = callback;
-		this->mediaPlayer.eventManager().onMediaChanged(
-			std::bind(&PlayerEvents::_onOpenCallback, this, std::placeholders::_1)
-		);
-	}
+ public:
+  void OnOpen(std::function<void(VLC::Media)> callback) {
+    open_callback_ = callback;
+    vlc_media_player_.eventManager().onMediaChanged(
+        std::bind(&PlayerEvents::OnOpenCallback, this, std::placeholders::_1));
+  }
 
-	void onPlay(std::function<void(void)> callback) {
-		this->_playCallback = callback;
-		this->mediaPlayer.eventManager().onPlaying(
-			std::bind(&PlayerEvents::_onPlayCallback, this)
-		);
-	}
+  void OnPlay(std::function<void(void)> callback) {
+    play_callback_ = callback;
+    vlc_media_player_.eventManager().onPlaying(
+        std::bind(&PlayerEvents::OnPlayCallback, this));
+  }
 
-	void onPause(std::function<void(void)> callback) {
-		this->_pauseCallback = callback;
-		this->mediaPlayer.eventManager().onPaused(
-			std::bind(&PlayerEvents::_onPauseCallback, this)
-		);
-	}
+  void OnPause(std::function<void(void)> callback) {
+    pause_callback_ = callback;
+    vlc_media_player_.eventManager().onPaused(
+        std::bind(&PlayerEvents::OnPauseCallback, this));
+  }
 
-	void onStop(std::function<void(void)> callback) {
-		this->_stopCallback = callback;
-		this->mediaPlayer.eventManager().onStopped(
-			std::bind(&PlayerEvents::_onStopCallback, this)
-		);
-	}
+  void OnStop(std::function<void(void)> callback) {
+    stop_callback_ = callback;
+    vlc_media_player_.eventManager().onStopped(
+        std::bind(&PlayerEvents::OnStopCallback, this));
+  }
 
-	void onPosition(std::function<void(int)> callback) {
-		this->_positionCallback = callback;
-		this->mediaPlayer.eventManager().onPositionChanged(
-			std::bind(&PlayerEvents::_onPositionCallback, this, std::placeholders::_1)
-		);
-	}
+  void OnPosition(std::function<void(int32_t)> callback) {
+    position_callback_ = callback;
+    vlc_media_player_.eventManager().onPositionChanged(std::bind(
+        &PlayerEvents::OnPositionCallback, this, std::placeholders::_1));
+  }
 
-	void onSeekable(std::function<void(bool)> callback) {
-		this->_seekableCallback = callback;
-		this->mediaPlayer.eventManager().onSeekableChanged(
-			std::bind(&PlayerEvents::_onSeekableCallback, this, std::placeholders::_1)
-		);
-	}
+  void OnSeekable(std::function<void(bool)> callback) {
+    seekable_callback_ = callback;
+    vlc_media_player_.eventManager().onSeekableChanged(std::bind(
+        &PlayerEvents::OnSeekableCallback, this, std::placeholders::_1));
+  }
 
-	void onComplete(std::function<void(void)> callback) {
-		this->_completeCallback = callback;
-		this->mediaPlayer.eventManager().onEndReached(
-			std::bind(&PlayerEvents::_onCompleteCallback, this)
-		);
-	}
+  void OnComplete(std::function<void(void)> callback) {
+    complete_callback_ = callback;
+    vlc_media_player_.eventManager().onEndReached(
+        std::bind(&PlayerEvents::OnCompleteCallback, this));
+  }
 
-	void onVolume(std::function<void(float)> callback) {
-		this->_volumeCallback = callback;
-	}
+  void OnVolume(std::function<void(float)> callback) {
+    volume_callback_ = callback;
+  }
 
-	void onRate(std::function<void(float)> callback) {
-		this->_rateCallback = callback;
-	}
+  void OnRate(std::function<void(float)> callback) {
+    rate_callback_ = callback;
+  }
 
-	void onPlaylist(std::function<void(void)> callback) {
-		this->_playlistCallback = callback;
-	}
+  void OnPlaylist(std::function<void(void)> callback) {
+    playlist_callback_ = callback;
+  }
 
-	void onVideo(std::function<void(uint8_t* frame)> callback) {
-		this->_videoCallback = callback;
-		int pitch = this->videoWidth * 4;
-		int size = this->videoHeight * pitch;
-		this->_videoFrameBuffer = new uint8_t[size];
-		this->mediaPlayer.setVideoCallbacks(
-			std::bind(&PlayerEvents::_videoLockCallback, this, std::placeholders::_1),
-			nullptr,
-			std::bind(&PlayerEvents::_videoPictureCallback, this, std::placeholders::_1)
-		);
-		this->mediaPlayer.setVideoFormatCallbacks(
-			[=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p, uint32_t* l) -> int {
-				strcpy(chroma, "RGBA");
-				*w = this->videoWidth;
-				*h = this->videoHeight;
-				*p = pitch;
-				*l = this->videoHeight;
-				return 1;
-			},
-			nullptr
-		);
-		this->mediaPlayer.setVideoFormat("RGBA", this->videoWidth, this->videoHeight, pitch);
-	}
+  void OnVideo(std::function<void(uint8_t* frame)> callback) {
+    video_callback_ = callback;
+    int32_t pitch = video_width_ * 4;
+    int32_t size = video_height_ * pitch;
+    video_frame_buffer_.reset(new uint8_t[size]);
+    vlc_media_player_.setVideoCallbacks(
+        std::bind(&PlayerEvents::OnVideoLockCallback, this,
+                  std::placeholders::_1),
+        nullptr, std::bind(&PlayerEvents::OnVideoPictureCallback, this,
+                           std::placeholders::_1));
+    vlc_media_player_.setVideoFormatCallbacks(
+        [=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p,
+            uint32_t* l) -> int32_t {
+          strcpy(chroma, "RGBA");
+          *w = video_width_;
+          *h = video_height_;
+          *p = pitch;
+          *l = video_height_;
+          return 1;
+        },
+        nullptr);
+    vlc_media_player_.setVideoFormat("RGBA", video_width_, video_height_,
+                                     pitch);
+  }
 
-protected:
+ protected:
+  std::function<void(void)> playlist_callback_ = [=]() -> void {};
 
-	std::function<void(void)> _playlistCallback = [=]() -> void {};
+  void OnPlaylistCallback() {
+    if (is_playlist_modified_) {
+      vlc_media_list_player_.setMediaList(vlc_media_list_);
+      if (!vlc_media_list_.count()) {
+        state()->Reset();
+        vlc_media_list_player_.stop();
+        return;
+      }
+      if (state()->index_ > vlc_media_list_.count())
+        state()->index_ = vlc_media_list_.count() - 1;
+      is_playlist_modified_ = false;
+      playlist_callback_();
+    };
+  }
 
-	void _onPlaylistCallback() {
-		if (this->isPlaylistModified) {
-			this->mediaListPlayer.setMediaList(this->mediaList);
-			if (!this->mediaList.count()) {
-				this->state->reset();
-				this->mediaListPlayer.stop();
-				return;
-			}
-			if (this->state->index > this->mediaList.count())
-				this->state->index = this->mediaList.count() - 1;
-			this->isPlaylistModified = false;
-			this->_playlistCallback();
-		};
-	}
+  std::function<void(VLC::Media)> open_callback_ = [=](
+      VLC::Media media) -> void {};
 
-	std::function<void(VLC::Media)> _openCallback = [=](VLC::Media media) -> void {};
+  void OnOpenCallback(VLC::MediaPtr media_ptr) {
+    state()->is_playing_ = vlc_media_player_.isPlaying();
+    state()->is_valid_ = vlc_media_player_.isValid();
+    if (duration() > 0) {
+      state()->is_completed_ = false;
+      state()->position_ = position();
+      state()->duration_ = duration();
+    } else {
+      state()->is_completed_ = false;
+      state()->position_ = 0;
+      state()->duration_ = 0;
+    }
+    state()->index_ = vlc_media_list_.indexOfItem(*media_ptr.get());
+    open_callback_(*media_ptr.get());
+  }
 
-	void _onOpenCallback(VLC::MediaPtr media) {
-		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		this->state->isValid = this->mediaPlayer.isValid();
-		if (this->getDuration() > 0) {
-			this->state->isCompleted = false;
-			this->state->position = this->getPosition();
-			this->state->duration = this->getDuration();
-		}
-		else {
-			this->state->isCompleted = false;
-			this->state->position = 0;
-			this->state->duration = 0;
-		}
-		this->state->index = this->mediaList.indexOfItem(*media.get());
-		this->_openCallback(*media.get());
-	}
+  std::function<void(void)> play_callback_ = [=]() -> void {};
 
-	std::function<void(void)> _playCallback = [=]() -> void {};
+  void OnPlayCallback() {
+    state()->is_playing_ = vlc_media_player_.isPlaying();
+    if (duration() > 0) {
+      state()->is_valid_ = vlc_media_player_.isValid();
+      state()->is_completed_ = false;
+      state()->position_ = position();
+      state()->duration_ = duration();
+    }
+    play_callback_();
+  }
 
-	void _onPlayCallback() {
-		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		if (this->getDuration() > 0) {
-			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->isCompleted = false;
-			this->state->position = this->getPosition();
-			this->state->duration = this->getDuration();
-		}
-		this->_playCallback();
-	}
+  std::function<void(void)> pause_callback_ = [=]() -> void {};
 
-	std::function<void(void)> _pauseCallback = [=]() -> void {};
+  void OnPauseCallback() {
+    state()->is_playing_ = vlc_media_player_.isPlaying();
+    if (duration() > 0) {
+      state()->position_ = position();
+      state()->is_valid_ = vlc_media_player_.isValid();
+      state()->duration_ = duration();
+    }
+    pause_callback_();
+  }
 
-	void _onPauseCallback() {
-		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		if (this->getDuration() > 0) {
-			this->state->position = this->getPosition();
-			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->duration = this->getDuration();
-		}
-		this->_pauseCallback();
-	}
+  std::function<void(void)> stop_callback_ = [=]() -> void {};
 
-	std::function<void(void)> _stopCallback = [=]() -> void {};
+  void OnStopCallback() {
+    state()->is_playing_ = vlc_media_player_.isPlaying();
+    state()->is_valid_ = vlc_media_player_.isValid();
+    state()->position_ = 0;
+    state()->duration_ = 0;
+    stop_callback_();
+  }
 
-	void _onStopCallback() {
-		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		this->state->isValid = this->mediaPlayer.isValid();
-		this->state->position = 0;
-		this->state->duration = 0;
-		this->_stopCallback();
-	}
+  std::function<void(int32_t)> position_callback_ = [=](
+      int32_t position) -> void {};
 
-	std::function<void(int)> _positionCallback = [=](int position) -> void {};
+  void OnPositionCallback(float relative_position) {
+    state()->is_playing_ = vlc_media_player_.isPlaying();
+    if (duration() > 0) {
+      state()->position_ = position();
+      state()->is_valid_ = vlc_media_player_.isValid();
+      state()->duration_ = duration();
+    }
+    position_callback_(
+        static_cast<int32_t>(relative_position * vlc_media_player_.length()));
+  }
 
-	void _onPositionCallback(float relativePosition) {
-		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		if (this->getDuration() > 0) {
-			this->state->position = this->getPosition();
-			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->duration = this->getDuration();
-		}
-		this->_positionCallback(
-			static_cast<int>(relativePosition * this->mediaPlayer.length())
-		);
-	}
+  std::function<void(bool)> seekable_callback_ = [=](bool isSeekable) -> void {
+  };
 
-	std::function<void(bool)> _seekableCallback = [=](bool isSeekable) -> void {};
+  void OnSeekableCallback(bool isSeekable) {
+    if (duration() > 0) {
+      state()->is_seekable_ = isSeekable;
+      seekable_callback_(isSeekable);
+    }
+  }
 
-	void _onSeekableCallback(bool isSeekable) {
-		if (this->getDuration() > 0) {
-			this->state->isSeekable = isSeekable;
-			this->_seekableCallback(isSeekable);
-		}
-	}
+  std::function<void(void)> complete_callback_ = [=]() -> void {};
 
-	std::function<void(void)> _completeCallback = [=]() -> void {};
+  void OnCompleteCallback() {
+    state()->is_playing_ = vlc_media_player_.isPlaying();
+    if (duration() > 0) {
+      state()->is_valid_ = vlc_media_player_.isValid();
+      state()->is_completed_ = true;
+      state()->position_ = position();
+      state()->duration_ = duration();
+      OnPlaylistCallback();
+      complete_callback_();
+    } else {
+      state()->position_ = 0;
+      state()->duration_ = 0;
+    }
+  }
 
-	void _onCompleteCallback() {
-		this->state->isPlaying = this->mediaPlayer.isPlaying();
-		if (this->getDuration() > 0) {
-			this->state->isValid = this->mediaPlayer.isValid();
-			this->state->isCompleted = true;
-			this->state->position = this->getPosition();
-			this->state->duration = this->getDuration();
-			this->_onPlaylistCallback();
-			this->_completeCallback();
-		} else {
-			this->state->position = 0;
-			this->state->duration = 0;
-		}
-	}
+  std::function<void(float)> volume_callback_ = [=](float volume) -> void {};
 
-	std::function<void(float)> _volumeCallback = [=](float volume) -> void {};
+  std::function<void(float)> rate_callback_ = [=](float rate) -> void {};
 
-	std::function<void(float)> _rateCallback = [=](float rate) -> void {};
+  std::function<void(uint8_t* frame)> video_callback_ = [=](
+      uint8_t* frame) -> void {};
 
-	std::function<void(uint8_t* frame)> _videoCallback = [=](uint8_t* frame) -> void {};
+  void* OnVideoLockCallback(void** planes) {
+    planes[0] = static_cast<void*>(video_frame_buffer_.get());
+    return nullptr;
+  }
 
-	uint8_t* _videoFrameBuffer;
-
-	void* _videoLockCallback(void** planes) {
-		planes[0] = static_cast<void*>(this->_videoFrameBuffer);
-		return nullptr;
-	}
-
-	void _videoPictureCallback(void* picture) {
-		this->_videoCallback(static_cast<uint8_t*>(this->_videoFrameBuffer));
-	}
+  void OnVideoPictureCallback(void* picture) {
+    video_callback_(static_cast<uint8_t*>(video_frame_buffer_.get()));
+  }
 };

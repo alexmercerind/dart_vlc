@@ -1,10 +1,11 @@
 /*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
+ * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
+ * libVLC++.
+ *
  * Hitesh Kumar Saini
  * https://github.com/alexmercerind
  * saini123hitesh@gmail.com; alexmercerind@gmail.com
- * 
+ *
  * GNU Lesser General Public License v2.1
  */
 
@@ -14,209 +15,189 @@
 #include "../mediasource/media.hpp"
 #include "../mediasource/playlist.hpp"
 
-
-class PlayerSetters: public PlayerEvents {
-public:
-	void open(MediaSource* mediaSource, bool autoStart = true) {
-		/* Freed the previous `Media` objects when a new `Playlist` or `Media` is opened. */
-		this->state->isStarted = false;
-		this->stop();
-		for (Media* media: this->state->medias->medias) {
-			delete media;
-		}
-		this->state->medias->medias = {};
-		this->mediaList = VLC::MediaList(this->instance);
-		if (mediaSource->mediaSourceType() == "MediaSourceType.media") {
-			Media* media = dynamic_cast<Media*>(mediaSource);
-			VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
-			this->mediaList.addMedia(_);
-			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->state->medias->medias = { media };
-			this->state->isPlaylist = false;
-		}
-		else if (mediaSource->mediaSourceType() == "MediaSourceType.playlist") {
-			Playlist* playlist = dynamic_cast<Playlist*>(mediaSource);
-			if (playlist->medias.empty())
-				return;
-			for (Media* media : playlist->medias) {
-				VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
-				this->mediaList.addMedia(_);
-			}
-			this->mediaListPlayer.setMediaList(this->mediaList);
-			this->state->medias->medias = playlist->medias;
-			this->state->isPlaylist = true;
-		}
-		this->_onOpenCallback(this->mediaList.itemAtIndex(0));
-		this->state->index = 0;
-		this->state->isPlaying = this->mediaListPlayer.isPlaying();
-		this->state->isValid = this->mediaListPlayer.isValid();
-		if (autoStart) this->play();
-	}
-
-	void play() {
-		if (!this->state->isStarted) {
-			this->mediaListPlayer.playItemAtIndex(0);
-			this->state->isStarted = true;
-		}
-        else {
-			this->mediaListPlayer.play();
-		}
-	}
-
-    void pause() {
-		if(this->mediaListPlayer.isPlaying()){
-        	this->mediaListPlayer.pause();
-		}
+class PlayerSetters : public PlayerEvents {
+ public:
+  void Open(std::shared_ptr<MediaSource> media_source, bool auto_start = true) {
+    state()->is_started_ = false;
+    state()->Reset();
+    Stop();
+    state()->medias()->medias() = {};
+    vlc_media_list_ = VLC::MediaList(vlc_instance_);
+    if (media_source->Type() == "MediaSourceType.media") {
+      std::shared_ptr<Media> media =
+          std::dynamic_pointer_cast<Media>(media_source);
+      VLC::Media vlc_media = VLC::Media(vlc_instance_, media->location(),
+                                        VLC::Media::FromLocation);
+      vlc_media_list_.addMedia(vlc_media);
+      vlc_media_list_player_.setMediaList(vlc_media_list_);
+      state()->medias()->medias() = {media};
+      state()->is_playlist_ = false;
+    } else if (media_source->Type() == "MediaSourceType.playlist") {
+      std::shared_ptr<Playlist> playlist =
+          std::dynamic_pointer_cast<Playlist>(media_source);
+      if (playlist->medias().empty()) return;
+      for (std::shared_ptr<Media>& media : playlist->medias()) {
+        VLC::Media vlc_media = VLC::Media(vlc_instance_, media->location(),
+                                          VLC::Media::FromLocation);
+        vlc_media_list_.addMedia(vlc_media);
+        state()->medias()->medias().emplace_back(media);
+      }
+      vlc_media_list_player_.setMediaList(vlc_media_list_);
+      state()->is_playlist_ = true;
     }
+    OnOpenCallback(vlc_media_list_.itemAtIndex(0));
+    if (auto_start) Play();
+  }
 
-	void playOrPause() {
-		if (!this->state->isStarted) {
-			this->mediaListPlayer.playItemAtIndex(0);
-			this->state->isStarted = true;
-		}
-		else {
-			this->mediaListPlayer.pause();
-		}
-	}
-
-    void stop() {
-        this->mediaListPlayer.stop();
+  void Play() {
+    if (!state()->is_started_ && !state()->medias()->medias().empty()) {
+      vlc_media_list_player_.playItemAtIndex(0);
+      state()->is_started_ = true;
+    } else {
+      vlc_media_list_player_.play();
     }
+  }
 
-	void next() {
-		this->_onPlaylistCallback();
-		if (this->state->index < this->mediaList.count())
-			this->mediaListPlayer.playItemAtIndex(
-				++this->state->index
-			);
-	}
+  void Pause() {
+    if (vlc_media_list_player_.isPlaying()) {
+      vlc_media_list_player_.pause();
+    }
+  }
 
-	void back() {
-		this->_onPlaylistCallback();
-		if (this->state->index > 0)
-			this->mediaListPlayer.playItemAtIndex(
-				--this->state->index
-			);
-	}
+  void PlayOrPause() {
+    if (!state()->is_started_ && !state()->medias()->medias().empty()) {
+      vlc_media_list_player_.playItemAtIndex(0);
+      state()->is_started_ = true;
+    } else {
+      vlc_media_list_player_.pause();
+    }
+  }
 
-	void jump(int index) {
-		this->_onPlaylistCallback();
-		if (index >= 0 && index < this->mediaList.count())
-			this->mediaListPlayer.playItemAtIndex(index);
-	}
+  void Stop() { vlc_media_list_player_.stop(); }
 
-	void seek(int position) {
-		float relativePosition = static_cast<float>(position) / static_cast<float>(this->getDuration());
-		this->mediaPlayer.setPosition(relativePosition);
-	}
+  void Next() {
+    OnPlaylistCallback();
+    if (state()->index_ < vlc_media_list_.count())
+      vlc_media_list_player_.playItemAtIndex(++state()->index_);
+  }
 
-	void setVolume(float volume) {
-		this->mediaPlayer.setVolume(
-				static_cast<int>(volume * 100)
-		);
-		this->state->volume = volume;
-		this->_volumeCallback(volume);
-	}
+  void Back() {
+    OnPlaylistCallback();
+    if (state()->index_ > 0)
+      vlc_media_list_player_.playItemAtIndex(--state()->index_);
+  }
 
-	void setRate(float rate) {
-		this->mediaPlayer.setRate(rate);
-		this->state->rate = rate;
-		this->_rateCallback(rate);
-	}
+  void Jump(int32_t index) {
+    OnPlaylistCallback();
+    if (index >= 0 && index < vlc_media_list_.count())
+      vlc_media_list_player_.playItemAtIndex(index);
+  }
 
-	void setDevice(Device* device) {
-		this->state->device = device->id != "" ? device: nullptr;
-		this->mediaPlayer.outputDeviceSet(device->id);
-	}
+  void Seek(int32_t position) {
+    vlc_media_player_.setPosition(static_cast<float>(position) /
+                                  static_cast<float>(duration()));
+  }
 
-	void setPlaylistMode(PlaylistMode mode) {
-		this->mediaListPlayer.setPlaybackMode(
-			static_cast<libvlc_playback_mode_t>(mode)
-		);
-	}
+  void SetVolume(float volume) {
+    vlc_media_player_.setVolume(static_cast<int32_t>(volume * 100));
+    state()->volume_ = volume;
+    volume_callback_(volume);
+  }
 
-	void setEqualizer(Equalizer* equalizer) {
-		this->mediaPlayer.setEqualizer(equalizer->equalizer);
-	}
+  void SetRate(float rate) {
+    vlc_media_player_.setRate(rate);
+    state()->rate_ = rate;
+    rate_callback_(rate);
+  }
 
-	void setUserAgent(std::string userAgent) {
-		this->instance.setUserAgent("Dart VLC", userAgent);
-	}
+  void SetDevice(Device device) {
+    vlc_media_player_.outputDeviceSet(device.id());
+  }
 
-	void add(Media* media) {
-		this->isPlaylistModified = true;
-		this->state->medias->medias.emplace_back(media);
-		VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
-		this->mediaList.addMedia(_);
-		this->_onPlaylistCallback();
-		this->state->isPlaylist = true;
-	}
+  void SetPlaylistMode(PlaylistMode mode) {
+    vlc_media_list_player_.setPlaybackMode(
+        static_cast<libvlc_playback_mode_t>(mode));
+  }
 
-	void remove(int index) {
-		if (index < 0 || index >= this->state->medias->medias.size()) return;
-		this->isPlaylistModified = true;
-		this->state->medias->medias.erase(state->medias->medias.begin() + index);
-		this->mediaList.removeIndex(index);
-		this->_onPlaylistCallback();
-		if (!this->state->isCompleted && this->state->index == index) {
-			if (this->state->index == this->mediaList.count()) {
-				this->mediaListPlayer.stop();
-			}
-			else
-				this->jump(index);
-		}
-		if (this->state->index > index)
-			this->state->index--;
-		this->state->isPlaylist = true;
-	}
+  void SetEqualizer(Equalizer equalizer) {
+    vlc_media_player_.setEqualizer(equalizer.vlc_equalizer_);
+  }
 
-	void insert(int index, Media* media) {
-		if (index < 0 || index >= this->state->medias->medias.size()) return;
-		this->isPlaylistModified = true;
-		this->state->medias->medias.insert(
-			state->medias->medias.begin() + index,
-			media
-		);
-		VLC::Media _ = VLC::Media(this->instance, media->location, VLC::Media::FromLocation);
-		this->mediaList.insertMedia(_, index);
-		this->_onPlaylistCallback();
-		if (this->state->index <= index)
-			this->state->index++;
-		this->state->isPlaylist = true;
-	}
+  void SetUserAgent(std::string userAgent) {
+    vlc_instance_.setUserAgent("dart_vlc", userAgent);
+  }
 
-	void move(int initial, int final) {
-		if (
-			initial < 0 ||
-			initial >= this->state->medias->medias.size() ||
-			final < 0 ||
-			final >= this->state->medias->medias.size()
-		) return;
-		if (initial == final) return;
-		this->isPlaylistModified = true;
-		Media* _ = this->state->medias->medias[initial];
-		VLC::Media __ = VLC::Media(this->instance, this->mediaList.itemAtIndex(initial).get()->mrl(), VLC::Media::FromLocation);
-		this->state->medias->medias.erase(
-			this->state->medias->medias.begin() + initial
-		);
-		this->mediaList.removeIndex(initial);
-		this->state->medias->medias.insert(
-			this->state->medias->medias.begin() + final,
-			_
-		);
-		this->mediaList.insertMedia(__, final);
-		if (initial == this->state->index) {
-			this->state->index = final;
-		}
-		else if (final == this->state->index) {
-			this->state->index++;
-		}
-		else if (!((initial < this->state->index && final < this->state->index) || (initial > this->state->index && final > this->state->index))) {
-			if (initial > final)
-				this->state->index++;
-			else
-				this->state->index--;
-		}
-		this->_onPlaylistCallback();
-	}
+  void Add(std::shared_ptr<Media> media) {
+    is_playlist_modified_ = true;
+    VLC::Media vlc_media =
+        VLC::Media(vlc_instance_, media->location(), VLC::Media::FromLocation);
+    vlc_media_list_.addMedia(vlc_media);
+    state()->medias()->medias().emplace_back(media);
+    OnPlaylistCallback();
+    state()->is_playlist_ = true;
+  }
+
+  void Remove(int32_t index) {
+    if (index < 0 || index >= state()->medias()->medias().size()) return;
+    is_playlist_modified_ = true;
+    state()->medias()->medias().erase(state()->medias()->medias().begin() +
+                                      index);
+    vlc_media_list_.removeIndex(index);
+    OnPlaylistCallback();
+    if (!state()->is_completed_ && state()->index_ == index) {
+      if (state()->index_ == vlc_media_list_.count()) {
+        vlc_media_list_player_.stop();
+      } else
+        Jump(index);
+    }
+    if (state()->index_ > index) state()->index_--;
+    state()->is_playlist_ = true;
+  }
+
+  void Insert(int32_t index, std::shared_ptr<Media> media) {
+    if (index < 0 || index >= state()->medias()->medias().size()) return;
+    is_playlist_modified_ = true;
+    VLC::Media vlc_media =
+        VLC::Media(vlc_instance_, media->location(), VLC::Media::FromLocation);
+    vlc_media_list_.insertMedia(vlc_media, index);
+    state()->medias()->medias().insert(
+        state()->medias()->medias().begin() + index, media);
+    OnPlaylistCallback();
+    if (state()->index_ <= index) state()->index_++;
+    state()->is_playlist_ = true;
+  }
+
+  void Move(int32_t initial, int32_t final) {
+    if (initial < 0 || initial >= state()->medias()->medias().size() ||
+        final < 0 || final >= state()->medias()->medias().size())
+      return;
+    if (initial == final) return;
+    is_playlist_modified_ = true;
+    std::shared_ptr<Media> media = state()->medias()->medias()[initial];
+    VLC::Media _media = VLC::Media(
+        vlc_instance_, vlc_media_list_.itemAtIndex(initial).get()->mrl(),
+        VLC::Media::FromLocation);
+    state()->medias()->medias().erase(state()->medias()->medias().begin() +
+                                      initial);
+    vlc_media_list_.removeIndex(initial);
+    state()->medias()->medias().insert(
+        state()->medias()->medias().begin() + final, std::move(media));
+    vlc_media_list_.insertMedia(_media, final);
+    if (initial == state()->index_) {
+      state()->index_ = final;
+    } else if (final == state()->index_) {
+      state()->index_++;
+    } else if (!((initial < state()->index_ && final < state()->index_) ||
+                 (initial > state()->index_ && final > state()->index_))) {
+      if (initial > final)
+        state()->index_++;
+      else
+        state()->index_--;
+    }
+    OnPlaylistCallback();
+  }
+
+  void SetVideoWidth(int32_t video_width) { video_width_ = video_width; }
+
+  void SetVideoHeight(int32_t video_height) { video_height_ = video_height; }
 };

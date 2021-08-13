@@ -21,112 +21,102 @@
 
 #include "mediasource.hpp"
 
-VLC::Instance instance = VLC::Instance(0, nullptr);
+VLC::Instance g_vlc_instance = VLC::Instance(0, nullptr);
 
-/* Media object is cleared inside PlayerSetters::open. */
 class Media : public MediaSource {
  public:
-  std::string mediaType;
-  std::string resource;
-  std::string location;
-  std::map<std::string, std::string> metas;
-
   static constexpr auto kMediaTypeFile = "MediaType.file";
   static constexpr auto kMediaTypeNetwork = "MediaType.network";
   static constexpr auto kMediaTypeDirectShow = "MediaType.directShow";
 
-  int64_t id() const { return reinterpret_cast<int64_t>(this); }
+  std::string& media_type() { return media_type_; };
+  std::string& resource() { return resource_; };
+  std::string& location() { return location_; };
+  std::map<std::string, std::string>& metas() { return metas_; };
 
-  static std::unique_ptr<Media> create(std::string_view type,
-                                       const std::string& url, bool parse = false) {
+  static std::shared_ptr<Media> create(std::string_view type,
+                                       const std::string& url,
+                                       bool parse = false) {
     if (type.compare(kMediaTypeFile) == 0)
-      return std::unique_ptr<Media>(Media::file(url, parse));
+      return std::shared_ptr<Media>(Media::file(url, parse));
     else if (type.compare(kMediaTypeNetwork) == 0)
-      return std::unique_ptr<Media>(Media::network(url, parse));
+      return std::shared_ptr<Media>(Media::network(url, parse));
     else
-      return std::unique_ptr<Media>(Media::directShow(url));
+      return std::shared_ptr<Media>(Media::directShow(url));
   }
 
-  // TODO: Return std::unique_ptr<Media>
-  static Media* file(std::string path, bool parse = false,
-                     int timeout = 10000) {
-    Media* media = new Media();
-    media->resource = path;
-    media->location = "file:///" + path;
-    media->mediaType = kMediaTypeFile;
+  static std::shared_ptr<Media> file(std::string path, bool parse = false,
+                                     int timeout = 10000) {
+    std::shared_ptr<Media> media = std::make_shared<Media>();
+    media->resource_ = path;
+    media->location_ = "file:///" + path;
+    media->media_type_ = kMediaTypeFile;
     if (parse) media->parse(timeout);
     return media;
   }
 
-  // TODO: Return std::unique_ptr<Media>
-  static Media* network(std::string url, bool parse = false,
-                        int timeout = 10000) {
-    Media* media = new Media();
-    media->resource = url;
-    media->location = url;
-    media->mediaType = kMediaTypeNetwork;
+  static std::shared_ptr<Media> network(std::string url, bool parse = false,
+                                        int timeout = 10000) {
+    std::shared_ptr<Media> media = std::make_shared<Media>();
+    media->resource_ = url;
+    media->location_ = url;
+    media->media_type_ = kMediaTypeNetwork;
     if (parse) media->parse(timeout);
     return media;
   }
 
-  // TODO: Return std::unique_ptr<Media>
-  static Media* directShow(std::string resource) {
-    Media* media = new Media();
-    media->resource = resource;
-    media->location = resource;
-    media->mediaType = kMediaTypeDirectShow;
+  static std::shared_ptr<Media> directShow(std::string resource) {
+    std::shared_ptr<Media> media = std::make_shared<Media>();
+    media->resource_ = resource;
+    media->location_ = resource;
+    media->media_type_ = kMediaTypeDirectShow;
     return media;
   }
-
-  /* Now done directly from dart_vlc.
-  static Media* asset(int id, std::string path, bool parse = false, int timeout
-  = 10000) { Media* media = new Media(); media->id = id; media->resource = path;
-          media->location = "file:///" +
-  std::filesystem::temp_directory_path().u8string() + "/" + path;
-          media->mediaType = "MediaType.asset";
-          if (parse) media->parse(timeout);
-          return media;
-  }
-  */
 
   void parse(int timeout) {
     VLC::Media media =
-        VLC::Media(instance, this->location, VLC::Media::FromLocation);
-    std::promise<bool>* isParsed = new std::promise<bool>();
+        VLC::Media(g_vlc_instance, location_, VLC::Media::FromLocation);
+    std::promise<bool> is_parsed = std::promise<bool>();
+    auto is_parsed_ptr = &is_parsed;
     media.eventManager().onParsedChanged(
-        [isParsed](VLC::Media::ParsedStatus status) -> void {
-          isParsed->set_value(true);
+        [is_parsed_ptr](VLC::Media::ParsedStatus status) -> void {
+          is_parsed_ptr->set_value(true);
         });
     media.parseWithOptions(VLC::Media::ParseFlags::Network, timeout);
-    isParsed->get_future().wait();
-    this->metas["title"] = media.meta(libvlc_meta_Title);
-    this->metas["artist"] = media.meta(libvlc_meta_Artist);
-    this->metas["genre"] = media.meta(libvlc_meta_Genre);
-    this->metas["copyright"] = media.meta(libvlc_meta_Copyright);
-    this->metas["album"] = media.meta(libvlc_meta_Album);
-    this->metas["trackNumber"] = media.meta(libvlc_meta_TrackNumber);
-    this->metas["description"] = media.meta(libvlc_meta_Description);
-    this->metas["rating"] = media.meta(libvlc_meta_Rating);
-    this->metas["date"] = media.meta(libvlc_meta_Date);
-    this->metas["settings"] = media.meta(libvlc_meta_Setting);
-    this->metas["url"] = media.meta(libvlc_meta_URL);
-    this->metas["language"] = media.meta(libvlc_meta_Language);
-    this->metas["nowPlaying"] = media.meta(libvlc_meta_NowPlaying);
-    this->metas["encodedBy"] = media.meta(libvlc_meta_EncodedBy);
-    this->metas["artworkUrl"] = media.meta(libvlc_meta_ArtworkURL);
-    this->metas["trackTotal"] = media.meta(libvlc_meta_TrackTotal);
-    this->metas["director"] = media.meta(libvlc_meta_Director);
-    this->metas["season"] = media.meta(libvlc_meta_Season);
-    this->metas["episode"] = media.meta(libvlc_meta_Episode);
-    this->metas["actors"] = media.meta(libvlc_meta_Actors);
-    this->metas["albumArtist"] = media.meta(libvlc_meta_AlbumArtist);
-    this->metas["discNumber"] = media.meta(libvlc_meta_DiscNumber);
-    this->metas["discTotal"] = media.meta(libvlc_meta_DiscTotal);
-    this->metas["duration"] = std::to_string(media.duration());
-    delete isParsed;
+    is_parsed_ptr->get_future().wait();
+    metas_["title"] = media.meta(libvlc_meta_Title);
+    metas_["artist"] = media.meta(libvlc_meta_Artist);
+    metas_["genre"] = media.meta(libvlc_meta_Genre);
+    metas_["copyright"] = media.meta(libvlc_meta_Copyright);
+    metas_["album"] = media.meta(libvlc_meta_Album);
+    metas_["trackNumber"] = media.meta(libvlc_meta_TrackNumber);
+    metas_["description"] = media.meta(libvlc_meta_Description);
+    metas_["rating"] = media.meta(libvlc_meta_Rating);
+    metas_["date"] = media.meta(libvlc_meta_Date);
+    metas_["settings"] = media.meta(libvlc_meta_Setting);
+    metas_["url"] = media.meta(libvlc_meta_URL);
+    metas_["language"] = media.meta(libvlc_meta_Language);
+    metas_["nowPlaying"] = media.meta(libvlc_meta_NowPlaying);
+    metas_["encodedBy"] = media.meta(libvlc_meta_EncodedBy);
+    metas_["artworkUrl"] = media.meta(libvlc_meta_ArtworkURL);
+    metas_["trackTotal"] = media.meta(libvlc_meta_TrackTotal);
+    metas_["director"] = media.meta(libvlc_meta_Director);
+    metas_["season"] = media.meta(libvlc_meta_Season);
+    metas_["episode"] = media.meta(libvlc_meta_Episode);
+    metas_["actors"] = media.meta(libvlc_meta_Actors);
+    metas_["albumArtist"] = media.meta(libvlc_meta_AlbumArtist);
+    metas_["discNumber"] = media.meta(libvlc_meta_DiscNumber);
+    metas_["discTotal"] = media.meta(libvlc_meta_DiscTotal);
+    metas_["duration"] = std::to_string(media.duration());
   }
 
-  std::string mediaSourceType() { return "MediaSourceType.media"; }
+  std::string Type() { return "MediaSourceType.media"; }
+
+ private:
+  std::string media_type_;
+  std::string resource_;
+  std::string location_;
+  std::map<std::string, std::string> metas_;
 };
 
 #endif

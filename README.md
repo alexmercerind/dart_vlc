@@ -13,7 +13,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.1.1
+  dart_vlc: ^0.1.4
 ```
 
 **Dart CLI**
@@ -21,7 +21,7 @@ dependencies:
 ```yaml
 dependencies:
   ...
-  dart_vlc_ffi: ^0.1.0
+  dart_vlc_ffi: ^0.1.2
 ```
 
 More on Dart CLI implementation [here](./ffi/README.md).
@@ -391,9 +391,12 @@ Under progress or planned features (irrespective of order)...
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
 
-[@jnschulze](https://github.com/jnschulze) for his awesome contributions to Flutter engine like adding texture support.
+Thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributions to this project & to Flutter engine like adding texture support.
 
-Thanks to following members of libVLC community (irrespective of the order) to give me bit of look & advice about how things work:
+Thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [The Flutter Team](https://flutter.dev) for helping out the project.
+
+
+Thanks to following members of libVLC community (irrespective of the order) for giving general ideas about libVLC APIs:
 
 - [@jeremyVignelles](https://github.com/jeremyVignelles)
 - [@chouquette](https://github.com/chouquette)

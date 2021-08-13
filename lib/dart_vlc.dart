@@ -45,7 +45,7 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 ///
 /// Do not provide [videoWidth] & [videoHeight], if you wish to use the [Player] for only audio playback.
 ///
-/// Use various methods & event streams avaiable to control & listen to events of the playback.
+/// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player extends FFI.Player {
   final ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
@@ -62,7 +62,7 @@ class Player extends FFI.Player {
             commandlineArguments: commandlineArguments) {
     if (videoHeight > 0 && videoWidth > 0 && Platform.isWindows) {
       () async {
-        textureId.value = await _channel.invokeMethod('createTexture', {
+        textureId.value = await _channel.invokeMethod('PlayerRegisterTexture', {
           'playerId': id,
           'videoWidth': videoWidth,
           'videoHeight': videoHeight
@@ -74,7 +74,7 @@ class Player extends FFI.Player {
   @override
   void dispose() async {
     if (textureId.value != null) {
-      await _channel.invokeMethod('disposeTexture', {'playerId': id});
+      await _channel.invokeMethod('PlayerUnegisterTexture', {'playerId': id});
       textureId.value = null;
     }
 

@@ -33,7 +33,7 @@ Map<int, Player> players = {};
 ///
 /// Do not provide [videoWidth] & [videoHeight], if you wish to use the [Player] for only audio playback.
 ///
-/// Use various methods & event streams avaiable to control & listen to events of the playback.
+/// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player {
   /// Id associated with the [Player] instance.
