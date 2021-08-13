@@ -77,7 +77,7 @@ class PlayerSetters : public PlayerEvents {
 
   void Next() {
     OnPlaylistCallback();
-    if (state()->index_ < vlc_media_list_.count())
+    if (state()->index_ + 1 < vlc_media_list_.count())
       vlc_media_list_player_.playItemAtIndex(++state()->index_);
   }
 
