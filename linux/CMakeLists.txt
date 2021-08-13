@@ -8,6 +8,16 @@
 cmake_minimum_required(VERSION 3.10)
 set (CMAKE_CXX_STANDARD 17)
 
+set(PROJECT_NAME dart_vlc)
+project(${PROJECT_NAME} LANGUAGES CXX)
+set(PLUGIN_NAME dart_vlc_plugin)
+include_directories(${PLUGIN_NAME} INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+add_library(${PLUGIN_NAME} SHARED
+  dart_vlc_plugin.cc
+)
+
 set(PACKAGE dartvlc)
 add_library(${PACKAGE} SHARED
   ../ffi/native/dart_vlc.cpp
@@ -23,6 +33,7 @@ set(LIBVLCPP_SOURCE ${LIBVLC_PACKAGE_DIR}/libvlcpp-master)
 add_custom_target(LIBVLC_EXTRACT ALL)
 
 if (NOT EXISTS ${LIBVLCPP_SOURCE})
+file(MAKE_DIRECTORY ${LIBVLC_PACKAGE_DIR})
   add_custom_command(
     TARGET LIBVLC_EXTRACT PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
@@ -48,16 +59,6 @@ target_link_libraries(${PACKAGE} PRIVATE
 
 
 # Not used Flutter plugin template.
-
-set(PROJECT_NAME dart_vlc)
-project(${PROJECT_NAME} LANGUAGES CXX)
-set(PLUGIN_NAME dart_vlc_plugin)
-include_directories(${PLUGIN_NAME} INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-add_library(${PLUGIN_NAME} SHARED
-  dart_vlc_plugin.cc
-)
 
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
