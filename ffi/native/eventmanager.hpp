@@ -66,9 +66,9 @@ inline void OnOpen(int32_t id, PlayerState* state) {
   CallbackStringArray(event);
 }
 
-inline void OnVideoDimension(int32_t id, int32_t video_width,
-                             int32_t video_height) {
-  std::vector<std::string> event{std::to_string(id), "videoDimensionEvent",
+inline void OnVideoDimensions(int32_t id, int32_t video_width,
+                              int32_t video_height) {
+  std::vector<std::string> event{std::to_string(id), "videoDimensionsEvent",
                                  std::to_string(video_width),
                                  std::to_string(video_height)};
   CallbackStringArray(event);

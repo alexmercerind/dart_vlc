@@ -24,7 +24,6 @@ auto TO_CHARARRAY = [](std::vector<std::string>& vector) -> char** {
 class Player : public PlayerSetters {
  public:
   Player(std::vector<std::string> cmd_arguments = {}) {
-    cmd_arguments.emplace_back("--no-video");
     if (cmd_arguments.empty()) {
       vlc_instance_ = VLC::Instance(0, nullptr);
     } else {

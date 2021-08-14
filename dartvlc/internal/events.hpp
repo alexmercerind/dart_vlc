@@ -25,10 +25,10 @@ class PlayerEvents : public PlayerGetters {
         std::bind(&PlayerEvents::OnPlayCallback, this));
   }
 
-  void OnVideoDimension(std::function<void(int32_t, int32_t)> callback) {
+  void OnVideoDimensions(std::function<void(int32_t, int32_t)> callback) {
     video_dimension_callback_ = callback;
     vlc_media_player_.eventManager().onPlaying(
-        std::bind(&PlayerEvents::OnVideoDimensionCallback, this));
+        std::bind(&PlayerEvents::OnVideoDimensionsCallback, this));
   }
 
   void OnPause(std::function<void()> callback) {
@@ -117,7 +117,7 @@ class PlayerEvents : public PlayerGetters {
   std::function<void(int32_t, int32_t)> video_dimension_callback_ = [=](
       int32_t, int32_t) -> void {};
 
-  void OnVideoDimensionCallback() {
+  void OnVideoDimensionsCallback() {
     int32_t video_width = preferred_video_width_.has_value()
                               ? preferred_video_width_.value()
                               : libvlc_video_get_width(vlc_media_player_.get());

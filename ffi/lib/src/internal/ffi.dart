@@ -289,7 +289,7 @@ final ReceivePort receiver = new ReceivePort()
                   .add(players[playerId]!.general);
             break;
           }
-        case 'videoDimensionEvent':
+        case 'videoDimensionsEvent':
           {
             players[playerId]!.videoDimensions =
                 VideoDimensions(int.parse(event[2]), int.parse(event[3]));

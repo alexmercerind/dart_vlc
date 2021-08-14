@@ -59,9 +59,9 @@ DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
   player->OnPosition([=](int32_t) -> void { OnPosition(id, player->state()); });
   player->OnOpen([=](VLC::Media) -> void { OnOpen(id, player->state()); });
   player->OnPlaylist([=]() -> void { OnOpen(id, player->state()); });
-  player->OnVideoDimension(
+  player->OnVideoDimensions(
       [=](int32_t video_width, int32_t video_height) -> void {
-        OnVideoDimension(id, video_width, video_height);
+        OnVideoDimensions(id, video_width, video_height);
       });
 #ifdef _WIN32
 /* Windows: Texture & flutter::TextureRegistrar */
