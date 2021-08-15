@@ -19,19 +19,25 @@ class PlayerEvents : public PlayerGetters {
         std::bind(&PlayerEvents::OnOpenCallback, this, std::placeholders::_1));
   }
 
-  void OnPlay(std::function<void(void)> callback) {
+  void OnPlay(std::function<void()> callback) {
     play_callback_ = callback;
     vlc_media_player_.eventManager().onPlaying(
         std::bind(&PlayerEvents::OnPlayCallback, this));
   }
 
-  void OnPause(std::function<void(void)> callback) {
+  void OnVideoDimensions(std::function<void(int32_t, int32_t)> callback) {
+    video_dimension_callback_ = callback;
+    vlc_media_player_.eventManager().onPlaying(
+        std::bind(&PlayerEvents::OnVideoDimensionsCallback, this));
+  }
+
+  void OnPause(std::function<void()> callback) {
     pause_callback_ = callback;
     vlc_media_player_.eventManager().onPaused(
         std::bind(&PlayerEvents::OnPauseCallback, this));
   }
 
-  void OnStop(std::function<void(void)> callback) {
+  void OnStop(std::function<void()> callback) {
     stop_callback_ = callback;
     vlc_media_player_.eventManager().onStopped(
         std::bind(&PlayerEvents::OnStopCallback, this));
@@ -49,7 +55,7 @@ class PlayerEvents : public PlayerGetters {
         &PlayerEvents::OnSeekableCallback, this, std::placeholders::_1));
   }
 
-  void OnComplete(std::function<void(void)> callback) {
+  void OnComplete(std::function<void()> callback) {
     complete_callback_ = callback;
     vlc_media_player_.eventManager().onEndReached(
         std::bind(&PlayerEvents::OnCompleteCallback, this));
@@ -63,37 +69,18 @@ class PlayerEvents : public PlayerGetters {
     rate_callback_ = callback;
   }
 
-  void OnPlaylist(std::function<void(void)> callback) {
+  void OnPlaylist(std::function<void()> callback) {
     playlist_callback_ = callback;
   }
 
-  void OnVideo(std::function<void(uint8_t* frame)> callback) {
+  void OnVideo(
+      std::function<void(uint8_t* frame, int32_t width, int32_t height)>
+          callback) {
     video_callback_ = callback;
-    int32_t pitch = video_width_ * 4;
-    int32_t size = video_height_ * pitch;
-    video_frame_buffer_.reset(new uint8_t[size]);
-    vlc_media_player_.setVideoCallbacks(
-        std::bind(&PlayerEvents::OnVideoLockCallback, this,
-                  std::placeholders::_1),
-        nullptr, std::bind(&PlayerEvents::OnVideoPictureCallback, this,
-                           std::placeholders::_1));
-    vlc_media_player_.setVideoFormatCallbacks(
-        [=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p,
-            uint32_t* l) -> int32_t {
-          strcpy(chroma, "RGBA");
-          *w = video_width_;
-          *h = video_height_;
-          *p = pitch;
-          *l = video_height_;
-          return 1;
-        },
-        nullptr);
-    vlc_media_player_.setVideoFormat("RGBA", video_width_, video_height_,
-                                     pitch);
   }
 
  protected:
-  std::function<void(void)> playlist_callback_ = [=]() -> void {};
+  std::function<void()> playlist_callback_ = [=]() -> void {};
 
   void OnPlaylistCallback() {
     if (is_playlist_modified_) {
@@ -110,10 +97,9 @@ class PlayerEvents : public PlayerGetters {
     };
   }
 
-  std::function<void(VLC::Media)> open_callback_ = [=](
-      VLC::Media media) -> void {};
+  std::function<void(VLC::Media)> open_callback_ = [=](VLC::Media) -> void {};
 
-  void OnOpenCallback(VLC::MediaPtr media_ptr) {
+  void OnOpenCallback(VLC::MediaPtr vlc_media_ptr) {
     state()->is_playing_ = vlc_media_player_.isPlaying();
     state()->is_valid_ = vlc_media_player_.isValid();
     if (duration() > 0) {
@@ -125,11 +111,51 @@ class PlayerEvents : public PlayerGetters {
       state()->position_ = 0;
       state()->duration_ = 0;
     }
-    state()->index_ = vlc_media_list_.indexOfItem(*media_ptr.get());
-    open_callback_(*media_ptr.get());
+    state()->index_ = vlc_media_list_.indexOfItem(*vlc_media_ptr.get());
+    open_callback_(*vlc_media_ptr.get());
   }
 
-  std::function<void(void)> play_callback_ = [=]() -> void {};
+  std::function<void(int32_t, int32_t)> video_dimension_callback_ =
+      [=](int32_t, int32_t) -> void {};
+
+  void OnVideoDimensionsCallback() {
+    int32_t video_width = preferred_video_width_.has_value()
+                              ? preferred_video_width_.value()
+                              : libvlc_video_get_width(vlc_media_player_.get());
+    int32_t video_height =
+        preferred_video_height_.has_value()
+            ? preferred_video_height_.value()
+            : libvlc_video_get_height(vlc_media_player_.get());
+    video_dimension_callback_(video_width, video_height);
+    if (video_width_ != video_width || video_height_ != video_height) {
+      video_width_ = video_width;
+      video_height_ = video_height;
+      int32_t pitch = video_width * 4;
+      int32_t size = video_height * pitch;
+      video_frame_buffer_.reset(new uint8_t[size]);
+      vlc_media_player_.setVideoCallbacks(
+          std::bind(&PlayerEvents::OnVideoLockCallback, this,
+                    std::placeholders::_1),
+          nullptr,
+          std::bind(&PlayerEvents::OnVideoPictureCallback, this,
+                    std::placeholders::_1));
+      vlc_media_player_.setVideoFormatCallbacks(
+          [=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p,
+              uint32_t* l) -> int32_t {
+            strcpy(chroma, "RGBA");
+            *w = video_width;
+            *h = video_height;
+            *p = pitch;
+            *l = video_height;
+            return 1;
+          },
+          nullptr);
+      vlc_media_player_.setVideoFormat("RGBA", video_width, video_height,
+                                       pitch);
+    }
+  }
+
+  std::function<void()> play_callback_ = [=]() -> void {};
 
   void OnPlayCallback() {
     state()->is_playing_ = vlc_media_player_.isPlaying();
@@ -142,7 +168,7 @@ class PlayerEvents : public PlayerGetters {
     play_callback_();
   }
 
-  std::function<void(void)> pause_callback_ = [=]() -> void {};
+  std::function<void()> pause_callback_ = [=]() -> void {};
 
   void OnPauseCallback() {
     state()->is_playing_ = vlc_media_player_.isPlaying();
@@ -154,7 +180,7 @@ class PlayerEvents : public PlayerGetters {
     pause_callback_();
   }
 
-  std::function<void(void)> stop_callback_ = [=]() -> void {};
+  std::function<void()> stop_callback_ = [=]() -> void {};
 
   void OnStopCallback() {
     state()->is_playing_ = vlc_media_player_.isPlaying();
@@ -164,8 +190,8 @@ class PlayerEvents : public PlayerGetters {
     stop_callback_();
   }
 
-  std::function<void(int32_t)> position_callback_ = [=](
-      int32_t position) -> void {};
+  std::function<void(int32_t)> position_callback_ =
+      [=](int32_t position) -> void {};
 
   void OnPositionCallback(float relative_position) {
     state()->is_playing_ = vlc_media_player_.isPlaying();
@@ -178,8 +204,7 @@ class PlayerEvents : public PlayerGetters {
         static_cast<int32_t>(relative_position * vlc_media_player_.length()));
   }
 
-  std::function<void(bool)> seekable_callback_ = [=](bool isSeekable) -> void {
-  };
+  std::function<void(bool)> seekable_callback_ = [=](bool) -> void {};
 
   void OnSeekableCallback(bool isSeekable) {
     if (duration() > 0) {
@@ -188,7 +213,7 @@ class PlayerEvents : public PlayerGetters {
     }
   }
 
-  std::function<void(void)> complete_callback_ = [=]() -> void {};
+  std::function<void()> complete_callback_ = [=]() -> void {};
 
   void OnCompleteCallback() {
     state()->is_playing_ = vlc_media_player_.isPlaying();
@@ -205,12 +230,12 @@ class PlayerEvents : public PlayerGetters {
     }
   }
 
-  std::function<void(float)> volume_callback_ = [=](float volume) -> void {};
+  std::function<void(float)> volume_callback_ = [=](float) -> void {};
 
-  std::function<void(float)> rate_callback_ = [=](float rate) -> void {};
+  std::function<void(float)> rate_callback_ = [=](float) -> void {};
 
-  std::function<void(uint8_t* frame)> video_callback_ = [=](
-      uint8_t* frame) -> void {};
+  std::function<void(uint8_t*, int32_t, int32_t)> video_callback_ =
+      [=](uint8_t*, int32_t width, int32_t height) -> void {};
 
   void* OnVideoLockCallback(void** planes) {
     planes[0] = static_cast<void*>(video_frame_buffer_.get());
@@ -218,6 +243,6 @@ class PlayerEvents : public PlayerGetters {
   }
 
   void OnVideoPictureCallback(void* picture) {
-    video_callback_(static_cast<uint8_t*>(video_frame_buffer_.get()));
+    video_callback_(video_frame_buffer_.get(), video_width_, video_height_);
   }
 };

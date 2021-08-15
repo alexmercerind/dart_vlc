@@ -32,19 +32,6 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 /// Player player = new Player(id: 0);
 /// ```
 ///
-/// If you wish to use this instance for [Video] playback, then provide [videoWidth] & [videoHeight] optional parameters.
-/// Higher value may lead to degraded performance.
-///
-/// ```dart
-/// Player player = new Player(
-///   id: 0,
-///   videoWidth: 1920,
-///   videoHeight: 1080,
-/// );
-/// ```
-///
-/// Do not provide [videoWidth] & [videoHeight], if you wish to use the [Player] for only audio playback.
-///
 /// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player extends FFI.Player {
@@ -52,23 +39,16 @@ class Player extends FFI.Player {
 
   Player(
       {required int id,
-      int videoWidth: 0,
-      int videoHeight: 0,
+      FFI.VideoDimensions? videoDimensions,
       List<String>? commandlineArguments})
       : super(
             id: id,
-            videoWidth: videoWidth,
-            videoHeight: videoHeight,
+            videoDimensions: videoDimensions,
             commandlineArguments: commandlineArguments) {
-    if (videoHeight > 0 && videoWidth > 0 && Platform.isWindows) {
-      () async {
-        textureId.value = await _channel.invokeMethod('PlayerRegisterTexture', {
-          'playerId': id,
-          'videoWidth': videoWidth,
-          'videoHeight': videoHeight
-        });
-      }();
-    }
+    () async {
+      textureId.value = await _channel
+          .invokeMethod('PlayerRegisterTexture', {'playerId': id});
+    }();
   }
 
   @override
@@ -99,8 +79,8 @@ abstract class DartVLC {
         if (!videoStreamControllers[playerId]!.isClosed) {
           videoStreamControllers[playerId]!.add(new VideoFrame(
               playerId: playerId,
-              videoWidth: FFI.players[playerId]!.videoWidth,
-              videoHeight: FFI.players[playerId]!.videoHeight,
+              videoWidth: FFI.players[playerId]!.videoDimensions.width,
+              videoHeight: FFI.players[playerId]!.videoDimensions.height,
               byteArray: videoFrame));
         }
       }

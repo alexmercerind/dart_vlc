@@ -14,10 +14,10 @@
 #ifndef Player_HEADER
 #define Player_HEADER
 
-auto TO_CHARARRAY = [](std::vector<std::string>* vector) -> char** {
-  size_t size = vector->size();
+auto TO_CHARARRAY = [](std::vector<std::string>& vector) -> char** {
+  size_t size = vector.size();
   char** array = new char*[size];
-  for (int32_t i = 0; i < size; i++) array[i] = (*vector)[i].data();
+  for (int32_t i = 0; i < size; i++) array[i] = vector[i].data();
   return array;
 };
 
@@ -27,7 +27,7 @@ class Player : public PlayerSetters {
     if (cmd_arguments.empty()) {
       vlc_instance_ = VLC::Instance(0, nullptr);
     } else {
-      char** args = TO_CHARARRAY(&cmd_arguments);
+      char** args = TO_CHARARRAY(cmd_arguments);
       vlc_instance_ =
           VLC::Instance(static_cast<int32_t>(cmd_arguments.size()), args);
       delete[] args;

@@ -8,6 +8,19 @@ import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
 import 'package:dart_vlc_ffi/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc_ffi/src/device.dart';
 
+/// Represents dimensions of a video.
+class VideoDimensions {
+  /// Width of the video.
+  final int width;
+
+  /// Height of the video.
+  final int height;
+  const VideoDimensions(this.width, this.height);
+
+  @override
+  String toString() => '($width, $height)';
+}
+
 /// Keeps various [Player] instances to manage event callbacks.
 Map<int, Player> players = {};
 
@@ -20,30 +33,11 @@ Map<int, Player> players = {};
 /// Player player = new Player(id: 0);
 /// ```
 ///
-/// If you wish to use this instance for [Video] playback, then provide [videoWidth] & [videoHeight] optional parameters.
-/// Higher value may lead to degraded performance.
-///
-/// ```dart
-/// Player player = new Player(
-///   id: 0,
-///   videoWidth: 1920,
-///   videoHeight: 1080,
-/// );
-/// ```
-///
-/// Do not provide [videoWidth] & [videoHeight], if you wish to use the [Player] for only audio playback.
-///
 /// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player {
   /// Id associated with the [Player] instance.
   int id;
-
-  /// Width of the [Video] frames to be extracted. Higher value may lead to degraded performance.
-  late int videoWidth;
-
-  /// Height of the [Video] frames to be extracted. Higher value may lead to degraded performance.
-  late int videoHeight;
 
   /// Commandline arguments passed to this instance of [Player].
   List<String> commandlineArguments = <String>[];
@@ -72,6 +66,12 @@ class Player {
   /// Stream to listen to volume & rate state of the [Player] instance.
   late Stream<GeneralState> generalStream;
 
+  /// Dimensions of the currently playing video.
+  VideoDimensions videoDimensions = new VideoDimensions(0, 0);
+
+  /// Stream to listen to dimensions of currently playing video.
+  late Stream<VideoDimensions> videoDimensionsStream;
+
   /// Creates a new [Player] instance.
   ///
   /// Takes unique id as parameter.
@@ -82,13 +82,10 @@ class Player {
   ///
   Player(
       {required this.id,
-      int videoWidth: 0,
-      int videoHeight: 0,
+      VideoDimensions? videoDimensions,
       List<String>? commandlineArguments}) {
     if (commandlineArguments != null)
       this.commandlineArguments = commandlineArguments;
-    this.videoWidth = videoWidth;
-    this.videoHeight = videoHeight;
     this.currentController = StreamController<CurrentState>.broadcast();
     this.currentStream = this.currentController.stream;
     this.positionController = StreamController<PositionState>.broadcast();
@@ -97,11 +94,17 @@ class Player {
     this.playbackStream = this.playbackController.stream;
     this.generalController = StreamController<GeneralState>.broadcast();
     this.generalStream = this.generalController.stream;
+    if (videoDimensions != null) {
+      this.videoDimensions = videoDimensions;
+    }
+    this.videoDimensionsController =
+        StreamController<VideoDimensions>.broadcast();
+    this.videoDimensionsStream = this.videoDimensionsController.stream;
     players[this.id] = this;
     PlayerFFI.create(
       this.id,
-      this.videoWidth,
-      this.videoHeight,
+      this.videoDimensions.width,
+      this.videoDimensions.width,
       this.commandlineArguments.length,
       this.commandlineArguments.toNativeUtf8Array(),
     );
@@ -272,6 +275,7 @@ class Player {
     this.positionController.close();
     this.playbackController.close();
     this.generalController.close();
+    this.videoDimensionsController.close();
     PlayerFFI.dispose(this.id);
   }
 
@@ -280,4 +284,5 @@ class Player {
   late StreamController<PositionState> positionController;
   late StreamController<PlaybackState> playbackController;
   late StreamController<GeneralState> generalController;
+  late StreamController<VideoDimensions> videoDimensionsController;
 }

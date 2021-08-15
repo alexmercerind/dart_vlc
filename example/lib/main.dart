@@ -14,16 +14,13 @@ class DartVLCExample extends StatefulWidget {
 }
 
 class DartVLCExampleState extends State<DartVLCExample> {
-  Player player = Player(
-    id: 0,
-    videoWidth: 480,
-    videoHeight: 360,
-  );
+  Player player = Player(id: 0);
   MediaType mediaType = MediaType.file;
   CurrentState current = new CurrentState();
   PositionState position = new PositionState();
   PlaybackState playback = new PlaybackState();
   GeneralState general = new GeneralState();
+  VideoDimensions videoDimensions = new VideoDimensions(0, 0);
   List<Media> medias = <Media>[];
   List<Device> devices = <Device>[];
   TextEditingController controller = new TextEditingController();
@@ -45,6 +42,11 @@ class DartVLCExampleState extends State<DartVLCExample> {
       });
       this.player.generalStream.listen((general) {
         this.setState(() => this.general = general);
+      });
+      this.player.videoDimensionsStream.listen((videoDimensions) {
+        this.setState(() {
+          this.videoDimensions = videoDimensions;
+        });
       });
     }
   }
@@ -128,8 +130,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                             hintStyle: TextStyle(
                                               fontSize: 14.0,
                                             ),
-                                            hintText:
-                                                'Enter Media path.',
+                                            hintText: 'Enter Media path.',
                                           ),
                                         ),
                                       ),
@@ -179,7 +180,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                                 MediaType.file) {
                                               this.medias.add(
                                                     Media.file(new File(
-                                                        controller.text.replaceAll('"', ''))),
+                                                        controller.text
+                                                            .replaceAll(
+                                                                '"', ''))),
                                                   );
                                             } else if (this.mediaType ==
                                                 MediaType.network) {
@@ -354,6 +357,10 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                   TableRow(children: [
                                     Text('player.current.medias'),
                                     Text('${this.current.medias}')
+                                  ]),
+                                  TableRow(children: [
+                                    Text('player.videoDimensions'),
+                                    Text('${this.videoDimensions}')
                                   ]),
                                 ],
                               ),

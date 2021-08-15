@@ -39,7 +39,8 @@ endif()
 
 # dart_vlc.dll
 add_library("${PLUGIN_NAME}" SHARED
-  "dart_vlc.cc"
+  "dart_vlc_plugin.cpp"
+  "video_outlet.cpp"
 )
 
 apply_standard_settings("${PLUGIN_NAME}")

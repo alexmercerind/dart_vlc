@@ -197,7 +197,11 @@ class PlayerSetters : public PlayerEvents {
     OnPlaylistCallback();
   }
 
-  void SetVideoWidth(int32_t video_width) { video_width_ = video_width; }
+  void SetVideoWidth(int32_t video_width) {
+    preferred_video_width_ = video_width;
+  }
 
-  void SetVideoHeight(int32_t video_height) { video_height_ = video_height; }
+  void SetVideoHeight(int32_t video_height) {
+    preferred_video_height_ = video_height;
+  }
 };
