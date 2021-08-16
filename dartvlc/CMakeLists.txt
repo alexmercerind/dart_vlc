@@ -1,7 +1,9 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.13)
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+if(UNIX AND NOT APPLE)
+  set(LINUX TRUE)
+endif()
 
 set(LIBRARY_NAME dart_vlc_core)
 project(${LIBRARY_NAME} LANGUAGES C CXX)
@@ -33,6 +35,7 @@ add_library(${LIBRARY_NAME} STATIC
   main.cc
   api/api.cc
 )
+add_dependencies(${LIBRARY_NAME} LIBVLC_EXTRACT)
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
@@ -72,4 +75,9 @@ if(WIN32)
     PARENT_SCOPE
   )
 
+elseif(LINUX)
+  set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  target_link_libraries(${LIBRARY_NAME} PRIVATE
+    "vlc"
+  )
 endif()
