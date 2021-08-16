@@ -1,5 +1,5 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<h4 align="center">Flutter 🎞 media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
+<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_1.PNG?raw=true)
@@ -36,8 +36,6 @@ Consider supporting the project by starring the repository or buying me a coffee
 
 Thanks a lot for your support.
 
-Looking for contributors for macOS port.
-
 ## Documentation
 
 #### Initialize the library
@@ -52,6 +50,15 @@ void main() {
 #### Create a new player instance.
 ```dart
 Player player = Player(id: 69420);
+```
+
+For passing VLC CLI arguments, use `commandlineArguments` argument.
+
+```dart
+Player player = Player(
+  id: 69420,
+  commandlineArguments: ['--no-video']
+);
 ```
 
 #### Create a media for playback.
@@ -154,14 +161,6 @@ player.setDevice(
 
 #### Show the video inside widget tree.
 
-Instanciate `Player` as follows.
-```dart
-Player player = Player(
-  id: 69420,
-  videoWidth: 480,
-  videoHeight: 320,
-);
-```
 Show `Video` in the `Widget` tree.
 ```dart
 class _MyAppState extends State<MyApp> {
@@ -169,7 +168,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Video(
-        playerId: 69420,
+        player: player,
         height: 1920.0,
         width: 1080.0,
         scale: 1.0, // default
@@ -180,7 +179,23 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
+By default, [Video] widget's frame size will adapt to the currently playing video.
+To override this & define custom video frame size, pass `videoDimensions` argument while instanciating `Player` class as follows.
+
+```dart
+Player player = Player(
+  id: 69420,
+  videoDimensions: const VideoDimensions(640, 360)
+);
+```
+
 Thanks to [@tomassasovsky](https://github.com/tomassasovsky) for adding visual controls to `Video` widget.
+
+#### Change user agent
+
+```dart
+player.setUserAgent(userAgent);
+```
 
 #### Retrieve metadata of media.
 ```dart
@@ -197,6 +212,8 @@ Map<String, String> metas = media.metas;
 
 (Same can be retrieved directly from `Player` instance without having to rely on stream).
 
+Listen to currently loaded media & playlist index changes.
+
 ```dart
 player.currentStream.listen((CurrentState state) {
   state.index;
@@ -206,12 +223,16 @@ player.currentStream.listen((CurrentState state) {
 });
 ```
 
+Listen to playback position & media duration.
+
 ```dart
 player.positionStream.listen((PositionState state) {
   state.position;
   state.duration;
 });
 ```
+
+Listen to playback states.
 
 ```dart
 player.playbackStream.listen((PlaybackState state) {
@@ -221,10 +242,21 @@ player.playbackStream.listen((PlaybackState state) {
 });
 ```
 
+Listen to volume & rate of the `Player`.
+
 ```dart
 player.generalStream.listen((GeneralState state) {
   state.volume;
   state.rate;
+});
+```
+
+Listen to dimensions of currently playing `Video`.
+
+```dart
+player.videoDimensionsStream.listen((VideoDimensions video) {
+  video.width;
+  video.height;
 });
 ```
 
@@ -293,8 +325,18 @@ Record record = Record.create(
 record.start();
 ```
 
-**NOTE:** For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. 
-On debian based distros, run:
+## Setup
+
+
+### Windows
+
+Everything is already set up.
+
+### Linux
+
+For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. 
+
+On debian based distros:
 
 ```bash
 sudo apt-get install vlc
@@ -302,12 +344,11 @@ sudo apt-get install vlc
 ```bash
 sudo apt-get install libvlc-dev
 ```
-On Fedora, enable RPMFusion repositories first:
+On Fedora:
 
 ```bash
 sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
 ```
-Then run:
 
 ```bash
 sudo dnf install vlc
@@ -375,6 +416,7 @@ Done
 - `Equalizer` support.
 - Adding headers for `Media.network` (Not possible, added user agent).
 - Switching to FFI for more cross platform freedom.
+- Changing `Video`'s frame size according to video.
 
 Under progress or planned features (irrespective of order)...
 
@@ -393,7 +435,9 @@ First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creati
 
 Thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributions to this project & to Flutter engine like adding texture support.
 
-Thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [The Flutter Team](https://flutter.dev) for helping out the project.
+Thanks to [@namniav](https://github.com/namniav) for working on macOS support.
+
+Thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [The Flutter Team](https://flutter.dev) for helping out the project with his opinions.
 
 
 Thanks to following members of libVLC community (irrespective of the order) for giving general ideas about libVLC APIs:
