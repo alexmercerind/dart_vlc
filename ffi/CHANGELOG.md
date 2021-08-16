@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Improved memory cleanup inside FFI.
+
 ## 0.1.1
 
 - Removed `Player::onVideo` callbacks for win32.
