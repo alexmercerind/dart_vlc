@@ -5,22 +5,16 @@
 # alexmercerind@gmail.com
 # GNU Lesser General Public License v2.1
 # 
-cmake_minimum_required(VERSION 3.10)
-set (CMAKE_CXX_STANDARD 17)
 
+cmake_minimum_required(VERSION 3.10)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED 17)
 set(PROJECT_NAME dart_vlc)
 project(${PROJECT_NAME} LANGUAGES CXX)
+
 set(PLUGIN_NAME dart_vlc_plugin)
-include_directories(${PLUGIN_NAME} INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
 add_library(${PLUGIN_NAME} SHARED
   dart_vlc_plugin.cc
-)
-
-set(PACKAGE dartvlc)
-add_library(${PACKAGE} SHARED
-  ../ffi/native/dart_vlc.cpp
 )
 
 set(LIBVLC_BINARIES ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
@@ -42,43 +36,44 @@ file(MAKE_DIRECTORY ${LIBVLC_PACKAGE_DIR})
   )
 endif()
 
-include_directories(${PACKAGE} INTERFACE
-  # libVLC++ Headers.
+set(PACKAGE dartvlc)
+
+add_library(${PACKAGE} SHARED
+  ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native/dart_vlc.cpp
+)
+
+include_directories(
+  ${PACKAGE} INTERFACE
   ${LIBVLCPP_SOURCE}
 )
 
 target_include_directories(${PACKAGE} INTERFACE
-  # DartVLC Headers.
   ${CMAKE_CURRENT_SOURCE_DIR}/../ffi/native
-  # libVLC++ Headers.
-  ${LIBVLCPP_SOURCE}
 )
 target_link_libraries(${PACKAGE} PRIVATE
   vlc
 )
 
-
-# Not used Flutter plugin template.
-
 apply_standard_settings(${PLUGIN_NAME})
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
-target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
-target_include_directories(${PLUGIN_NAME} INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc
+set_target_properties(
+  ${PLUGIN_NAME} PROPERTIES
+  CXX_VISIBILITY_PRESET hidden
 )
 
+target_compile_definitions(
+  ${PLUGIN_NAME} PRIVATE
+  FLUTTER_PLUGIN_IMPL
+)
+target_include_directories(${PLUGIN_NAME} INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 target_link_libraries(${PLUGIN_NAME} PRIVATE
   flutter
   PkgConfig::GTK
 )
 
-# Add generated shared library.
-
 set(
   dart_vlc_bundled_libraries
-  # libdartvlc.so
   plugins/dart_vlc/libdartvlc.so
   PARENT_SCOPE
 )
