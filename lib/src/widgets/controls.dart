@@ -9,8 +9,6 @@ import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
 class Control extends StatefulWidget {
   final Widget child;
   final int playerId;
-  final double height;
-  final double width;
   final bool? showTimeLeft;
   final double? progressBarThumbRadius;
   final double? progressBarThumbGlowRadius;
@@ -27,8 +25,6 @@ class Control extends StatefulWidget {
   Control({
     required this.child,
     required this.playerId,
-    required this.height,
-    required this.width,
     required this.showTimeLeft,
     required this.progressBarThumbRadius,
     required this.progressBarThumbGlowRadius,
@@ -103,211 +99,205 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
         onHover: (_) => _cancelAndRestartTimer(),
         child: AbsorbPointer(
           absorbing: _hideControls,
-          child: Container(
-            width: widget.width,
-            height: widget.height,
-            child: Stack(
-              children: [
-                widget.child,
-                AnimatedOpacity(
-                  duration: Duration(milliseconds: 300),
-                  opacity: _hideControls ? 0.0 : 1.0,
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0xCC000000),
-                              Color(0x00000000),
-                              Color(0x00000000),
-                              Color(0x00000000),
-                              Color(0x00000000),
-                              Color(0x00000000),
-                              Color(0xCC000000),
-                            ],
-                          ),
+          child: Stack(
+            children: [
+              widget.child,
+              AnimatedOpacity(
+                duration: Duration(milliseconds: 300),
+                opacity: _hideControls ? 0.0 : 1.0,
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xCC000000),
+                            Color(0x00000000),
+                            Color(0x00000000),
+                            Color(0x00000000),
+                            Color(0x00000000),
+                            Color(0x00000000),
+                            Color(0xCC000000),
+                          ],
                         ),
                       ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Padding(
-                          padding:
-                              EdgeInsets.only(bottom: 60, right: 20, left: 20),
-                          child: StreamBuilder<PositionState>(
-                            stream: players[widget.playerId]?.positionStream,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<PositionState> snapshot) {
-                              final durationState = snapshot.data;
-                              final progress =
-                                  durationState?.position ?? Duration.zero;
-                              final total =
-                                  durationState?.duration ?? Duration.zero;
-                              return Theme(
-                                data: ThemeData.dark(),
-                                child: ProgressBar(
-                                  progress: progress,
-                                  total: total,
-                                  barHeight: 3,
-                                  progressBarColor:
-                                      widget.progressBarActiveColor,
-                                  thumbColor: widget.progressBarThumbColor,
-                                  baseBarColor: widget.progressBarInactiveColor,
-                                  thumbGlowColor:
-                                      widget.progressBarThumbGlowColor,
-                                  thumbRadius:
-                                      widget.progressBarThumbRadius ?? 10.0,
-                                  thumbGlowRadius:
-                                      widget.progressBarThumbGlowRadius ?? 30.0,
-                                  timeLabelLocation: TimeLabelLocation.sides,
-                                  timeLabelType: widget.showTimeLeft!
-                                      ? TimeLabelType.remainingTime
-                                      : TimeLabelType.totalTime,
-                                  timeLabelTextStyle:
-                                      widget.progressBarTextStyle,
-                                  onSeek: (duration) {
-                                    players[widget.playerId]!.seek(duration);
-                                  },
-                                ),
-                              );
-                            },
-                          ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.only(bottom: 60, right: 20, left: 20),
+                        child: StreamBuilder<PositionState>(
+                          stream: players[widget.playerId]?.positionStream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<PositionState> snapshot) {
+                            final durationState = snapshot.data;
+                            final progress =
+                                durationState?.position ?? Duration.zero;
+                            final total =
+                                durationState?.duration ?? Duration.zero;
+                            return Theme(
+                              data: ThemeData.dark(),
+                              child: ProgressBar(
+                                progress: progress,
+                                total: total,
+                                barHeight: 3,
+                                progressBarColor: widget.progressBarActiveColor,
+                                thumbColor: widget.progressBarThumbColor,
+                                baseBarColor: widget.progressBarInactiveColor,
+                                thumbGlowColor:
+                                    widget.progressBarThumbGlowColor,
+                                thumbRadius:
+                                    widget.progressBarThumbRadius ?? 10.0,
+                                thumbGlowRadius:
+                                    widget.progressBarThumbGlowRadius ?? 30.0,
+                                timeLabelLocation: TimeLabelLocation.sides,
+                                timeLabelType: widget.showTimeLeft!
+                                    ? TimeLabelType.remainingTime
+                                    : TimeLabelType.totalTime,
+                                timeLabelTextStyle: widget.progressBarTextStyle,
+                                onSeek: (duration) {
+                                  players[widget.playerId]!.seek(duration);
+                                },
+                              ),
+                            );
+                          },
                         ),
                       ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 10,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 10,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            color: Colors.white,
+                            iconSize: 30,
+                            icon: Icon(Icons.skip_previous),
+                            onPressed: () => players[widget.playerId]!.back(),
+                          ),
+                          SizedBox(width: 50),
+                          IconButton(
                               color: Colors.white,
                               iconSize: 30,
-                              icon: Icon(Icons.skip_previous),
-                              onPressed: () => players[widget.playerId]!.back(),
-                            ),
-                            SizedBox(width: 50),
-                            IconButton(
-                                color: Colors.white,
-                                iconSize: 30,
-                                icon: Icon(Icons.replay_10),
-                                onPressed: () {
-                                  int positionInMilliseconds =
-                                      players[widget.playerId]!
-                                              .position
-                                              .position
-                                              ?.inMilliseconds ??
-                                          0;
-                                  if (!(positionInMilliseconds - 10000)
-                                      .isNegative)
-                                    positionInMilliseconds -= 10000;
+                              icon: Icon(Icons.replay_10),
+                              onPressed: () {
+                                int positionInMilliseconds =
+                                    players[widget.playerId]!
+                                            .position
+                                            .position
+                                            ?.inMilliseconds ??
+                                        0;
+                                if (!(positionInMilliseconds - 10000)
+                                    .isNegative)
+                                  positionInMilliseconds -= 10000;
+                                players[widget.playerId]!.seek(Duration(
+                                    milliseconds: positionInMilliseconds));
+                                setState(() {});
+                              }),
+                          SizedBox(width: 20),
+                          IconButton(
+                            color: Colors.white,
+                            iconSize: 30,
+                            icon: AnimatedIcon(
+                                icon: AnimatedIcons.play_pause,
+                                progress: this.playPauseController),
+                            onPressed: () {
+                              if (players[widget.playerId]!
+                                  .playback
+                                  .isPlaying) {
+                                players[widget.playerId]!.pause();
+                                this.playPauseController.reverse();
+                              } else {
+                                players[widget.playerId]!.play();
+                                this.playPauseController.forward();
+                              }
+                            },
+                          ),
+                          SizedBox(width: 20),
+                          IconButton(
+                              color: Colors.white,
+                              iconSize: 30,
+                              icon: Icon(Icons.forward_10),
+                              onPressed: () {
+                                int durationInMilliseconds =
+                                    players[widget.playerId]!
+                                            .position
+                                            .duration
+                                            ?.inMilliseconds ??
+                                        0;
+                                int positionInMilliseconds =
+                                    players[widget.playerId]!
+                                            .position
+                                            .position
+                                            ?.inMilliseconds ??
+                                        1;
+                                if ((positionInMilliseconds + 10000) <=
+                                    durationInMilliseconds) {
+                                  positionInMilliseconds += 10000;
                                   players[widget.playerId]!.seek(Duration(
                                       milliseconds: positionInMilliseconds));
                                   setState(() {});
-                                }),
-                            SizedBox(width: 20),
-                            IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: AnimatedIcon(
-                                  icon: AnimatedIcons.play_pause,
-                                  progress: this.playPauseController),
-                              onPressed: () {
-                                if (players[widget.playerId]!
-                                    .playback
-                                    .isPlaying) {
-                                  players[widget.playerId]!.pause();
-                                  this.playPauseController.reverse();
-                                } else {
-                                  players[widget.playerId]!.play();
-                                  this.playPauseController.forward();
                                 }
-                              },
-                            ),
-                            SizedBox(width: 20),
-                            IconButton(
-                                color: Colors.white,
-                                iconSize: 30,
-                                icon: Icon(Icons.forward_10),
-                                onPressed: () {
-                                  int durationInMilliseconds =
-                                      players[widget.playerId]!
-                                              .position
-                                              .duration
-                                              ?.inMilliseconds ??
-                                          0;
-                                  int positionInMilliseconds =
-                                      players[widget.playerId]!
-                                              .position
-                                              .position
-                                              ?.inMilliseconds ??
-                                          1;
-                                  if ((positionInMilliseconds + 10000) <=
-                                      durationInMilliseconds) {
-                                    positionInMilliseconds += 10000;
-                                    players[widget.playerId]!.seek(Duration(
-                                        milliseconds: positionInMilliseconds));
-                                    setState(() {});
-                                  }
-                                }),
-                            SizedBox(width: 50),
-                            IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: Icon(Icons.skip_next),
-                              onPressed: () => players[widget.playerId]!.next(),
-                            ),
-                          ],
-                        ),
+                              }),
+                          SizedBox(width: 50),
+                          IconButton(
+                            color: Colors.white,
+                            iconSize: 30,
+                            icon: Icon(Icons.skip_next),
+                            onPressed: () => players[widget.playerId]!.next(),
+                          ),
+                        ],
                       ),
-                      Positioned(
-                        right: 15,
-                        bottom: 12.5,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            VolumeControl(
-                              playerId: widget.playerId,
-                              thumbColor: widget.volumeThumbColor,
-                              inactiveColor: widget.volumeInactiveColor,
-                              activeColor: widget.volumeActiveColor,
-                              backgroundColor: widget.volumeBackgroundColor,
-                            ),
-                            PopupMenuButton(
-                              iconSize: 24,
-                              icon: Icon(Icons.speaker, color: Colors.white),
-                              onSelected: (Device device) {
-                                players[widget.playerId]!.setDevice(device);
-                                setState(() {});
-                              },
-                              itemBuilder: (context) {
-                                return Devices.all
-                                    .map(
-                                      (device) => PopupMenuItem(
-                                        child: Text(device.name,
-                                            style: TextStyle(
-                                              fontSize: 14.0,
-                                            )),
-                                        value: device,
-                                      ),
-                                    )
-                                    .toList();
-                              },
-                            ),
-                          ],
-                        ),
+                    ),
+                    Positioned(
+                      right: 15,
+                      bottom: 12.5,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          VolumeControl(
+                            playerId: widget.playerId,
+                            thumbColor: widget.volumeThumbColor,
+                            inactiveColor: widget.volumeInactiveColor,
+                            activeColor: widget.volumeActiveColor,
+                            backgroundColor: widget.volumeBackgroundColor,
+                          ),
+                          PopupMenuButton(
+                            iconSize: 24,
+                            icon: Icon(Icons.speaker, color: Colors.white),
+                            onSelected: (Device device) {
+                              players[widget.playerId]!.setDevice(device);
+                              setState(() {});
+                            },
+                            itemBuilder: (context) {
+                              return Devices.all
+                                  .map(
+                                    (device) => PopupMenuItem(
+                                      child: Text(device.name,
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                          )),
+                                      value: device,
+                                    ),
+                                  )
+                                  .toList();
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

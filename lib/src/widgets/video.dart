@@ -37,7 +37,7 @@ class VideoFrame {
 ///
 /// ```dart
 /// class _MyAppState extends State<MyApp> {
-///   Player player = new Player(id: 0);
+///   Player player = Player(id: 0);
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
@@ -63,10 +63,20 @@ class Video extends StatefulWidget {
   final Player player;
 
   /// Width of the viewport.
-  final double width;
+  /// Defaults to the width of the parent.
+  final double? width;
 
   /// Height of the viewport.
-  final double height;
+  /// Defaults to the height of the parent.
+  final double? height;
+
+  /// How to inscribe the picture box into the player viewport.
+  /// Defaults to [BoxFit.contain].
+  final BoxFit fit;
+
+  /// How to align the picture box within the player viewport.
+  /// Defaults to [Alignment.center]
+  final AlignmentGeometry alignment;
 
   /// Scale.
   final double scale;
@@ -117,8 +127,10 @@ class Video extends StatefulWidget {
   Video({
     @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
     Player? player,
-    required this.width,
-    required this.height,
+    this.width,
+    this.height,
+    this.fit: BoxFit.contain,
+    this.alignment: Alignment.center,
     this.scale: 1.0,
     this.showControls: true,
     this.progressBarActiveColor,
@@ -143,7 +155,7 @@ class Video extends StatefulWidget {
 }
 
 abstract class _VideoStateBase extends State<Video> {
-  GlobalKey<ControlState> controlKey = new GlobalKey<ControlState>();
+  GlobalKey<ControlState> controlKey = GlobalKey<ControlState>();
 
   int get playerId => widget.player.id;
 
@@ -155,48 +167,80 @@ abstract class _VideoStateBase extends State<Video> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.showControls) {
-      return Control(
-          key: controlKey,
-          playerId: playerId,
-          height: widget.height,
-          width: widget.width,
-          progressBarThumbRadius: widget.progressBarThumbRadius,
-          progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
-          progressBarActiveColor: widget.progressBarActiveColor,
-          progressBarInactiveColor: widget.progressBarInactiveColor,
-          progressBarThumbColor: widget.progressBarThumbColor,
-          progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
-          volumeActiveColor: widget.volumeActiveColor,
-          volumeInactiveColor: widget.volumeInactiveColor,
-          volumeBackgroundColor: widget.volumeBackgroundColor,
-          volumeThumbColor: widget.volumeThumbColor,
-          showTimeLeft: widget.showTimeLeft,
-          progressBarTextStyle: widget.progressBarTextStyle,
-          child: present());
-    }
-    return present();
+    return Container(
+        width: widget.width ?? double.infinity,
+        height: widget.height ?? double.infinity,
+        color: Colors.black,
+        child: widget.showControls
+            ? Control(
+                key: controlKey,
+                playerId: playerId,
+                progressBarThumbRadius: widget.progressBarThumbRadius,
+                progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
+                progressBarActiveColor: widget.progressBarActiveColor,
+                progressBarInactiveColor: widget.progressBarInactiveColor,
+                progressBarThumbColor: widget.progressBarThumbColor,
+                progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+                volumeActiveColor: widget.volumeActiveColor,
+                volumeInactiveColor: widget.volumeInactiveColor,
+                volumeBackgroundColor: widget.volumeBackgroundColor,
+                volumeThumbColor: widget.volumeThumbColor,
+                showTimeLeft: widget.showTimeLeft,
+                progressBarTextStyle: widget.progressBarTextStyle,
+                child: present())
+            : present());
   }
 
   Widget present();
 }
 
 class _VideoStateTexture extends _VideoStateBase {
+  StreamSubscription? _videoDimensionsSubscription;
+  double? _videoWidth;
+  double? _videoHeight;
+
+  @override
+  void initState() {
+    _videoDimensionsSubscription =
+        widget.player.videoDimensionsStream.listen((dimensions) {
+      setState(() {
+        _videoWidth = dimensions.width.toDouble();
+        _videoHeight = dimensions.height.toDouble();
+      });
+    });
+    super.initState();
+    if (mounted) setState(() {});
+  }
+
   Widget present() {
     return ValueListenableBuilder<int?>(
         valueListenable: widget.player.textureId,
         builder: (context, textureId, _) {
-          return Container(
-              width: widget.width,
-              height: widget.height,
-              color: Colors.black,
-              child: textureId != null
-                  ? Texture(
-                      textureId: textureId,
-                      filterQuality: widget.filterQuality,
-                    )
-                  : null);
+          if (textureId == null ||
+              _videoWidth == null ||
+              _videoHeight == null) {
+            return Container();
+          }
+
+          return SizedBox.expand(
+              child: ClipRect(
+                  child: FittedBox(
+                      alignment: widget.alignment,
+                      fit: widget.fit,
+                      child: SizedBox(
+                          width: _videoWidth,
+                          height: _videoHeight,
+                          child: Texture(
+                            textureId: textureId,
+                            filterQuality: widget.filterQuality,
+                          )))));
         });
+  }
+
+  @override
+  Future<void> dispose() async {
+    _videoDimensionsSubscription?.cancel();
+    super.dispose();
   }
 }
 
@@ -204,22 +248,20 @@ class _VideoStateFallback extends _VideoStateBase {
   Widget? videoFrameRawImage;
 
   Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
-    Completer<ui.Image> imageCompleter = new Completer<ui.Image>();
+    Completer<ui.Image> imageCompleter = Completer<ui.Image>();
     ui.decodeImageFromPixels(
-      videoFrame.byteArray,
-      videoFrame.videoWidth,
-      videoFrame.videoHeight,
-      ui.PixelFormat.rgba8888,
-      (ui.Image _image) => imageCompleter.complete(_image),
-      rowBytes: 4 * videoFrame.videoWidth,
-      targetWidth: widget.width.toInt(),
-      targetHeight: widget.height.toInt(),
-    );
+        videoFrame.byteArray,
+        videoFrame.videoWidth,
+        videoFrame.videoHeight,
+        ui.PixelFormat.rgba8888,
+        (ui.Image _image) => imageCompleter.complete(_image),
+        rowBytes: 4 * videoFrame.videoWidth);
     ui.Image image = await imageCompleter.future;
+
     return RawImage(
       image: image,
-      height: widget.height,
-      width: widget.width,
+      alignment: widget.alignment,
+      fit: widget.fit,
       scale: widget.scale,
       filterQuality: widget.filterQuality,
     );
@@ -245,11 +287,8 @@ class _VideoStateFallback extends _VideoStateBase {
   }
 
   Widget present() {
-    return videoFrameRawImage ??
-        Container(
-          color: Colors.black,
-          height: widget.height,
-          width: widget.width,
-        );
+    return videoFrameRawImage != null
+        ? SizedBox.expand(child: ClipRect(child: videoFrameRawImage))
+        : Container();
   }
 }
