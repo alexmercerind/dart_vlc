@@ -7,6 +7,7 @@
 - Added `videoDimensionStream` and `videoDimension` attributes to `Player` class to listen to currently playing video dimensions.
 - Migrated C++ code to use smart pointers instead of raw pointers.
 - `Player.dispose` no longer causing crash on Windows (#103).
+- Added Add fit and alignment properties to `Video` widget (Thanks to @jnschulze).
 
 ## 0.1.3
 
