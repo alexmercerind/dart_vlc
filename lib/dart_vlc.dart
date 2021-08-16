@@ -32,6 +32,17 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 /// Player player = new Player(id: 0);
 /// ```
 ///
+/// By default, [Video] widget will adapt to the size of the currently playing video itself.
+/// If you wish to override the default video size,
+/// then you can pass [videoDimensions] argument to override the frame size as follows.
+///
+/// ```dart
+/// Player player = new Player(
+///   id: 0,
+///   videoDimensions: const VideoDimensions(480, 360)
+/// );
+/// ```
+///
 /// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player extends FFI.Player {
@@ -46,14 +57,16 @@ class Player extends FFI.Player {
             videoDimensions: videoDimensions,
             commandlineArguments: commandlineArguments) {
     () async {
-      textureId.value = await _channel
-          .invokeMethod('PlayerRegisterTexture', {'playerId': id});
+      if (Platform.isWindows) {
+        textureId.value = await _channel
+            .invokeMethod('PlayerRegisterTexture', {'playerId': id});
+      }
     }();
   }
 
   @override
   void dispose() async {
-    if (textureId.value != null) {
+    if (Platform.isWindows && textureId.value != null) {
       await _channel.invokeMethod('PlayerUnegisterTexture', {'playerId': id});
       textureId.value = null;
     }
