@@ -1,3 +1,13 @@
+## 0.1.4
+
+- Now `Player` no longer requires `videoWidth` & `videoHeight` to be passed for video playback.
+- `Video` widget now uses the dimensions of the currently playing video.
+- For overriding the automatic video dimensions retrieval, `videoDimensions` argument must be passed while instantiating `Player` class.  
+- `Video` widget no longer asks for `playerId` argument, but `player` instead.
+- Added `videoDimensionStream` and `videoDimension` attributes to `Player` class to listen to currently playing video dimensions.
+- Migrated C++ code to use smart pointers instead of raw pointers.
+- `Player.dispose` no longer causing crash on Windows (#103).
+
 ## 0.1.3
 
 - Fixed libVLC shared libraries not being copied on Windows (thanks to @jnschulze).
@@ -56,8 +66,6 @@
 
 ## 0.0.6
 
-**This new release of dart_vlc adds:**
-
 - Now `Player` class has sync constructor & no longer needs `Player.create`.
 - Fixed memory leak errors on Windows & Linux.
 - Added controls to `Video` widget. Thanks to @tomassasovsky.
@@ -68,14 +76,10 @@
 
 ## 0.0.5
 
-**This new release of dart_vlc adds:**
-
 - `Broadcast` class to broadcast a `Media`.
 - Fix to a bug that caused `CurrentState` to not update in `Player`.
 
 ## 0.0.4
-
-**This new release of dart_vlc adds:**
 
 - `Video` `Widget` for showing video output from a `Player` inside `Widget` tree.
   - `Player` must be used as a controller for a `Video`.
@@ -83,8 +87,6 @@
 - Null-safety migration.
 
 ## 0.0.3
-
-**This new release of dart_vlc adds:**
 
 - More advanced playlist modification methods like:
   - `add` for appending a new `Media` to the `Playlist` of the `Player`.
@@ -121,21 +123,15 @@
 
 ## 0.0.2
 
-**This new release of dart_vlc adds:**
-
 - Support for Flutter on Linux.
 - Fixed bug that caused index to not update properly in `Playlist`, when `next` or `back` or on completion of `Media`.
 - Changed default `Player` volume to `0.5`.
 
 ## 0.0.1+1
 
-**This new release of dart_vlc adds:**
-
 - Little left-over changes in the project documentation.
 
 ## 0.0.1
-
-**This first release of dart_vlc adds:**
 
 - `Media` playback from file.
 - `Media` playback from network.
