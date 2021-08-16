@@ -9,7 +9,7 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "getters.hpp"
+#include "internal/getters.h"
 
 class PlayerEvents : public PlayerGetters {
  public:

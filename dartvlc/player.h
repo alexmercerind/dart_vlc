@@ -9,10 +9,10 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "internal/setters.hpp"
+#ifndef PLAYER_H_
+#define PLAYER_H_
 
-#ifndef Player_HEADER
-#define Player_HEADER
+#include "internal/setters.h"
 
 auto TO_CHARARRAY = [](std::vector<std::string>& vector) -> char** {
   size_t size = vector.size();
@@ -59,6 +59,6 @@ class Players {
   std::map<int32_t, std::unique_ptr<Player>> players_;
 };
 
-std::unique_ptr<Players> g_players = std::make_unique<Players>();
+extern std::unique_ptr<Players> g_players;
 
 #endif

@@ -9,7 +9,7 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "internal.hpp"
+#include "internal/internal.h"
 
 class PlayerGetters : public PlayerInternal {
  public:

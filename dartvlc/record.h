@@ -7,16 +7,16 @@
  * saini123hitesh@gmail.com; alexmercerind@gmail.com
  *
  * GNU Lesser General Public License v2.1
-*/
+ */
 
-#ifndef Record_HEADER
-#define Record_HEADER
+#ifndef RECORD_H_
+#define RECORD_H_
 
 #include <memory>
-#include <string>
 #include <sstream>
+#include <string>
 
-#include "mediasource/media.hpp"
+#include "mediasource/media.h"
 
 class Record {
  public:
@@ -59,6 +59,6 @@ class Records {
   std::map<int, std::unique_ptr<Record>> records_;
 };
 
-std::unique_ptr<Records> g_records = std::make_unique<Records>();
+extern std::unique_ptr<Records> g_records;
 
 #endif

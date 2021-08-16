@@ -10,10 +10,9 @@
  */
 
 #include <optional>
-
 #include <vlcpp/vlc.hpp>
 
-#include "state.hpp"
+#include "internal/state.h"
 
 class PlayerInternal {
  protected:

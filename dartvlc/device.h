@@ -9,13 +9,12 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include <vector>
+#ifndef DEVICE_H_
+#define DEVICE_H_
+
 #include <map>
-
+#include <vector>
 #include <vlcpp/vlc.hpp>
-
-#ifndef Device_HEADER
-#define Device_HEADER
 
 class Device {
  public:

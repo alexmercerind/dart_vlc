@@ -9,10 +9,12 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include <unordered_map>
 #include "include/dart_vlc/dart_vlc_plugin.h"
-#include "native/dart_vlc.cpp"
-#include "video_outlet.hpp"
+
+#include <unordered_map>
+
+#include "player.h"
+#include "video_outlet.h"
 
 namespace {
 
@@ -47,10 +49,10 @@ void DartVlcPlugin::RegisterWithRegistrar(
           registrar->messenger(), "dart_vlc",
           &flutter::StandardMethodCodec::GetInstance()),
       registrar->texture_registrar());
-  plugin->channel()->SetMethodCallHandler([plugin_pointer = plugin.get()](
-      const auto& call, auto result) {
-    plugin_pointer->HandleMethodCall(call, std::move(result));
-  });
+  plugin->channel()->SetMethodCallHandler(
+      [plugin_pointer = plugin.get()](const auto& call, auto result) {
+        plugin_pointer->HandleMethodCall(call, std::move(result));
+      });
   registrar->AddPlugin(std::move(plugin));
 }
 

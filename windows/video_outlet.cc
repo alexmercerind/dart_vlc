@@ -1,4 +1,4 @@
-#include "video_outlet.hpp"
+#include "video_outlet.h"
 
 VideoOutlet::VideoOutlet(flutter::TextureRegistrar* texture_registrar)
     : texture_registrar_(texture_registrar) {

@@ -11,9 +11,9 @@
 
 #include <memory>
 
-#include "../mediasource/playlist.hpp"
-#include "../device.hpp"
-#include "../equalizer.hpp"
+#include "mediasource/playlist.h"
+#include "device.h"
+#include "equalizer.h"
 
 class PlayerState {
  public:

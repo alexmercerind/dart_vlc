@@ -9,13 +9,13 @@
  * GNU Lesser General Public License v2.1
  */
 
-#ifndef Broadcast_HEADER
-#define Broadcast_HEADER
+#ifndef BROADCAST_H_
+#define BROADCAST_H_
 
-#include <string>
 #include <sstream>
+#include <string>
 
-#include "mediasource/media.hpp"
+#include "mediasource/media.h"
 
 class BroadcastConfiguration {
  public:
@@ -95,6 +95,6 @@ class Broadcasts {
   std::map<int32_t, std::unique_ptr<Broadcast>> broadcasts_;
 };
 
-std::unique_ptr<Broadcasts> g_broadcasts = std::make_unique<Broadcasts>();
+extern std::unique_ptr<Broadcasts> g_broadcasts;
 
 #endif

@@ -1,3 +1,6 @@
+#ifndef VIDEO_OUTLET_H
+#define VIDEO_OUTLET_H
+
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
@@ -21,3 +24,5 @@ class VideoOutlet {
   int64_t texture_id_;
   mutable std::mutex mutex_;
 };
+
+#endif

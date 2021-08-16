@@ -13,34 +13,13 @@ set(PROJECT_NAME "dart_vlc")
 set(PLUGIN_NAME "dart_vlc_plugin")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
-set(LIBVLC_VERSION "3.0.9.2")
 
-set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
-
-set(LIBVLC_ARCHIVE "${LIBVLC_BINARIES}/vlc-${LIBVLC_VERSION}.7z")
-set(LIBVLCPP_ARCHIVE "${LIBVLC_BINARIES}/libvlcpp.zip")
-
-set(LIBVLC_PACKAGE_DIR "${CMAKE_BINARY_DIR}/${PLUGIN_NAME}_packages")
-set(LIBVLC_SOURCE "${LIBVLC_PACKAGE_DIR}/vlc-${LIBVLC_VERSION}")
-set(LIBVLCPP_SOURCE "${LIBVLC_PACKAGE_DIR}/libvlcpp-master")
-
-add_custom_target(LIBVLC_EXTRACT ALL)
-
-if (NOT EXISTS "${LIBVLC_SOURCE}" OR NOT EXISTS "${LIBVLCPP_SOURCE}")
-  file(MAKE_DIRECTORY ${LIBVLC_PACKAGE_DIR})
-  add_custom_command(
-    TARGET LIBVLC_EXTRACT PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLC_ARCHIVE}\"
-    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
-    WORKING_DIRECTORY "${LIBVLC_PACKAGE_DIR}"
-    DEPENDS "${LIBVLC_ARCHIVE}" "${LIBVLCPP_ARCHIVE}"
-  )
-endif()
+add_subdirectory(../dartvlc "${CMAKE_BINARY_DIR}/${PROJECT_NAME}_core")
 
 # dart_vlc.dll
 add_library("${PLUGIN_NAME}" SHARED
-  "dart_vlc_plugin.cpp"
-  "video_outlet.cpp"
+  "dart_vlc_plugin.cc"
+  "video_outlet.cc"
 )
 
 apply_standard_settings("${PLUGIN_NAME}")
@@ -53,49 +32,32 @@ target_compile_definitions(
   FLUTTER_PLUGIN_IMPL
 )
 
-# Include dart_vlc, FFI, plugin, libVLC++ & libVLC headers.
-include_directories(
-  "${PLUGIN_NAME}" INTERFACE
-  # dart_vlc wrapper headers.
-  "${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc"
-  # FFI interface headers.
-  "${CMAKE_CURRENT_SOURCE_DIR}/../ffi"
-  # Plugin interface headers.
+target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  # libVLC++ headers.
-  "${LIBVLCPP_SOURCE}"
-  # libVLC headers.
-  "${LIBVLC_SOURCE}/sdk/include"
 )
 
-target_include_directories(
-  "${PLUGIN_NAME}" INTERFACE
-  # dart_vlc wrapper headers.
-  "${CMAKE_CURRENT_SOURCE_DIR}/../dartvlc"
-  # FFI interface headers.
-  "${CMAKE_CURRENT_SOURCE_DIR}/../ffi"
-  # Plugin interface headers.
-  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  # libVLC++ headers.
-  "${LIBVLCPP_SOURCE}"
-  # libVLC headers.
-  "${LIBVLC_SOURCE}/sdk/include"
+target_include_directories(${PLUGIN_NAME} PRIVATE
+  "${DARTVLC_CORE_PATH}"
 )
 
 # Link libVLC & Flutter embedder.
 target_link_libraries("${PLUGIN_NAME}" PRIVATE
   flutter
   flutter_wrapper_plugin
-  "${LIBVLC_SOURCE}/sdk/lib/libvlc.lib"
-  "${LIBVLC_SOURCE}/sdk/lib/libvlccore.lib"
+  dart_vlc_core
 )
+
+# We're currently building the core library as a static
+# library. So we need to force exporting all symbols.
+target_link_options("${PLUGIN_NAME}" PRIVATE "/WHOLEARCHIVE:dart_vlc_core")
 
 # Add generated shared library & libVLC DLLs.
 set(
   dart_vlc_bundled_libraries
-  "${LIBVLC_SOURCE}/libvlc.dll"
-  "${LIBVLC_SOURCE}/libvlccore.dll"
-  "${LIBVLC_SOURCE}/plugins"
+  # the core library
+  dart_vlc_core
+  # the core library dependencies
+  ${DARTVLC_CORE_LIBS}
   PARENT_SCOPE
 )
 

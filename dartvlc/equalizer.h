@@ -9,12 +9,11 @@
  * GNU Lesser General Public License v2.1
  */
 
+#ifndef EQUALIZER_H_
+#define EQUALIZER_H_
+
 #include <map>
-
 #include <vlcpp/vlc.hpp>
-
-#ifndef Equalizer_HEADER
-#define Equalizer_HEADER
 
 enum EqualizerMode {
   flat,
@@ -104,6 +103,6 @@ class Equalizers {
   std::map<int, Equalizer*> equalizers_;
 };
 
-std::unique_ptr<Equalizers> g_equalizers = std::make_unique<Equalizers>();
+extern std::unique_ptr<Equalizers> g_equalizers;
 
 #endif

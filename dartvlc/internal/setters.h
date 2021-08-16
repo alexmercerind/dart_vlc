@@ -9,11 +9,11 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include "events.hpp"
-#include "../device.hpp"
-#include "../mediasource/mediasource.hpp"
-#include "../mediasource/media.hpp"
-#include "../mediasource/playlist.hpp"
+#include "device.h"
+#include "internal/events.h"
+#include "mediasource/media.h"
+#include "mediasource/mediasource.h"
+#include "mediasource/playlist.h"
 
 class PlayerSetters : public PlayerEvents {
  public:

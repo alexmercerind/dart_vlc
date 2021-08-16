@@ -7,15 +7,15 @@
  * saini123hitesh@gmail.com; alexmercerind@gmail.com
  *
  * GNU Lesser General Public License v2.1
-*/
+ */
 
-#ifndef Chromecast_HEADER
-#define Chromecast_HEADER
+#ifndef CHROMECAST_H_
+#define CHROMECAST_H_
 
-#include <string>
 #include <sstream>
+#include <string>
 
-#include "mediasource/media.hpp"
+#include "mediasource/media.h"
 
 class Chromecast {
  public:

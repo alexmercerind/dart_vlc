@@ -9,8 +9,8 @@
  * GNU Lesser General Public License v2.1
  */
 
-#ifndef Media_HEADER
-#define Media_HEADER
+#ifndef MEDIASOURCE_MEDIA_H_
+#define MEDIASOURCE_MEDIA_H_
 
 #include <filesystem>
 #include <future>
@@ -19,9 +19,9 @@
 #include <string_view>
 #include <vlcpp/vlc.hpp>
 
-#include "mediasource.hpp"
+#include "mediasource/mediasource.h"
 
-VLC::Instance g_vlc_instance = VLC::Instance(0, nullptr);
+//VLC::Instance g_vlc_instance = VLC::Instance(0, nullptr);
 
 class Media : public MediaSource {
  public:
@@ -74,8 +74,10 @@ class Media : public MediaSource {
   }
 
   void parse(int timeout) {
+    VLC::Instance vlc_instance = VLC::Instance(0, nullptr);
+
     VLC::Media media =
-        VLC::Media(g_vlc_instance, location_, VLC::Media::FromLocation);
+        VLC::Media(vlc_instance, location_, VLC::Media::FromLocation);
     std::promise<bool> is_parsed = std::promise<bool>();
     auto is_parsed_ptr = &is_parsed;
     media.eventManager().onParsedChanged(

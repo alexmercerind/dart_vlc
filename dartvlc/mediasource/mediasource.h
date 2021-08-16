@@ -9,8 +9,8 @@
  * GNU Lesser General Public License v2.1
  */
 
-#ifndef MediaSource_HEADER
-#define MediaSource_HEADER
+#ifndef MEDIASOURCE_MEDIASOURCE_H_
+#define MEDIASOURCE_MEDIASOURCE_H_
 
 #include <string>
 

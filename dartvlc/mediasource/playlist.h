@@ -9,15 +9,15 @@
  * GNU Lesser General Public License v2.1
  */
 
+#ifndef MEDIASOURCE_PLAYLIST_H_
+#define MEDIASOURCE_PLAYLIST_H_
+
 #include <string>
 #include <map>
 #include <vector>
 
-#include "mediasource.hpp"
-#include "media.hpp"
-
-#ifndef Playlist_HEADER
-#define Playlist_HEADER
+#include "mediasource/mediasource.h"
+#include "mediasource/media.h"
 
 enum PlaylistMode { single, loop, repeat };
 
