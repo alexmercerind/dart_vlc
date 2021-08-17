@@ -28,7 +28,7 @@ packages:
       path: ffi
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.2"
   ffi:
     dependency: transitive
     description:
@@ -54,7 +54,7 @@ packages:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.0"
+    version: "1.7.0"
   path:
     dependency: "direct main"
     description:

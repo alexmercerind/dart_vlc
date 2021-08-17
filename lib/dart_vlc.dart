@@ -12,6 +12,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
 import 'package:flutter/services.dart';
 
 import 'package:dart_vlc/src/widgets/video.dart';
@@ -99,18 +100,19 @@ abstract class DartVLC {
       }
     };
     if (Platform.isWindows) {
-      String directory = Platform.resolvedExecutable
-          .split('\\')
-          .sublist(0, Platform.resolvedExecutable.split('\\').length - 1)
-          .join('\\');
-      FFI.DartVLC.initialize(directory + '\\' + 'dart_vlc_plugin.dll');
+      final libraryPath = path.join(
+          path.dirname(Platform.resolvedExecutable), 'dart_vlc_plugin.dll');
+      FFI.DartVLC.initialize(libraryPath);
     }
-    if (Platform.isLinux) {
-      String directory = Platform.resolvedExecutable
-          .split('/')
-          .sublist(0, Platform.resolvedExecutable.split('/').length - 1)
-          .join('/');
-      FFI.DartVLC.initialize(directory + '/lib/' + 'libdartvlc.so');
+    else if (Platform.isLinux) {
+      final libraryPath = path.join(path.dirname(Platform.resolvedExecutable),
+          'lib', 'libdart_vlc_plugin.so');
+      FFI.DartVLC.initialize(libraryPath);
+    }
+    else if(Platform.isMacOS) {
+      final libraryPath = path.join(path.dirname(path.dirname(Platform.resolvedExecutable)),
+          'Frameworks', 'dart_vlc.framework', 'dart_vlc');
+      FFI.DartVLC.initialize(libraryPath);
     }
   }
 }
