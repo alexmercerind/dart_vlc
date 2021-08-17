@@ -21,7 +21,7 @@ A new flutter plugin project.
   {
     :name => 'Change VLCKit ID',
     :show_env_vars_in_log => true,
-    :script => 'echo ${PODS_ROOT} && install_name_tool -id "@executable_path/../Frameworks/VLCKit.framework/Versions/A/VLCKit" ${PODS_ROOT}/VLCKit/VLCKit.framework/VLCKit',
+    :script => 'install_name_tool -id "@executable_path/../Frameworks/VLCKit.framework/Versions/A/VLCKit" ${PODS_ROOT}/VLCKit/VLCKit.framework/VLCKit',
     :execution_position => :before_compile
   }]
   s.source           = { :path => '.' }
