@@ -15,8 +15,12 @@ class DartVLC {
           .lookup<NativeFunction<RegisterCallbackPortCXX>>(
               'RegisterDartCallbackPort')
           .asFunction();
+      DartInitializeApiDLDart dartInitializeApiDL = dynamicLibrary
+          .lookup<NativeFunction<DartInitializeApiDLCXX>>('DartInitializeApiDL')
+          .asFunction();
       registerPostCObject(NativeApi.postCObject);
       registerCallbackPort(receiver.sendPort.nativePort);
+      dartInitializeApiDL(NativeApi.initializeApiDLData);
       isInitialized = true;
     }
   }

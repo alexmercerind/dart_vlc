@@ -1,5 +1,8 @@
 import 'dart:ffi';
 
+typedef DartInitializeApiDLCXX = Void Function(Pointer<Void> nativePort);
+typedef DartInitializeApiDLDart = void Function(Pointer<Void> nativePort);
+
 typedef RegisterPostCObjectCXX = Void Function(
     Pointer<NativeFunction<Int8 Function(Int64, Pointer<Dart_CObject>)>>
         functionPointer);
