@@ -11,6 +11,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: subosito/flutter-action@v1
         with:
           channel: "beta"
@@ -27,6 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: subosito/flutter-action@v1
         with:
           channel: "beta"
@@ -41,6 +45,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: subosito/flutter-action@v1
         with:
           channel: "beta"
