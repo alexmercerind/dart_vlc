@@ -1,7 +1,7 @@
 import 'dart:ffi';
-import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/enums/equalizerMode.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/equalizer.dart';
 
 /// Internally used class to avoid direct creation of the object of a [Equalizer] class.
 class _Equalizer extends Equalizer {}
@@ -18,7 +18,7 @@ class _Equalizer extends Equalizer {}
 /// player.setEqualizer(equalizer);
 /// ```
 ///
-class Equalizer {
+abstract class Equalizer {
   /// Unique Id associated with this [Equalizer].
   late int id;
 
@@ -34,48 +34,28 @@ class Equalizer {
   /// Creates a default [Equalizer] instance with all values set to `0.0`.
   static Equalizer createEmpty() {
     Equalizer equalizer = new _Equalizer();
-    Pointer<Pointer<Utf8>> _equalizer = EqualizerFFI.createEmpty();
-    equalizer.id = int.parse(_equalizer.elementAt(0).value.toDartString());
-    equalizer.preAmp =
-        double.parse(_equalizer.elementAt(1).value.toDartString());
+    EqualizerStruct _equalizer = EqualizerFFI.createEmpty(equalizer);
+    equalizer.id = _equalizer.id;
+    equalizer.preAmp = equalizer.preAmp;
     equalizer.mode = null;
-    equalizer.bandAmps = {
-      double.parse(_equalizer.elementAt(2).value.toDartString()):
-          double.parse(_equalizer.elementAt(3).value.toDartString()),
-      double.parse(_equalizer.elementAt(4).value.toDartString()):
-          double.parse(_equalizer.elementAt(5).value.toDartString()),
-      double.parse(_equalizer.elementAt(6).value.toDartString()):
-          double.parse(_equalizer.elementAt(7).value.toDartString()),
-      double.parse(_equalizer.elementAt(8).value.toDartString()):
-          double.parse(_equalizer.elementAt(9).value.toDartString()),
-      double.parse(_equalizer.elementAt(10).value.toDartString()):
-          double.parse(_equalizer.elementAt(11).value.toDartString()),
-    };
-    CleanupFFI.equalizer();
+    equalizer.bandAmps = {};
+    for (int i = 0; i < _equalizer.size; i++) {
+      equalizer.bandAmps[_equalizer.bands[i]] = _equalizer.amps[i];
+    }
     return equalizer;
   }
 
   /// Creates an [Equalizer] instance with any preset from [EqualizerMode].
   static Equalizer createMode(EqualizerMode mode) {
     Equalizer equalizer = new _Equalizer();
-    Pointer<Pointer<Utf8>> _equalizer = EqualizerFFI.createMode(mode.index);
-    equalizer.id = int.parse(_equalizer.elementAt(0).value.toDartString());
-    equalizer.preAmp =
-        double.parse(_equalizer.elementAt(1).value.toDartString());
-    equalizer.mode = mode;
-    equalizer.bandAmps = {
-      double.parse(_equalizer.elementAt(2).value.toDartString()):
-          double.parse(_equalizer.elementAt(3).value.toDartString()),
-      double.parse(_equalizer.elementAt(4).value.toDartString()):
-          double.parse(_equalizer.elementAt(5).value.toDartString()),
-      double.parse(_equalizer.elementAt(6).value.toDartString()):
-          double.parse(_equalizer.elementAt(7).value.toDartString()),
-      double.parse(_equalizer.elementAt(8).value.toDartString()):
-          double.parse(_equalizer.elementAt(9).value.toDartString()),
-      double.parse(_equalizer.elementAt(10).value.toDartString()):
-          double.parse(_equalizer.elementAt(11).value.toDartString()),
-    };
-    CleanupFFI.equalizer();
+    EqualizerStruct _equalizer = EqualizerFFI.createMode(equalizer, mode.index);
+    equalizer.id = _equalizer.id;
+    equalizer.preAmp = equalizer.preAmp;
+    equalizer.mode = null;
+    equalizer.bandAmps = {};
+    for (int i = 0; i < _equalizer.size; i++) {
+      equalizer.bandAmps[_equalizer.bands[i]] = _equalizer.amps[i];
+    }
     return equalizer;
   }
 

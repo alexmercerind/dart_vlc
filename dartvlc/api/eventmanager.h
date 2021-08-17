@@ -36,8 +36,7 @@ inline void OnPosition(int32_t id, PlayerState* state) {
 
 inline void OnComplete(int32_t id, PlayerState* state) {
   std::vector<std::string> event{
-      std::to_string(id),
-      "completeEvent",
+      std::to_string(id), "completeEvent",
       std::to_string(state->is_completed()),
   };
   CallbackStringArray(event);

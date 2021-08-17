@@ -10,8 +10,8 @@
  */
 
 #include <memory>
+#include "api.h"
 
-#include "api/eventmanager.h"
 #include "broadcast.h"
 #include "chromecast.h"
 #include "device.h"
@@ -27,13 +27,10 @@ static char** g_metas_ptr = nullptr;
 static size_t g_metas_size = 0;
 static char** g_devices_ptr = nullptr;
 static size_t g_devices_size = 0;
-static char** g_equalizer_ptr = nullptr;
-static size_t g_equalizer_size = 0;
 
-DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
-                            int32_t video_height,
-                            int32_t commandLineArgumentsCount,
-                            const char** commandLineArguments) {
+void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
+                  int32_t commandLineArgumentsCount,
+                  const char** commandLineArguments) {
   std::vector<std::string> args{};
   for (int32_t index = 0; index < commandLineArgumentsCount; index++)
     args.emplace_back(commandLineArguments[index]);
@@ -69,10 +66,10 @@ DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
       });
 }
 
-DLLEXPORT void PlayerDispose(int32_t id) { g_players->Dispose(id); }
+void PlayerDispose(int32_t id) { g_players->Dispose(id); }
 
-DLLEXPORT void PlayerOpen(int32_t id, bool auto_start, const char** source,
-                          int32_t source_size) {
+void PlayerOpen(int32_t id, bool auto_start, const char** source,
+                int32_t source_size) {
   std::vector<std::shared_ptr<Media>> medias{};
   Player* player = g_players->Get(id);
   for (int32_t index = 0; index < 2 * source_size; index += 2) {
@@ -90,75 +87,75 @@ DLLEXPORT void PlayerOpen(int32_t id, bool auto_start, const char** source,
   player->Open(std::make_shared<Playlist>(medias), auto_start);
 }
 
-DLLEXPORT void PlayerPlay(int32_t id) {
+void PlayerPlay(int32_t id) {
   Player* player = g_players->Get(id);
   player->Play();
 }
 
-DLLEXPORT void PlayerPause(int32_t id) {
+void PlayerPause(int32_t id) {
   Player* player = g_players->Get(id);
   player->Pause();
 }
 
-DLLEXPORT void PlayerPlayOrPause(int32_t id) {
+void PlayerPlayOrPause(int32_t id) {
   Player* player = g_players->Get(id);
   player->PlayOrPause();
 }
 
-DLLEXPORT void PlayerStop(int32_t id) {
+void PlayerStop(int32_t id) {
   Player* player = g_players->Get(id);
   player->Stop();
 }
 
-DLLEXPORT void PlayerNext(int32_t id) {
+void PlayerNext(int32_t id) {
   Player* player = g_players->Get(id);
   player->Next();
 }
 
-DLLEXPORT void PlayerBack(int32_t id) {
+void PlayerBack(int32_t id) {
   Player* player = g_players->Get(id);
   player->Back();
 }
 
-DLLEXPORT void PlayerJump(int32_t id, int32_t index) {
+void PlayerJump(int32_t id, int32_t index) {
   Player* player = g_players->Get(id);
   player->Jump(index);
 }
 
-DLLEXPORT void PlayerSeek(int32_t id, int32_t position) {
+void PlayerSeek(int32_t id, int32_t position) {
   Player* player = g_players->Get(id);
   player->Seek(position);
 }
 
-DLLEXPORT void PlayerSetVolume(int32_t id, float volume) {
+void PlayerSetVolume(int32_t id, float volume) {
   Player* player = g_players->Get(id);
   player->SetVolume(volume);
 }
 
-DLLEXPORT void PlayerSetRate(int32_t id, float rate) {
+void PlayerSetRate(int32_t id, float rate) {
   Player* player = g_players->Get(id);
   player->SetRate(rate);
 }
 
-DLLEXPORT void PlayerSetUserAgent(int32_t id, const char* userAgent) {
+void PlayerSetUserAgent(int32_t id, const char* userAgent) {
   Player* player = g_players->Get(id);
   player->SetUserAgent(userAgent);
 }
 
-DLLEXPORT void PlayerSetDevice(int32_t id, const char* device_id,
-                               const char* device_name) {
+void PlayerSetDevice(int32_t id, const char* device_id,
+                     const char* device_name) {
   Player* player = g_players->Get(id);
   Device device(device_id, device_name);
   player->SetDevice(device);
 }
 
-DLLEXPORT void PlayerSetEqualizer(int32_t id, int32_t equalizer_id) {
+void PlayerSetEqualizer(int32_t id, int32_t equalizer_id) {
   Player* player = g_players->Get(id);
   Equalizer* equalizer = g_equalizers->Get(equalizer_id);
   player->SetEqualizer(*equalizer);
 }
 
-DLLEXPORT void PlayerSetPlaylistMode(int32_t id, const char* mode) {
+void PlayerSetPlaylistMode(int32_t id, const char* mode) {
   Player* player = g_players->Get(id);
   PlaylistMode playlistMode;
   if (strcmp(mode, "PlaylistMode.repeat") == 0)
@@ -170,7 +167,7 @@ DLLEXPORT void PlayerSetPlaylistMode(int32_t id, const char* mode) {
   player->SetPlaylistMode(playlistMode);
 }
 
-DLLEXPORT void PlayerAdd(int32_t id, const char* type, const char* resource) {
+void PlayerAdd(int32_t id, const char* type, const char* resource) {
   Player* player = g_players->Get(id);
   std::shared_ptr<Media> media;
   if (strcmp(type, "MediaType.file") == 0)
@@ -182,13 +179,13 @@ DLLEXPORT void PlayerAdd(int32_t id, const char* type, const char* resource) {
   player->Add(media);
 }
 
-DLLEXPORT void PlayerRemove(int32_t id, int32_t index) {
+void PlayerRemove(int32_t id, int32_t index) {
   Player* player = g_players->Get(id);
   player->Remove(index);
 }
 
-DLLEXPORT void PlayerInsert(int32_t id, int32_t index, const char* type,
-                            const char* resource) {
+void PlayerInsert(int32_t id, int32_t index, const char* type,
+                  const char* resource) {
   Player* player = g_players->Get(id);
   std::shared_ptr<Media> media;
   if (strcmp(type, "MediaType.file") == 0)
@@ -200,20 +197,18 @@ DLLEXPORT void PlayerInsert(int32_t id, int32_t index, const char* type,
   player->Insert(index, media);
 }
 
-DLLEXPORT void Player_move(int32_t id, int32_t initial_index,
-                           int32_t final_index) {
+void PlayerMove(int32_t id, int32_t initial_index, int32_t final_index) {
   Player* player = g_players->Get(id);
   player->Move(initial_index, final_index);
 }
 
 // TODO: respect timeout
-DLLEXPORT char** MediaParse(const char* type, const char* resource,
-                            int32_t timeout) {
+char** MediaParse(const char* type, const char* resource, int32_t timeout) {
   std::shared_ptr<Media> media = Media::create(type, resource, true);
   g_metas_ptr = new char*[media->metas().size()];
   g_metas_size = media->metas().size();
   int32_t index = 0;
-  for (const auto& [key, value] : media->metas()) {
+  for (const auto & [ key, value ] : media->metas()) {
     g_metas_ptr[index] = new char[200];
     strncpy(g_metas_ptr[index], value.data(), 200);
     index++;
@@ -221,7 +216,7 @@ DLLEXPORT char** MediaParse(const char* type, const char* resource,
   return g_metas_ptr;
 }
 
-DLLEXPORT void MediaClear() {
+void MediaClear() {
   if (g_metas_ptr != nullptr) {
     for (size_t i = 0; i < g_metas_size; i++) {
       delete g_metas_ptr[i];
@@ -232,11 +227,10 @@ DLLEXPORT void MediaClear() {
   }
 }
 
-DLLEXPORT void BroadcastCreate(int32_t id, const char* type,
-                               const char* resource, const char* access,
-                               const char* mux, const char* dst,
-                               const char* vcodec, int32_t vb,
-                               const char* acodec, int32_t ab) {
+void BroadcastCreate(int32_t id, const char* type, const char* resource,
+                     const char* access, const char* mux, const char* dst,
+                     const char* vcodec, int32_t vb, const char* acodec,
+                     int32_t ab) {
   std::shared_ptr<Media> media = Media::create(type, resource);
 
   std::unique_ptr<BroadcastConfiguration> configuration =
@@ -245,40 +239,40 @@ DLLEXPORT void BroadcastCreate(int32_t id, const char* type,
   g_broadcasts->Get(id, std::move(media), std::move(configuration));
 }
 
-DLLEXPORT void BroadcastStart(int32_t id) {
+void BroadcastStart(int32_t id) {
   Broadcast* broadcast = g_broadcasts->Get(id, nullptr, nullptr);
   broadcast->Start();
 }
 
-DLLEXPORT void BroadcastDispose(int32_t id) { g_broadcasts->Dispose(id); }
+void BroadcastDispose(int32_t id) { g_broadcasts->Dispose(id); }
 
-DLLEXPORT void ChromecastCreate(int32_t id, const char* type,
-                                const char* resource, const char* ip_address) {
+void ChromecastCreate(int32_t id, const char* type, const char* resource,
+                      const char* ip_address) {
   std::shared_ptr<Media> media = Media::create(type, resource);
   chromecasts->Get(id, std::move(media), ip_address);
 }
 
-DLLEXPORT void ChromecastStart(int32_t id) {
+void ChromecastStart(int32_t id) {
   Chromecast* chromecast = chromecasts->Get(id, nullptr, "");
   chromecast->Start();
 }
 
-DLLEXPORT void ChromecastDispose(int32_t id) { chromecasts->Dispose(id); }
+void ChromecastDispose(int32_t id) { chromecasts->Dispose(id); }
 
-DLLEXPORT void RecordCreate(int32_t id, const char* saving_file,
-                            const char* type, const char* resource) {
+void RecordCreate(int32_t id, const char* saving_file, const char* type,
+                  const char* resource) {
   std::shared_ptr<Media> media = Media::create(type, resource);
   g_records->Get(id, media, saving_file);
 }
 
-DLLEXPORT void RecordStart(int32_t id) {
+void RecordStart(int32_t id) {
   Record* record = g_records->Get(id, nullptr, "");
   record->Start();
 }
 
-DLLEXPORT void RecordDispose(int32_t id) { g_records->Dispose(id); }
+void RecordDispose(int32_t id) { g_records->Dispose(id); }
 
-DLLEXPORT char** DevicesAll() {
+char** DevicesAll() {
   std::vector<Device> devices = Devices::All();
   g_devices_ptr = new char*[(devices.size() * 2) + 1];
   g_devices_size = (devices.size() * 2) + 1;
@@ -295,7 +289,7 @@ DLLEXPORT char** DevicesAll() {
   return g_devices_ptr;
 }
 
-DLLEXPORT void DevicesClear() {
+void DevicesClear() {
   if (g_devices_ptr != nullptr) {
     for (size_t i = 0; i < g_devices_size; i++) {
       delete g_devices_ptr[i];
@@ -306,62 +300,63 @@ DLLEXPORT void DevicesClear() {
   }
 }
 
-DLLEXPORT char** EqualizerCreateEmpty() {
+void EqualizerClear(void*, void* peer) {
+  delete reinterpret_cast<std::vector<float>*>(peer);
+}
+
+struct EqualizerStruct EqualizerCreateEmpty(Dart_Handle object) {
   int32_t id = g_equalizers->CreateEmpty();
   Equalizer* equalizer = g_equalizers->Get(id);
-  g_equalizer_ptr = new char*[2 * equalizer->band_amps().size() + 2];
-  g_equalizer_size = 2 * equalizer->band_amps().size() + 2;
-  g_equalizer_ptr[0] = new char[200];
-  strncpy(g_equalizer_ptr[0], std::to_string(id).data(), 200);
-  g_equalizer_ptr[1] = new char[200];
-  strncpy(g_equalizer_ptr[1], std::to_string(equalizer->pre_amp()).data(), 200);
-  int32_t index = 0;
-  for (const auto& [band, amp] : equalizer->band_amps()) {
-    g_equalizer_ptr[index + 2] = new char[200];
-    strncpy(g_equalizer_ptr[index + 2], std::to_string(band).data(), 200);
-    g_equalizer_ptr[index + 3] = new char[200];
-    strncpy(g_equalizer_ptr[index + 3], std::to_string(amp).data(), 200);
-    index += 2;
+  auto bands = new std::vector<float>();
+  auto amps = new std::vector<float>();
+  Dart_NewFinalizableHandle_DL(
+      object, reinterpret_cast<void*>(bands), sizeof(bands),
+      static_cast<Dart_HandleFinalizer>(EqualizerClear));
+  Dart_NewFinalizableHandle_DL(
+      object, reinterpret_cast<void*>(amps), sizeof(amps),
+      static_cast<Dart_HandleFinalizer>(EqualizerClear));
+  for (const auto & [ band, amp ] : equalizer->band_amps()) {
+    bands->emplace_back(band);
+    amps->emplace_back(amp);
   }
-  return g_equalizer_ptr;
+  struct EqualizerStruct equalizer_struct;
+  equalizer_struct.id = id;
+  equalizer_struct.pre_amp = equalizer->pre_amp();
+  equalizer_struct.bands = bands->data();
+  equalizer_struct.amps = amps->data();
+  equalizer_struct.size = equalizer->band_amps().size();
+  return equalizer_struct;
 }
 
-DLLEXPORT char** EqualizerCreateMode(int32_t mode) {
+struct EqualizerStruct EqualizerCreateMode(Dart_Handle object, int32_t mode) {
   int32_t id = g_equalizers->CreateMode(static_cast<EqualizerMode>(mode));
   Equalizer* equalizer = g_equalizers->Get(id);
-  g_equalizer_ptr = new char*[2 * equalizer->band_amps().size() + 2];
-  g_equalizer_size = 2 * equalizer->band_amps().size() + 2;
-  g_equalizer_ptr[0] = new char[200];
-  strncpy(g_equalizer_ptr[0], std::to_string(id).data(), 200);
-  g_equalizer_ptr[1] = new char[200];
-  strncpy(g_equalizer_ptr[1], std::to_string(equalizer->pre_amp()).data(), 200);
-  int32_t index = 0;
-  for (const auto& [band, amp] : equalizer->band_amps()) {
-    g_equalizer_ptr[index + 2] = new char[200];
-    strncpy(g_equalizer_ptr[index + 2], std::to_string(band).data(), 200);
-    g_equalizer_ptr[index + 3] = new char[200];
-    strncpy(g_equalizer_ptr[index + 3], std::to_string(amp).data(), 200);
-    index += 2;
+  auto bands = new std::vector<float>();
+  auto amps = new std::vector<float>();
+  Dart_NewFinalizableHandle_DL(
+      object, reinterpret_cast<void*>(bands), sizeof(bands),
+      static_cast<Dart_HandleFinalizer>(EqualizerClear));
+  Dart_NewFinalizableHandle_DL(
+      object, reinterpret_cast<void*>(amps), sizeof(amps),
+      static_cast<Dart_HandleFinalizer>(EqualizerClear));
+  for (const auto & [ band, amp ] : equalizer->band_amps()) {
+    bands->emplace_back(band);
+    amps->emplace_back(amp);
   }
-  return g_equalizer_ptr;
+  struct EqualizerStruct equalizer_struct;
+  equalizer_struct.id = id;
+  equalizer_struct.pre_amp = equalizer->pre_amp();
+  equalizer_struct.bands = bands->data();
+  equalizer_struct.amps = amps->data();
+  equalizer_struct.size = equalizer->band_amps().size();
+  return equalizer_struct;
 }
 
-DLLEXPORT void EqualizerClear() {
-  if (g_equalizer_ptr != nullptr) {
-    for (size_t i = 0; i < g_equalizer_size; i++) {
-      delete g_equalizer_ptr[i];
-    }
-    delete[] g_equalizer_ptr;
-    g_equalizer_ptr = nullptr;
-    g_equalizer_size = 0;
-  }
-}
-
-DLLEXPORT void EqualizerSetBandAmp(int32_t id, float band, float amp) {
+void EqualizerSetBandAmp(int32_t id, float band, float amp) {
   g_equalizers->Get(id)->SetBandAmp(band, amp);
 }
 
-DLLEXPORT void EqualizerSetPreAmp(int32_t id, float amp) {
+void EqualizerSetPreAmp(int32_t id, float amp) {
   g_equalizers->Get(id)->SetPreAmp(amp);
 }
 

@@ -15,10 +15,19 @@
 #include <cstdint>
 
 #include "base.h"
+#include "api/eventmanager.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct EqualizerStruct {
+  int32_t id;
+  float pre_amp;
+  float* bands;
+  float* amps;
+  int32_t size;
+};
 
 DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
                             int32_t video_height,
@@ -64,8 +73,8 @@ DLLEXPORT void PlayerRemove(int32_t id, int32_t index);
 DLLEXPORT void PlayerInsert(int32_t id, int32_t index, const char* type,
                             const char* resource);
 
-DLLEXPORT void Player_move(int32_t id, int32_t initial_index,
-                           int32_t final_index);
+DLLEXPORT void PlayerMove(int32_t id, int32_t initial_index,
+                          int32_t final_index);
 
 DLLEXPORT char** MediaParse(const char* type, const char* resource,
                             int32_t timeout);
@@ -94,9 +103,9 @@ DLLEXPORT void RecordStart(int32_t id);
 DLLEXPORT void RecordDispose(int32_t id);
 DLLEXPORT char** DevicesAll();
 DLLEXPORT void DevicesClear();
-DLLEXPORT char** EqualizerCreateEmpty();
-DLLEXPORT char** EqualizerCreateMode(int32_t mode);
-DLLEXPORT void EqualizerClear();
+DLLEXPORT struct EqualizerStruct EqualizerCreateEmpty(Dart_Handle object);
+DLLEXPORT struct EqualizerStruct EqualizerCreateMode(Dart_Handle object,
+                                                     int32_t mode);
 DLLEXPORT void EqualizerSetBandAmp(int32_t id, float band, float amp);
 DLLEXPORT void EqualizerSetPreAmp(int32_t id, float amp);
 
