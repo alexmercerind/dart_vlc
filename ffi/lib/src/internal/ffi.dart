@@ -175,20 +175,6 @@ abstract class EqualizerFFI {
       .asFunction();
 }
 
-abstract class CleanupFFI {
-  static final MediaClearDart media = dynamicLibrary
-      .lookup<NativeFunction<MediaClearCXX>>('MediaClear')
-      .asFunction();
-
-  static final DevicesClearDart devices = dynamicLibrary
-      .lookup<NativeFunction<DevicesClearCXX>>('DevicesClear')
-      .asFunction();
-
-  static final EqualizerClearDart equalizer = dynamicLibrary
-      .lookup<NativeFunction<EqualizerClearCXX>>('EqualizerClear')
-      .asFunction();
-}
-
 bool isInitialized = false;
 void Function(int playerId, Uint8List frame) videoFrameCallback = (_, __) {};
 final ReceivePort receiver = new ReceivePort()

@@ -28,5 +28,3 @@ typedef EqualizerSetBandAmpDart = void Function(
     int id, double band, double amp);
 typedef EqualizerSetPreAmpCXX = Void Function(Int32 id, Float amp);
 typedef EqualizerSetPreAmpDart = void Function(int id, double amp);
-typedef EqualizerClearCXX = Void Function();
-typedef EqualizerClearDart = void Function();

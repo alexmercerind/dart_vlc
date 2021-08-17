@@ -23,11 +23,6 @@
 extern "C" {
 #endif
 
-static char** g_metas_ptr = nullptr;
-static size_t g_metas_size = 0;
-static char** g_devices_ptr = nullptr;
-static size_t g_devices_size = 0;
-
 void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
                   int32_t commandLineArgumentsCount,
                   const char** commandLineArguments) {
@@ -202,29 +197,29 @@ void PlayerMove(int32_t id, int32_t initial_index, int32_t final_index) {
   player->Move(initial_index, final_index);
 }
 
-// TODO: respect timeout
-char** MediaParse(const char* type, const char* resource, int32_t timeout) {
-  std::shared_ptr<Media> media = Media::create(type, resource, true);
-  g_metas_ptr = new char*[media->metas().size()];
-  g_metas_size = media->metas().size();
-  int32_t index = 0;
-  for (const auto & [ key, value ] : media->metas()) {
-    g_metas_ptr[index] = new char[200];
-    strncpy(g_metas_ptr[index], value.data(), 200);
-    index++;
-  }
-  return g_metas_ptr;
+void MediaClearMap(void*, void* peer) {
+  delete reinterpret_cast<std::map<std::string, std::string>*>(peer);
 }
 
-void MediaClear() {
-  if (g_metas_ptr != nullptr) {
-    for (size_t i = 0; i < g_metas_size; i++) {
-      delete g_metas_ptr[i];
-    }
-    delete[] g_metas_ptr;
-    g_metas_ptr = nullptr;
-    g_metas_size = 0;
+void MediaClearVector(void*, void* peer) {
+  delete reinterpret_cast<std::vector<const char*>*>(peer);
+}
+
+const char** MediaParse(Dart_Handle object, const char* type,
+                        const char* resource, int32_t timeout) {
+  std::shared_ptr<Media> media = Media::create(type, resource, true, timeout);
+  auto metas = new std::map<std::string, std::string>(media->metas());
+  auto values = new std::vector<const char*>();
+  Dart_NewFinalizableHandle_DL(
+      object, reinterpret_cast<void*>(metas), sizeof(metas),
+      static_cast<Dart_HandleFinalizer>(MediaClearMap));
+  Dart_NewFinalizableHandle_DL(
+      object, reinterpret_cast<void*>(values), sizeof(values),
+      static_cast<Dart_HandleFinalizer>(MediaClearVector));
+  for (const auto & [ key, value ] : *metas) {
+    values->emplace_back(value.c_str());
   }
+  return values->data();
 }
 
 void BroadcastCreate(int32_t id, const char* type, const char* resource,
@@ -272,32 +267,32 @@ void RecordStart(int32_t id) {
 
 void RecordDispose(int32_t id) { g_records->Dispose(id); }
 
-char** DevicesAll() {
-  std::vector<Device> devices = Devices::All();
-  g_devices_ptr = new char*[(devices.size() * 2) + 1];
-  g_devices_size = (devices.size() * 2) + 1;
-  g_devices_ptr[0] = new char[200];
-  strncpy(g_devices_ptr[0], std::to_string(devices.size()).data(), 200);
-  int32_t index = 0;
-  for (Device& device : devices) {
-    g_devices_ptr[index + 1] = new char[200];
-    strncpy(g_devices_ptr[index + 1], device.id().data(), 200);
-    g_devices_ptr[index + 2] = new char[200];
-    strncpy(g_devices_ptr[index + 2], device.name().data(), 200);
-    index += 2;
-  }
-  return g_devices_ptr;
+void DevicesClear(void*, void* peer) {
+  delete reinterpret_cast<std::vector<const char*>*>(peer);
 }
 
-void DevicesClear() {
-  if (g_devices_ptr != nullptr) {
-    for (size_t i = 0; i < g_devices_size; i++) {
-      delete g_devices_ptr[i];
-    }
-    delete[] g_devices_ptr;
-    g_devices_ptr = nullptr;
-    g_devices_size = 0;
+struct DevicesStruct DevicesAll(Dart_Handle object) {
+  auto devices = new std::vector<Device>(Devices::All());
+  auto ids = new std::vector<const char*>();
+  auto names = new std::vector<const char*>();
+  for (int i = 0; i < devices->size(); i++) {
+    ids->emplace_back((*devices)[i].id().c_str());
+    names->emplace_back((*devices)[i].name().c_str());
   }
+  Dart_NewFinalizableHandle_DL(object, reinterpret_cast<void*>(devices),
+                               sizeof(devices),
+                               static_cast<Dart_HandleFinalizer>(DevicesClear));
+  Dart_NewFinalizableHandle_DL(object, reinterpret_cast<void*>(ids),
+                               sizeof(ids),
+                               static_cast<Dart_HandleFinalizer>(DevicesClear));
+  Dart_NewFinalizableHandle_DL(object, reinterpret_cast<void*>(names),
+                               sizeof(names),
+                               static_cast<Dart_HandleFinalizer>(DevicesClear));
+  struct DevicesStruct devices_struct;
+  devices_struct.device_ids = ids->data();
+  devices_struct.device_names = names->data();
+  devices_struct.size = devices->size();
+  return devices_struct;
 }
 
 void EqualizerClear(void*, void* peer) {

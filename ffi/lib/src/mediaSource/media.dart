@@ -109,9 +109,10 @@ class Media extends MediaSource {
   /// Parses the [Media] to retrieve [Media.metas].
   void parse(Duration timeout) {
     Pointer<Pointer<Utf8>> metas = MediaFFI.parse(
+        this,
         this.mediaType.toString().toNativeUtf8(),
         this.resource.toNativeUtf8(),
-        timeout.inSeconds);
+        timeout.inMilliseconds);
     // Keep this sorted alphabetically by key.
     this.metas['actors'] = metas.elementAt(0).value.toDartString();
     this.metas['album'] = metas.elementAt(1).value.toDartString();
@@ -137,6 +138,5 @@ class Media extends MediaSource {
     this.metas['trackNumber'] = metas.elementAt(21).value.toDartString();
     this.metas['trackTotal'] = metas.elementAt(22).value.toDartString();
     this.metas['url'] = metas.elementAt(23).value.toDartString();
-    CleanupFFI.media();
   }
 }

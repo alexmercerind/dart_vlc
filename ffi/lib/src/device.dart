@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:dart_vlc_ffi/src/internal/typedefs/devices.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 
 /// Represents a playback [Device] for the [Player].
@@ -18,13 +19,15 @@ class Devices {
   /// Gets [List] of all available playback [Device].
   static List<Device> get all {
     List<Device> devices = <Device>[];
-    Pointer<Pointer<Utf8>> devicesPtr = DevicesFFI.all();
-    int count = int.parse(devicesPtr.elementAt(0).value.toDartString());
-    for (int i = 1; i < 2 * count; i += 2) {
-      devices.add(Device(devicesPtr.elementAt(i).value.toDartString(),
-          devicesPtr.elementAt(i + 1).value.toDartString()));
+    DevicesStruct _devices = DevicesFFI.all(devices);
+    for (int i = 0; i < _devices.size; i++) {
+      devices.add(
+        Device(
+          _devices.device_ids.elementAt(i).value.toDartString(),
+          _devices.device_names.elementAt(i).value.toDartString(),
+        ),
+      );
     }
-    CleanupFFI.devices();
     return devices;
   }
 }
