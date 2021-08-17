@@ -54,8 +54,6 @@ target_link_options("${PLUGIN_NAME}" PRIVATE "/WHOLEARCHIVE:dart_vlc_core")
 # Add generated shared library & libVLC DLLs.
 set(
   dart_vlc_bundled_libraries
-  # the core library
-  dart_vlc_core
   # the core library dependencies
   ${DARTVLC_CORE_LIBS}
   PARENT_SCOPE
