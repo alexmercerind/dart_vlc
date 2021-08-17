@@ -18,8 +18,13 @@ set(LIBVLC_PACKAGE_DIR "${CMAKE_BINARY_DIR}/${LIBRARY_NAME}_packages")
 set(LIBVLC_SOURCE "${LIBVLC_PACKAGE_DIR}/vlc-${LIBVLC_VERSION}")
 set(LIBVLCPP_SOURCE "${LIBVLC_PACKAGE_DIR}/libvlcpp-master")
 
-add_custom_target(LIBVLC_EXTRACT ALL)
+get_directory_property(_HAS_PARENT_DIRECTORY PARENT_DIRECTORY)
+if(NOT _HAS_PARENT_DIRECTORY)
+  # Indicates that this is a top-level CMake project.
+  set(IS_STANDALONE TRUE)
+endif()
 
+add_custom_target(LIBVLC_EXTRACT ALL)
 if (NOT EXISTS "${LIBVLC_SOURCE}" OR NOT EXISTS "${LIBVLCPP_SOURCE}")
   file(MAKE_DIRECTORY ${LIBVLC_PACKAGE_DIR})
   add_custom_command(
@@ -36,10 +41,7 @@ add_library(${LIBRARY_NAME} STATIC
   api/api.cc
 )
 add_dependencies(${LIBRARY_NAME} LIBVLC_EXTRACT)
-
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-
-get_directory_property(hasParent PARENT_DIRECTORY)
 
 target_include_directories(${LIBRARY_NAME} PRIVATE
   # dart_vlc wrapper headers.
@@ -57,6 +59,7 @@ target_include_directories(${LIBRARY_NAME} INTERFACE
   "${LIBVLC_SOURCE}/sdk/include"
 )
 
+# Windows
 if(WIN32)
   set_target_properties(${LIBRARY_NAME} PROPERTIES CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   target_link_libraries(${LIBRARY_NAME} PRIVATE
@@ -75,17 +78,21 @@ if(WIN32)
     PARENT_SCOPE
   )
 
+# Linux
 elseif(LINUX)
+  # Build with -fPIC
   set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  # Link against platform-provided libvlc
   target_link_libraries(${LIBRARY_NAME} PRIVATE
     "vlc"
   )
 endif()
 
-if (hasParent)
-  set(DARTVLC_CORE_PATH ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-else()
-  # only required by our podspec script phase
+# If this is the top-level CMake project (e.g. on macOS where this is being run
+# by a CocoaPods script phase) we "install" the library directly
+if(IS_STANDALONE)
   install(TARGETS ${LIBRARY_NAME})
+else()
+  set(DARTVLC_CORE_PATH ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 endif()
 
