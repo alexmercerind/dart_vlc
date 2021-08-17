@@ -19,15 +19,11 @@ typedef bool (*Dart_PostCObjectType)(Dart_Port port_id, Dart_CObject* message);
 Dart_PostCObjectType g_dart_post_C_object;
 Dart_Port g_callback_port;
 
-DLLEXPORT void DartInitializeApiDL(void* data) { Dart_InitializeApiDL(data); }
-
-DLLEXPORT void RegisterDartPostCObject(
-    Dart_PostCObjectType dart_post_C_object) {
+DLLEXPORT void InitializeDartApi(Dart_PostCObjectType dart_post_C_object,
+                                 Dart_Port callback_port, void* data) {
   g_dart_post_C_object = dart_post_C_object;
-}
-
-DLLEXPORT void RegisterDartCallbackPort(Dart_Port callback_port) {
   g_callback_port = callback_port;
+  Dart_InitializeApiDL(data);
 }
 
 #ifdef __cplusplus

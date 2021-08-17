@@ -39,9 +39,9 @@ packages:
   dart_vlc_ffi:
     dependency: transitive
     description:
-      name: dart_vlc_ffi
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../ffi"
+      relative: true
+    source: path
     version: "0.1.2"
   ffi:
     dependency: transitive
