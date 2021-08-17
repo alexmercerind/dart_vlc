@@ -39,7 +39,10 @@ add_dependencies(${LIBRARY_NAME} LIBVLC_EXTRACT)
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
-set(DARTVLC_CORE_PATH ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+get_directory_property(hasParent PARENT_DIRECTORY)
+if (hasParent)
+  set(DARTVLC_CORE_PATH ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+endif()
 
 target_include_directories(${LIBRARY_NAME} PRIVATE
   # dart_vlc wrapper headers.
@@ -81,3 +84,7 @@ elseif(LINUX)
     "vlc"
   )
 endif()
+
+# only required by our podspec script phase
+install(TARGETS ${LIBRARY_NAME})
+

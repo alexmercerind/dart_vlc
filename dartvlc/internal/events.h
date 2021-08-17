@@ -120,11 +120,11 @@ class PlayerEvents : public PlayerGetters {
 
   void OnVideoDimensionsCallback() {
     int32_t video_width = preferred_video_width_.has_value()
-                              ? preferred_video_width_.value()
+                              ? preferred_video_width_.value_or(0)
                               : libvlc_video_get_width(vlc_media_player_.get());
     int32_t video_height =
         preferred_video_height_.has_value()
-            ? preferred_video_height_.value()
+            ? preferred_video_height_.value_or(0)
             : libvlc_video_get_height(vlc_media_player_.get());
     video_dimension_callback_(video_width, video_height);
     if (video_width_ != video_width || video_height_ != video_height) {
