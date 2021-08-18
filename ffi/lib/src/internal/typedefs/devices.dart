@@ -1,16 +1,17 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
-/// Struct received from C with devices data.
-class DevicesStruct extends Struct {
-  // ignore: non_constant_identifier_names
-  external Pointer<Pointer<Utf8>> device_ids;
-
-  external Pointer<Pointer<Utf8>> device_names;
-
-  @Int32()
-  external int size;
+class DeviceStruct extends Struct {
+  external Pointer<Utf8> name;
+  external Pointer<Utf8> id;
 }
 
-typedef DevicesAllCXX = DevicesStruct Function(Handle object);
-typedef DevicesAllDart = DevicesStruct Function(Object object);
+/// Struct received from C with devices data.
+class DeviceList extends Struct {
+  @Int32()
+  external int size;
+  external Pointer<DeviceStruct> devices;
+}
+
+typedef DevicesAllCXX = Pointer<DeviceList> Function(Handle object);
+typedef DevicesAllDart = Pointer<DeviceList> Function(Object object);

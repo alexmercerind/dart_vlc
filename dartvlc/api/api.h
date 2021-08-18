@@ -14,24 +14,29 @@
 
 #include <cstdint>
 
-#include "base.h"
 #include "api/eventmanager.h"
+#include "base.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct DevicesStruct {
-  const char** device_ids;
-  const char** device_names;
+struct DartDeviceList {
+  struct Device {
+    const char* name;
+    const char* id;
+    explicit Device(const char* name, const char* id) : name(name), id(id) {}
+  };
+
   int32_t size;
+  const Device* device_infos;
 };
 
-struct EqualizerStruct {
+struct DartEqualizer {
   int32_t id;
   float pre_amp;
-  float* bands;
-  float* amps;
+  const float* bands;
+  const float* amps;
   int32_t size;
 };
 
@@ -110,12 +115,12 @@ DLLEXPORT void RecordStart(int32_t id);
 
 DLLEXPORT void RecordDispose(int32_t id);
 
-DLLEXPORT struct DevicesStruct DevicesAll(Dart_Handle object);
+DLLEXPORT DartDeviceList* DevicesAll(Dart_Handle object);
 
-DLLEXPORT struct EqualizerStruct EqualizerCreateEmpty(Dart_Handle object);
+DLLEXPORT struct DartEqualizer* EqualizerCreateEmpty(Dart_Handle object);
 
-DLLEXPORT struct EqualizerStruct EqualizerCreateMode(Dart_Handle object,
-                                                     int32_t mode);
+DLLEXPORT struct DartEqualizer* EqualizerCreateMode(Dart_Handle object,
+                                                int32_t mode);
 
 DLLEXPORT void EqualizerSetBandAmp(int32_t id, float band, float amp);
 

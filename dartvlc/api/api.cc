@@ -9,7 +9,6 @@
  * GNU Lesser General Public License v2.1
  */
 
-#include <memory>
 #include "api.h"
 
 #include "broadcast.h"
@@ -18,6 +17,30 @@
 #include "equalizer.h"
 #include "player.h"
 #include "record.h"
+
+namespace DartObjects {
+
+struct DeviceList {
+  // The device list that gets exposed to Dart.
+  DartDeviceList dart_object;
+
+  // Backing data
+  std::vector<DartDeviceList::Device> device_infos;
+  std::vector<Device> devices;
+};
+
+struct Equalizer {
+  // The equalizer that gets exposed to Dart.
+  DartEqualizer dart_object;
+
+  // Backing data
+  std::vector<float> bands;
+  std::vector<float> amps;
+};
+
+static void DestroyObject(void*, void* peer) { delete peer; }
+
+}  // namespace DartObjects
 
 #ifdef __cplusplus
 extern "C" {
@@ -216,7 +239,7 @@ const char** MediaParse(Dart_Handle object, const char* type,
   Dart_NewFinalizableHandle_DL(
       object, reinterpret_cast<void*>(values), sizeof(values),
       static_cast<Dart_HandleFinalizer>(MediaClearVector));
-  for (const auto & [ key, value ] : *metas) {
+  for (const auto& [key, value] : *metas) {
     values->emplace_back(value.c_str());
   }
   return values->data();
@@ -267,84 +290,55 @@ void RecordStart(int32_t id) {
 
 void RecordDispose(int32_t id) { g_records->Dispose(id); }
 
-void DevicesClear(void*, void* peer) {
-  delete reinterpret_cast<std::vector<const char*>*>(peer);
-}
+DartDeviceList* DevicesAll(Dart_Handle object) {
+  auto wrapper = new DartObjects::DeviceList();
+  wrapper->devices = Devices::All();
 
-struct DevicesStruct DevicesAll(Dart_Handle object) {
-  auto devices = new std::vector<Device>(Devices::All());
-  auto ids = new std::vector<const char*>();
-  auto names = new std::vector<const char*>();
-  for (int i = 0; i < devices->size(); i++) {
-    ids->emplace_back((*devices)[i].id().c_str());
-    names->emplace_back((*devices)[i].name().c_str());
+  for (const auto& device : wrapper->devices) {
+    wrapper->device_infos.emplace_back(device.name().c_str(),
+                                       device.id().c_str());
   }
-  Dart_NewFinalizableHandle_DL(object, reinterpret_cast<void*>(devices),
-                               sizeof(devices),
-                               static_cast<Dart_HandleFinalizer>(DevicesClear));
-  Dart_NewFinalizableHandle_DL(object, reinterpret_cast<void*>(ids),
-                               sizeof(ids),
-                               static_cast<Dart_HandleFinalizer>(DevicesClear));
-  Dart_NewFinalizableHandle_DL(object, reinterpret_cast<void*>(names),
-                               sizeof(names),
-                               static_cast<Dart_HandleFinalizer>(DevicesClear));
-  struct DevicesStruct devices_struct;
-  devices_struct.device_ids = ids->data();
-  devices_struct.device_names = names->data();
-  devices_struct.size = devices->size();
-  return devices_struct;
+
+  wrapper->dart_object.size = wrapper->device_infos.size();
+  wrapper->dart_object.device_infos = wrapper->device_infos.data();
+
+  Dart_NewFinalizableHandle_DL(
+      object, wrapper, sizeof(*wrapper),
+      static_cast<Dart_HandleFinalizer>(DartObjects::DestroyObject));
+  return &wrapper->dart_object;
 }
 
-void EqualizerClear(void*, void* peer) {
-  delete reinterpret_cast<std::vector<float>*>(peer);
+static DartEqualizer* EqualizerToDart(const Equalizer* equalizer, int32_t id,
+                                      Dart_Handle dart_handle) {
+  auto wrapper = new DartObjects::Equalizer();
+  for (const auto& [band, amp] : equalizer->band_amps()) {
+    wrapper->bands.emplace_back(band);
+    wrapper->amps.emplace_back(amp);
+  }
+
+  wrapper->dart_object.id = id;
+  wrapper->dart_object.pre_amp = equalizer->pre_amp();
+  wrapper->dart_object.bands = wrapper->bands.data();
+  wrapper->dart_object.amps = wrapper->amps.data();
+  wrapper->dart_object.size = wrapper->amps.size();
+
+  Dart_NewFinalizableHandle_DL(
+      dart_handle, wrapper, sizeof(*wrapper),
+      static_cast<Dart_HandleFinalizer>(DartObjects::DestroyObject));
+
+  return &wrapper->dart_object;
 }
 
-struct EqualizerStruct EqualizerCreateEmpty(Dart_Handle object) {
+struct DartEqualizer* EqualizerCreateEmpty(Dart_Handle object) {
   int32_t id = g_equalizers->CreateEmpty();
   Equalizer* equalizer = g_equalizers->Get(id);
-  auto bands = new std::vector<float>();
-  auto amps = new std::vector<float>();
-  Dart_NewFinalizableHandle_DL(
-      object, reinterpret_cast<void*>(bands), sizeof(bands),
-      static_cast<Dart_HandleFinalizer>(EqualizerClear));
-  Dart_NewFinalizableHandle_DL(
-      object, reinterpret_cast<void*>(amps), sizeof(amps),
-      static_cast<Dart_HandleFinalizer>(EqualizerClear));
-  for (const auto & [ band, amp ] : equalizer->band_amps()) {
-    bands->emplace_back(band);
-    amps->emplace_back(amp);
-  }
-  struct EqualizerStruct equalizer_struct;
-  equalizer_struct.id = id;
-  equalizer_struct.pre_amp = equalizer->pre_amp();
-  equalizer_struct.bands = bands->data();
-  equalizer_struct.amps = amps->data();
-  equalizer_struct.size = equalizer->band_amps().size();
-  return equalizer_struct;
+  return EqualizerToDart(equalizer, id, object);
 }
 
-struct EqualizerStruct EqualizerCreateMode(Dart_Handle object, int32_t mode) {
+struct DartEqualizer* EqualizerCreateMode(Dart_Handle object, int32_t mode) {
   int32_t id = g_equalizers->CreateMode(static_cast<EqualizerMode>(mode));
   Equalizer* equalizer = g_equalizers->Get(id);
-  auto bands = new std::vector<float>();
-  auto amps = new std::vector<float>();
-  Dart_NewFinalizableHandle_DL(
-      object, reinterpret_cast<void*>(bands), sizeof(bands),
-      static_cast<Dart_HandleFinalizer>(EqualizerClear));
-  Dart_NewFinalizableHandle_DL(
-      object, reinterpret_cast<void*>(amps), sizeof(amps),
-      static_cast<Dart_HandleFinalizer>(EqualizerClear));
-  for (const auto & [ band, amp ] : equalizer->band_amps()) {
-    bands->emplace_back(band);
-    amps->emplace_back(amp);
-  }
-  struct EqualizerStruct equalizer_struct;
-  equalizer_struct.id = id;
-  equalizer_struct.pre_amp = equalizer->pre_amp();
-  equalizer_struct.bands = bands->data();
-  equalizer_struct.amps = amps->data();
-  equalizer_struct.size = equalizer->band_amps().size();
-  return equalizer_struct;
+  return EqualizerToDart(equalizer, id, object);
 }
 
 void EqualizerSetBandAmp(int32_t id, float band, float amp) {

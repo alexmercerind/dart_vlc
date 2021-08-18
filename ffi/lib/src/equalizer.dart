@@ -1,7 +1,6 @@
 import 'dart:ffi';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/enums/equalizerMode.dart';
-import 'package:dart_vlc_ffi/src/internal/typedefs/equalizer.dart';
 
 /// Internally used class to avoid direct creation of the object of a [Equalizer] class.
 class _Equalizer extends Equalizer {}
@@ -34,13 +33,13 @@ abstract class Equalizer {
   /// Creates a default [Equalizer] instance with all values set to `0.0`.
   static Equalizer createEmpty() {
     Equalizer equalizer = new _Equalizer();
-    EqualizerStruct _equalizer = EqualizerFFI.createEmpty(equalizer);
-    equalizer.id = _equalizer.id;
+    final _equalizer = EqualizerFFI.createEmpty(equalizer);
+    equalizer.id = _equalizer.ref.id;
     equalizer.preAmp = equalizer.preAmp;
     equalizer.mode = null;
     equalizer.bandAmps = {};
-    for (int i = 0; i < _equalizer.size; i++) {
-      equalizer.bandAmps[_equalizer.bands[i]] = _equalizer.amps[i];
+    for (int i = 0; i < _equalizer.ref.size; i++) {
+      equalizer.bandAmps[_equalizer.ref.bands[i]] = _equalizer.ref.amps[i];
     }
     return equalizer;
   }
@@ -48,13 +47,13 @@ abstract class Equalizer {
   /// Creates an [Equalizer] instance with any preset from [EqualizerMode].
   static Equalizer createMode(EqualizerMode mode) {
     Equalizer equalizer = new _Equalizer();
-    EqualizerStruct _equalizer = EqualizerFFI.createMode(equalizer, mode.index);
-    equalizer.id = _equalizer.id;
+    final _equalizer = EqualizerFFI.createMode(equalizer, mode.index);
+    equalizer.id = _equalizer.ref.id;
     equalizer.preAmp = equalizer.preAmp;
-    equalizer.mode = null;
+    equalizer.mode = mode;
     equalizer.bandAmps = {};
-    for (int i = 0; i < _equalizer.size; i++) {
-      equalizer.bandAmps[_equalizer.bands[i]] = _equalizer.amps[i];
+    for (int i = 0; i < _equalizer.ref.size; i++) {
+      equalizer.bandAmps[_equalizer.ref.bands[i]] = _equalizer.ref.amps[i];
     }
     return equalizer;
   }
