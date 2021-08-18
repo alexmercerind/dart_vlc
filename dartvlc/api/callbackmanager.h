@@ -3,11 +3,12 @@
 
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "base.h"
 #include "api/dartmanager.h"
+#include "base.h"
 #include "dart_api_dl.h"
 
 #ifdef __cplusplus
@@ -41,7 +42,7 @@ void CallbackStringArray(int32_t length, char** values) {
   auto value_objects =
       std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
   auto value_object_refs =
-      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[length]);
+      std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[length]);
 
   for (int32_t i = 0; i < length; i++) {
     Dart_CObject* value_object = &value_objects[i];
@@ -61,7 +62,7 @@ void CallbackStringArray(const std::vector<std::string>& values) {
   auto value_objects =
       std::unique_ptr<Dart_CObject[]>(new Dart_CObject[length]);
   auto value_object_refs =
-      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[length]);
+      std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[length]);
 
   for (int32_t i = 0; i < length; i++) {
     Dart_CObject* value_object = &value_objects[i];
