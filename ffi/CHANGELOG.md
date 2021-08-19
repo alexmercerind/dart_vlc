@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Update `ReceivePort` listener to match new NativePort callbacks.
+
 ## 0.1.2
 
 - Improved memory cleanup inside FFI.

@@ -1,3 +1,12 @@
+## 0.1.5
+
+- Added initial macOS support. (Thanks to @jnschulze).
+- Improved NativePort callbacks & removed unnecessary serialization.
+- Now using a common dartvlc wrapper CMake library for all platforms. (Thanks to @jnschulze).
+- Other bug-fixes related to `Video`. (Thanks to @jnschulze).
+- Setup garbage cleaning finalizers for memory allocated on heap (for C++/Dart FFI communication).
+- Removed deprecated libVLC API calls.
+
 ## 0.1.4
 
 - Now `Player` no longer requires `videoWidth` & `videoHeight` to be passed for video playback.
