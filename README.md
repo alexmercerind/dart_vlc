@@ -1,5 +1,5 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
+<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows, Linux & macOS.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_1.PNG?raw=true)
@@ -433,9 +433,9 @@ Under progress or planned features (irrespective of order)...
 
 First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
 
-Thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributions to this project & to Flutter engine like adding texture support.
+Thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributions to this project & to Flutter engine itself like adding texture support.
 
-Thanks to [@namniav](https://github.com/namniav) for working on macOS support.
+Thanks to [@jnschulze](https://github.com/jnschulze) & [@namniav](https://github.com/namniav) for working on macOS support.
 
 Thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [The Flutter Team](https://flutter.dev) for helping out the project with his opinions.
 
