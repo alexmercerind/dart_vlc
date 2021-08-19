@@ -1,0 +1,6 @@
+[submodule "dartvlc/external/libvlcpp"]
+	path = dartvlc/external/libvlcpp
+	url = https://github.com/videolan/libvlcpp.git
+[submodule "dartvlc/external/dart_api"]
+	path = dartvlc/external/dart_api
+	url = https://github.com/alexmercerind/dart_api.git

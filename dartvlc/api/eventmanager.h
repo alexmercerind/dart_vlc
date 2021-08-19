@@ -12,74 +12,249 @@
 #ifndef API_EVENTMANAGER_H_
 #define API_EVENTMANAGER_H_
 
-#include "api/callbackmanager.h"
+#include "base.h"
 #include "player.h"
+#include "api/dartmanager.h"
+#include "dart_api_dl.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-inline void OnPlayPauseStop(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{std::to_string(id), "playbackEvent",
-                                 std::to_string(state->is_playing()),
-                                 std::to_string(state->is_seekable())};
+typedef bool (*Dart_PostCObjectType)(Dart_Port port_id, Dart_CObject* message);
 
-  CallbackStringArray(event);
+Dart_PostCObjectType g_dart_post_C_object;
+Dart_Port g_callback_port;
+
+DLLEXPORT void InitializeDartApi(Dart_PostCObjectType dart_post_C_object,
+                                 Dart_Port callback_port, void* data) {
+  g_dart_post_C_object = dart_post_C_object;
+  g_callback_port = callback_port;
+  Dart_InitializeApiDL(data);
+}
+
+inline void OnPlayPauseStop(int32_t id, PlayerState* state) {
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "playbackEvent";
+
+  Dart_CObject is_playing_object;
+  is_playing_object.type = Dart_CObject_kBool;
+  is_playing_object.value.as_bool = state->is_playing();
+
+  Dart_CObject is_seekable_object;
+  is_seekable_object.type = Dart_CObject_kBool;
+  is_seekable_object.value.as_bool = state->is_seekable();
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object, &is_playing_object,
+                                   &is_seekable_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 4;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
 inline void OnPosition(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{
-      std::to_string(id), "positionEvent", std::to_string(state->index()),
-      std::to_string(state->position()), std::to_string(state->duration())};
-  CallbackStringArray(event);
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "positionEvent";
+
+  Dart_CObject index_object;
+  index_object.type = Dart_CObject_kInt32;
+  index_object.value.as_int32 = state->index();
+
+  Dart_CObject position_object;
+  position_object.type = Dart_CObject_kInt32;
+  position_object.value.as_int32 = state->position();
+
+  Dart_CObject duration_object;
+  duration_object.type = Dart_CObject_kInt32;
+  duration_object.value.as_int32 = state->duration();
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object, &index_object,
+                                   &position_object, &duration_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 5;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
 inline void OnComplete(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{
-      std::to_string(id),
-      "completeEvent",
-      std::to_string(state->is_completed()),
-  };
-  CallbackStringArray(event);
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "completeEvent";
+
+  Dart_CObject is_completed_object;
+  is_completed_object.type = Dart_CObject_kBool;
+  is_completed_object.value.as_int32 = state->is_completed();
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object,
+                                   &is_completed_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 3;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
 inline void OnVolume(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{std::to_string(id), "volumeEvent",
-                                 std::to_string(state->volume())};
-  CallbackStringArray(event);
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "volumeEvent";
+
+  Dart_CObject volume_object;
+  volume_object.type = Dart_CObject_kDouble;
+  volume_object.value.as_double = state->volume();
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object, &volume_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 3;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
 inline void OnRate(int32_t id, PlayerState* state) {
-  std::vector<std::string> event{std::to_string(id), "rateEvent",
-                                 std::to_string(state->rate())};
-  CallbackStringArray(event);
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "rateEvent";
+
+  Dart_CObject rate_object;
+  rate_object.type = Dart_CObject_kDouble;
+  rate_object.value.as_double = state->rate();
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object, &rate_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 3;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
 inline void OnOpen(int32_t id, PlayerState* state) {
   const auto& media_items = state->medias()->medias();
-  std::vector<std::string> event;
-  event.reserve(4 + media_items.size() * 2);
-  event.emplace_back(std::to_string(id));
-  event.emplace_back("openEvent");
-  event.emplace_back(std::to_string(state->index()));
-  event.emplace_back(std::to_string(state->is_playlist()));
-  for (const auto& media : media_items) {
-    event.emplace_back(media->media_type());
-    event.emplace_back(media->resource());
+
+  auto value_objects = std::unique_ptr<Dart_CObject* []>(
+      new Dart_CObject*[4 + media_items.size() * 2]);
+
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+  value_objects[0] = &id_object;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "openEvent";
+  value_objects[1] = &type_object;
+
+  Dart_CObject index_object;
+  index_object.type = Dart_CObject_kInt32;
+  index_object.value.as_int32 = state->index();
+  value_objects[2] = &index_object;
+
+  Dart_CObject is_playlist_object;
+  is_playlist_object.type = Dart_CObject_kBool;
+  is_playlist_object.value.as_int32 = state->is_playlist();
+  value_objects[3] = &is_playlist_object;
+
+  for (int32_t i = 0; i < media_items.size(); i += 2) {
+    Dart_CObject media_type_object;
+    media_type_object.type = Dart_CObject_kString;
+    media_type_object.value.as_string =
+        const_cast<char*>(media_items[i]->media_type().c_str());
+
+    Dart_CObject resource_object;
+    resource_object.type = Dart_CObject_kString;
+    resource_object.value.as_string =
+        const_cast<char*>(media_items[i]->resource().c_str());
+    value_objects[i + 4] = &media_type_object;
+    value_objects[i + 5] = &resource_object;
   }
-  CallbackStringArray(event);
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 4 + media_items.size() * 2;
+  return_object.value.as_array.values = value_objects.get();
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
 inline void OnVideoDimensions(int32_t id, int32_t video_width,
                               int32_t video_height) {
-  std::vector<std::string> event{std::to_string(id), "videoDimensionsEvent",
-                                 std::to_string(video_width),
-                                 std::to_string(video_height)};
-  CallbackStringArray(event);
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "videoDimensionsEvent";
+
+  Dart_CObject video_width_object;
+  video_width_object.type = Dart_CObject_kInt32;
+  video_width_object.value.as_int32 = video_width;
+
+  Dart_CObject video_height_object;
+  video_height_object.type = Dart_CObject_kInt32;
+  video_height_object.value.as_int32 = video_height;
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object,
+                                   &video_width_object, &video_height_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 4;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
-inline void OnVideo(int32_t id, int size, PlayerState* state, uint8_t* frame) {
-  CallbackFrame(id, size, frame);
+inline void OnVideo(int32_t id, int size, uint8_t* frame) {
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "videoEvent";
+
+  Dart_CObject frame_object;
+  frame_object.type = Dart_CObject_kTypedData;
+  frame_object.value.as_typed_data.type = Dart_TypedData_kUint8;
+  frame_object.value.as_typed_data.values = frame;
+  frame_object.value.as_typed_data.length = size;
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object, &frame_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 3;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
 }
 
 #ifdef __cplusplus

@@ -18,8 +18,8 @@
 
 class Device {
  public:
-  std::string& id() { return id_; }
-  std::string& name() { return name_; }
+  const std::string& id() const { return id_; }
+  const std::string& name() const { return name_; }
 
   Device(std::string id, std::string name) : id_(id), name_(name) {}
 

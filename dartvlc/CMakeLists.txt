@@ -9,28 +9,27 @@ set(LIBRARY_NAME dart_vlc_core)
 project(${LIBRARY_NAME} LANGUAGES C CXX)
 
 set(LIBVLC_VERSION "3.0.9.2")
-set(LIBVLC_BINARIES "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
-
-set(LIBVLC_ARCHIVE "${LIBVLC_BINARIES}/vlc-${LIBVLC_VERSION}.7z")
-set(LIBVLCPP_ARCHIVE "${LIBVLC_BINARIES}/libvlcpp.zip")
-
 set(LIBVLC_PACKAGE_DIR "${CMAKE_BINARY_DIR}/${LIBRARY_NAME}_packages")
-set(LIBVLC_SOURCE "${LIBVLC_PACKAGE_DIR}/vlc-${LIBVLC_VERSION}")
-set(LIBVLCPP_SOURCE "${LIBVLC_PACKAGE_DIR}/libvlcpp-master")
 
+set(LIBVLC_ARCHIVE "${CMAKE_CURRENT_SOURCE_DIR}/../bin/vlc-${LIBVLC_VERSION}.7z")
+set(LIBVLC_SOURCE "${LIBVLC_PACKAGE_DIR}/vlc-${LIBVLC_VERSION}")
+
+set(LIBVLCPP_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/libvlcpp")
+set(DARTAPI_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/dart_api")
+
+
+add_custom_target(LIBVLC_EXTRACT ALL)
 get_directory_property(_HAS_PARENT_DIRECTORY PARENT_DIRECTORY)
 if(NOT _HAS_PARENT_DIRECTORY)
   # Indicates that this is a top-level CMake project.
   set(IS_STANDALONE TRUE)
 endif()
 
-add_custom_target(LIBVLC_EXTRACT ALL)
 if (NOT EXISTS "${LIBVLC_SOURCE}" OR NOT EXISTS "${LIBVLCPP_SOURCE}")
   file(MAKE_DIRECTORY ${LIBVLC_PACKAGE_DIR})
   add_custom_command(
     TARGET LIBVLC_EXTRACT PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLC_ARCHIVE}\"
-    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLCPP_ARCHIVE}\"
     WORKING_DIRECTORY "${LIBVLC_PACKAGE_DIR}"
     DEPENDS "${LIBVLC_ARCHIVE}" "${LIBVLCPP_ARCHIVE}"
   )
@@ -40,7 +39,9 @@ add_library(${LIBRARY_NAME} STATIC
   main.cc
   api/api.cc
 )
+
 add_dependencies(${LIBRARY_NAME} LIBVLC_EXTRACT)
+
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(${LIBRARY_NAME} PRIVATE
@@ -50,6 +51,8 @@ target_include_directories(${LIBRARY_NAME} PRIVATE
   "${LIBVLCPP_SOURCE}"
   # libVLC headers.
   "${LIBVLC_SOURCE}/sdk/include"
+  # Dart API headers.
+  "${DARTAPI_SOURCE}"
 )
 
 target_include_directories(${LIBRARY_NAME} INTERFACE

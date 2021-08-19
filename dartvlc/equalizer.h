@@ -39,7 +39,7 @@ enum EqualizerMode {
 class Equalizer {
  public:
   float pre_amp() const { return pre_amp_; }
-  std::map<float, float>& band_amps() { return band_amps_; }
+  const std::map<float, float>& band_amps() const { return band_amps_; }
 
   Equalizer() {
     vlc_equalizer_ = VLC::Equalizer();

@@ -21,8 +21,6 @@
 
 #include "mediasource/mediasource.h"
 
-//VLC::Instance g_vlc_instance = VLC::Instance(0, nullptr);
-
 class Media : public MediaSource {
  public:
   static constexpr auto kMediaTypeFile = "MediaType.file";
@@ -36,17 +34,18 @@ class Media : public MediaSource {
 
   static std::shared_ptr<Media> create(std::string_view type,
                                        const std::string& url,
-                                       bool parse = false) {
+                                       bool parse = false,
+                                       int32_t timeout = 10000) {
     if (type.compare(kMediaTypeFile) == 0)
-      return std::shared_ptr<Media>(Media::file(url, parse));
+      return std::shared_ptr<Media>(Media::file(url, parse, timeout));
     else if (type.compare(kMediaTypeNetwork) == 0)
-      return std::shared_ptr<Media>(Media::network(url, parse));
+      return std::shared_ptr<Media>(Media::network(url, parse, timeout));
     else
       return std::shared_ptr<Media>(Media::directShow(url));
   }
 
   static std::shared_ptr<Media> file(std::string path, bool parse = false,
-                                     int timeout = 10000) {
+                                     int32_t timeout = 10000) {
     std::shared_ptr<Media> media = std::make_shared<Media>();
     media->resource_ = path;
     media->location_ = "file:///" + path;
@@ -56,7 +55,7 @@ class Media : public MediaSource {
   }
 
   static std::shared_ptr<Media> network(std::string url, bool parse = false,
-                                        int timeout = 10000) {
+                                        int32_t timeout = 10000) {
     std::shared_ptr<Media> media = std::make_shared<Media>();
     media->resource_ = url;
     media->location_ = url;
@@ -73,7 +72,7 @@ class Media : public MediaSource {
     return media;
   }
 
-  void parse(int timeout) {
+  void parse(int32_t timeout) {
     VLC::Instance vlc_instance = VLC::Instance(0, nullptr);
 
     VLC::Media media =

@@ -1,22 +1,27 @@
 import 'dart:ffi';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
-import 'package:dart_vlc_ffi/src/internal/typedefs/callback.dart';
+
+typedef InitializeDartApiCXX = Void Function(
+    Pointer<NativeFunction<Int8 Function(Int64, Pointer<Dart_CObject>)>>
+        postCObject,
+    Int64 nativePort,
+    Pointer<Void> initializeApiDLData);
+typedef InitializeDartApiDart = void Function(
+    Pointer<NativeFunction<Int8 Function(Int64, Pointer<Dart_CObject>)>>
+        postCObject,
+    int nativePort,
+    Pointer<Void> initializeApiDLData);
 
 class DartVLC {
   static void initialize(String dynamicLibraryPath) {
     if (!isInitialized) {
       dynamicLibrary = DynamicLibrary.open(dynamicLibraryPath);
-      RegisterPostCObjectDart registerPostCObject = dynamicLibrary
-          .lookup<NativeFunction<RegisterPostCObjectCXX>>(
-              'RegisterDartPostCObject')
+      InitializeDartApiDart initializeDartApi = dynamicLibrary
+          .lookup<NativeFunction<InitializeDartApiCXX>>('InitializeDartApi')
           .asFunction();
-      RegisterCallbackPortDart registerCallbackPort = dynamicLibrary
-          .lookup<NativeFunction<RegisterCallbackPortCXX>>(
-              'RegisterDartCallbackPort')
-          .asFunction();
-      registerPostCObject(NativeApi.postCObject);
-      registerCallbackPort(receiver.sendPort.nativePort);
+      initializeDartApi(NativeApi.postCObject, receiver.sendPort.nativePort,
+          NativeApi.initializeApiDLData);
       isInitialized = true;
     }
   }
