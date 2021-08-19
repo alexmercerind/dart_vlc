@@ -71,17 +71,21 @@ void DartVlcPlugin::HandleMethodCall(
         std::get<flutter::EncodableMap>(*method_call.arguments());
     int32_t player_id =
         std::get<int>(arguments[flutter::EncodableValue("playerId")]);
-    if (outlets_.find(player_id) == outlets_.end()) {
-      outlets_[player_id] = std::make_unique<VideoOutlet>(texture_registrar_);
+
+    auto [it, added] = outlets_.try_emplace(player_id, nullptr);
+    if (added) {
+      it->second = std::make_unique<VideoOutlet>(texture_registrar_);
+
       Player* player = g_players->Get(player_id);
-      player->OnVideo(
-          [=](uint8_t* frame, int32_t width, int32_t height) -> void {
-            outlets_[player_id]->OnVideo(frame, width, height);
-          });
-      return result->Success(
-          flutter::EncodableValue(outlets_[player_id]->texture_id()));
+      player->OnVideo([outlet_ptr = it->second.get()](uint8_t* frame,
+                                                      int32_t width,
+                                                      int32_t height) -> void {
+        outlet_ptr->OnVideo(frame, width, height);
+      });
     }
-    result->Error("-1", "Texture was already registered.");
+
+    return result->Success(flutter::EncodableValue(it->second->texture_id()));
+
   } else if (method_call.method_name() == "PlayerUnregisterTexture") {
     flutter::EncodableMap arguments =
         std::get<flutter::EncodableMap>(*method_call.arguments());
@@ -90,7 +94,14 @@ void DartVlcPlugin::HandleMethodCall(
     if (outlets_.find(player_id) == outlets_.end()) {
       return result->Error("-2", "Texture was not found.");
     }
+
+    // The callback must be unregistered
+    // before destroying the outlet.
+    Player* player = g_players->Get(player_id);
+    player->OnVideo(nullptr);
+
     outlets_.erase(player_id);
+
     result->Success(flutter::EncodableValue(nullptr));
   } else {
     result->NotImplemented();
