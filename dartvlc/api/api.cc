@@ -74,8 +74,7 @@ void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
 #else
   /* Linux: decodeImageFromPixels & NativePorts */
   player->OnVideo([=](uint8_t* frame, int32_t width, int32_t height) -> void {
-    OnVideo(id, player->video_width() * player->video_height() * 4,
-            player->state(), frame);
+    OnVideo(id, player->video_width() * player->video_height() * 4, frame);
   });
 #endif
   player->OnVideoDimensions(
@@ -239,7 +238,7 @@ const char** MediaParse(Dart_Handle object, const char* type,
   Dart_NewFinalizableHandle_DL(
       object, reinterpret_cast<void*>(values), sizeof(values),
       static_cast<Dart_HandleFinalizer>(MediaClearVector));
-  for (const auto& [key, value] : *metas) {
+  for (const auto & [ key, value ] : *metas) {
     values->emplace_back(value.c_str());
   }
   return values->data();
@@ -311,7 +310,7 @@ DartDeviceList* DevicesAll(Dart_Handle object) {
 static DartEqualizer* EqualizerToDart(const Equalizer* equalizer, int32_t id,
                                       Dart_Handle dart_handle) {
   auto wrapper = new DartObjects::Equalizer();
-  for (const auto& [band, amp] : equalizer->band_amps()) {
+  for (const auto & [ band, amp ] : equalizer->band_amps()) {
     wrapper->bands.emplace_back(band);
     wrapper->amps.emplace_back(amp);
   }
