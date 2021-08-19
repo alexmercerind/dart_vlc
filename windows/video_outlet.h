@@ -1,5 +1,5 @@
-#ifndef VIDEO_OUTLET_H
-#define VIDEO_OUTLET_H
+#ifndef VIDEO_OUTLET_H_
+#define VIDEO_OUTLET_H_
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -18,7 +18,7 @@ class VideoOutlet {
   ~VideoOutlet();
 
  private:
-  FlutterDesktopPixelBuffer flutter_pixel_buffer_;
+  FlutterDesktopPixelBuffer flutter_pixel_buffer_{};
   flutter::TextureRegistrar* texture_registrar_ = nullptr;
   std::unique_ptr<flutter::TextureVariant> texture_ = nullptr;
   int64_t texture_id_;
