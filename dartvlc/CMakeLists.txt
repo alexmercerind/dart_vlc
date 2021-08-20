@@ -25,11 +25,34 @@ if(NOT _HAS_PARENT_DIRECTORY)
   set(IS_STANDALONE TRUE)
 endif()
 
-if (NOT EXISTS "${LIBVLC_SOURCE}" OR NOT EXISTS "${LIBVLCPP_SOURCE}")
+if (NOT EXISTS "${LIBVLC_SOURCE}")
+  if(NOT WIN32)
+    # Headers only.
+    set(LIBVLC_FILES sdk)
+  else()
+    if(DARTVLC_VLC_PLUGINS)
+      list(TRANSFORM DARTVLC_VLC_PLUGINS PREPEND "plugins/")
+    else()
+      # Extract the whole plugins directory
+      # by default
+      set(DARTVLC_VLC_PLUGINS plugins)
+    endif()
+
+    set(LIBVLC_FILES
+      sdk
+      libvlc.dll
+      libvlccore.dll
+      ${DARTVLC_VLC_PLUGINS}
+    )
+  endif()
+
+  set(LIBVLC_ARCHIVE_ROOT "vlc-${LIBVLC_VERSION}/")
+  list(TRANSFORM LIBVLC_FILES PREPEND ${LIBVLC_ARCHIVE_ROOT})
+
   file(MAKE_DIRECTORY ${LIBVLC_PACKAGE_DIR})
   add_custom_command(
     TARGET LIBVLC_EXTRACT PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLC_ARCHIVE}\"
+    COMMAND ${CMAKE_COMMAND} -E tar xzf \"${LIBVLC_ARCHIVE}\" -- ${LIBVLC_FILES}
     WORKING_DIRECTORY "${LIBVLC_PACKAGE_DIR}"
     DEPENDS "${LIBVLC_ARCHIVE}" "${LIBVLCPP_ARCHIVE}"
   )
@@ -71,10 +94,9 @@ if(WIN32)
   )
 
   # Add generated shared library & libVLC DLLs.
-  set(DARTVLC_CORE_LIBS 
+  set(DARTVLC_CORE_LIBS
     # In case we decide to build this as a shared library
     #"$<TARGET_FILE:dart_vlc_core>"
-    
     "${LIBVLC_SOURCE}/libvlc.dll"
     "${LIBVLC_SOURCE}/libvlccore.dll"
     "${LIBVLC_SOURCE}/plugins"
