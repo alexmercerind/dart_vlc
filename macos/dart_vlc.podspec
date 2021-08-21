@@ -25,14 +25,24 @@ A new flutter plugin project.
     :execution_position => :before_compile
   }]
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files     = 'Classes/**/*.{h,m,mm}'
   s.dependency 'FlutterMacOS'
   s.dependency 'VLCKit', '~>3.3'
-  s.platform = :osx, '10.11'
+  s.platform = :osx
+  s.osx.deployment_target = '10.11'
   s.library = 'c++'
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
+    # Hack. We should restructure the common layer in a way that
+    # the platform-specific plugins won't need the VLC headers anymore.
+    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/../dartvlc $(PODS_TARGET_SRCROOT)/../dartvlc/external/libvlcpp ${PODS_ROOT}/dartvlc_core/dart_vlc_core_packages/vlc-3.0.9.2/sdk/include',
     'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/deps/lib',
+    'OTHER_CFLAGS' => [
+      '-Wno-documentation',
+    ],
+    'OTHER_CXXFLAGS' => [
+      '-Wno-documentation',
+    ],
     'OTHER_LDFLAGS' => [
       '-ldart_vlc_core',
       '-Wl,-force_load,${PODS_TARGET_SRCROOT}/deps/lib/libdart_vlc_core.a',

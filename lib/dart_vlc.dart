@@ -47,6 +47,8 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 /// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player extends FFI.Player {
+  static bool get hasTextureSupport => Platform.isWindows || Platform.isMacOS;
+
   final ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
 
   Player(
@@ -58,7 +60,7 @@ class Player extends FFI.Player {
             videoDimensions: videoDimensions,
             commandlineArguments: commandlineArguments) {
     () async {
-      if (Platform.isWindows) {
+      if (hasTextureSupport) {
         textureId.value = await _channel
             .invokeMethod('PlayerRegisterTexture', {'playerId': id});
       }
@@ -67,7 +69,7 @@ class Player extends FFI.Player {
 
   @override
   void dispose() async {
-    if (Platform.isWindows && textureId.value != null) {
+    if (hasTextureSupport && textureId.value != null) {
       await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
       textureId.value = null;
     }
@@ -91,7 +93,7 @@ abstract class DartVLC {
       if (videoStreamControllers[playerId] != null &&
           FFI.players[playerId] != null) {
         if (!videoStreamControllers[playerId]!.isClosed) {
-          videoStreamControllers[playerId]!.add(new VideoFrame(
+          videoStreamControllers[playerId]!.add(VideoFrame(
               playerId: playerId,
               videoWidth: FFI.players[playerId]!.videoDimensions.width,
               videoHeight: FFI.players[playerId]!.videoDimensions.height,
@@ -103,15 +105,16 @@ abstract class DartVLC {
       final libraryPath = path.join(
           path.dirname(Platform.resolvedExecutable), 'dart_vlc_plugin.dll');
       FFI.DartVLC.initialize(libraryPath);
-    }
-    else if (Platform.isLinux) {
+    } else if (Platform.isLinux) {
       final libraryPath = path.join(path.dirname(Platform.resolvedExecutable),
           'lib', 'libdart_vlc_plugin.so');
       FFI.DartVLC.initialize(libraryPath);
-    }
-    else if(Platform.isMacOS) {
-      final libraryPath = path.join(path.dirname(path.dirname(Platform.resolvedExecutable)),
-          'Frameworks', 'dart_vlc.framework', 'dart_vlc');
+    } else if (Platform.isMacOS) {
+      final libraryPath = path.join(
+          path.dirname(path.dirname(Platform.resolvedExecutable)),
+          'Frameworks',
+          'dart_vlc.framework',
+          'dart_vlc');
       FFI.DartVLC.initialize(libraryPath);
     }
   }
