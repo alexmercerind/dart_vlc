@@ -88,6 +88,9 @@ DLLEXPORT void PlayerInsert(int32_t id, int32_t index, const char* type,
 DLLEXPORT void PlayerMove(int32_t id, int32_t initial_index,
                           int32_t final_index);
 
+DLLEXPORT void PlayerTakeSnapshot(int32_t id, const char* file_path,
+                                  int32_t width, int32_t height);
+
 DLLEXPORT const char** MediaParse(Dart_Handle object, const char* type,
                                   const char* resource, int32_t timeout);
 
@@ -120,7 +123,7 @@ DLLEXPORT DartDeviceList* DevicesAll(Dart_Handle object);
 DLLEXPORT struct DartEqualizer* EqualizerCreateEmpty(Dart_Handle object);
 
 DLLEXPORT struct DartEqualizer* EqualizerCreateMode(Dart_Handle object,
-                                                int32_t mode);
+                                                    int32_t mode);
 
 DLLEXPORT void EqualizerSetBandAmp(int32_t id, float band, float amp);
 

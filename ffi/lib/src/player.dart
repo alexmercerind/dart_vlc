@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/dart_vlc_ffi.dart';
@@ -267,6 +268,11 @@ class Player {
   /// Sets [Equalizer] for the [Player].
   void setEqualizer(Equalizer equalizer) {
     PlayerFFI.setEqualizer(this.id, equalizer.id);
+  }
+
+  /// Saves snapshot of a video to a desired [File] location.
+  void takeSnapshot(File file, int width, int height) {
+    PlayerFFI.takeSnapshot(this.id, file.path.toNativeUtf8(), width, height);
   }
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.

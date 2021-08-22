@@ -100,6 +100,10 @@ abstract class PlayerFFI {
   static final PlayerMoveDart move = dynamicLibrary
       .lookup<NativeFunction<PlayerMoveCXX>>('PlayerMove')
       .asFunction();
+
+  static final PlayerTakeSnapshotDart takeSnapshot = dynamicLibrary
+      .lookup<NativeFunction<PlayerTakeSnapshotCXX>>('PlayerTakeSnapshot')
+      .asFunction();
 }
 
 abstract class MediaFFI {

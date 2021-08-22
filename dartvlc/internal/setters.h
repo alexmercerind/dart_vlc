@@ -197,6 +197,10 @@ class PlayerSetters : public PlayerEvents {
     OnPlaylistCallback();
   }
 
+  void TakeSnapshot(std::string file_path, int32_t width, int32_t height) {
+    vlc_media_player_.takeSnapshot(0, file_path, width, height);
+  }
+
   void SetVideoWidth(int32_t video_width) {
     preferred_video_width_ = video_width;
   }
