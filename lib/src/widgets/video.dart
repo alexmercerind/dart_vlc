@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:dart_vlc_ffi/src/player.dart' hide Player;
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/widgets/controls.dart';
+import 'package:window_size/window_size.dart' as Window;
 
 /// Internally used map to keep [GlobalKey]s for [Video]'s [ControlState]s.
 Map<int, GlobalKey<ControlState>> controls = {};
@@ -124,6 +125,9 @@ class Video extends StatefulWidget {
   // instead of the total time, set this to true
   final bool showTimeLeft;
 
+  // For having custom controls.
+  final Widget? controls;
+
   Video({
     @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
     Player? player,
@@ -146,16 +150,18 @@ class Video extends StatefulWidget {
     this.showTimeLeft = false,
     this.progressBarTextStyle = const TextStyle(),
     this.filterQuality = FilterQuality.low,
+    this.controls,
     Key? key,
   })  : player = player ?? players[playerId]! as Player,
         super(key: key);
 
-  _VideoStateBase createState() =>
+  VideoState createState() =>
       Platform.isWindows ? _VideoStateTexture() : _VideoStateFallback();
 }
 
-abstract class _VideoStateBase extends State<Video> {
+abstract class VideoState extends State<Video> {
   GlobalKey<ControlState> controlKey = GlobalKey<ControlState>();
+  bool isFullscreen = false;
 
   int get playerId => widget.player.id;
 
@@ -165,15 +171,31 @@ abstract class _VideoStateBase extends State<Video> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: widget.width ?? double.infinity,
-        height: widget.height ?? double.infinity,
-        color: Colors.black,
-        child: widget.showControls
-            ? Control(
-                key: controlKey,
+  void enterFullscreen() {
+    if (!isFullscreen) {
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            body: Video(
+              player: widget.player,
+              showControls: true,
+              fit: widget.fit,
+              alignment: widget.alignment,
+              scale: widget.scale,
+              filterQuality: widget.filterQuality,
+              progressBarThumbRadius: widget.progressBarThumbRadius,
+              progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
+              progressBarActiveColor: widget.progressBarActiveColor,
+              progressBarInactiveColor: widget.progressBarInactiveColor,
+              progressBarThumbColor: widget.progressBarThumbColor,
+              progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+              progressBarTextStyle: widget.progressBarTextStyle,
+              volumeActiveColor: widget.volumeActiveColor,
+              volumeInactiveColor: widget.volumeInactiveColor,
+              volumeBackgroundColor: widget.volumeBackgroundColor,
+              volumeThumbColor: widget.volumeThumbColor,
+              showTimeLeft: widget.showTimeLeft,
+              controls: Control(
                 playerId: playerId,
                 progressBarThumbRadius: widget.progressBarThumbRadius,
                 progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
@@ -187,14 +209,127 @@ abstract class _VideoStateBase extends State<Video> {
                 volumeThumbColor: widget.volumeThumbColor,
                 showTimeLeft: widget.showTimeLeft,
                 progressBarTextStyle: widget.progressBarTextStyle,
-                child: present())
+                isFullscreen: true,
+                enterFullscreen: () {},
+                exitFullscreen: () {
+                  Navigator.of(context).pop();
+                },
+                child: present(),
+              ),
+            ),
+          ),
+        ),
+      );
+      Window.enterFullscreen();
+      isFullscreen = true;
+    }
+  }
+
+  void exitFullscreen() {
+    if (isFullscreen) {
+      Navigator.of(context).pop();
+      Window.exitFullscreen();
+      isFullscreen = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: widget.width ?? double.infinity,
+        height: widget.height ?? double.infinity,
+        color: Colors.black,
+        child: widget.showControls
+            ? (widget.controls ??
+                Control(
+                  playerId: playerId,
+                  progressBarThumbRadius: widget.progressBarThumbRadius,
+                  progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
+                  progressBarActiveColor: widget.progressBarActiveColor,
+                  progressBarInactiveColor: widget.progressBarInactiveColor,
+                  progressBarThumbColor: widget.progressBarThumbColor,
+                  progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+                  volumeActiveColor: widget.volumeActiveColor,
+                  volumeInactiveColor: widget.volumeInactiveColor,
+                  volumeBackgroundColor: widget.volumeBackgroundColor,
+                  volumeThumbColor: widget.volumeThumbColor,
+                  showTimeLeft: widget.showTimeLeft,
+                  progressBarTextStyle: widget.progressBarTextStyle,
+                  isFullscreen: false,
+                  enterFullscreen: () {
+                    Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          body: Video(
+                            player: widget.player,
+                            showControls: true,
+                            fit: widget.fit,
+                            alignment: widget.alignment,
+                            scale: widget.scale,
+                            filterQuality: widget.filterQuality,
+                            progressBarThumbRadius:
+                                widget.progressBarThumbRadius,
+                            progressBarThumbGlowRadius:
+                                widget.progressBarThumbGlowRadius,
+                            progressBarActiveColor:
+                                widget.progressBarActiveColor,
+                            progressBarInactiveColor:
+                                widget.progressBarInactiveColor,
+                            progressBarThumbColor: widget.progressBarThumbColor,
+                            progressBarThumbGlowColor:
+                                widget.progressBarThumbGlowColor,
+                            progressBarTextStyle: widget.progressBarTextStyle,
+                            volumeActiveColor: widget.volumeActiveColor,
+                            volumeInactiveColor: widget.volumeInactiveColor,
+                            volumeBackgroundColor: widget.volumeBackgroundColor,
+                            volumeThumbColor: widget.volumeThumbColor,
+                            showTimeLeft: widget.showTimeLeft,
+                            controls: Control(
+                              key: controlKey,
+                              playerId: playerId,
+                              progressBarThumbRadius:
+                                  widget.progressBarThumbRadius,
+                              progressBarThumbGlowRadius:
+                                  widget.progressBarThumbGlowRadius,
+                              progressBarActiveColor:
+                                  widget.progressBarActiveColor,
+                              progressBarInactiveColor:
+                                  widget.progressBarInactiveColor,
+                              progressBarThumbColor:
+                                  widget.progressBarThumbColor,
+                              progressBarThumbGlowColor:
+                                  widget.progressBarThumbGlowColor,
+                              volumeActiveColor: widget.volumeActiveColor,
+                              volumeInactiveColor: widget.volumeInactiveColor,
+                              volumeBackgroundColor:
+                                  widget.volumeBackgroundColor,
+                              volumeThumbColor: widget.volumeThumbColor,
+                              showTimeLeft: widget.showTimeLeft,
+                              progressBarTextStyle: widget.progressBarTextStyle,
+                              isFullscreen: true,
+                              enterFullscreen: () {},
+                              exitFullscreen: () {
+                                Navigator.of(context).pop();
+                                Window.exitFullscreen();
+                              },
+                              child: present(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                    Window.enterFullscreen();
+                  },
+                  exitFullscreen: () {},
+                  child: present(),
+                ))
             : present());
   }
 
   Widget present();
 }
 
-class _VideoStateTexture extends _VideoStateBase {
+class _VideoStateTexture extends VideoState {
   StreamSubscription? _videoDimensionsSubscription;
   double? _videoWidth;
   double? _videoHeight;
@@ -209,7 +344,6 @@ class _VideoStateTexture extends _VideoStateBase {
       });
     });
     super.initState();
-    if (mounted) setState(() {});
   }
 
   Widget present() {
@@ -244,7 +378,7 @@ class _VideoStateTexture extends _VideoStateBase {
   }
 }
 
-class _VideoStateFallback extends _VideoStateBase {
+class _VideoStateFallback extends VideoState {
   Widget? videoFrameRawImage;
 
   Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
@@ -283,7 +417,6 @@ class _VideoStateFallback extends _VideoStateBase {
       if (mounted) setState(() {});
     });
     super.initState();
-    if (mounted) setState(() {});
   }
 
   Widget present() {

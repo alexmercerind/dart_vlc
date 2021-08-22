@@ -15,6 +15,7 @@ class DartVLCExample extends StatefulWidget {
 
 class DartVLCExampleState extends State<DartVLCExample> {
   Player player = Player(id: 0);
+  GlobalKey<VideoState> videoKey = GlobalKey<VideoState>();
   MediaType mediaType = MediaType.file;
   CurrentState current = new CurrentState();
   PositionState position = new PositionState();
@@ -83,6 +84,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                   clipBehavior: Clip.antiAlias,
                   elevation: 2.0,
                   child: Video(
+                    key: videoKey,
                     player: player,
                     width: 640,
                     height: 480,
@@ -603,6 +605,31 @@ class DartVLCExampleState extends State<DartVLCExample> {
                               Divider(
                                 height: 12.0,
                                 color: Colors.transparent,
+                              ),
+                              Row(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () => videoKey.currentState
+                                        ?.enterFullscreen(),
+                                    child: Text(
+                                      'enterFullscreen',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.0),
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        videoKey.currentState?.exitFullscreen(),
+                                    child: Text(
+                                      'exitFullscreen',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               Divider(
                                 height: 12.0,

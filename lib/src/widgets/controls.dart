@@ -5,6 +5,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:dart_vlc_ffi/src/device.dart';
 import 'package:dart_vlc_ffi/src/player.dart';
 import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
+import 'package:window_size/window_size.dart';
 
 class Control extends StatefulWidget {
   final Widget child;
@@ -21,6 +22,9 @@ class Control extends StatefulWidget {
   final Color? volumeInactiveColor;
   final Color? volumeBackgroundColor;
   final Color? volumeThumbColor;
+  final bool isFullscreen;
+  final void Function() enterFullscreen;
+  final void Function() exitFullscreen;
 
   Control({
     required this.child,
@@ -37,6 +41,9 @@ class Control extends StatefulWidget {
     required this.volumeInactiveColor,
     required this.volumeBackgroundColor,
     required this.volumeThumbColor,
+    required this.isFullscreen,
+    required this.enterFullscreen,
+    required this.exitFullscreen,
     Key? key,
   }) : super(key: key);
 
@@ -122,6 +129,30 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                             Color(0xCC000000),
                           ],
                         ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 16,
+                      bottom: 10,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            color: Colors.white,
+                            iconSize: 30,
+                            icon: Icon(
+                              widget.isFullscreen
+                                  ? Icons.fullscreen_exit
+                                  : Icons.fullscreen,
+                            ),
+                            onPressed: () {
+                              if (widget.isFullscreen)
+                                widget.exitFullscreen();
+                              else
+                                widget.enterFullscreen();
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Positioned(
@@ -258,8 +289,8 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     Positioned(
-                      right: 15,
-                      bottom: 12.5,
+                      right: 16,
+                      bottom: 10,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -271,7 +302,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                             backgroundColor: widget.volumeBackgroundColor,
                           ),
                           PopupMenuButton(
-                            iconSize: 24,
+                            iconSize: 28,
                             icon: Icon(Icons.speaker, color: Colors.white),
                             onSelected: (Device device) {
                               players[widget.playerId]!.setDevice(device);
@@ -370,7 +401,6 @@ class _VolumeControlState extends State<VolumeControl> {
                 setState(() => _showVolume = false);
               },
               child: Container(
-                width: 60,
                 height: 250,
                 child: Card(
                   color: widget.backgroundColor,
@@ -409,6 +439,7 @@ class _VolumeControlState extends State<VolumeControl> {
           },
           child: IconButton(
             color: Colors.white,
+            iconSize: 28.0,
             onPressed: () => muteUnmute(),
             icon: Icon(getIcon()),
           ),
