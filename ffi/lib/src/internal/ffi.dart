@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
-import 'package:dart_vlc_ffi/src/enums/mediaType.dart';
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
@@ -240,10 +239,7 @@ final ReceivePort receiver = new ReceivePort()
                 }
               case 'MediaType.directShow':
                 {
-                  Media media = Media();
-                  media.mediaType = MediaType.directShow;
-                  media.resource = event[index + 1];
-                  medias.add(media);
+                  medias.add(Media.directShow(rawUrl: event[index + 1]));
                   break;
                 }
             }

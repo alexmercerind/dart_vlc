@@ -7,9 +7,6 @@ import 'package:dart_vlc_ffi/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
 import 'package:dart_vlc_ffi/src/enums/mediaType.dart';
 
-/// Internally used class to avoid direct creation of the object of a [Media] class.
-class _Media extends Media {}
-
 /// A media object to open inside a [Player].
 ///
 /// Pass `true` to [parse] for retrieving the metadata of the [Media].
@@ -29,20 +26,22 @@ class _Media extends Media {}
 /// ```
 ///
 ///
-class Media extends MediaSource {
-  MediaSourceType mediaSourceType = MediaSourceType.media;
-  Map<String, String> metas = {};
-  late MediaType mediaType;
-  late String resource;
+class Media implements MediaSource {
+  MediaSourceType get mediaSourceType => MediaSourceType.media;
+  final MediaType mediaType;
+  final String resource;
+  final Map<String, String> metas;
+
+  const Media._(
+      {required this.mediaType, required this.resource, this.metas = const {}});
 
   /// Makes [Media] object from a [File].
   static Media file(File file,
       {bool parse: false,
       Map<String, dynamic>? extras,
       Duration timeout: const Duration(seconds: 10)}) {
-    Media media = new _Media();
-    media.mediaType = MediaType.file;
-    media.resource = file.path;
+    final media = Media._(mediaType: MediaType.file, resource: file.path);
+
     if (parse) {
       media.parse(timeout);
     }
@@ -54,12 +53,10 @@ class Media extends MediaSource {
       {bool parse: false,
       Map<String, dynamic>? extras,
       Duration timeout: const Duration(seconds: 10)}) {
-    Media media = new _Media();
-    media.mediaType = MediaType.network;
-    if (url is Uri)
-      media.resource = url.toString();
-    else
-      media.resource = url;
+    final resource = (url is Uri) ? url.toString() : url;
+    final Media media =
+        Media._(mediaType: MediaType.network, resource: resource);
+
     if (parse) {
       media.parse(timeout);
     }
@@ -68,12 +65,20 @@ class Media extends MediaSource {
 
   /// Makes [Media] object from direct show.
   static Media directShow(
-      {String vdev = '', String adev = '', required int liveCaching}) {
-    Media media = new _Media();
-    media.mediaType = MediaType.directShow;
-    media.resource =
-        'dshow:// :dshow-vdev=$vdev :dshow-adev=$adev :live-caching=$liveCaching';
-    return media;
+      {String? rawUrl,
+      Map<String, dynamic>? args,
+      String? vdev,
+      String? adev,
+      int? liveCaching}) {
+    final resourceUrl = rawUrl ??
+        _buildDirectShowUrl(args ??
+            {
+              'dshow-vdev': vdev,
+              'dshow-adev': adev,
+              'live-caching': liveCaching
+            });
+
+    return Media._(mediaType: MediaType.directShow, resource: resourceUrl);
   }
 
   /// Makes [Media] object from assets.
@@ -84,26 +89,15 @@ class Media extends MediaSource {
   /// Might result in an exception on Dart CLI.
   ///
   static Media asset(String asset) {
-    Media media = new _Media();
-    media.mediaType = MediaType.asset;
-    late String directory;
-    if (Platform.isWindows) {
-      directory = Platform.resolvedExecutable
-          .split('\\')
-          .sublist(0, Platform.resolvedExecutable.split('\\').length - 1)
-          .join('\\');
-      media.resource =
-          path.join('file:///' + directory, 'data', 'flutter_assets', asset);
+    if (Platform.isWindows || Platform.isLinux) {
+      final assetPath = path.join(path.dirname(Platform.resolvedExecutable),
+          'data', 'flutter_assets', asset);
+      final url = Uri.file(assetPath, windows: Platform.isWindows);
+      return Media._(mediaType: MediaType.asset, resource: url.toString());
     }
-    if (Platform.isLinux) {
-      directory = Platform.resolvedExecutable
-          .split('/')
-          .sublist(0, Platform.resolvedExecutable.split('/').length - 1)
-          .join('/');
-      media.resource =
-          path.join('file://' + directory, 'data', 'flutter_assets', asset);
-    }
-    return media;
+
+    // TODO: Add macOS asset path support.
+    throw UnimplementedError('The platform is not supported');
   }
 
   /// Parses the [Media] to retrieve [Media.metas].
@@ -139,4 +133,21 @@ class Media extends MediaSource {
     this.metas['trackTotal'] = metas.elementAt(22).value.toDartString();
     this.metas['url'] = metas.elementAt(23).value.toDartString();
   }
+
+  static String _buildDirectShowUrl(Map<String, dynamic> args) {
+    return args.entries.fold(
+        'dshow://',
+        (prev, pair) =>
+            prev +
+            (pair.value != null
+                ? ' :${pair.key.toLowerCase()}=${pair.value}'
+                : ''));
+  }
+
+  int get hashCode => mediaType.hashCode ^ resource.hashCode;
+
+  bool operator ==(Object other) =>
+      other is Media &&
+      other.mediaType == mediaType &&
+      other.resource == resource;
 }

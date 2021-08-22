@@ -1,4 +1,5 @@
 import 'package:dart_vlc_ffi/src/enums/playlistMode.dart';
+import 'package:dart_vlc_ffi/src/internal/utils.dart';
 import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
 import 'package:dart_vlc_ffi/src/mediaSource/mediaSource.dart';
 import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
@@ -23,10 +24,20 @@ import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
 /// );
 /// ```
 ///
-class Playlist extends MediaSource {
+class Playlist implements MediaSource {
+  MediaSourceType get mediaSourceType => MediaSourceType.playlist;
+
   /// [List] of [Media] present in the playlist.
-  List<Media> medias;
-  MediaSourceType mediaSourceType = MediaSourceType.playlist;
-  PlaylistMode playlistMode;
-  Playlist({required this.medias, this.playlistMode = PlaylistMode.single});
+  final List<Media> medias;
+  final PlaylistMode playlistMode;
+
+  const Playlist(
+      {required this.medias, this.playlistMode = PlaylistMode.single});
+
+  int get hashCode => medias.hashCode ^ playlistMode.hashCode;
+
+  bool operator ==(Object other) =>
+      other is Playlist &&
+      other.playlistMode == playlistMode &&
+      listEquals(other.medias, medias);
 }
