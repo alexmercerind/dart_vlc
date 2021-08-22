@@ -16,7 +16,6 @@
 #include "player.h"
 #include "api/dartmanager.h"
 #include "dart_api_dl.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -183,19 +182,20 @@ inline void OnOpen(int32_t id, PlayerState* state) {
   is_playlist_object.type = Dart_CObject_kBool;
   is_playlist_object.value.as_int32 = state->is_playlist();
   value_objects[3] = &is_playlist_object;
-
-  for (int32_t i = 0; i < media_items.size(); i += 2) {
+  int index = 0;
+  for (const auto& media : media_items) {
     Dart_CObject media_type_object;
     media_type_object.type = Dart_CObject_kString;
     media_type_object.value.as_string =
-        const_cast<char*>(media_items[i]->media_type().c_str());
+        const_cast<char*>(media->media_type().c_str());
 
     Dart_CObject resource_object;
     resource_object.type = Dart_CObject_kString;
     resource_object.value.as_string =
-        const_cast<char*>(media_items[i]->resource().c_str());
-    value_objects[i + 4] = &media_type_object;
-    value_objects[i + 5] = &resource_object;
+        const_cast<char*>(media->resource().c_str());
+    value_objects[index + 4] = &media_type_object;
+    value_objects[index + 5] = &resource_object;
+    index += 2;
   }
 
   Dart_CObject return_object;
