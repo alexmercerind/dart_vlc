@@ -16,6 +16,11 @@ dependencies:
   path: ^1.8.0
   path_provider: ^2.0.1
   audio_video_progress_bar: ^0.4.0
+  window_size:
+    git:
+      url: git://github.com/alexmercerind/flutter-desktop-embedding.git
+      path: plugins/window_size
+      ref: da98a3b5a0e2b9425fbcb2a3e4b4ba50754abf93
 
 flutter:
   # No platform channel implementation after migration to FFI.
