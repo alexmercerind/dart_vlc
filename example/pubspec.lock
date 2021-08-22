@@ -35,14 +35,14 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.1.4"
+    version: "0.1.5"
   dart_vlc_ffi:
     dependency: transitive
     description:
       path: "../ffi"
       relative: true
     source: path
-    version: "0.1.2"
+    version: "0.1.3"
   ffi:
     dependency: transitive
     description:
@@ -158,6 +158,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
+  window_size:
+    dependency: transitive
+    description:
+      path: "plugins/window_size"
+      ref: da98a3b5a0e2b9425fbcb2a3e4b4ba50754abf93
+      resolved-ref: da98a3b5a0e2b9425fbcb2a3e4b4ba50754abf93
+      url: "git://github.com/alexmercerind/flutter-desktop-embedding.git"
+    source: git
+    version: "0.1.0"
   xdg_directories:
     dependency: transitive
     description:

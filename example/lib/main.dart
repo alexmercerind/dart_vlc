@@ -608,6 +608,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                               ),
                               Row(
                                 children: [
+                                  SizedBox(width: 12.0),
                                   ElevatedButton(
                                     onPressed: () => videoKey.currentState
                                         ?.enterFullscreen(),
