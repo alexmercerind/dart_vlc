@@ -219,6 +219,12 @@ void PlayerMove(int32_t id, int32_t initial_index, int32_t final_index) {
   player->Move(initial_index, final_index);
 }
 
+void PlayerTakeSnapshot(int32_t id, const char* file_path, int32_t width,
+                        int32_t height) {
+  Player* player = g_players->Get(id);
+  player->TakeSnapshot(file_path, width, height);
+}
+
 void MediaClearMap(void*, void* peer) {
   delete reinterpret_cast<std::map<std::string, std::string>*>(peer);
 }

@@ -54,3 +54,7 @@ typedef PlayerMoveCXX = Void Function(
     Int32 id, Int32 initialIndex, Int32 finalIndex);
 typedef PlayerMoveDart = void Function(
     int id, int initialIndex, int finalIndex);
+typedef PlayerTakeSnapshotCXX = Void Function(
+    Int32 id, Pointer<Utf8> filePath, Int32 width, Int32 height);
+typedef PlayerTakeSnapshotDart = void Function(
+    int id, Pointer<Utf8> filePath, int width, int height);
