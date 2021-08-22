@@ -1,3 +1,10 @@
+## 0.1.6
+
+- A hotfix update to fix a critical bug.
+- Fixed a critical bug that resulted in a crash upon opening more than one `Media` in `Playlist` (apologies).
+- Implemented media and playlist equality operators. (Thanks to @jnschulze).
+- Added `Player.takeSnapshot` to save snapshot of a playing video.
+
 ## 0.1.5
 
 - Added initial macOS support. (Thanks to @jnschulze).

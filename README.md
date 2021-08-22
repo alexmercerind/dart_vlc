@@ -13,7 +13,7 @@
 ```yaml
 dependencies:
   ...
-  dart_vlc: ^0.1.4
+  dart_vlc: ^0.1.6
 ```
 
 **Dart CLI**
