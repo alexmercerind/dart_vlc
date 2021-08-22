@@ -40,4 +40,7 @@ class Playlist implements MediaSource {
       other is Playlist &&
       other.playlistMode == playlistMode &&
       listEquals(other.medias, medias);
+
+  @override
+  String toString() => 'Playlist[${medias.length}]';
 }

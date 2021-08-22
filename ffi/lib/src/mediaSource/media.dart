@@ -150,4 +150,7 @@ class Media implements MediaSource {
       other is Media &&
       other.mediaType == mediaType &&
       other.resource == resource;
+
+  @override
+  String toString() => '[$mediaType]$resource';
 }
