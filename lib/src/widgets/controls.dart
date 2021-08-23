@@ -8,7 +8,7 @@ import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
 
 class Control extends StatefulWidget {
   final Widget child;
-  final int playerId;
+  final Player player;
   final bool? showTimeLeft;
   final double? progressBarThumbRadius;
   final double? progressBarThumbGlowRadius;
@@ -24,7 +24,7 @@ class Control extends StatefulWidget {
 
   Control({
     required this.child,
-    required this.playerId,
+    required this.player,
     required this.showTimeLeft,
     required this.progressBarThumbRadius,
     required this.progressBarThumbGlowRadius,
@@ -51,37 +51,37 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   late StreamSubscription<PlaybackState> playPauseStream;
   late AnimationController playPauseController;
 
+  Player get player => widget.player;
+
   @override
   void initState() {
     super.initState();
-    this.playPauseController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 400));
-    this.playPauseStream = players[widget.playerId]!
-        .playbackStream
-        .listen((event) => this.setPlaybackMode(event.isPlaying));
-    if (players[widget.playerId]!.playback.isPlaying)
-      this.playPauseController.forward();
+    playPauseController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    playPauseStream = player.playbackStream
+        .listen((event) => setPlaybackMode(event.isPlaying));
+    if (player.playback.isPlaying) playPauseController.forward();
   }
 
   @override
   void dispose() {
-    this.playPauseStream.cancel();
+    playPauseStream.cancel();
     super.dispose();
   }
 
   void setPlaybackMode(bool isPlaying) {
     if (isPlaying)
-      this.playPauseController.forward();
+      playPauseController.forward();
     else
-      this.playPauseController.reverse();
-    this.setState(() {});
+      playPauseController.reverse();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (players[widget.playerId]!.playback.isPlaying) {
+        if (player.playback.isPlaying) {
           if (_displayTapped) {
             setState(() {
               _hideControls = true;
@@ -132,7 +132,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                         padding:
                             EdgeInsets.only(bottom: 60, right: 20, left: 20),
                         child: StreamBuilder<PositionState>(
-                          stream: players[widget.playerId]?.positionStream,
+                          stream: player.positionStream,
                           builder: (BuildContext context,
                               AsyncSnapshot<PositionState> snapshot) {
                             final durationState = snapshot.data;
@@ -161,7 +161,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                     : TimeLabelType.totalTime,
                                 timeLabelTextStyle: widget.progressBarTextStyle,
                                 onSeek: (duration) {
-                                  players[widget.playerId]!.seek(duration);
+                                  player.seek(duration);
                                 },
                               ),
                             );
@@ -181,7 +181,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                             color: Colors.white,
                             iconSize: 30,
                             icon: Icon(Icons.skip_previous),
-                            onPressed: () => players[widget.playerId]!.back(),
+                            onPressed: () => player.back(),
                           ),
                           SizedBox(width: 50),
                           IconButton(
@@ -190,15 +190,12 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                               icon: Icon(Icons.replay_10),
                               onPressed: () {
                                 int positionInMilliseconds =
-                                    players[widget.playerId]!
-                                            .position
-                                            .position
-                                            ?.inMilliseconds ??
+                                    player.position.position?.inMilliseconds ??
                                         0;
                                 if (!(positionInMilliseconds - 10000)
                                     .isNegative)
                                   positionInMilliseconds -= 10000;
-                                players[widget.playerId]!.seek(Duration(
+                                player.seek(Duration(
                                     milliseconds: positionInMilliseconds));
                                 setState(() {});
                               }),
@@ -208,16 +205,14 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                             iconSize: 30,
                             icon: AnimatedIcon(
                                 icon: AnimatedIcons.play_pause,
-                                progress: this.playPauseController),
+                                progress: playPauseController),
                             onPressed: () {
-                              if (players[widget.playerId]!
-                                  .playback
-                                  .isPlaying) {
-                                players[widget.playerId]!.pause();
-                                this.playPauseController.reverse();
+                              if (player.playback.isPlaying) {
+                                player.pause();
+                                playPauseController.reverse();
                               } else {
-                                players[widget.playerId]!.play();
-                                this.playPauseController.forward();
+                                player.play();
+                                playPauseController.forward();
                               }
                             },
                           ),
@@ -228,21 +223,15 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                               icon: Icon(Icons.forward_10),
                               onPressed: () {
                                 int durationInMilliseconds =
-                                    players[widget.playerId]!
-                                            .position
-                                            .duration
-                                            ?.inMilliseconds ??
+                                    player.position.duration?.inMilliseconds ??
                                         0;
                                 int positionInMilliseconds =
-                                    players[widget.playerId]!
-                                            .position
-                                            .position
-                                            ?.inMilliseconds ??
+                                    player.position.position?.inMilliseconds ??
                                         1;
                                 if ((positionInMilliseconds + 10000) <=
                                     durationInMilliseconds) {
                                   positionInMilliseconds += 10000;
-                                  players[widget.playerId]!.seek(Duration(
+                                  player.seek(Duration(
                                       milliseconds: positionInMilliseconds));
                                   setState(() {});
                                 }
@@ -252,7 +241,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                             color: Colors.white,
                             iconSize: 30,
                             icon: Icon(Icons.skip_next),
-                            onPressed: () => players[widget.playerId]!.next(),
+                            onPressed: () => player.next(),
                           ),
                         ],
                       ),
@@ -264,7 +253,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           VolumeControl(
-                            playerId: widget.playerId,
+                            player: player,
                             thumbColor: widget.volumeThumbColor,
                             inactiveColor: widget.volumeInactiveColor,
                             activeColor: widget.volumeActiveColor,
@@ -274,7 +263,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                             iconSize: 24,
                             icon: Icon(Icons.speaker, color: Colors.white),
                             onSelected: (Device device) {
-                              players[widget.playerId]!.setDevice(device);
+                              player.setDevice(device);
                               setState(() {});
                             },
                             itemBuilder: (context) {
@@ -305,12 +294,12 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   }
 
   void _cancelAndRestartTimer() {
-    this._hideTimer?.cancel();
+    _hideTimer?.cancel();
 
-    if (this.mounted) {
-      this._startHideTimer();
+    if (mounted) {
+      _startHideTimer();
 
-      this.setState(() {
+      setState(() {
         _hideControls = false;
         _displayTapped = true;
       });
@@ -318,9 +307,9 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   }
 
   void _startHideTimer() {
-    this._hideTimer = Timer(const Duration(seconds: 3), () {
-      if (this.mounted) {
-        this.setState(() {
+    _hideTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
           _hideControls = true;
         });
       }
@@ -329,14 +318,14 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
 }
 
 class VolumeControl extends StatefulWidget {
-  final int playerId;
+  final Player player;
   final Color? activeColor;
   final Color? inactiveColor;
   final Color? backgroundColor;
   final Color? thumbColor;
 
   const VolumeControl({
-    required this.playerId,
+    required this.player,
     required this.activeColor,
     required this.inactiveColor,
     required this.backgroundColor,
@@ -352,6 +341,8 @@ class _VolumeControlState extends State<VolumeControl> {
   double volume = 0.5;
   bool _showVolume = false;
   double unmutedVolume = 0.5;
+
+  Player get player => widget.player;
 
   @override
   Widget build(BuildContext context) {
@@ -387,9 +378,9 @@ class _VolumeControlState extends State<VolumeControl> {
                       child: Slider(
                         min: 0.0,
                         max: 1.0,
-                        value: players[widget.playerId]!.general.volume,
+                        value: player.general.volume,
                         onChanged: (volume) {
-                          players[widget.playerId]!.setVolume(volume);
+                          player.setVolume(volume);
                           setState(() {});
                         },
                       ),
@@ -418,20 +409,20 @@ class _VolumeControlState extends State<VolumeControl> {
   }
 
   IconData getIcon() {
-    if (players[widget.playerId]!.general.volume > .5)
+    if (player.general.volume > .5)
       return Icons.volume_up_sharp;
-    else if (players[widget.playerId]!.general.volume > 0)
+    else if (player.general.volume > 0)
       return Icons.volume_down_sharp;
     else
       return Icons.volume_off_sharp;
   }
 
   void muteUnmute() {
-    if (players[widget.playerId]!.general.volume > 0) {
-      unmutedVolume = players[widget.playerId]!.general.volume;
-      players[widget.playerId]!.setVolume(0);
+    if (player.general.volume > 0) {
+      unmutedVolume = player.general.volume;
+      player.setVolume(0);
     } else {
-      players[widget.playerId]!.setVolume(unmutedVolume);
+      player.setVolume(unmutedVolume);
     }
     setState(() {});
   }

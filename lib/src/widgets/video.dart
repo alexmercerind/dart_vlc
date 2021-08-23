@@ -174,7 +174,7 @@ abstract class _VideoStateBase extends State<Video> {
         child: widget.showControls
             ? Control(
                 key: controlKey,
-                playerId: playerId,
+                player: widget.player,
                 progressBarThumbRadius: widget.progressBarThumbRadius,
                 progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
                 progressBarActiveColor: widget.progressBarActiveColor,
