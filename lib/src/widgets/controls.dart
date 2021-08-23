@@ -6,9 +6,30 @@ import 'package:dart_vlc_ffi/src/device.dart';
 import 'package:dart_vlc_ffi/src/player.dart';
 import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
 
+class FullscreenState {
+  final bool isFullscreen;
+  final bool isFullscreenAllowed;
+  const FullscreenState(
+      {required this.isFullscreen, required this.isFullscreenAllowed});
+
+  FullscreenState copyWith({bool? isFullscreen, bool? isFullscreenAllowed}) =>
+      FullscreenState(
+          isFullscreen: isFullscreen ?? this.isFullscreen,
+          isFullscreenAllowed: isFullscreenAllowed ?? this.isFullscreenAllowed);
+}
+
+abstract class FullscreenController extends ValueNotifier<FullscreenState> {
+  FullscreenController()
+      : super(FullscreenState(isFullscreenAllowed: true, isFullscreen: false));
+
+  bool get isFullscreen => value.isFullscreen;
+  void toggleFullscreen();
+}
+
 class Control extends StatefulWidget {
   final Widget child;
   final Player player;
+  final FullscreenController? fullscreenController;
   final bool? showTimeLeft;
   final double? progressBarThumbRadius;
   final double? progressBarThumbGlowRadius;
@@ -25,6 +46,7 @@ class Control extends StatefulWidget {
   Control({
     required this.child,
     required this.player,
+    this.fullscreenController,
     required this.showTimeLeft,
     required this.progressBarThumbRadius,
     required this.progressBarThumbGlowRadius,
@@ -124,6 +146,34 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                         ),
                       ),
                     ),
+                    if (widget.fullscreenController != null)
+                      Positioned(
+                        left: 16,
+                        bottom: 10,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            ValueListenableBuilder<FullscreenState>(
+                                valueListenable: widget.fullscreenController!,
+                                builder: (context, state, _) => IconButton(
+                                      color: Colors.white,
+                                      disabledColor: Colors.white,
+                                      iconSize: 30,
+                                      icon: Icon(
+                                        state.isFullscreen
+                                            ? Icons.fullscreen_exit
+                                            : Icons.fullscreen,
+                                      ),
+                                      onPressed: state.isFullscreenAllowed
+                                          ? () {
+                                              widget.fullscreenController
+                                                  ?.toggleFullscreen();
+                                            }
+                                          : null,
+                                    )),
+                          ],
+                        ),
+                      ),
                     Positioned(
                       left: 0,
                       right: 0,
@@ -247,8 +297,8 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     Positioned(
-                      right: 15,
-                      bottom: 12.5,
+                      right: 16,
+                      bottom: 10,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -260,7 +310,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                             backgroundColor: widget.volumeBackgroundColor,
                           ),
                           PopupMenuButton(
-                            iconSize: 24,
+                            iconSize: 28,
                             icon: Icon(Icons.speaker, color: Colors.white),
                             onSelected: (Device device) {
                               player.setDevice(device);
@@ -361,7 +411,6 @@ class _VolumeControlState extends State<VolumeControl> {
                 setState(() => _showVolume = false);
               },
               child: Container(
-                width: 60,
                 height: 250,
                 child: Card(
                   color: widget.backgroundColor,
@@ -400,6 +449,7 @@ class _VolumeControlState extends State<VolumeControl> {
           },
           child: IconButton(
             color: Colors.white,
+            iconSize: 28,
             onPressed: () => muteUnmute(),
             icon: Icon(getIcon()),
           ),

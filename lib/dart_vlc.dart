@@ -20,6 +20,7 @@ import 'package:dart_vlc_ffi/src/internal/ffi.dart' as FFI;
 import 'package:dart_vlc_ffi/dart_vlc_ffi.dart' as FFI;
 export 'package:dart_vlc_ffi/dart_vlc_ffi.dart' hide DartVLC, Player;
 export 'package:dart_vlc/src/widgets/video.dart';
+export 'package:dart_vlc/src/widgets/controls.dart';
 
 /// Platform channel for using [Texture] & flutter::TextureRegistrar on Windows.
 final MethodChannel _channel = MethodChannel('dart_vlc');
@@ -103,15 +104,16 @@ abstract class DartVLC {
       final libraryPath = path.join(
           path.dirname(Platform.resolvedExecutable), 'dart_vlc_plugin.dll');
       FFI.DartVLC.initialize(libraryPath);
-    }
-    else if (Platform.isLinux) {
+    } else if (Platform.isLinux) {
       final libraryPath = path.join(path.dirname(Platform.resolvedExecutable),
           'lib', 'libdart_vlc_plugin.so');
       FFI.DartVLC.initialize(libraryPath);
-    }
-    else if(Platform.isMacOS) {
-      final libraryPath = path.join(path.dirname(path.dirname(Platform.resolvedExecutable)),
-          'Frameworks', 'dart_vlc.framework', 'dart_vlc');
+    } else if (Platform.isMacOS) {
+      final libraryPath = path.join(
+          path.dirname(path.dirname(Platform.resolvedExecutable)),
+          'Frameworks',
+          'dart_vlc.framework',
+          'dart_vlc');
       FFI.DartVLC.initialize(libraryPath);
     }
   }
