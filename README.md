@@ -1,4 +1,8 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
+
+[![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc)
+![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master)
+  
 <h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows, Linux & macOS.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
@@ -26,7 +30,7 @@ dependencies:
 
 More on Dart CLI implementation [here](./ffi/README.md).
 
-Feel free to open issue, incase you find something to be not working.
+Feel free to open a [new issue](https://github.com/alexmercerind/dart_vlc/issues) or [discussion](https://github.com/alexmercerind/dart_vlc/discussions), if you found a bug or need assistance.
 
 ## Support
 
@@ -67,7 +71,11 @@ Media media0 = Media.file(
   File('C:/music.mp3')
 );
 
-Media media1 = Media.network(
+Media media1 = Media.asset(
+  File('assets/audio/example.mp3')
+);
+
+Media media2 = Media.network(
   'https://www.example.com/music.aac'
 );
 ```
@@ -78,6 +86,7 @@ Playlist playlist = new Playlist(
   medias: [
     Media.file(File('C:/music.mp3')),
     Media.file(File('C:/audio.mp3')),
+    Media.asset(File('assets/audio/example.mp3')),
     Media.network('https://www.example.com/music.aac'),
   ],
 );
@@ -332,6 +341,14 @@ record.start();
 
 Everything is already set up.
 
+## macOS
+
+To run on macOS, install CMake through [Homebrew](https://brew.sh):
+
+```bash
+brew install cmake
+```
+
 ### Linux
 
 For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. 
@@ -451,7 +468,7 @@ Thanks to following members of libVLC community (irrespective of the order) for 
 
 ## Contributions
 
-The code in the project is nicely arranged (I guess), I have added comments wherever I felt necessary.
+The code in the project is nicely arranged and follows the clean architecture.
 
 Contributions to the project are open, it will be appreciated if you discuss the bug-fix/feature-addition in the issues first.
 
