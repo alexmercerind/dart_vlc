@@ -25,7 +25,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos
 
 SPEC CHECKSUMS:
-  dart_vlc: 658d094d047363f415eff6aa093507dbf6fc6a9c
+  dart_vlc: d6aba717726b8919fe4d72dc763e3cc80429eb5c
   FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
   path_provider_macos: a0a3fd666cb7cd0448e936fb4abad4052961002b
   VLCKit: 21651e881f19774ecf9a86ca2c2010859fe68a08

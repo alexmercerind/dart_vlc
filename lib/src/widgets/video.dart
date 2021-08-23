@@ -151,7 +151,7 @@ class Video extends StatefulWidget {
         super(key: key);
 
   _VideoStateBase createState() =>
-      Platform.isWindows ? _VideoStateTexture() : _VideoStateFallback();
+      Player.hasTextureSupport ? _VideoStateTexture() : _VideoStateFallback();
 }
 
 abstract class _VideoStateBase extends State<Video> {
