@@ -72,7 +72,7 @@ Media media0 = Media.file(
 );
 
 Media media1 = Media.asset(
-  File('assets/audio/example.mp3')
+  'assets/audio/example.mp3'
 );
 
 Media media2 = Media.network(
@@ -86,7 +86,7 @@ Playlist playlist = new Playlist(
   medias: [
     Media.file(File('C:/music.mp3')),
     Media.file(File('C:/audio.mp3')),
-    Media.asset(File('assets/audio/example.mp3')),
+    Media.asset('assets/audio/example.mp3'),
     Media.network('https://www.example.com/music.aac'),
   ],
 );
