@@ -341,12 +341,20 @@ record.start();
 
 Everything is already set up.
 
-## macOS
+### macOS
 
 To run on macOS, install CMake through [Homebrew](https://brew.sh):
 
 ```bash
 brew install cmake
+```
+
+If you encounter the error `cmake: command not found` during archiving:
+
+1. Download [CMake](https://cmake.org/download/) and move it to the `Applications` Folder.
+2. Run:
+```bash
+sudo "/Applications/CMake.app/Contents/bin/cmake-gui" --install
 ```
 
 ### Linux
