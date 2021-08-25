@@ -160,48 +160,68 @@ inline void OnRate(int32_t id, PlayerState* state) {
 inline void OnOpen(int32_t id, PlayerState* state) {
   const auto& media_items = state->medias()->medias();
 
-  auto value_objects = std::unique_ptr<Dart_CObject* []>(
-      new Dart_CObject*[4 + media_items.size() * 2]);
-
   Dart_CObject id_object;
   id_object.type = Dart_CObject_kInt32;
   id_object.value.as_int32 = id;
-  value_objects[0] = &id_object;
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
   type_object.value.as_string = "openEvent";
-  value_objects[1] = &type_object;
 
   Dart_CObject index_object;
   index_object.type = Dart_CObject_kInt32;
   index_object.value.as_int32 = state->index();
-  value_objects[2] = &index_object;
 
   Dart_CObject is_playlist_object;
   is_playlist_object.type = Dart_CObject_kBool;
   is_playlist_object.value.as_int32 = state->is_playlist();
-  value_objects[3] = &is_playlist_object;
-  int index = 0;
-  for (const auto& media : media_items) {
-    Dart_CObject media_type_object;
-    media_type_object.type = Dart_CObject_kString;
-    media_type_object.value.as_string =
-        const_cast<char*>(media->media_type().c_str());
 
-    Dart_CObject resource_object;
-    resource_object.type = Dart_CObject_kString;
-    resource_object.value.as_string =
-        const_cast<char*>(media->resource().c_str());
-    value_objects[index + 4] = &media_type_object;
-    value_objects[index + 5] = &resource_object;
-    index += 2;
+  auto types_objects =
+      std::unique_ptr<Dart_CObject[]>(new Dart_CObject[media_items.size()]);
+  auto types_object_refs =
+      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[media_items.size()]);
+  std::vector<std::string> types_str(media_items.size());
+  std::vector<const char*> types_ptr(media_items.size());
+  for (int32_t i = 0; i < media_items.size(); i++) {
+    types_str[i] = media_items[i]->media_type();
+    types_ptr[i] = types_str[i].c_str();
+    Dart_CObject* value_object = &types_objects[i];
+    value_object->type = Dart_CObject_kString;
+    value_object->value.as_string = const_cast<char*>(types_ptr[i]);
+    types_object_refs[i] = value_object;
   }
+  Dart_CObject types_object;
+  types_object.type = Dart_CObject_kArray;
+  types_object.value.as_array.length = media_items.size();
+  types_object.value.as_array.values = types_object_refs.get();
+
+  auto resources_objects =
+      std::unique_ptr<Dart_CObject[]>(new Dart_CObject[media_items.size()]);
+  auto resources_object_refs =
+      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[media_items.size()]);
+  std::vector<std::string> resources_str(media_items.size());
+  std::vector<const char*> resources_ptr(media_items.size());
+  for (int32_t i = 0; i < media_items.size(); i++) {
+    resources_str[i] = media_items[i]->resource();
+    resources_ptr[i] = resources_str[i].c_str();
+    Dart_CObject* value_object = &resources_objects[i];
+    value_object->type = Dart_CObject_kString;
+    value_object->value.as_string = const_cast<char*>(resources_ptr[i]);
+    resources_object_refs[i] = value_object;
+  }
+  Dart_CObject resources_object;
+  resources_object.type = Dart_CObject_kArray;
+  resources_object.value.as_array.length = media_items.size();
+  resources_object.value.as_array.values = resources_object_refs.get();
+
+  Dart_CObject* value_objects[] = {&id_object,    &type_object,
+                                   &index_object, &is_playlist_object,
+                                   &types_object, &resources_object};
 
   Dart_CObject return_object;
   return_object.type = Dart_CObject_kArray;
-  return_object.value.as_array.length = 4 + media_items.size() * 2;
-  return_object.value.as_array.values = value_objects.get();
+  return_object.value.as_array.length = 6;
+  return_object.value.as_array.values = value_objects;
   g_dart_post_C_object(g_callback_port, &return_object);
 }
 

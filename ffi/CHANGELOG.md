@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Fix OnOpen callback
+
 ## 0.1.3
 
 - Update `ReceivePort` listener to match new NativePort callbacks.

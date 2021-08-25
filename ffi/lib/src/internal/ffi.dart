@@ -228,22 +228,24 @@ final ReceivePort receiver = new ReceivePort()
         {
           players[id]!.current.index = event[2];
           players[id]!.current.isPlaylist = event[3];
+          assert(event[4].length == event[5].length);
+          int length = event[4].length;
           List<Media> medias = [];
-          for (int index = 4; index < event.length; index += 2) {
-            switch (event[index]) {
+          for (int index = 0; index < length; index++) {
+            switch (event[4][index]) {
               case 'MediaType.file':
                 {
-                  medias.add(Media.file(File(event[index + 1])));
+                  medias.add(Media.file(File(event[5][index])));
                   break;
                 }
               case 'MediaType.network':
                 {
-                  medias.add(Media.network(Uri.parse(event[index + 1])));
+                  medias.add(Media.network(Uri.parse(event[5][index])));
                   break;
                 }
               case 'MediaType.directShow':
                 {
-                  medias.add(Media.directShow(rawUrl: event[index + 1]));
+                  medias.add(Media.directShow(rawUrl: event[5][index]));
                   break;
                 }
             }
