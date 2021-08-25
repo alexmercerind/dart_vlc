@@ -134,8 +134,9 @@ class PlayerEvents : public PlayerGetters {
       video_width_ = video_width;
       video_height_ = video_height;
       int32_t pitch = video_width * 4;
-      int32_t size = video_height * pitch;
-      video_frame_buffer_.reset(new uint8_t[size]);
+      // https://github.com/alexmercerind/dart_vlc/pull/137
+      // int32_t size = video_height * pitch;
+      // video_frame_buffer_.reset(new uint8_t[size]);
       vlc_media_player_.setVideoCallbacks(
           std::bind(&PlayerEvents::OnVideoLockCallback, this,
                     std::placeholders::_1),
