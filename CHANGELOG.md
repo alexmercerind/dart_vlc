@@ -1,3 +1,8 @@
+## 0.1.7
+
+- Fixed `Player.open` (`OnOpen` event) randomly causing crash on Windows.
+- Using constant frame buffer size until #137 is resolved.
+
 ## 0.1.6
 
 - A hotfix update to fix a critical bug.

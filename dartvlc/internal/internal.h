@@ -9,6 +9,9 @@
  * GNU Lesser General Public License v2.1
  */
 
+// https://github.com/alexmercerind/dart_vlc/pull/137
+#define BUFFER_SIZE 67108864
+
 #include <optional>
 #include <vlcpp/vlc.hpp>
 
@@ -21,7 +24,8 @@ class PlayerInternal {
   VLC::MediaListPlayer vlc_media_list_player_;
   VLC::MediaList vlc_media_list_;
   std::unique_ptr<PlayerState> state_ = nullptr;
-  std::unique_ptr<uint8_t> video_frame_buffer_ = nullptr;
+  std::unique_ptr<uint8_t[]> video_frame_buffer_ =
+      std::make_unique<uint8_t[]>(BUFFER_SIZE);
   int32_t video_width_ = 0;
   int32_t video_height_ = 0;
   std::optional<int32_t> preferred_video_width_ = std::nullopt;
