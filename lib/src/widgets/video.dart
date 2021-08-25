@@ -21,7 +21,7 @@ class VideoFrame {
   final int videoHeight;
   final Uint8List byteArray;
 
-  VideoFrame({
+  const VideoFrame({
     required this.playerId,
     required this.videoWidth,
     required this.videoHeight,
@@ -87,42 +87,45 @@ class Video extends StatefulWidget {
   // Built-In video controls.
   final bool showControls;
 
-  // Radius of the progressbar's thumb
+  /// Radius of the progressbar's thumb
   final double? progressBarThumbRadius;
 
-  // Radius of the progressbar's glow of the thumb
+  /// Radius of the progressbar's glow of the thumb
   final double? progressBarThumbGlowRadius;
 
-  // Active color of the progress bar
+  /// Active color of the progress bar
   final Color? progressBarActiveColor;
 
-  // Inactive color of the progress bar
+  /// Inactive color of the progress bar
   final Color? progressBarInactiveColor;
 
-  // Thumb color of the progress bar
+  /// Thumb color of the progress bar
   final Color? progressBarThumbColor;
 
   // Thumb's glow color of the progress bar
   final Color? progressBarThumbGlowColor;
 
-  // TextStyle for the Progress Bar
+  /// TextStyle for the Progress Bar
   final TextStyle progressBarTextStyle;
 
-  // Active color of the volume slider
+  /// Active color of the volume slider
   final Color? volumeActiveColor;
 
-  // Inactive color of the volume slider
+  /// Inactive color of the volume slider
   final Color? volumeInactiveColor;
 
-  // Background color of the volume slider
+  /// Background color of the volume slider
   final Color volumeBackgroundColor;
 
-  // Thumb color of the volume slider
+  /// Thumb color of the volume slider
   final Color? volumeThumbColor;
 
-  // if you want the progress bar to display the time left while playing
-  // instead of the total time, set this to true
+  /// if you want the progress bar to display the time left while playing
+  /// instead of the total time, set this to true
   final bool showTimeLeft;
+
+  /// An optional [FullscreenController].
+  final FullscreenController? fullscreenController;
 
   Video({
     @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
@@ -146,6 +149,7 @@ class Video extends StatefulWidget {
     this.showTimeLeft = false,
     this.progressBarTextStyle = const TextStyle(),
     this.filterQuality = FilterQuality.low,
+    this.fullscreenController,
     Key? key,
   })  : player = player ?? players[playerId]! as Player,
         super(key: key);
@@ -175,6 +179,7 @@ abstract class _VideoStateBase extends State<Video> {
             ? Control(
                 key: controlKey,
                 player: widget.player,
+                fullscreenController: widget.fullscreenController,
                 progressBarThumbRadius: widget.progressBarThumbRadius,
                 progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
                 progressBarActiveColor: widget.progressBarActiveColor,
@@ -209,7 +214,6 @@ class _VideoStateTexture extends _VideoStateBase {
       });
     });
     super.initState();
-    if (mounted) setState(() {});
   }
 
   Widget present() {
@@ -283,7 +287,6 @@ class _VideoStateFallback extends _VideoStateBase {
       if (mounted) setState(() {});
     });
     super.initState();
-    if (mounted) setState(() {});
   }
 
   Widget present() {

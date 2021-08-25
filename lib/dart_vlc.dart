@@ -20,6 +20,7 @@ import 'package:dart_vlc_ffi/src/internal/ffi.dart' as FFI;
 import 'package:dart_vlc_ffi/dart_vlc_ffi.dart' as FFI;
 export 'package:dart_vlc_ffi/dart_vlc_ffi.dart' hide DartVLC, Player;
 export 'package:dart_vlc/src/widgets/video.dart';
+export 'package:dart_vlc/src/widgets/controls.dart';
 
 /// Platform channel for using [Texture] & flutter::TextureRegistrar on Windows.
 final MethodChannel _channel = MethodChannel('dart_vlc');
