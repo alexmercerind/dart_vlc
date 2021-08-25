@@ -22,7 +22,20 @@ export 'package:dart_vlc_ffi/dart_vlc_ffi.dart' hide DartVLC, Player;
 export 'package:dart_vlc/src/widgets/video.dart';
 
 /// Platform channel for using [Texture] & flutter::TextureRegistrar on Windows.
-final MethodChannel _channel = MethodChannel('dart_vlc');
+final MethodChannel _channel = MethodChannel('dart_vlc')
+  ..setMethodCallHandler((MethodCall call) async {
+    int playerId = call.arguments['playerId'];
+    switch (call.method) {
+      case 'PlayerTextureId':
+        {
+          int textureId = call.arguments['textureId'];
+          (FFI.players[playerId] as Player).textureId.value = textureId;
+          break;
+        }
+      default:
+        break;
+    }
+  });
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
@@ -47,7 +60,7 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 /// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player extends FFI.Player {
-  final ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
+  late ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
 
   Player(
       {required int id,
@@ -59,8 +72,8 @@ class Player extends FFI.Player {
             commandlineArguments: commandlineArguments) {
     () async {
       if (Platform.isWindows) {
-        textureId.value = await _channel
-            .invokeMethod('PlayerRegisterTexture', {'playerId': id});
+        await _channel
+            .invokeMethod('PlayerCreateVideoOutlet', {'playerId': id});
       }
     }();
   }
@@ -68,7 +81,7 @@ class Player extends FFI.Player {
   @override
   void dispose() async {
     if (Platform.isWindows && textureId.value != null) {
-      await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
+      await _channel.invokeMethod('PlayerDeleteVideoOutlet', {'playerId': id});
       textureId.value = null;
     }
 
@@ -103,15 +116,16 @@ abstract class DartVLC {
       final libraryPath = path.join(
           path.dirname(Platform.resolvedExecutable), 'dart_vlc_plugin.dll');
       FFI.DartVLC.initialize(libraryPath);
-    }
-    else if (Platform.isLinux) {
+    } else if (Platform.isLinux) {
       final libraryPath = path.join(path.dirname(Platform.resolvedExecutable),
           'lib', 'libdart_vlc_plugin.so');
       FFI.DartVLC.initialize(libraryPath);
-    }
-    else if(Platform.isMacOS) {
-      final libraryPath = path.join(path.dirname(path.dirname(Platform.resolvedExecutable)),
-          'Frameworks', 'dart_vlc.framework', 'dart_vlc');
+    } else if (Platform.isMacOS) {
+      final libraryPath = path.join(
+          path.dirname(path.dirname(Platform.resolvedExecutable)),
+          'Frameworks',
+          'dart_vlc.framework',
+          'dart_vlc');
       FFI.DartVLC.initialize(libraryPath);
     }
   }

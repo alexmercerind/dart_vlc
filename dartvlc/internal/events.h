@@ -12,6 +12,7 @@
 #include "internal/getters.h"
 
 typedef std::function<void(uint8_t*, int32_t, int32_t)> VideoFrameCallback;
+typedef std::function<void(int32_t, int32_t)> VideoResizeCallback;
 
 class PlayerEvents : public PlayerGetters {
  public:
@@ -75,7 +76,11 @@ class PlayerEvents : public PlayerGetters {
     playlist_callback_ = callback;
   }
 
-  void OnVideo(VideoFrameCallback callback) { video_callback_ = callback; }
+  void OnVideo(VideoFrameCallback video_callback,
+               VideoResizeCallback resize_callback) {
+    video_frame_callback_ = video_callback;
+    video_resize_callback_ = resize_callback;
+  }
 
  protected:
   std::function<void()> playlist_callback_ = [=]() -> void {};
@@ -135,6 +140,9 @@ class PlayerEvents : public PlayerGetters {
       video_height_ = video_height;
       int32_t pitch = video_width * 4;
       int32_t size = video_height * pitch;
+      if (video_resize_callback_) {
+        video_resize_callback_(video_width_, video_height_);
+      }
       video_frame_buffer_.reset(new uint8_t[size]);
       vlc_media_player_.setVideoCallbacks(
           std::bind(&PlayerEvents::OnVideoLockCallback, this,
@@ -236,7 +244,8 @@ class PlayerEvents : public PlayerGetters {
 
   std::function<void(float)> rate_callback_ = [=](float) -> void {};
 
-  VideoFrameCallback video_callback_;
+  VideoFrameCallback video_frame_callback_ = nullptr;
+  VideoResizeCallback video_resize_callback_ = nullptr;
 
   void* OnVideoLockCallback(void** planes) {
     planes[0] = static_cast<void*>(video_frame_buffer_.get());
@@ -244,8 +253,9 @@ class PlayerEvents : public PlayerGetters {
   }
 
   void OnVideoPictureCallback(void* picture) {
-    if (video_callback_) {
-      video_callback_(video_frame_buffer_.get(), video_width_, video_height_);
+    if (video_frame_callback_) {
+      video_frame_callback_(video_frame_buffer_.get(), video_width_,
+                            video_height_);
     }
   }
 };

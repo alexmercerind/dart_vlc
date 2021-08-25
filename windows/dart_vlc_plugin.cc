@@ -11,6 +11,7 @@
 
 #include "include/dart_vlc/dart_vlc_plugin.h"
 
+#include <optional>
 #include <unordered_map>
 
 #include "player.h"
@@ -49,10 +50,10 @@ void DartVlcPlugin::RegisterWithRegistrar(
           registrar->messenger(), "dart_vlc",
           &flutter::StandardMethodCodec::GetInstance()),
       registrar->texture_registrar());
-  plugin->channel()->SetMethodCallHandler(
-      [plugin_pointer = plugin.get()](const auto& call, auto result) {
-        plugin_pointer->HandleMethodCall(call, std::move(result));
-      });
+  plugin->channel()->SetMethodCallHandler([plugin_pointer = plugin.get()](
+      const auto& call, auto result) {
+    plugin_pointer->HandleMethodCall(call, std::move(result));
+  });
   registrar->AddPlugin(std::move(plugin));
 }
 
@@ -66,39 +67,38 @@ DartVlcPlugin::~DartVlcPlugin() {}
 void DartVlcPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  if (method_call.method_name() == "PlayerRegisterTexture") {
+  if (method_call.method_name() == "PlayerCreateVideoOutlet") {
     flutter::EncodableMap arguments =
         std::get<flutter::EncodableMap>(*method_call.arguments());
     int32_t player_id =
         std::get<int>(arguments[flutter::EncodableValue("playerId")]);
-
-    auto [it, added] = outlets_.try_emplace(player_id, nullptr);
+    auto[it, added] = outlets_.try_emplace(player_id, nullptr);
     if (added) {
-      it->second = std::make_unique<VideoOutlet>(texture_registrar_);
+      it->second = std::make_unique<VideoOutlet>(player_id, texture_registrar_,
+                                                 channel_.get());
 
       Player* player = g_players->Get(player_id);
-      player->OnVideo([outlet_ptr = it->second.get()](uint8_t* frame,
-                                                      int32_t width,
-                                                      int32_t height) -> void {
-        outlet_ptr->OnVideo(frame, width, height);
-      });
+      player->OnVideo([outlet_ptr = it->second.get()](
+                          uint8_t * frame, int32_t width, int32_t height)
+                          ->void { outlet_ptr->OnVideo(frame, width, height); },
+                      [outlet_ptr = it->second.get()](int32_t, int32_t)
+                          ->void { outlet_ptr->DeleteTexture(); });
     }
+    return result->Success(flutter::EncodableValue(nullptr));
 
-    return result->Success(flutter::EncodableValue(it->second->texture_id()));
-
-  } else if (method_call.method_name() == "PlayerUnregisterTexture") {
+  } else if (method_call.method_name() == "PlayerDeleteVideoOutlet") {
     flutter::EncodableMap arguments =
         std::get<flutter::EncodableMap>(*method_call.arguments());
     int player_id =
         std::get<int>(arguments[flutter::EncodableValue("playerId")]);
     if (outlets_.find(player_id) == outlets_.end()) {
-      return result->Error("-2", "Texture was not found.");
+      return result->Error("-1", "Texture was not found.");
     }
 
     // The callback must be unregistered
     // before destroying the outlet.
     Player* player = g_players->Get(player_id);
-    player->OnVideo(nullptr);
+    player->OnVideo(nullptr, nullptr);
 
     outlets_.erase(player_id);
 
