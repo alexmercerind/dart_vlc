@@ -42,6 +42,19 @@ Thanks a lot for your support.
 
 ## Documentation
 
+#### iOS Setup
+
+Disable bitcode generation for the whole project for MobileVLC to work.
+Add the following to the `post_install` function living in the `Podfile` of your iOS Flutter project. For reference look at the `Podfile` in the example project.
+
+```ruby
+target.build_configurations.each do |config|
+    config.build_settings['ENABLE_BITCODE'] = 'NO'
+end
+```
+
+For the example project to work you need to configure a real device in the xcode project, or comment out the build script `Build Device lib` in in `ios/dart_vlc.podspec`.
+
 #### Initialize the library
 
 ```dart

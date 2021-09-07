@@ -17,6 +17,10 @@ dependencies:
   path_provider: ">=2.0.2 <3.0.0"
   audio_video_progress_bar: ">=0.9.0 <1.0.0"
 
+dependency_overrides:
+  dart_vlc_ffi: 
+    path: ffi
+
 flutter:
   # No platform channel implementation after migration to FFI.
   plugin:
@@ -26,5 +30,7 @@ flutter:
       linux:
         pluginClass: DartVlcPlugin
       macos:
+        pluginClass: DartVlcPlugin
+      ios:
         pluginClass: DartVlcPlugin
 
