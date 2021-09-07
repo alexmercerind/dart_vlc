@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
@@ -64,6 +65,24 @@ class DartVLCExampleState extends State<DartVLCExample> {
 
   @override
   Widget build(BuildContext context) {
+    bool isTablet;
+    bool isPhone;
+
+    final double devicePixelRatio = ui.window.devicePixelRatio;
+    final ui.Size size = ui.window.physicalSize;
+    final double width = size.width;
+    final double height = size.height;
+
+    if (devicePixelRatio < 2 && (width >= 1000 || height >= 1000)) {
+      isTablet = true;
+      isPhone = false;
+    } else if (devicePixelRatio == 2 && (width >= 1920 || height >= 1920)) {
+      isTablet = true;
+      isPhone = false;
+    } else {
+      isTablet = false;
+      isPhone = true;
+    }
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -84,8 +103,8 @@ class DartVLCExampleState extends State<DartVLCExample> {
                   elevation: 2.0,
                   child: Video(
                     player: player,
-                    width: 640,
-                    height: 480,
+                    width: isPhone ? 320 : 640,
+                    height: isPhone ? 240 : 480,
                     volumeThumbColor: Colors.blue,
                     volumeActiveColor: Colors.blue,
                   ),
@@ -102,6 +121,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (isPhone) _controls(context, isPhone),
                       Card(
                         elevation: 2.0,
                         margin: EdgeInsets.all(4.0),
@@ -516,215 +536,223 @@ class DartVLCExampleState extends State<DartVLCExample> {
                           ),
                         ),
                       ),
+                      if (isPhone) _playlist(context),
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Card(
-                        elevation: 2.0,
-                        margin: EdgeInsets.all(4.0),
-                        child: Container(
-                          margin: EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Playback controls.'),
-                              Divider(
-                                height: 8.0,
-                                color: Colors.transparent,
-                              ),
-                              Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () => this.player.play(),
-                                    child: Text(
-                                      'play',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.pause(),
-                                    child: Text(
-                                      'pause',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.playOrPause(),
-                                    child: Text(
-                                      'playOrPause',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.stop(),
-                                    child: Text(
-                                      'stop',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.next(),
-                                    child: Text(
-                                      'next',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.0),
-                                  ElevatedButton(
-                                    onPressed: () => this.player.back(),
-                                    child: Text(
-                                      'back',
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(
-                                height: 12.0,
-                                color: Colors.transparent,
-                              ),
-                              Divider(
-                                height: 12.0,
-                              ),
-                              Text('Volume control.'),
-                              Divider(
-                                height: 8.0,
-                                color: Colors.transparent,
-                              ),
-                              Slider(
-                                min: 0.0,
-                                max: 1.0,
-                                value: this.player.general.volume,
-                                onChanged: (volume) {
-                                  this.player.setVolume(volume);
-                                  this.setState(() {});
-                                },
-                              ),
-                              Text('Playback rate control.'),
-                              Divider(
-                                height: 8.0,
-                                color: Colors.transparent,
-                              ),
-                              Slider(
-                                min: 0.5,
-                                max: 1.5,
-                                value: this.player.general.rate,
-                                onChanged: (rate) {
-                                  this.player.setRate(rate);
-                                  this.setState(() {});
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 2.0,
-                        margin: EdgeInsets.all(4.0),
-                        child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 16.0, top: 16.0),
-                                alignment: Alignment.topLeft,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Playlist manipulation.'),
-                                    Divider(
-                                      height: 12.0,
-                                      color: Colors.transparent,
-                                    ),
-                                    Divider(
-                                      height: 12.0,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: 456.0,
-                                child: ReorderableListView(
-                                  shrinkWrap: true,
-                                  onReorder:
-                                      (int initialIndex, int finalIndex) async {
-                                    /// 🙏🙏🙏
-                                    /// In the name of God,
-                                    /// With all due respect,
-                                    /// I ask all Flutter engineers to please fix this issue.
-                                    /// Peace.
-                                    /// 🙏🙏🙏
-                                    ///
-                                    /// Issue:
-                                    /// https://github.com/flutter/flutter/issues/24786
-                                    /// Prevention:
-                                    /// https://stackoverflow.com/a/54164333/12825435
-                                    ///
-                                    if (finalIndex > this.current.medias.length)
-                                      finalIndex = this.current.medias.length;
-                                    if (initialIndex < finalIndex) finalIndex--;
+                if (isTablet)
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _controls(context, isPhone),
+                        _playlist(context),
+                      ],
+                    ),
+                  ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
-                                    this.player.move(initialIndex, finalIndex);
-                                    this.setState(() {});
-                                  },
-                                  scrollDirection: Axis.vertical,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  children: List.generate(
-                                    this.current.medias.length,
-                                    (int index) => new ListTile(
-                                      key: Key(index.toString()),
-                                      leading: Text(
-                                        index.toString(),
-                                        style: TextStyle(fontSize: 14.0),
-                                      ),
-                                      title: Text(
-                                        this.current.medias[index].resource,
-                                        style: TextStyle(fontSize: 14.0),
-                                      ),
-                                      subtitle: Text(
-                                        this
-                                            .current
-                                            .medias[index]
-                                            .mediaType
-                                            .toString(),
-                                        style: TextStyle(fontSize: 14.0),
-                                      ),
-                                    ),
-                                    growable: true,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+  Widget _controls(BuildContext context, bool isPhone) {
+    return Card(
+      elevation: 2.0,
+      margin: EdgeInsets.all(4.0),
+      child: Container(
+        margin: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Playback controls.'),
+            Divider(
+              height: 8.0,
+              color: Colors.transparent,
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => this.player.play(),
+                  child: Text(
+                    'play',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.0),
+                ElevatedButton(
+                  onPressed: () => this.player.pause(),
+                  child: Text(
+                    'pause',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.0),
+                ElevatedButton(
+                  onPressed: () => this.player.playOrPause(),
+                  child: Text(
+                    'playOrPause',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.0),
+              ],
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => this.player.stop(),
+                  child: Text(
+                    'stop',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.0),
+                ElevatedButton(
+                  onPressed: () => this.player.next(),
+                  child: Text(
+                    'next',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.0),
+                ElevatedButton(
+                  onPressed: () => this.player.back(),
+                  child: Text(
+                    'back',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
                   ),
                 ),
               ],
-            )
+            ),
+            Divider(
+              height: 12.0,
+              color: Colors.transparent,
+            ),
+            Divider(
+              height: 12.0,
+            ),
+            Text('Volume control.'),
+            Divider(
+              height: 8.0,
+              color: Colors.transparent,
+            ),
+            Slider(
+              min: 0.0,
+              max: 1.0,
+              value: this.player.general.volume,
+              onChanged: (volume) {
+                this.player.setVolume(volume);
+                this.setState(() {});
+              },
+            ),
+            Text('Playback rate control.'),
+            Divider(
+              height: 8.0,
+              color: Colors.transparent,
+            ),
+            Slider(
+              min: 0.5,
+              max: 1.5,
+              value: this.player.general.rate,
+              onChanged: (rate) {
+                this.player.setRate(rate);
+                this.setState(() {});
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _playlist(BuildContext context) {
+    return Card(
+      elevation: 2.0,
+      margin: EdgeInsets.all(4.0),
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 16.0, top: 16.0),
+              alignment: Alignment.topLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Playlist manipulation.'),
+                  Divider(
+                    height: 12.0,
+                    color: Colors.transparent,
+                  ),
+                  Divider(
+                    height: 12.0,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: 456.0,
+              child: ReorderableListView(
+                shrinkWrap: true,
+                onReorder: (int initialIndex, int finalIndex) async {
+                  /// 🙏🙏🙏
+                  /// In the name of God,
+                  /// With all due respect,
+                  /// I ask all Flutter engineers to please fix this issue.
+                  /// Peace.
+                  /// 🙏🙏🙏
+                  ///
+                  /// Issue:
+                  /// https://github.com/flutter/flutter/issues/24786
+                  /// Prevention:
+                  /// https://stackoverflow.com/a/54164333/12825435
+                  ///
+                  if (finalIndex > this.current.medias.length)
+                    finalIndex = this.current.medias.length;
+                  if (initialIndex < finalIndex) finalIndex--;
+
+                  this.player.move(initialIndex, finalIndex);
+                  this.setState(() {});
+                },
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                children: List.generate(
+                  this.current.medias.length,
+                  (int index) => new ListTile(
+                    key: Key(index.toString()),
+                    leading: Text(
+                      index.toString(),
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+                    title: Text(
+                      this.current.medias[index].resource,
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+                    subtitle: Text(
+                      this.current.medias[index].mediaType.toString(),
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+                  ),
+                  growable: true,
+                ),
+              ),
+            ),
           ],
         ),
       ),
