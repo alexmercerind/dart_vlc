@@ -89,15 +89,39 @@ class Media implements MediaSource {
   /// Might result in an exception on Dart CLI.
   ///
   static Media asset(String asset) {
+    String? assetPath;
     if (Platform.isWindows || Platform.isLinux) {
-      final assetPath = path.join(path.dirname(Platform.resolvedExecutable),
-          'data', 'flutter_assets', asset);
-      final url = Uri.file(assetPath, windows: Platform.isWindows);
-      return Media._(mediaType: MediaType.asset, resource: url.toString());
+      assetPath = path.join(
+        path.dirname(Platform.resolvedExecutable),
+        'data',
+        'flutter_assets',
+        asset,
+      );
+    } else if (Platform.isMacOS) {
+      assetPath = path.join(
+        path.dirname(Platform.resolvedExecutable),
+        '..',
+        'Frameworks',
+        'App.framework',
+        'Resources',
+        'flutter_assets',
+        asset,
+      );
+    } else if (Platform.isIOS) {
+      assetPath = path.join(
+        path.dirname(Platform.resolvedExecutable),
+        'Frameworks',
+        'App.framework',
+        'flutter_assets',
+        asset,
+      );
     }
-
-    // TODO: Add macOS asset path support.
-    throw UnimplementedError('The platform is not supported');
+    if (assetPath == null) {
+      // TODO: Add Android asset path support.
+      throw UnimplementedError('The platform is not supported');
+    }
+    final url = Uri.file(assetPath, windows: Platform.isWindows);
+    return Media._(mediaType: MediaType.asset, resource: url.toString());
   }
 
   /// Parses the [Media] to retrieve [Media.metas].

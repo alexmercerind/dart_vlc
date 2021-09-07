@@ -42,6 +42,8 @@ Thanks a lot for your support.
 
 ## Documentation
 
+Checkout [Setup](#setup) section to configure plugin on your platform.
+
 #### Initialize the library
 
 ```dart
@@ -382,6 +384,19 @@ sudo dnf install vlc
 sudo dnf install vlc-devel
 ```
 
+### iOS
+
+Disable bitcode generation for the whole project for MobileVLC to work.
+Add the following to the `post_install` function living in the `Podfile` of your iOS Flutter project. For reference look at the `Podfile` in the example project.
+
+```ruby
+target.build_configurations.each do |config|
+    config.build_settings['ENABLE_BITCODE'] = 'NO'
+end
+```
+
+For the example project to work you need to configure a real device in the xcode project, or comment out the build script `Build Device lib` in in `ios/dart_vlc.podspec`.
+
 ## Example
 
 You can see an example project [here](https://github.com/alexmercerind/dart_vlc/blob/master/example/lib/main.dart).
@@ -460,6 +475,8 @@ First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creati
 
 Thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributions to this project & to Flutter engine itself like adding texture support.
 
+Thanks to [@krjw-eyev](https://github.com/krjw-eyev) for working on iOS support.
+
 Thanks to [@jnschulze](https://github.com/jnschulze) & [@namniav](https://github.com/namniav) for working on macOS support.
 
 Thanks to [@stuartmorgan](https://github.com/stuartmorgan) from [The Flutter Team](https://flutter.dev) for helping out the project with his opinions.
@@ -493,4 +510,4 @@ As one might be already aware, VLC is one of the best media playback tools out t
 
 So, now you can use it to play audio or video files from Flutter or Dart apps.
 
-Support for other platforms is also under progress.
+As the project has grown, awesome people from community have added support for iOS & macOS aswell.

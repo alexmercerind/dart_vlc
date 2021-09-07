@@ -5,6 +5,7 @@
 .pub/
 
 build/
+pubspec.lock
 
 .vscode
 
