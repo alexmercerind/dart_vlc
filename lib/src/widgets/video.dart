@@ -269,7 +269,7 @@ class _VideoStateFallback extends _VideoStateBase {
 
   @override
   Future<void> dispose() async {
-    await videoStreamControllers[playerId]?.close();
+    videoStreamControllers[playerId]?.close();
     super.dispose();
   }
 
