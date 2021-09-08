@@ -13,12 +13,16 @@ A new flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.script_phases     = [{
+    :name => 'Fetch submodules... only needed if using git in pubspec.yaml',
+    :show_env_vars_in_log => true,
+    :script => 'cd .. && git submodule update --init --recursive',
+    :execution_position => :before_compile
+  }, {
     :name => 'Build common lib',
     :show_env_vars_in_log => true,
     :script => 'cmake -Bdartvlc_core ${PODS_TARGET_SRCROOT}/../dartvlc -DCMAKE_INSTALL_PREFIX:PATH=${PODS_TARGET_SRCROOT}/deps && pwd && make -C dartvlc_core install',
     :execution_position => :before_compile
-  },
-  {
+  }, {
     :name => 'Change VLCKit ID',
     :show_env_vars_in_log => true,
     :script => 'install_name_tool -id "@executable_path/../Frameworks/VLCKit.framework/Versions/A/VLCKit" ${PODS_ROOT}/VLCKit/VLCKit.framework/VLCKit',
