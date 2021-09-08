@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
     s.script_phases     = [{
         :name => 'Fetch submodules... only needed if using git in pubspec.yaml',
         :show_env_vars_in_log => true,
-        :script => 'cd .. && git submodule update --init --recursive',
+        :script => 'cd ${PODS_TARGET_SRCROOT}/.. && git submodule update --init --recursive',
         :execution_position => :before_compile
     }, {
         :name => 'Build Simulator lib',
