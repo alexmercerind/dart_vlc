@@ -105,7 +105,7 @@ class Player {
     PlayerFFI.create(
       this.id,
       this.videoDimensions.width,
-      this.videoDimensions.width,
+      this.videoDimensions.height,
       this.commandlineArguments.length,
       this.commandlineArguments.toNativeUtf8Array(),
     );
