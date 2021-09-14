@@ -33,14 +33,15 @@ class Media implements MediaSource {
   final Map<String, String> metas;
 
   const Media._(
-      {required this.mediaType, required this.resource, this.metas = const {}});
+      {required this.mediaType, required this.resource, required this.metas});
 
   /// Makes [Media] object from a [File].
   static Media file(File file,
       {bool parse: false,
       Map<String, dynamic>? extras,
       Duration timeout: const Duration(seconds: 10)}) {
-    final media = Media._(mediaType: MediaType.file, resource: file.path);
+    final media =
+        Media._(mediaType: MediaType.file, resource: file.path, metas: {});
 
     if (parse) {
       media.parse(timeout);
@@ -55,7 +56,7 @@ class Media implements MediaSource {
       Duration timeout: const Duration(seconds: 10)}) {
     final resource = (url is Uri) ? url.toString() : url;
     final Media media =
-        Media._(mediaType: MediaType.network, resource: resource);
+        Media._(mediaType: MediaType.network, resource: resource, metas: {});
 
     if (parse) {
       media.parse(timeout);
@@ -78,7 +79,8 @@ class Media implements MediaSource {
               'live-caching': liveCaching
             });
 
-    return Media._(mediaType: MediaType.directShow, resource: resourceUrl);
+    return Media._(
+        mediaType: MediaType.directShow, resource: resourceUrl, metas: {});
   }
 
   /// Makes [Media] object from assets.
@@ -121,7 +123,8 @@ class Media implements MediaSource {
       throw UnimplementedError('The platform is not supported');
     }
     final url = Uri.file(assetPath, windows: Platform.isWindows);
-    return Media._(mediaType: MediaType.asset, resource: url.toString());
+    return Media._(
+        mediaType: MediaType.asset, resource: url.toString(), metas: {});
   }
 
   /// Parses the [Media] to retrieve [Media.metas].

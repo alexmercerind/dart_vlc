@@ -280,7 +280,8 @@ class _VideoStateFallback extends _VideoStateBase {
         ?.stream
         .listen((VideoFrame videoFrame) async {
       videoFrameRawImage = await getVideoFrameRawImage(videoFrame);
-      if (mounted) setState(() {});
+      if (mounted && !(videoStreamControllers[playerId]?.isClosed ?? true))
+        setState(() {});
     });
     super.initState();
     if (mounted) setState(() {});
