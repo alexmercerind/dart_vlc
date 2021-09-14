@@ -66,14 +66,16 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     playPauseStream.cancel();
+    playPauseController.dispose();
     super.dispose();
   }
 
   void setPlaybackMode(bool isPlaying) {
-    if (isPlaying)
+    if (isPlaying) {
       playPauseController.forward();
-    else
+    } else {
       playPauseController.reverse();
+    }
     setState(() {});
   }
 
