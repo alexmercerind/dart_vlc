@@ -270,6 +270,15 @@ final ReceivePort receiver = new ReceivePort()
           videoFrameCallback(id, event[2]);
           break;
         }
+      case 'bufferingEvent':
+        {
+          players[id]!.bufferingProgress = event[2];
+          if (!players[id]!.bufferingProgressController.isClosed)
+            players[id]!
+                .bufferingProgressController
+                .add(players[id]!.bufferingProgress);
+          break;
+        }
       default:
         break;
     }
