@@ -26,6 +26,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
   List<Device> devices = <Device>[];
   TextEditingController controller = new TextEditingController();
   TextEditingController metasController = new TextEditingController();
+  double bufferingProgress = 0.0;
   Media? metasMedia;
 
   @override
@@ -49,6 +50,13 @@ class DartVLCExampleState extends State<DartVLCExample> {
           this.videoDimensions = videoDimensions;
         });
       });
+      this.player.bufferingProgressStream.listen(
+        (bufferingProgress) {
+          this.setState(() {
+            this.bufferingProgress = bufferingProgress;
+          });
+        },
+      );
     }
   }
 
@@ -59,7 +67,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
     Equalizer equalizer = Equalizer.createMode(EqualizerMode.live);
     equalizer.setPreAmp(10.0);
     equalizer.setBandAmp(31.25, 10.0);
-    player.setEqualizer(equalizer);
+    this.player.setEqualizer(equalizer);
     this.setState(() {});
   }
 
@@ -382,6 +390,10 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                     Text('player.videoDimensions'),
                                     Text('${this.videoDimensions}')
                                   ]),
+                                  TableRow(children: [
+                                    Text('player.bufferingProgress'),
+                                    Text('${this.bufferingProgress}')
+                                  ]),
                                 ],
                               ),
                             ],
@@ -606,6 +618,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 ),
                 SizedBox(width: 12.0),
               ],
+            ),
+            SizedBox(
+              height: 8.0,
             ),
             Row(
               children: [
