@@ -12,10 +12,10 @@
 #ifndef API_EVENTMANAGER_H_
 #define API_EVENTMANAGER_H_
 
-#include "base.h"
-#include "player.h"
 #include "api/dartmanager.h"
+#include "base.h"
 #include "dart_api_dl.h"
+#include "player.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -179,7 +179,7 @@ inline void OnOpen(int32_t id, PlayerState* state) {
   auto types_objects =
       std::unique_ptr<Dart_CObject[]>(new Dart_CObject[media_items.size()]);
   auto types_object_refs =
-      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[media_items.size()]);
+      std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[media_items.size()]);
   std::vector<std::string> types_str(media_items.size());
   std::vector<const char*> types_ptr(media_items.size());
   for (int32_t i = 0; i < media_items.size(); i++) {
@@ -198,7 +198,7 @@ inline void OnOpen(int32_t id, PlayerState* state) {
   auto resources_objects =
       std::unique_ptr<Dart_CObject[]>(new Dart_CObject[media_items.size()]);
   auto resources_object_refs =
-      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[media_items.size()]);
+      std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[media_items.size()]);
   std::vector<std::string> resources_str(media_items.size());
   std::vector<const char*> resources_ptr(media_items.size());
   for (int32_t i = 0; i < media_items.size(); i++) {
@@ -269,6 +269,28 @@ inline void OnVideo(int32_t id, int size, uint8_t* frame) {
   frame_object.value.as_typed_data.length = size;
 
   Dart_CObject* value_objects[] = {&id_object, &type_object, &frame_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 3;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
+}
+
+inline void OnBuffering(int32_t id, float buffering) {
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = "bufferingEvent";
+
+  Dart_CObject buffering_object;
+  buffering_object.type = Dart_CObject_kDouble;
+  buffering_object.value.as_double = static_cast<double>(buffering);
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object, &buffering_object};
 
   Dart_CObject return_object;
   return_object.type = Dart_CObject_kArray;
