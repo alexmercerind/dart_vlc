@@ -12,12 +12,12 @@
 #ifndef MEDIASOURCE_PLAYLIST_H_
 #define MEDIASOURCE_PLAYLIST_H_
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
-#include "mediasource/mediasource.h"
 #include "mediasource/media.h"
+#include "mediasource/mediasource.h"
 
 enum PlaylistMode { single, loop, repeat };
 

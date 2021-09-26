@@ -68,6 +68,12 @@ class Player {
   /// Stream to listen to dimensions of currently playing video.
   late Stream<VideoDimensions> videoDimensionsStream;
 
+  /// Current buffering progress of the [Media].
+  double bufferingProgress = 0.0;
+
+  /// Stream to listen to current buffering progress of the [Media].
+  late Stream<double> bufferingProgressStream;
+
   /// Creates a new [Player] instance.
   ///
   /// Takes unique id as parameter.
@@ -90,6 +96,8 @@ class Player {
     this.playbackStream = this.playbackController.stream;
     this.generalController = StreamController<GeneralState>.broadcast();
     this.generalStream = this.generalController.stream;
+    this.bufferingProgressController = StreamController<double>.broadcast();
+    this.bufferingProgressStream = this.bufferingProgressController.stream;
     if (videoDimensions != null) {
       this.videoDimensions = videoDimensions;
     }
@@ -277,6 +285,7 @@ class Player {
     this.playbackController.close();
     this.generalController.close();
     this.videoDimensionsController.close();
+    this.bufferingProgressController.close();
     PlayerFFI.dispose(this.id);
   }
 
@@ -286,4 +295,5 @@ class Player {
   late StreamController<PlaybackState> playbackController;
   late StreamController<GeneralState> generalController;
   late StreamController<VideoDimensions> videoDimensionsController;
+  late StreamController<double> bufferingProgressController;
 }

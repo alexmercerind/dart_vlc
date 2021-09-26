@@ -58,20 +58,14 @@ class Player extends FFI.Player {
             videoDimensions: videoDimensions,
             commandlineArguments: commandlineArguments) {
     () async {
-      if (Platform.isWindows || Platform.isLinux) {
-        textureId.value = await _channel
-            .invokeMethod('PlayerRegisterTexture', {'playerId': id});
-      }
+      textureId.value = await _channel.invokeMethod('PlayerRegisterTexture', {'playerId': id});
     }();
   }
 
   @override
   void dispose() async {
-    if (Platform.isWindows || Platform.isLinux && textureId.value != null) {
-      await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
-      textureId.value = null;
-    }
-
+    await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
+    textureId.value = null;
     super.dispose();
   }
 }
@@ -91,7 +85,7 @@ abstract class DartVLC {
       if (videoStreamControllers[playerId] != null &&
           FFI.players[playerId] != null) {
         if (!videoStreamControllers[playerId]!.isClosed) {
-          videoStreamControllers[playerId]!.add(new VideoFrame(
+          videoStreamControllers[playerId]!.add(VideoFrame(
               playerId: playerId,
               videoWidth: FFI.players[playerId]!.videoDimensions.width,
               videoHeight: FFI.players[playerId]!.videoDimensions.height,
