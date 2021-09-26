@@ -607,6 +607,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 SizedBox(width: 12.0),
               ],
             ),
+            SizedBox(
+              height: 8.0,
+            ),
             Row(
               children: [
                 ElevatedButton(

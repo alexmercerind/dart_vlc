@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:dart_vlc_ffi/src/player.dart' hide Player;
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/widgets/controls.dart';
 
@@ -150,8 +149,9 @@ class Video extends StatefulWidget {
   })  : player = player ?? players[playerId]! as Player,
         super(key: key);
 
-  _VideoStateBase createState() =>
-      Platform.isWindows ? _VideoStateTexture() : _VideoStateFallback();
+  _VideoStateBase createState() => (Platform.isWindows || Platform.isLinux)
+      ? _VideoStateTexture()
+      : _VideoStateFallback();
 }
 
 abstract class _VideoStateBase extends State<Video> {

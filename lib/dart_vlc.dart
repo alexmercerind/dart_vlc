@@ -58,7 +58,7 @@ class Player extends FFI.Player {
             videoDimensions: videoDimensions,
             commandlineArguments: commandlineArguments) {
     () async {
-      if (Platform.isWindows) {
+      if (Platform.isWindows || Platform.isLinux) {
         textureId.value = await _channel
             .invokeMethod('PlayerRegisterTexture', {'playerId': id});
       }
@@ -67,7 +67,7 @@ class Player extends FFI.Player {
 
   @override
   void dispose() async {
-    if (Platform.isWindows && textureId.value != null) {
+    if (Platform.isWindows || Platform.isLinux && textureId.value != null) {
       await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
       textureId.value = null;
     }
