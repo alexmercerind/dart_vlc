@@ -69,9 +69,7 @@ void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
   player->OnPosition([=](int32_t) -> void { OnPosition(id, player->state()); });
   player->OnOpen([=](VLC::Media) -> void { OnOpen(id, player->state()); });
   player->OnPlaylist([=]() -> void { OnOpen(id, player->state()); });
-#ifdef _WIN32
-/* Windows: Texture & flutter::TextureRegistrar */
-#else
+#ifdef __APPLE__
   /* Linux: decodeImageFromPixels & NativePorts */
   player->OnVideo([=](uint8_t* frame, int32_t width, int32_t height) -> void {
     OnVideo(id, player->video_width() * player->video_height() * 4, frame);
