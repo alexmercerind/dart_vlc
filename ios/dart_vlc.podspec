@@ -13,6 +13,11 @@ Pod::Spec.new do |s|
     s.license          = { :file => '../LICENSE' }
     s.author           = { 'Your Company' => 'email@example.com' }
     s.script_phases     = [{
+        :name => 'Fetch submodules... only needed if using git in pubspec.yaml',
+        :show_env_vars_in_log => true,
+        :script => 'cd ${PODS_TARGET_SRCROOT}/.. && git submodule update --init --recursive',
+        :execution_position => :before_compile
+    }, {
         :name => 'Build Simulator lib',
         :show_env_vars_in_log => true,
         :script => 'cmake -Bdartvlc_core '\
