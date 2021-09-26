@@ -113,8 +113,8 @@ class PlayerEvents : public PlayerGetters {
     open_callback_(*vlc_media_ptr.get());
   }
 
-  std::function<void(int32_t, int32_t)> video_dimension_callback_ = [=](
-      int32_t, int32_t) -> void {};
+  std::function<void(int32_t, int32_t)> video_dimension_callback_ =
+      [=](int32_t, int32_t) -> void {};
 
   void OnVideoDimensionsCallback() {
     int32_t video_width = 0;
@@ -139,12 +139,17 @@ class PlayerEvents : public PlayerGetters {
       vlc_media_player_.setVideoCallbacks(
           std::bind(&PlayerEvents::OnVideoLockCallback, this,
                     std::placeholders::_1),
-          nullptr, std::bind(&PlayerEvents::OnVideoPictureCallback, this,
-                             std::placeholders::_1));
+          nullptr,
+          std::bind(&PlayerEvents::OnVideoPictureCallback, this,
+                    std::placeholders::_1));
       vlc_media_player_.setVideoFormatCallbacks(
           [=](char* chroma, uint32_t* w, uint32_t* h, uint32_t* p,
               uint32_t* l) -> int32_t {
-            strcpy(chroma, "RGBA");
+#ifndef __APPLE__
+            strncpy(chroma, "RGBA", 4);
+#elif
+            strncpy(chroma, "RV32", 4);
+#endif
             *w = video_width;
             *h = video_height;
             *p = pitch;
@@ -152,8 +157,13 @@ class PlayerEvents : public PlayerGetters {
             return 1;
           },
           nullptr);
+#ifndef __APPLE__
       vlc_media_player_.setVideoFormat("RGBA", video_width, video_height,
                                        pitch);
+#elif
+      vlc_media_player_.setVideoFormat("RV32", video_width, video_height,
+                                       pitch);
+#endif
     }
   }
 
@@ -192,8 +202,8 @@ class PlayerEvents : public PlayerGetters {
     stop_callback_();
   }
 
-  std::function<void(int32_t)> position_callback_ = [=](
-      int32_t position) -> void {};
+  std::function<void(int32_t)> position_callback_ =
+      [=](int32_t position) -> void {};
 
   void OnPositionCallback(float relative_position) {
     state()->is_playing_ = vlc_media_player_.isPlaying();
