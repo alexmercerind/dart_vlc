@@ -12,10 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: 'true'
+          submodules: "true"
       - uses: subosito/flutter-action@v1
         with:
-          channel: "beta"
+          channel: "master"
       - run: flutter config --enable-windows-desktop
       - run: flutter pub get
       - run: flutter build windows --verbose
@@ -30,10 +30,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: 'true'
+          submodules: "true"
       - uses: subosito/flutter-action@v1
         with:
-          channel: "beta"
+          channel: "master"
       - run: sudo apt update
       - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev vlc libvlc-dev
       - run: flutter config --enable-linux-desktop
@@ -46,11 +46,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: 'true'
+          submodules: "true"
       - uses: subosito/flutter-action@v1
         with:
-          channel: "beta"
+          channel: "master"
       - run: flutter config --enable-macos-desktop
       - run: flutter pub get
       - run: flutter build macos --verbose
-

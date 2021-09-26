@@ -149,8 +149,7 @@ class Video extends StatefulWidget {
   })  : player = player ?? players[playerId]! as Player,
         super(key: key);
 
-  _VideoStateBase createState() =>
-      Player.hasTextureSupport ? _VideoStateTexture() : _VideoStateFallback();
+  _VideoStateBase createState() => _VideoStateTexture();
 }
 
 abstract class _VideoStateBase extends State<Video> {

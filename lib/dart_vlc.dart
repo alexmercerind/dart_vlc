@@ -47,8 +47,6 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 /// Use various methods & event streams available to control & listen to events of the playback.
 ///
 class Player extends FFI.Player {
-  static bool get hasTextureSupport => Platform.isWindows || Platform.isMacOS;
-
   final ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
 
   Player(
@@ -60,20 +58,14 @@ class Player extends FFI.Player {
             videoDimensions: videoDimensions,
             commandlineArguments: commandlineArguments) {
     () async {
-      if (hasTextureSupport) {
-        textureId.value = await _channel
-            .invokeMethod('PlayerRegisterTexture', {'playerId': id});
-      }
+      textureId.value = await _channel.invokeMethod('PlayerRegisterTexture', {'playerId': id});
     }();
   }
 
   @override
   void dispose() async {
-    if (hasTextureSupport && textureId.value != null) {
-      await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
-      textureId.value = null;
-    }
-
+    await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
+    textureId.value = null;
     super.dispose();
   }
 }
