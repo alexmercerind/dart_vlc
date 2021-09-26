@@ -152,7 +152,7 @@ class PlayerEvents : public PlayerGetters {
               uint32_t* l) -> int32_t {
 #ifndef __APPLE__
             strncpy(chroma, "RGBA", 4);
-#elif
+#else
             strncpy(chroma, "RV32", 4);
 #endif
             *w = video_width;
@@ -165,7 +165,7 @@ class PlayerEvents : public PlayerGetters {
 #ifndef __APPLE__
       vlc_media_player_.setVideoFormat("RGBA", video_width, video_height,
                                        pitch);
-#elif
+#else
       vlc_media_player_.setVideoFormat("RV32", video_width, video_height,
                                        pitch);
 #endif
