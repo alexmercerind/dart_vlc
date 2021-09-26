@@ -3,7 +3,7 @@
 [![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc)
 ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master)
   
-<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows, Linux & macOS.</h4>
+<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows, Linux, macOS & iOS.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_1.PNG?raw=true)
@@ -38,7 +38,7 @@ Consider supporting the project by starring the repository or buying me a coffee
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
-Thanks a lot for your support.
+Thanks a lot for your support. Android support is on its way.
 
 ## Documentation
 
@@ -190,7 +190,7 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
-By default, [Video] widget's frame size will adapt to the currently playing video.
+By default, `Video` widget's frame size will adapt to the currently playing video.
 To override this & define custom video frame size, pass `videoDimensions` argument while instanciating `Player` class as follows.
 
 ```dart
@@ -269,6 +269,18 @@ player.videoDimensionsStream.listen((VideoDimensions video) {
   video.width;
   video.height;
 });
+```
+
+Listen to buffering progress of the playing `Media`.
+
+```dart
+player.bufferingProgressStream.listen(
+  (double event) {
+    this.setState(() {
+      this.bufferingProgress = event;
+    });
+  },
+);
 ```
 
 #### Set an equalizer.
