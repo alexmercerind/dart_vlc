@@ -75,6 +75,10 @@ class PlayerEvents : public PlayerGetters {
     playlist_callback_ = callback;
   }
 
+  void OnBuffering(std::function<void(float)> callback) {
+    vlc_media_player_.eventManager().onBuffering(callback);
+  }
+
   void OnVideo(VideoFrameCallback callback) { video_callback_ = callback; }
 
  protected:
