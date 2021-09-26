@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dart_vlc_ffi: 
+  dart_vlc_ffi:
     path: ./ffi
   path: ">=1.8.0 <2.0.0"
   path_provider: ">=2.0.2 <3.0.0"
@@ -30,4 +30,3 @@ flutter:
         pluginClass: DartVlcPlugin
       ios:
         pluginClass: DartVlcPlugin
-
