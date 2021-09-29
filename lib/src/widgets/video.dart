@@ -152,7 +152,8 @@ class Video extends StatefulWidget {
   _VideoStateBase createState() => _VideoStateTexture();
 }
 
-abstract class _VideoStateBase extends State<Video> {
+abstract class _VideoStateBase extends State<Video>
+    with AutomaticKeepAliveClientMixin {
   GlobalKey<ControlState> controlKey = GlobalKey<ControlState>();
 
   int get playerId => widget.player.id;
@@ -166,32 +167,35 @@ abstract class _VideoStateBase extends State<Video> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: widget.width ?? double.infinity,
-        height: widget.height ?? double.infinity,
-        color: Colors.black,
-        child: widget.showControls
-            ? Control(
-                key: controlKey,
-                player: widget.player,
-                progressBarThumbRadius: widget.progressBarThumbRadius,
-                progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
-                progressBarActiveColor: widget.progressBarActiveColor,
-                progressBarInactiveColor: widget.progressBarInactiveColor,
-                progressBarThumbColor: widget.progressBarThumbColor,
-                progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
-                volumeActiveColor: widget.volumeActiveColor,
-                volumeInactiveColor: widget.volumeInactiveColor,
-                volumeBackgroundColor: widget.volumeBackgroundColor,
-                volumeThumbColor: widget.volumeThumbColor,
-                showTimeLeft: widget.showTimeLeft,
-                progressBarTextStyle: widget.progressBarTextStyle,
-                child: present())
-            : present());
+      width: widget.width ?? double.infinity,
+      height: widget.height ?? double.infinity,
+      color: Colors.black,
+      child: widget.showControls
+          ? Control(
+              key: controlKey,
+              player: widget.player,
+              progressBarThumbRadius: widget.progressBarThumbRadius,
+              progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
+              progressBarActiveColor: widget.progressBarActiveColor,
+              progressBarInactiveColor: widget.progressBarInactiveColor,
+              progressBarThumbColor: widget.progressBarThumbColor,
+              progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+              volumeActiveColor: widget.volumeActiveColor,
+              volumeInactiveColor: widget.volumeInactiveColor,
+              volumeBackgroundColor: widget.volumeBackgroundColor,
+              volumeThumbColor: widget.volumeThumbColor,
+              showTimeLeft: widget.showTimeLeft,
+              progressBarTextStyle: widget.progressBarTextStyle,
+              child: present(),
+            )
+          : present(),
+    );
   }
 
   Widget present();
 }
 
+/// Texture based Video playback.
 class _VideoStateTexture extends _VideoStateBase {
   StreamSubscription? _videoDimensionsSubscription;
   double? _videoWidth;
@@ -240,8 +244,13 @@ class _VideoStateTexture extends _VideoStateBase {
     _videoDimensionsSubscription?.cancel();
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
+/// NativePorts & decodeImageFromPixels based video playback.
+// ignore: unused_element
 class _VideoStateFallback extends _VideoStateBase {
   Widget? videoFrameRawImage;
 
@@ -290,4 +299,7 @@ class _VideoStateFallback extends _VideoStateBase {
         ? SizedBox.expand(child: ClipRect(child: videoFrameRawImage))
         : Container();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
