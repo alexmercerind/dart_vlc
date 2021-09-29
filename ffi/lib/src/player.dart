@@ -154,18 +154,33 @@ class Player {
       PlayerFFI.open(
           this.id,
           autoStart ? 1 : 0,
-          <String>[source.mediaType.toString(), source.resource]
-              .toNativeUtf8Array(),
+          <String>[
+            source.mediaType.toString(),
+            source.resource,
+            source.startTime.argument('start-time'),
+            source.stopTime.argument('stop-time'),
+          ].toNativeUtf8Array(),
           1);
     }
     if (source is Playlist) {
       List<String> medias = <String>[];
       source.medias.forEach((media) {
-        medias.add(media.mediaType.toString());
-        medias.add(media.resource);
+        medias.addAll(
+          <String>[
+            media.mediaType.toString(),
+            media.resource,
+            media.startTime.argument('start-time'),
+            media.stopTime.argument('stop-time'),
+          ],
+        );
       });
-      PlayerFFI.open(this.id, autoStart ? 1 : 0, medias.toNativeUtf8Array(),
-          source.medias.length);
+      print(medias);
+      PlayerFFI.open(
+        this.id,
+        autoStart ? 1 : 0,
+        medias.toNativeUtf8Array(),
+        source.medias.length,
+      );
     }
   }
 
@@ -206,54 +221,86 @@ class Player {
   /// Jumps to [Media] at specific index in the [Playlist] opened.
   /// Pass index as parameter.
   void jump(int index) {
-    PlayerFFI.jump(this.id, index);
+    PlayerFFI.jump(
+      this.id,
+      index,
+    );
   }
 
   /// Seeks the [Media] currently playing in the [Player] instance, to the provided [Duration].
   void seek(Duration duration) {
-    PlayerFFI.seek(this.id, duration.inMilliseconds);
+    PlayerFFI.seek(
+      this.id,
+      duration.inMilliseconds,
+    );
   }
 
   /// Sets volume of the [Player] instance.
   void setVolume(double volume) {
-    PlayerFFI.setVolume(this.id, volume);
+    PlayerFFI.setVolume(
+      this.id,
+      volume,
+    );
   }
 
   /// Sets playback rate of the [Media] currently playing in the [Player] instance.
   void setRate(double rate) {
-    PlayerFFI.setRate(this.id, rate);
+    PlayerFFI.setRate(
+      this.id,
+      rate,
+    );
   }
 
   /// Sets user agent for dart_vlc player.
   void setUserAgent(String userAgent) {
-    PlayerFFI.setUserAgent(this.id, userAgent.toNativeUtf8());
+    PlayerFFI.setUserAgent(
+      this.id,
+      userAgent.toNativeUtf8(),
+    );
   }
 
   /// Changes [Playlist] playback mode.
   void setPlaylistMode(PlaylistMode playlistMode) {
-    PlayerFFI.setPlaylistMode(this.id, playlistMode.toString().toNativeUtf8());
+    PlayerFFI.setPlaylistMode(
+      this.id,
+      playlistMode.toString().toNativeUtf8(),
+    );
   }
 
   /// Appends [Media] to the [Playlist] of the [Player] instance.
   void add(Media source) {
-    PlayerFFI.add(this.id, source.mediaType.toString().toNativeUtf8(),
-        source.resource.toString().toNativeUtf8());
+    PlayerFFI.add(
+      this.id,
+      source.mediaType.toString().toNativeUtf8(),
+      source.resource.toString().toNativeUtf8(),
+    );
   }
 
   /// Removes [Media] from the [Playlist] at a specific index.
   void remove(int index) {
-    PlayerFFI.remove(this.id, index);
+    PlayerFFI.remove(
+      this.id,
+      index,
+    );
   }
 
   /// Inserts [Media] to the [Playlist] of the [Player] instance at specific index.
   void insert(int index, Media source) {
-    PlayerFFI.insert(this.id, index, source.mediaType.toString().toNativeUtf8(),
-        source.resource.toString().toNativeUtf8());
+    PlayerFFI.insert(
+      this.id,
+      index,
+      source.mediaType.toString().toNativeUtf8(),
+      source.resource.toString().toNativeUtf8(),
+    );
   }
 
   /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
   void move(int initialIndex, int finalIndex) {
-    PlayerFFI.move(this.id, initialIndex, finalIndex);
+    PlayerFFI.move(
+      this.id,
+      initialIndex,
+      finalIndex,
+    );
   }
 
   /// Sets playback [Device] for the instance of [Player].
@@ -265,7 +312,10 @@ class Player {
   ///
   void setDevice(Device device) {
     PlayerFFI.setDevice(
-        this.id, device.id.toNativeUtf8(), device.name.toNativeUtf8());
+      this.id,
+      device.id.toNativeUtf8(),
+      device.name.toNativeUtf8(),
+    );
   }
 
   /// Sets [Equalizer] for the [Player].
@@ -275,7 +325,12 @@ class Player {
 
   /// Saves snapshot of a video to a desired [File] location.
   void takeSnapshot(File file, int width, int height) {
-    PlayerFFI.takeSnapshot(this.id, file.path.toNativeUtf8(), width, height);
+    PlayerFFI.takeSnapshot(
+      this.id,
+      file.path.toNativeUtf8(),
+      width,
+      height,
+    );
   }
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.

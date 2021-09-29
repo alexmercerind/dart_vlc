@@ -16,33 +16,56 @@ import 'package:dart_vlc_ffi/src/enums/mediaType.dart';
 /// * A [Media] from a [File].
 ///
 /// ```dart
-/// Media media = await Media.file(new File('C:/music.ogg'));
+/// Media media = Media.file(File('C:/music.ogg'));
 /// ```
 ///
 /// * A [Media] from a [Uri].
 ///
 /// ```dart
-/// Media media = await Media.network('http://alexmercerind.github.io/music.mp3');
+/// Media media = Media.network('http://alexmercerind.github.io/music.mp3');
 /// ```
 ///
+/// For starting a [Media] at particular time, one can pass `startTime`.
+///
+/// ```dart
+/// Media media = Media.file(
+///   File('C:/music.ogg'),
+///   startTime: Duration(milliseconds: 20),
+/// );
+/// ```
 ///
 class Media implements MediaSource {
   MediaSourceType get mediaSourceType => MediaSourceType.media;
   final MediaType mediaType;
   final String resource;
+  final Duration startTime;
+  final Duration stopTime;
   final Map<String, String> metas;
 
-  const Media._(
-      {required this.mediaType, required this.resource, required this.metas});
+  const Media._({
+    required this.mediaType,
+    required this.resource,
+    required this.metas,
+    this.startTime: Duration.zero,
+    this.stopTime: Duration.zero,
+  });
 
   /// Makes [Media] object from a [File].
-  static Media file(File file,
-      {bool parse: false,
-      Map<String, dynamic>? extras,
-      Duration timeout: const Duration(seconds: 10)}) {
-    final media =
-        Media._(mediaType: MediaType.file, resource: file.path, metas: {});
-
+  factory Media.file(
+    File file, {
+    bool parse: false,
+    Map<String, dynamic>? extras,
+    Duration timeout: const Duration(seconds: 10),
+    startTime: Duration.zero,
+    stopTime: Duration.zero,
+  }) {
+    final media = Media._(
+      mediaType: MediaType.file,
+      resource: file.path,
+      metas: {},
+      startTime: startTime,
+      stopTime: stopTime,
+    );
     if (parse) {
       media.parse(timeout);
     }
@@ -50,14 +73,22 @@ class Media implements MediaSource {
   }
 
   /// Makes [Media] object from url.
-  static Media network(dynamic url,
-      {bool parse: false,
-      Map<String, dynamic>? extras,
-      Duration timeout: const Duration(seconds: 10)}) {
+  factory Media.network(
+    dynamic url, {
+    bool parse: false,
+    Map<String, dynamic>? extras,
+    Duration timeout: const Duration(seconds: 10),
+    startTime: Duration.zero,
+    stopTime: Duration.zero,
+  }) {
     final resource = (url is Uri) ? url.toString() : url;
-    final Media media =
-        Media._(mediaType: MediaType.network, resource: resource, metas: {});
-
+    final Media media = Media._(
+      mediaType: MediaType.network,
+      resource: resource,
+      metas: {},
+      startTime: startTime,
+      stopTime: stopTime,
+    );
     if (parse) {
       media.parse(timeout);
     }
@@ -65,7 +96,7 @@ class Media implements MediaSource {
   }
 
   /// Makes [Media] object from direct show.
-  static Media directShow(
+  factory Media.directShow(
       {String? rawUrl,
       Map<String, dynamic>? args,
       String? vdev,
@@ -90,7 +121,10 @@ class Media implements MediaSource {
   /// This method only works for Flutter.
   /// Might result in an exception on Dart CLI.
   ///
-  static Media asset(String asset) {
+  factory Media.asset(
+    String asset, {
+    startTime: Duration.zero,
+  }) {
     String? assetPath;
     if (Platform.isWindows || Platform.isLinux) {
       assetPath = path.join(
@@ -119,12 +153,16 @@ class Media implements MediaSource {
       );
     }
     if (assetPath == null) {
-      // TODO: Add Android asset path support.
+      // TODO: Add Android support.
       throw UnimplementedError('The platform is not supported');
     }
     final url = Uri.file(assetPath, windows: Platform.isWindows);
     return Media._(
-        mediaType: MediaType.asset, resource: url.toString(), metas: {});
+      mediaType: MediaType.asset,
+      resource: url.toString(),
+      metas: {},
+      startTime: startTime,
+    );
   }
 
   /// Parses the [Media] to retrieve [Media.metas].
@@ -180,4 +218,10 @@ class Media implements MediaSource {
 
   @override
   String toString() => '[$mediaType]$resource';
+}
+
+extension DurationExtension on Duration {
+  String argument(String value) => this == Duration.zero
+      ? ''
+      : ':$value=${(inMilliseconds / 1000).toStringAsFixed(6)}';
 }
