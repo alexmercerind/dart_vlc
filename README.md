@@ -1,9 +1,9 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
 
-[![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc)
-![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master)
-  
-<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows, Linux, macOS & iOS.</h4>
+[![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) ![https://twitter.com/alexmercerind](https://img.shields.io/twitter/follow/alexmercerind)
+
+
+<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows, Linux & macOS.</h4>
 <h5 align="center">Written in C++ using libVLC & libVLC++.</h5>
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_1.PNG?raw=true)
@@ -36,7 +36,8 @@ Feel free to open a [new issue](https://github.com/alexmercerind/dart_vlc/issues
 
 Consider supporting the project by starring the repository or buying me a coffee.
 
-<a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind)
+[![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind)
 
 Thanks a lot for your support. Android support is on its way.
 
@@ -79,6 +80,13 @@ Media media1 = Media.asset(
 
 Media media2 = Media.network(
   'https://www.example.com/music.aac'
+);
+
+// Clip the media.
+Media media2 = Media.network(
+  'https://www.example.com/music.aac',
+  startTime: Duration(seconds: 20), // Start media from 20 seconds from the beginning.
+  stopTime: Duration(seconds: 60), // End media at 60 seconds from the beginning. 
 );
 ```
 
@@ -168,6 +176,12 @@ List<Device> devices = Devices.all;
 player.setDevice(
   devices[0],
 );
+```
+
+#### Save the video snapshot
+
+```dart
+player.takeSnapshot(file, 1920, 1080);
 ```
 
 #### Show the video inside widget tree.
@@ -375,7 +389,7 @@ sudo "/Applications/CMake.app/Contents/bin/cmake-gui" --install
 
 For using this plugin on Linux, you must have [VLC](https://www.videolan.org) & [libVLC](https://www.videolan.org/vlc/libvlc.html) installed. 
 
-On debian based distros:
+**On Ubuntu/Debian:**
 
 ```bash
 sudo apt-get install vlc
@@ -383,7 +397,8 @@ sudo apt-get install vlc
 ```bash
 sudo apt-get install libvlc-dev
 ```
-On Fedora:
+
+**On Fedora:**
 
 ```bash
 sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
@@ -396,7 +411,7 @@ sudo dnf install vlc
 sudo dnf install vlc-devel
 ```
 
-### iOS
+### iOS [WIP]
 
 Disable bitcode generation for the whole project for MobileVLC to work.
 Add the following to the `post_install` function living in the `Podfile` of your iOS Flutter project. For reference look at the `Podfile` in the example project.
@@ -469,6 +484,7 @@ Done
 - Adding headers for `Media.network` (Not possible, added user agent).
 - Switching to FFI for more cross platform freedom.
 - Changing `Video`'s frame size according to video.
+- Saving snapshot.
 
 Under progress or planned features (irrespective of order)...
 
