@@ -30,6 +30,8 @@ class Media : public MediaSource {
   std::string& media_type() { return media_type_; };
   std::string& resource() { return resource_; };
   std::string& location() { return location_; };
+  std::string& start_time() { return start_time_; };
+  std::string& stop_time() { return stop_time_; };
   std::map<std::string, std::string>& metas() { return metas_; };
 
   static std::shared_ptr<Media> create(std::string_view type,
@@ -45,21 +47,29 @@ class Media : public MediaSource {
   }
 
   static std::shared_ptr<Media> file(std::string path, bool parse = false,
-                                     int32_t timeout = 10000) {
+                                     int32_t timeout = 10000,
+                                     std::string start_time = "",
+                                     std::string stop_time = "") {
     std::shared_ptr<Media> media = std::make_shared<Media>();
     media->resource_ = path;
     media->location_ = "file:///" + path;
     media->media_type_ = kMediaTypeFile;
+    media->start_time_ = start_time;
+    media->stop_time_ = stop_time;
     if (parse) media->parse(timeout);
     return media;
   }
 
   static std::shared_ptr<Media> network(std::string url, bool parse = false,
-                                        int32_t timeout = 10000) {
+                                        int32_t timeout = 10000,
+                                        std::string start_time = "",
+                                        std::string stop_time = "") {
     std::shared_ptr<Media> media = std::make_shared<Media>();
     media->resource_ = url;
     media->location_ = url;
     media->media_type_ = kMediaTypeNetwork;
+    media->start_time_ = start_time;
+    media->stop_time_ = stop_time;
     if (parse) media->parse(timeout);
     return media;
   }
@@ -114,10 +124,12 @@ class Media : public MediaSource {
   std::string Type() { return "MediaSourceType.media"; }
 
  private:
-  std::string media_type_;
-  std::string resource_;
-  std::string location_;
-  std::map<std::string, std::string> metas_;
+  std::string media_type_ = "";
+  std::string resource_ = "";
+  std::string location_ = "";
+  std::string start_time_ = "";
+  std::string stop_time_ = "";
+  std::map<std::string, std::string> metas_ = {};
 };
 
 #endif

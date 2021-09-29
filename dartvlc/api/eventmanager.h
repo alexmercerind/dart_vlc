@@ -39,7 +39,7 @@ inline void OnPlayPauseStop(int32_t id, PlayerState* state) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "playbackEvent";
+  type_object.value.as_string = const_cast<char*>("playbackEvent");
 
   Dart_CObject is_playing_object;
   is_playing_object.type = Dart_CObject_kBool;
@@ -66,7 +66,7 @@ inline void OnPosition(int32_t id, PlayerState* state) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "positionEvent";
+  type_object.value.as_string = const_cast<char*>("positionEvent");
 
   Dart_CObject index_object;
   index_object.type = Dart_CObject_kInt32;
@@ -97,7 +97,7 @@ inline void OnComplete(int32_t id, PlayerState* state) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "completeEvent";
+  type_object.value.as_string = const_cast<char*>("completeEvent");
 
   Dart_CObject is_completed_object;
   is_completed_object.type = Dart_CObject_kBool;
@@ -120,7 +120,7 @@ inline void OnVolume(int32_t id, PlayerState* state) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "volumeEvent";
+  type_object.value.as_string = const_cast<char*>("volumeEvent");
 
   Dart_CObject volume_object;
   volume_object.type = Dart_CObject_kDouble;
@@ -142,7 +142,7 @@ inline void OnRate(int32_t id, PlayerState* state) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "rateEvent";
+  type_object.value.as_string = const_cast<char*>("rateEvent");
 
   Dart_CObject rate_object;
   rate_object.type = Dart_CObject_kDouble;
@@ -166,7 +166,7 @@ inline void OnOpen(int32_t id, PlayerState* state) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "openEvent";
+  type_object.value.as_string = const_cast<char*>("openEvent");
 
   Dart_CObject index_object;
   index_object.type = Dart_CObject_kInt32;
@@ -179,7 +179,7 @@ inline void OnOpen(int32_t id, PlayerState* state) {
   auto types_objects =
       std::unique_ptr<Dart_CObject[]>(new Dart_CObject[media_items.size()]);
   auto types_object_refs =
-      std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[media_items.size()]);
+      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[media_items.size()]);
   std::vector<std::string> types_str(media_items.size());
   std::vector<const char*> types_ptr(media_items.size());
   for (int32_t i = 0; i < media_items.size(); i++) {
@@ -198,7 +198,7 @@ inline void OnOpen(int32_t id, PlayerState* state) {
   auto resources_objects =
       std::unique_ptr<Dart_CObject[]>(new Dart_CObject[media_items.size()]);
   auto resources_object_refs =
-      std::unique_ptr<Dart_CObject*[]>(new Dart_CObject*[media_items.size()]);
+      std::unique_ptr<Dart_CObject* []>(new Dart_CObject*[media_items.size()]);
   std::vector<std::string> resources_str(media_items.size());
   std::vector<const char*> resources_ptr(media_items.size());
   for (int32_t i = 0; i < media_items.size(); i++) {
@@ -233,7 +233,7 @@ inline void OnVideoDimensions(int32_t id, int32_t video_width,
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "videoDimensionsEvent";
+  type_object.value.as_string = const_cast<char*>("videoDimensionsEvent");
 
   Dart_CObject video_width_object;
   video_width_object.type = Dart_CObject_kInt32;
@@ -260,7 +260,7 @@ inline void OnVideo(int32_t id, int size, uint8_t* frame) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "videoEvent";
+  type_object.value.as_string = const_cast<char*>("videoEvent");
 
   Dart_CObject frame_object;
   frame_object.type = Dart_CObject_kTypedData;
@@ -284,7 +284,7 @@ inline void OnBuffering(int32_t id, float buffering) {
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = "bufferingEvent";
+  type_object.value.as_string = const_cast<char*>("bufferingEvent");
 
   Dart_CObject buffering_object;
   buffering_object.type = Dart_CObject_kDouble;

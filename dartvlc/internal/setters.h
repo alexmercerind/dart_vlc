@@ -28,6 +28,12 @@ class PlayerSetters : public PlayerEvents {
           std::dynamic_pointer_cast<Media>(media_source);
       VLC::Media vlc_media = VLC::Media(vlc_instance_, media->location(),
                                         VLC::Media::FromLocation);
+      if (media->start_time() != "") {
+        vlc_media.addOption(media->start_time());
+      }
+      if (media->stop_time() != "") {
+        vlc_media.addOption(media->stop_time());
+      }
       vlc_media_list_.addMedia(vlc_media);
       vlc_media_list_player_.setMediaList(vlc_media_list_);
       state()->medias()->medias() = {media};
@@ -39,6 +45,12 @@ class PlayerSetters : public PlayerEvents {
       for (std::shared_ptr<Media>& media : playlist->medias()) {
         VLC::Media vlc_media = VLC::Media(vlc_instance_, media->location(),
                                           VLC::Media::FromLocation);
+        if (media->start_time() != "") {
+          vlc_media.addOption(media->start_time());
+        }
+        if (media->stop_time() != "") {
+          vlc_media.addOption(media->stop_time());
+        }
         vlc_media_list_.addMedia(vlc_media);
         state()->medias()->medias().emplace_back(media);
       }

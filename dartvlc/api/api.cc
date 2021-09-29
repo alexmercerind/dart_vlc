@@ -83,14 +83,16 @@ void PlayerOpen(int32_t id, bool auto_start, const char** source,
                 int32_t source_size) {
   std::vector<std::shared_ptr<Media>> medias{};
   Player* player = g_players->Get(id);
-  for (int32_t index = 0; index < 2 * source_size; index += 2) {
+  for (int32_t index = 0; index < 4 * source_size; index += 4) {
     std::shared_ptr<Media> media;
     const char* type = source[index];
     const char* resource = source[index + 1];
+    const char* start_time = source[index + 2];
+    const char* stop_time = source[index + 3];
     if (strcmp(type, "MediaType.file") == 0)
-      media = Media::file(resource, false);
+      media = Media::file(resource, false, 10000, start_time, stop_time);
     else if (strcmp(type, "MediaType.network") == 0)
-      media = Media::network(resource, false);
+      media = Media::network(resource, false, 10000, start_time, stop_time);
     else
       media = Media::directShow(resource);
     medias.emplace_back(media);
@@ -238,7 +240,7 @@ const char** MediaParse(Dart_Handle object, const char* type,
   Dart_NewFinalizableHandle_DL(
       object, reinterpret_cast<void*>(values), sizeof(values),
       static_cast<Dart_HandleFinalizer>(MediaClearVector));
-  for (const auto& [key, value] : *metas) {
+  for (const auto & [ key, value ] : *metas) {
     values->emplace_back(value.c_str());
   }
   return values->data();
@@ -310,7 +312,7 @@ DartDeviceList* DevicesAll(Dart_Handle object) {
 static DartEqualizer* EqualizerToDart(const Equalizer* equalizer, int32_t id,
                                       Dart_Handle dart_handle) {
   auto wrapper = new DartObjects::Equalizer();
-  for (const auto& [band, amp] : equalizer->band_amps()) {
+  for (const auto & [ band, amp ] : equalizer->band_amps()) {
     wrapper->bands.emplace_back(band);
     wrapper->amps.emplace_back(amp);
   }
