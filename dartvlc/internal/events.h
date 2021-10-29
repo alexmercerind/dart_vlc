@@ -124,7 +124,7 @@ class PlayerEvents : public PlayerGetters {
     int32_t video_width = 0;
     int32_t video_height = 0;
     if (preferred_video_width_.has_value() &&
-        preferred_video_width_.has_value()) {
+        preferred_video_height_.has_value()) {
       video_width = preferred_video_width_.value_or(0);
       video_height = preferred_video_height_.value_or(0);
     } else {
