@@ -26,8 +26,8 @@ class PlayerInternal {
   std::unique_ptr<PlayerState> state_ = nullptr;
   std::unique_ptr<uint8_t[]> video_frame_buffer_ =
       std::make_unique<uint8_t[]>(BUFFER_SIZE);
-  int32_t video_width_ = 0;
-  int32_t video_height_ = 0;
+  int32_t video_width_ = -1;
+  int32_t video_height_ = -1;
   std::optional<int32_t> preferred_video_width_ = std::nullopt;
   std::optional<int32_t> preferred_video_height_ = std::nullopt;
   bool is_playlist_modified_ = false;
