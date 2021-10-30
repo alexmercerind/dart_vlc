@@ -174,7 +174,6 @@ class Player {
           ],
         );
       });
-      print(medias);
       PlayerFFI.open(
         this.id,
         autoStart ? 1 : 0,
