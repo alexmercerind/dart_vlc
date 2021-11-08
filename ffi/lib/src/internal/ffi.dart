@@ -280,7 +280,12 @@ final ReceivePort receiver = new ReceivePort()
           break;
         }
       default:
-        break;
+        {
+          players[id]!.error = event[2];
+          if (!players[id]!.errorController.isClosed)
+            players[id]!.errorController.add(players[id]!.error);
+          break;
+        }
     }
   });
 

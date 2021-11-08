@@ -74,6 +74,12 @@ class Player {
   /// Stream to listen to current buffering progress of the [Media].
   late Stream<double> bufferingProgressStream;
 
+  /// Last error received.
+  String error = '';
+
+  /// Stream to listen to error events.
+  late Stream<String> errorStream;
+
   /// Creates a new [Player] instance.
   ///
   /// Takes unique id as parameter.
@@ -98,6 +104,8 @@ class Player {
     this.generalStream = this.generalController.stream;
     this.bufferingProgressController = StreamController<double>.broadcast();
     this.bufferingProgressStream = this.bufferingProgressController.stream;
+    this.errorController = StreamController<String>.broadcast();
+    this.errorStream = this.errorController.stream;
     if (videoDimensions != null) {
       this.videoDimensions = videoDimensions;
     }
@@ -340,6 +348,7 @@ class Player {
     this.generalController.close();
     this.videoDimensionsController.close();
     this.bufferingProgressController.close();
+    this.errorController.close();
     PlayerFFI.dispose(this.id);
   }
 
@@ -350,4 +359,5 @@ class Player {
   late StreamController<GeneralState> generalController;
   late StreamController<VideoDimensions> videoDimensionsController;
   late StreamController<double> bufferingProgressController;
+  late StreamController<String> errorController;
 }

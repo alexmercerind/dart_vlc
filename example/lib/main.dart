@@ -57,6 +57,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
           });
         },
       );
+      this.player.errorStream.listen((event) {
+        print('⚠️⚠️⚠️ libVLC error received.');
+      });
     }
   }
 
