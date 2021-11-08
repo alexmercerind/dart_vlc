@@ -75,6 +75,8 @@ void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
       [=](int32_t video_width, int32_t video_height) -> void {
         OnVideoDimensions(id, video_width, video_height);
       });
+  player->onError(
+      [=](std::string error) -> void { OnError(id, error.c_str()); });
 }
 
 void PlayerDispose(int32_t id) { g_players->Dispose(id); }

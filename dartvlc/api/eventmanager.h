@@ -299,6 +299,28 @@ inline void OnBuffering(int32_t id, float buffering) {
   g_dart_post_C_object(g_callback_port, &return_object);
 }
 
+inline void OnError(int32_t id, const char* error) {
+  Dart_CObject id_object;
+  id_object.type = Dart_CObject_kInt32;
+  id_object.value.as_int32 = id;
+
+  Dart_CObject type_object;
+  type_object.type = Dart_CObject_kString;
+  type_object.value.as_string = const_cast<char*>("errorEvent");
+
+  Dart_CObject error_object;
+  error_object.type = Dart_CObject_kString;
+  error_object.value.as_string = const_cast<char*>(error);
+
+  Dart_CObject* value_objects[] = {&id_object, &type_object, &error_object};
+
+  Dart_CObject return_object;
+  return_object.type = Dart_CObject_kArray;
+  return_object.value.as_array.length = 3;
+  return_object.value.as_array.values = value_objects;
+  g_dart_post_C_object(g_callback_port, &return_object);
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -126,6 +126,13 @@ class PlayerEvents : public PlayerGetters {
 
   void OnVideo(VideoFrameCallback callback) { video_callback_ = callback; }
 
+  void onError(std::function<void(std::string)> callback) {
+    vlc_media_player_.eventManager().onEncounteredError([=]() -> void {
+      auto error = libvlc_errmsg();
+      callback(error != NULL ? error : "");
+    });
+  }
+
  protected:
   std::function<void()> playlist_callback_ = [=]() -> void {};
 
