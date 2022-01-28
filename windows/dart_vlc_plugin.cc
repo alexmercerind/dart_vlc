@@ -61,7 +61,14 @@ DartVlcPlugin::DartVlcPlugin(
     flutter::TextureRegistrar* texture_registrar)
     : channel_(std::move(channel)), texture_registrar_(texture_registrar) {}
 
-DartVlcPlugin::~DartVlcPlugin() {}
+DartVlcPlugin::~DartVlcPlugin() {
+  // Clean up unreleased players when the flutter engine is destroyed to avoid crashes.
+  for (const auto& [player_id, outlet] : outlets_) {
+    Player* player = g_players->Get(player_id);
+    player->OnVideo(nullptr);
+    g_players->Dispose(player_id);
+  }
+}
 
 void DartVlcPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
