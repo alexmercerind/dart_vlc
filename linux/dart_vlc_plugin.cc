@@ -49,23 +49,25 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self,
           video_outlet_copy_pixels;
       fl_texture_registrar_register_texture(self->texture_registrar,
                                             FL_TEXTURE(it->second));
-      DART_VLC_VIDEO_OUTLET_GET_CLASS(it->second)->texture_id =
-          reinterpret_cast<int64_t>(FL_TEXTURE(it->second));
+
+      auto video_outlet_private = (VideoOutletPrivate*) video_outlet_get_instance_private(it->second);
+      video_outlet_private->texture_id = reinterpret_cast<int64_t>(FL_TEXTURE(it->second));
+
       Player* player = g_players->Get(player_id);
       player->OnVideo([texture_registrar = self->texture_registrar,
                        video_outlet_ptr = it->second,
-                       video_outlet_class_ptr = DART_VLC_VIDEO_OUTLET_GET_CLASS(
-                           it->second)](uint8_t* frame, int32_t width,
-                                        int32_t height) -> void {
-        video_outlet_class_ptr->buffer = frame;
-        video_outlet_class_ptr->video_width = width;
-        video_outlet_class_ptr->video_height = height;
+                       video_outlet_private = video_outlet_private](uint8_t* frame, int32_t width,
+                                                                    int32_t height) -> void {
+        video_outlet_private->buffer = frame;
+        video_outlet_private->video_width = width;
+        video_outlet_private->video_height = height;
         fl_texture_registrar_mark_texture_frame_available(
             texture_registrar, FL_TEXTURE(video_outlet_ptr));
       });
+
       response =
         FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_int(
-            DART_VLC_VIDEO_OUTLET_GET_CLASS(it->second)->texture_id)));
+            video_outlet_private->texture_id)));
     }
     
   } else if (strcmp(method_name, "PlayerUnregisterTexture") == 0) {
