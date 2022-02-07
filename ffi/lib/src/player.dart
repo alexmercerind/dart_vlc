@@ -340,6 +340,19 @@ class Player {
     );
   }
 
+  /// Sets Current Audio Track for the current [MediaSource]
+  void setAudioTrack(int track) {
+    return PlayerFFI.setAudioTrack(this.id, track);
+  }
+
+  /// Gets audio track count from current [MediaSource]
+  int audioTrackCount() {
+    int count = PlayerFFI.audioTrackCount(this.id);
+    // for some reason this value returns 0 when no tracks exists
+    // and 2 or more if there's 1 or more audio tracks for this [MediaSource].
+    return count > 1 ? count - 1 : count;
+  }
+
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.
   void dispose() {
     this.currentController.close();

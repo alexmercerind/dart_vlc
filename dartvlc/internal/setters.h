@@ -220,4 +220,12 @@ class PlayerSetters : public PlayerEvents {
   void SetVideoHeight(int32_t video_height) {
     preferred_video_height_ = video_height;
   }
+
+  void SetAudioTrack(int32_t track) {
+    vlc_media_player_.setAudioTrack(track);
+  }
+
+  int32_t AudioTrackCount() {
+    return vlc_media_player_.audioTrackCount();
+  }
 };

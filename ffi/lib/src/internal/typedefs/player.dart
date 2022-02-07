@@ -58,3 +58,7 @@ typedef PlayerTakeSnapshotCXX = Void Function(
     Int32 id, Pointer<Utf8> filePath, Int32 width, Int32 height);
 typedef PlayerTakeSnapshotDart = void Function(
     int id, Pointer<Utf8> filePath, int width, int height);
+typedef PlayerSetAudioTrackCXX = Void Function(Int32 id, Int32 index);
+typedef PlayerSetAudioTrackDart = void Function(int id, int index);
+typedef PlayerAudioTrackCountCXX = Int32 Function(Int32 id);
+typedef PlayerAudioTrackCountDart = int Function(int id);

@@ -91,6 +91,10 @@ DLLEXPORT void PlayerMove(int32_t id, int32_t initial_index,
 DLLEXPORT void PlayerTakeSnapshot(int32_t id, const char* file_path,
                                   int32_t width, int32_t height);
 
+DLLEXPORT void PlayerSetAudioTrack(int32_t id, int32_t track);
+
+DLLEXPORT int32_t PlayerAudioTrackCount(int32_t id);                                  
+
 DLLEXPORT const char** MediaParse(Dart_Handle object, const char* type,
                                   const char* resource, int32_t timeout);
 

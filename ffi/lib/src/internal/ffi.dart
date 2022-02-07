@@ -104,6 +104,14 @@ abstract class PlayerFFI {
   static final PlayerTakeSnapshotDart takeSnapshot = dynamicLibrary
       .lookup<NativeFunction<PlayerTakeSnapshotCXX>>('PlayerTakeSnapshot')
       .asFunction();
+
+  static final PlayerSetAudioTrackDart setAudioTrack = dynamicLibrary
+    .lookup<NativeFunction<PlayerSetAudioTrackCXX>>('PlayerSetAudioTrack')
+    .asFunction();
+
+  static final PlayerAudioTrackCountDart audioTrackCount = dynamicLibrary
+    .lookup<NativeFunction<PlayerAudioTrackCountCXX>>('PlayerAudioTrackCount')
+    .asFunction();
 }
 
 abstract class MediaFFI {

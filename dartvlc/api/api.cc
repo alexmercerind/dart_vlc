@@ -223,6 +223,16 @@ void PlayerTakeSnapshot(int32_t id, const char* file_path, int32_t width,
   player->TakeSnapshot(file_path, width, height);
 }
 
+void PlayerSetAudioTrack(int32_t id, int32_t track) {
+    Player* player = g_players->Get(id);
+    player->SetAudioTrack(track);
+}
+
+int32_t PlayerAudioTrackCount(int32_t id) {
+    Player* player = g_players->Get(id);
+    return player->AudioTrackCount();
+}
+
 void MediaClearMap(void*, void* peer) {
   delete reinterpret_cast<std::map<std::string, std::string>*>(peer);
 }
