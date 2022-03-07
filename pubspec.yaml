@@ -4,6 +4,7 @@ version: 0.1.8
 homepage: https://github.com/alexmercerind/dart_vlc
 repository: https://github.com/alexmercerind/dart_vlc
 documentation: https://github.com/alexmercerind/dart_vlc/blob/master/README.md
+publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -12,15 +13,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
-  dart_vlc_ffi:
-    git: https://github.com/zezo357/dart_vlc
-    path: ffi/
+
     
   path: ">=1.8.0 <2.0.0"
   path_provider: ">=2.0.2 <3.0.0"
   audio_video_progress_bar: ">=0.9.0 <1.0.0"
 
+  dart_vlc_ffi:
+    git:
+      url: https://github.com/zezo357/dart_vlc
+      path: ffi/
 flutter:
   # No platform channel implementation after migration to FFI.
   plugin:
