@@ -21,8 +21,8 @@ dependencies:
 
   dart_vlc_ffi:
     git:
-      url: https://github.com/zezo357/dart_vlc
-      path: ffi/
+      url: https://github.com/zezo357/dart_vlc.git
+      path: ffi
 flutter:
   # No platform channel implementation after migration to FFI.
   plugin:
