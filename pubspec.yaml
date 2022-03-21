@@ -12,8 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dart_vlc_ffi:
-    path: ./ffi
+  dart_vlc_ffi: ^0.1.5
   path: ">=1.8.0 <2.0.0"
   path_provider: ">=2.0.2 <3.0.0"
   audio_video_progress_bar: ">=0.9.0 <1.0.0"

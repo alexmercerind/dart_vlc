@@ -4,8 +4,8 @@ import 'package:ffi/ffi.dart';
 import 'package:path/path.dart' as path;
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/media_source/media_source.dart';
-import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
-import 'package:dart_vlc_ffi/src/enums/mediaType.dart';
+import 'package:dart_vlc_ffi/src/enums/media_source_type.dart';
+import 'package:dart_vlc_ffi/src/enums/media_type.dart';
 
 /// A media object to open inside a [Player].
 ///
