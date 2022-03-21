@@ -15,19 +15,20 @@ Map<int, StreamController<VideoFrame>> videoStreamControllers = {};
 
 /// Represents a [Video] frame, used for retriving frame through platform channel.
 class VideoFrame {
-  final int playerId;
-  final int videoWidth;
-  final int videoHeight;
-  final Uint8List byteArray;
-
   VideoFrame({
     required this.playerId,
     required this.videoWidth,
     required this.videoHeight,
     required this.byteArray,
   });
+
+  final int playerId;
+  final int videoWidth;
+  final int videoHeight;
+  final Uint8List byteArray;
 }
 
+/// {@template video}
 /// Widget for showing [Video] inside the [Widget] tree.
 /// Creation of [Player] instance is necessary as a controller, for this [Widget] to show [Video] output.
 ///
@@ -56,8 +57,36 @@ class VideoFrame {
 /// This [Widget] internally uses [StreamController].
 /// Prefer calling [Player.stop] & [Video.dispose] to freed the resources.
 /// A global [Key] may be used for this purpose.
-///
+/// {@endtemplate}
 class Video extends StatefulWidget {
+  /// {@macro video}
+  Video({
+    Key? key,
+    @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
+    Player? player,
+    this.width,
+    this.height,
+    this.fit: BoxFit.contain,
+    this.alignment: Alignment.center,
+    this.scale: 1.0,
+    this.showControls: true,
+    this.progressBarActiveColor,
+    this.progressBarInactiveColor = Colors.white24,
+    this.progressBarThumbColor,
+    this.progressBarThumbGlowColor = const Color.fromRGBO(0, 161, 214, .2),
+    this.volumeActiveColor,
+    this.volumeInactiveColor = Colors.grey,
+    this.volumeBackgroundColor = const Color(0xff424242),
+    this.volumeThumbColor,
+    this.progressBarThumbRadius = 10.0,
+    this.progressBarThumbGlowRadius = 15.0,
+    this.showTimeLeft = false,
+    this.progressBarTextStyle = const TextStyle(),
+    this.filterQuality = FilterQuality.low,
+    required this.playlistLength,
+  })  : player = player ?? players[playerId]! as Player,
+        super(key: key);
+
   /// The [Player] whose [Video] output should be shown.
   final Player player;
 
@@ -83,71 +112,52 @@ class Video extends StatefulWidget {
   /// Filter quality.
   final FilterQuality filterQuality;
 
-  // Built-In video controls.
+  /// Built-In video controls.
   final bool showControls;
 
-  // Radius of the progressbar's thumb
+  /// Radius of the progressbar's thumb
   final double? progressBarThumbRadius;
 
-  // Radius of the progressbar's glow of the thumb
+  /// Radius of the progressbar's glow of the thumb
   final double? progressBarThumbGlowRadius;
 
-  // Active color of the progress bar
+  /// Active color of the progress bar
   final Color? progressBarActiveColor;
 
-  // Inactive color of the progress bar
+  /// Inactive color of the progress bar
   final Color? progressBarInactiveColor;
 
-  // Thumb color of the progress bar
+  /// Thumb color of the progress bar
   final Color? progressBarThumbColor;
 
-  // Thumb's glow color of the progress bar
+  /// Thumb's glow color of the progress bar
   final Color? progressBarThumbGlowColor;
 
-  // TextStyle for the Progress Bar
+  /// TextStyle for the Progress Bar
   final TextStyle progressBarTextStyle;
 
-  // Active color of the volume slider
+  /// Active color of the volume slider
   final Color? volumeActiveColor;
 
-  // Inactive color of the volume slider
+  /// Inactive color of the volume slider
   final Color? volumeInactiveColor;
 
-  // Background color of the volume slider
+  /// Background color of the volume slider
   final Color volumeBackgroundColor;
 
-  // Thumb color of the volume slider
+  /// Thumb color of the volume slider
   final Color? volumeThumbColor;
 
-  // if you want the progress bar to display the time left while playing
-  // instead of the total time, set this to true
+  /// If you want the progress bar to display the time left while playing
+  /// instead of the total time, set this to true
   final bool showTimeLeft;
 
-  Video({
-    @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
-    Player? player,
-    this.width,
-    this.height,
-    this.fit: BoxFit.contain,
-    this.alignment: Alignment.center,
-    this.scale: 1.0,
-    this.showControls: true,
-    this.progressBarActiveColor,
-    this.progressBarInactiveColor = Colors.white24,
-    this.progressBarThumbColor,
-    this.progressBarThumbGlowColor = const Color.fromRGBO(0, 161, 214, .2),
-    this.volumeActiveColor,
-    this.volumeInactiveColor = Colors.grey,
-    this.volumeBackgroundColor = const Color(0xff424242),
-    this.volumeThumbColor,
-    this.progressBarThumbRadius = 10.0,
-    this.progressBarThumbGlowRadius = 15.0,
-    this.showTimeLeft = false,
-    this.progressBarTextStyle = const TextStyle(),
-    this.filterQuality = FilterQuality.low,
-    Key? key,
-  })  : player = player ?? players[playerId]! as Player,
-        super(key: key);
+  /// The length of the playlist of media being played.
+  ///
+  /// This is useful for determining whether or not to show the "skip next"
+  /// and "skip previous" control buttons - if there is only one media in
+  /// the playlist, the buttons will not be shown.
+  final int playlistLength;
 
   _VideoStateBase createState() => _VideoStateTexture();
 }
@@ -160,8 +170,8 @@ abstract class _VideoStateBase extends State<Video>
 
   @override
   void initState() {
-    if (widget.showControls) controls[playerId] = controlKey;
     super.initState();
+    if (widget.showControls) controls[playerId] = controlKey;
   }
 
   @override
@@ -186,6 +196,7 @@ abstract class _VideoStateBase extends State<Video>
               volumeThumbColor: widget.volumeThumbColor,
               showTimeLeft: widget.showTimeLeft,
               progressBarTextStyle: widget.progressBarTextStyle,
+              playlistLength: widget.playlistLength,
               child: present(),
             )
           : present(),
@@ -203,6 +214,7 @@ class _VideoStateTexture extends _VideoStateBase {
 
   @override
   void initState() {
+    super.initState();
     _videoDimensionsSubscription =
         widget.player.videoDimensionsStream.listen((dimensions) {
       setState(() {
@@ -210,7 +222,6 @@ class _VideoStateTexture extends _VideoStateBase {
         _videoHeight = dimensions.height.toDouble();
       });
     });
-    super.initState();
     if (mounted) setState(() {});
   }
 
@@ -221,21 +232,25 @@ class _VideoStateTexture extends _VideoStateBase {
           if (textureId == null ||
               _videoWidth == null ||
               _videoHeight == null) {
-            return Container();
+            return const SizedBox.shrink();
           }
 
           return SizedBox.expand(
-              child: ClipRect(
-                  child: FittedBox(
-                      alignment: widget.alignment,
-                      fit: widget.fit,
-                      child: SizedBox(
-                          width: _videoWidth,
-                          height: _videoHeight,
-                          child: Texture(
-                            textureId: textureId,
-                            filterQuality: widget.filterQuality,
-                          )))));
+            child: ClipRect(
+              child: FittedBox(
+                alignment: widget.alignment,
+                fit: widget.fit,
+                child: SizedBox(
+                  width: _videoWidth,
+                  height: _videoHeight,
+                  child: Texture(
+                    textureId: textureId,
+                    filterQuality: widget.filterQuality,
+                  ),
+                ),
+              ),
+            ),
+          );
         });
   }
 
@@ -275,13 +290,8 @@ class _VideoStateFallback extends _VideoStateBase {
   }
 
   @override
-  Future<void> dispose() async {
-    videoStreamControllers[playerId]?.close();
-    super.dispose();
-  }
-
-  @override
   void initState() {
+    super.initState();
     videoStreamControllers[playerId] = StreamController<VideoFrame>.broadcast();
     videoStreamControllers[playerId]
         ?.stream
@@ -290,14 +300,21 @@ class _VideoStateFallback extends _VideoStateBase {
       if (mounted && !(videoStreamControllers[playerId]?.isClosed ?? true))
         setState(() {});
     });
-    super.initState();
     if (mounted) setState(() {});
+  }
+
+  @override
+  Future<void> dispose() async {
+    videoStreamControllers[playerId]?.close();
+    super.dispose();
   }
 
   Widget present() {
     return videoFrameRawImage != null
-        ? SizedBox.expand(child: ClipRect(child: videoFrameRawImage))
-        : Container();
+        ? SizedBox.expand(
+            child: ClipRect(child: videoFrameRawImage),
+          )
+        : const SizedBox.shrink();
   }
 
   @override

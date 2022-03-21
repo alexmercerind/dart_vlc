@@ -17,15 +17,15 @@ class DartVLCExample extends StatefulWidget {
 class DartVLCExampleState extends State<DartVLCExample> {
   Player player = Player(id: 0);
   MediaType mediaType = MediaType.file;
-  CurrentState current = new CurrentState();
-  PositionState position = new PositionState();
-  PlaybackState playback = new PlaybackState();
-  GeneralState general = new GeneralState();
-  VideoDimensions videoDimensions = new VideoDimensions(0, 0);
+  CurrentState current = CurrentState();
+  PositionState position = PositionState();
+  PlaybackState playback = PlaybackState();
+  GeneralState general = GeneralState();
+  VideoDimensions videoDimensions = VideoDimensions(0, 0);
   List<Media> medias = <Media>[];
   List<Device> devices = <Device>[];
-  TextEditingController controller = new TextEditingController();
-  TextEditingController metasController = new TextEditingController();
+  TextEditingController controller = TextEditingController();
+  TextEditingController metasController = TextEditingController();
   double bufferingProgress = 0.0;
   Media? metasMedia;
 
@@ -46,15 +46,11 @@ class DartVLCExampleState extends State<DartVLCExample> {
         this.setState(() => this.general = general);
       });
       this.player.videoDimensionsStream.listen((videoDimensions) {
-        this.setState(() {
-          this.videoDimensions = videoDimensions;
-        });
+        this.setState(() => this.videoDimensions = videoDimensions);
       });
       this.player.bufferingProgressStream.listen(
         (bufferingProgress) {
-          this.setState(() {
-            this.bufferingProgress = bufferingProgress;
-          });
+          this.setState(() => this.bufferingProgress = bufferingProgress);
         },
       );
       this.player.errorStream.listen((event) {
@@ -102,7 +98,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
         ),
         body: ListView(
           shrinkWrap: true,
-          padding: EdgeInsets.all(4.0),
+          padding: const EdgeInsets.all(4.0),
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -118,6 +114,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                     height: isPhone ? 240 : 480,
                     volumeThumbColor: Colors.blue,
                     volumeActiveColor: Colors.blue,
+                    playlistLength: medias.length,
                   ),
                 ),
               ],
@@ -135,13 +132,13 @@ class DartVLCExampleState extends State<DartVLCExample> {
                       if (isPhone) _controls(context, isPhone),
                       Card(
                         elevation: 2.0,
-                        margin: EdgeInsets.all(4.0),
+                        margin: const EdgeInsets.all(4.0),
                         child: Container(
-                          margin: EdgeInsets.all(16.0),
+                          margin: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                                  Text('Playlist creation.'),
+                                  const Text('Playlist creation.'),
                                   Divider(
                                     height: 8.0,
                                     color: Colors.transparent,
@@ -154,11 +151,11 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                           controller: this.controller,
                                           cursorWidth: 1.0,
                                           autofocus: true,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14.0,
                                           ),
                                           decoration: InputDecoration.collapsed(
-                                            hintStyle: TextStyle(
+                                            hintStyle: const TextStyle(
                                               fontSize: 14.0,
                                             ),
                                             hintText: 'Enter Media path.',
@@ -177,7 +174,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                               value: MediaType.file,
                                               child: Text(
                                                 MediaType.file.toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 14.0,
                                                 ),
                                               ),
@@ -186,7 +183,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                               value: MediaType.network,
                                               child: Text(
                                                 MediaType.network.toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 14.0,
                                                 ),
                                               ),
@@ -195,7 +192,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                               value: MediaType.asset,
                                               child: Text(
                                                 MediaType.asset.toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 14.0,
                                                 ),
                                               ),
@@ -206,20 +203,24 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                       Padding(
                                         padding: EdgeInsets.only(left: 10.0),
                                         child: ElevatedButton(
-                                          onPressed: () async {
+                                          onPressed: () {
                                             if (this.mediaType ==
                                                 MediaType.file) {
                                               this.medias.add(
-                                                    Media.file(new File(
+                                                    Media.file(
+                                                      File(
                                                         controller.text
                                                             .replaceAll(
-                                                                '"', ''))),
+                                                                '"', ''),
+                                                      ),
+                                                    ),
                                                   );
                                             } else if (this.mediaType ==
                                                 MediaType.network) {
                                               this.medias.add(
                                                     Media.network(
-                                                        controller.text),
+                                                      controller.text,
+                                                    ),
                                                   );
                                             }
                                             this.setState(() {});
@@ -234,14 +235,14 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                       ),
                                     ],
                                   ),
-                                  Divider(
+                                  const Divider(
                                     height: 12.0,
                                   ),
-                                  Divider(
+                                  const Divider(
                                     height: 8.0,
                                     color: Colors.transparent,
                                   ),
-                                  Text('Playlist'),
+                                  const Text('Playlist'),
                                 ] +
                                 this
                                     .medias
@@ -249,13 +250,13 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                       (media) => ListTile(
                                         title: Text(
                                           media.resource,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14.0,
                                           ),
                                         ),
                                         subtitle: Text(
                                           media.mediaType.toString(),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14.0,
                                           ),
                                         ),
@@ -263,36 +264,40 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                     )
                                     .toList() +
                                 <Widget>[
-                                  Divider(
+                                  const Divider(
                                     height: 8.0,
                                     color: Colors.transparent,
                                   ),
                                   Row(
                                     children: [
                                       ElevatedButton(
-                                        onPressed: () => this.setState(() {
-                                          this.player.open(
-                                                new Playlist(
+                                        onPressed: () => this.setState(
+                                          () {
+                                            this.player.open(
+                                                  Playlist(
                                                     medias: this.medias,
                                                     playlistMode:
-                                                        PlaylistMode.single),
-                                              );
-                                        }),
+                                                        PlaylistMode.single,
+                                                  ),
+                                                );
+                                          },
+                                        ),
                                         child: Text(
                                           'Open into Player',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14.0,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 12.0),
+                                      const SizedBox(width: 12.0),
                                       ElevatedButton(
-                                        onPressed: () => this.setState(() {
-                                          this.medias.clear();
-                                        }),
+                                        onPressed: () {
+                                          this.setState(
+                                              () => this.medias.clear());
+                                        },
                                         child: Text(
                                           'Clear the list',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14.0,
                                           ),
                                         ),
@@ -305,98 +310,125 @@ class DartVLCExampleState extends State<DartVLCExample> {
                       ),
                       Card(
                         elevation: 2.0,
-                        margin: EdgeInsets.all(4.0),
+                        margin: const EdgeInsets.all(4.0),
                         child: Container(
-                          margin: EdgeInsets.all(16.0),
+                          margin: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Playback event listeners.'),
-                              Divider(
+                              const Text('Playback event listeners.'),
+                              const Divider(
                                 height: 12.0,
                                 color: Colors.transparent,
                               ),
-                              Divider(
+                              const Divider(
                                 height: 12.0,
                               ),
-                              Text('Playback position.'),
-                              Divider(
+                              const Text('Playback position.'),
+                              const Divider(
                                 height: 8.0,
                                 color: Colors.transparent,
                               ),
                               Slider(
-                                  min: 0,
-                                  max: this
-                                          .position
-                                          .duration
-                                          ?.inMilliseconds
-                                          .toDouble() ??
-                                      1.0,
-                                  value: this
-                                          .position
-                                          .position
-                                          ?.inMilliseconds
-                                          .toDouble() ??
-                                      0.0,
-                                  onChanged: (double position) => this
-                                      .player
-                                      .seek(Duration(
-                                          milliseconds: position.toInt()))),
-                              Text('Event streams.'),
-                              Divider(
+                                min: 0,
+                                max: this
+                                        .position
+                                        .duration
+                                        ?.inMilliseconds
+                                        .toDouble() ??
+                                    1.0,
+                                value: this
+                                        .position
+                                        .position
+                                        ?.inMilliseconds
+                                        .toDouble() ??
+                                    0.0,
+                                onChanged: (double position) =>
+                                    this.player.seek(
+                                          Duration(
+                                            milliseconds: position.toInt(),
+                                          ),
+                                        ),
+                              ),
+                              const Text('Event streams.'),
+                              const Divider(
                                 height: 8.0,
                                 color: Colors.transparent,
                               ),
                               Table(
                                 children: [
-                                  TableRow(children: [
-                                    Text('player.general.volume'),
-                                    Text('${this.general.volume}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.general.rate'),
-                                    Text('${this.general.rate}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.position.position'),
-                                    Text('${this.position.position}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.position.duration'),
-                                    Text('${this.position.duration}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.playback.isCompleted'),
-                                    Text('${this.playback.isCompleted}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.playback.isPlaying'),
-                                    Text('${this.playback.isPlaying}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.playback.isSeekable'),
-                                    Text('${this.playback.isSeekable}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.current.index'),
-                                    Text('${this.current.index}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.current.media'),
-                                    Text('${this.current.media}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.current.medias'),
-                                    Text('${this.current.medias}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.videoDimensions'),
-                                    Text('${this.videoDimensions}')
-                                  ]),
-                                  TableRow(children: [
-                                    Text('player.bufferingProgress'),
-                                    Text('${this.bufferingProgress}')
-                                  ]),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.general.volume'),
+                                      Text('${this.general.volume}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.general.rate'),
+                                      Text('${this.general.rate}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.position.position'),
+                                      Text('${this.position.position}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.position.duration'),
+                                      Text('${this.position.duration}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.playback.isCompleted'),
+                                      Text('${this.playback.isCompleted}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.playback.isPlaying'),
+                                      Text('${this.playback.isPlaying}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.playback.isSeekable'),
+                                      Text('${this.playback.isSeekable}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.current.index'),
+                                      Text('${this.current.index}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.current.media'),
+                                      Text('${this.current.media}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.current.medias'),
+                                      Text('${this.current.medias}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.videoDimensions'),
+                                      Text('${this.videoDimensions}')
+                                    ],
+                                  ),
+                                  TableRow(
+                                    children: [
+                                      const Text('player.bufferingProgress'),
+                                      Text('${this.bufferingProgress}')
+                                    ],
+                                  ),
                                 ],
                               ),
                             ],
@@ -405,12 +437,12 @@ class DartVLCExampleState extends State<DartVLCExample> {
                       ),
                       Card(
                         elevation: 2.0,
-                        margin: EdgeInsets.all(4.0),
+                        margin: const EdgeInsets.all(4.0),
                         child: Container(
-                          margin: EdgeInsets.all(16.0),
+                          margin: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: const [
                                   Text('Playback devices.'),
                                   Divider(
                                     height: 12.0,
@@ -423,16 +455,16 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                 this
                                     .devices
                                     .map(
-                                      (device) => new ListTile(
+                                      (device) => ListTile(
                                         title: Text(
                                           device.name,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14.0,
                                           ),
                                         ),
                                         subtitle: Text(
                                           device.id,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14.0,
                                           ),
                                         ),
@@ -446,13 +478,13 @@ class DartVLCExampleState extends State<DartVLCExample> {
                       ),
                       Card(
                         elevation: 2.0,
-                        margin: EdgeInsets.all(4.0),
+                        margin: const EdgeInsets.all(4.0),
                         child: Container(
-                          margin: EdgeInsets.all(16.0),
+                          margin: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Metas parsing.'),
+                              const Text('Metas parsing.'),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -461,11 +493,11 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                       controller: this.metasController,
                                       cursorWidth: 1.0,
                                       autofocus: true,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 14.0,
                                       ),
                                       decoration: InputDecoration.collapsed(
-                                        hintStyle: TextStyle(
+                                        hintStyle: const TextStyle(
                                           fontSize: 14.0,
                                         ),
                                         hintText: 'Enter Media path.',
@@ -483,7 +515,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                           value: MediaType.file,
                                           child: Text(
                                             MediaType.file.toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 14.0,
                                             ),
                                           ),
@@ -492,7 +524,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                           value: MediaType.network,
                                           child: Text(
                                             MediaType.network.toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 14.0,
                                             ),
                                           ),
@@ -501,7 +533,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                           value: MediaType.asset,
                                           child: Text(
                                             MediaType.asset.toString(),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 14.0,
                                             ),
                                           ),
@@ -512,21 +544,22 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                   Padding(
                                     padding: EdgeInsets.only(left: 16.0),
                                     child: ElevatedButton(
-                                      onPressed: () async {
+                                      onPressed: () {
                                         if (this.mediaType == MediaType.file) {
                                           this.metasMedia = Media.file(
-                                              new File(
-                                                  this.metasController.text),
-                                              parse: true);
+                                            File(this.metasController.text),
+                                            parse: true,
+                                          );
                                         } else if (this.mediaType ==
                                             MediaType.network) {
                                           this.metasMedia = Media.network(
-                                              this.metasController.text,
-                                              parse: true);
+                                            this.metasController.text,
+                                            parse: true,
+                                          );
                                         }
                                         this.setState(() {});
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         'Parse',
                                         style: TextStyle(
                                           fontSize: 14.0,
@@ -536,10 +569,10 @@ class DartVLCExampleState extends State<DartVLCExample> {
                                   ),
                                 ],
                               ),
-                              Divider(
+                              const Divider(
                                 height: 12.0,
                               ),
-                              Divider(
+                              const Divider(
                                 height: 8.0,
                                 color: Colors.transparent,
                               ),
@@ -577,14 +610,14 @@ class DartVLCExampleState extends State<DartVLCExample> {
   Widget _controls(BuildContext context, bool isPhone) {
     return Card(
       elevation: 2.0,
-      margin: EdgeInsets.all(4.0),
+      margin: const EdgeInsets.all(4.0),
       child: Container(
-        margin: EdgeInsets.all(16.0),
+        margin: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Playback controls.'),
-            Divider(
+            const Text('Playback controls.'),
+            const Divider(
               height: 8.0,
               color: Colors.transparent,
             ),
@@ -592,64 +625,64 @@ class DartVLCExampleState extends State<DartVLCExample> {
               children: [
                 ElevatedButton(
                   onPressed: () => this.player.play(),
-                  child: Text(
+                  child: const Text(
                     'play',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),
                   ),
                 ),
-                SizedBox(width: 12.0),
+                const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () => this.player.pause(),
-                  child: Text(
+                  child: const Text(
                     'pause',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),
                   ),
                 ),
-                SizedBox(width: 12.0),
+                const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () => this.player.playOrPause(),
-                  child: Text(
+                  child: const Text(
                     'playOrPause',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),
                   ),
                 ),
-                SizedBox(width: 12.0),
+                const SizedBox(width: 12.0),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8.0,
             ),
             Row(
               children: [
                 ElevatedButton(
                   onPressed: () => this.player.stop(),
-                  child: Text(
+                  child: const Text(
                     'stop',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),
                   ),
                 ),
-                SizedBox(width: 12.0),
+                const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () => this.player.next(),
-                  child: Text(
+                  child: const Text(
                     'next',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),
                   ),
                 ),
-                SizedBox(width: 12.0),
+                const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () => this.player.back(),
-                  child: Text(
+                  child: const Text(
                     'back',
                     style: TextStyle(
                       fontSize: 14.0,
@@ -658,15 +691,15 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 ),
               ],
             ),
-            Divider(
+            const Divider(
               height: 12.0,
               color: Colors.transparent,
             ),
-            Divider(
+            const Divider(
               height: 12.0,
             ),
-            Text('Volume control.'),
-            Divider(
+            const Text('Volume control.'),
+            const Divider(
               height: 8.0,
               color: Colors.transparent,
             ),
@@ -679,8 +712,8 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 this.setState(() {});
               },
             ),
-            Text('Playback rate control.'),
-            Divider(
+            const Text('Playback rate control.'),
+            const Divider(
               height: 8.0,
               color: Colors.transparent,
             ),
@@ -702,17 +735,17 @@ class DartVLCExampleState extends State<DartVLCExample> {
   Widget _playlist(BuildContext context) {
     return Card(
       elevation: 2.0,
-      margin: EdgeInsets.all(4.0),
+      margin: const EdgeInsets.all(4.0),
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: EdgeInsets.only(left: 16.0, top: 16.0),
+              margin: const EdgeInsets.only(left: 16.0, top: 16.0),
               alignment: Alignment.topLeft,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: const [
                   Text('Playlist manipulation.'),
                   Divider(
                     height: 12.0,
@@ -752,19 +785,19 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 children: List.generate(
                   this.current.medias.length,
-                  (int index) => new ListTile(
+                  (int index) => ListTile(
                     key: Key(index.toString()),
                     leading: Text(
                       index.toString(),
-                      style: TextStyle(fontSize: 14.0),
+                      style: const TextStyle(fontSize: 14.0),
                     ),
                     title: Text(
                       this.current.medias[index].resource,
-                      style: TextStyle(fontSize: 14.0),
+                      style: const TextStyle(fontSize: 14.0),
                     ),
                     subtitle: Text(
                       this.current.medias[index].mediaType.toString(),
-                      style: TextStyle(fontSize: 14.0),
+                      style: const TextStyle(fontSize: 14.0),
                     ),
                   ),
                   growable: true,

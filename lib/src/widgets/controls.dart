@@ -7,22 +7,8 @@ import 'package:dart_vlc_ffi/src/player.dart';
 import 'package:dart_vlc_ffi/src/playerState/playerState.dart';
 
 class Control extends StatefulWidget {
-  final Widget child;
-  final Player player;
-  final bool? showTimeLeft;
-  final double? progressBarThumbRadius;
-  final double? progressBarThumbGlowRadius;
-  final Color? progressBarActiveColor;
-  final Color? progressBarInactiveColor;
-  final Color? progressBarThumbColor;
-  final Color? progressBarThumbGlowColor;
-  final TextStyle? progressBarTextStyle;
-  final Color? volumeActiveColor;
-  final Color? volumeInactiveColor;
-  final Color? volumeBackgroundColor;
-  final Color? volumeThumbColor;
-
   Control({
+    Key? key,
     required this.child,
     required this.player,
     required this.showTimeLeft,
@@ -37,8 +23,24 @@ class Control extends StatefulWidget {
     required this.volumeInactiveColor,
     required this.volumeBackgroundColor,
     required this.volumeThumbColor,
-    Key? key,
+    required this.playlistLength,
   }) : super(key: key);
+
+  final Widget child;
+  final Player player;
+  final bool? showTimeLeft;
+  final double? progressBarThumbRadius;
+  final double? progressBarThumbGlowRadius;
+  final Color? progressBarActiveColor;
+  final Color? progressBarInactiveColor;
+  final Color? progressBarThumbColor;
+  final Color? progressBarThumbGlowColor;
+  final TextStyle? progressBarTextStyle;
+  final Color? volumeActiveColor;
+  final Color? volumeInactiveColor;
+  final Color? volumeBackgroundColor;
+  final Color? volumeThumbColor;
+  final int playlistLength;
 
   @override
   ControlState createState() => ControlState();
@@ -85,16 +87,12 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
       onTap: () {
         if (player.playback.isPlaying) {
           if (_displayTapped) {
-            setState(() {
-              _hideControls = true;
-            });
+            setState(() => _hideControls = true);
           } else {
             _cancelAndRestartTimer();
           }
         } else {
-          setState(() {
-            _hideControls = true;
-          });
+          setState(() => _hideControls = true);
         }
       },
       child: MouseRegion(
@@ -179,12 +177,13 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            color: Colors.white,
-                            iconSize: 30,
-                            icon: Icon(Icons.skip_previous),
-                            onPressed: () => player.back(),
-                          ),
+                          if (widget.playlistLength > 1)
+                            IconButton(
+                              color: Colors.white,
+                              iconSize: 30,
+                              icon: Icon(Icons.skip_previous),
+                              onPressed: () => player.back(),
+                            ),
                           SizedBox(width: 50),
                           IconButton(
                               color: Colors.white,
@@ -239,12 +238,13 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                 }
                               }),
                           SizedBox(width: 50),
-                          IconButton(
-                            color: Colors.white,
-                            iconSize: 30,
-                            icon: Icon(Icons.skip_next),
-                            onPressed: () => player.next(),
-                          ),
+                          if (widget.playlistLength > 1)
+                            IconButton(
+                              color: Colors.white,
+                              iconSize: 30,
+                              icon: Icon(Icons.skip_next),
+                              onPressed: () => player.next(),
+                            ),
                         ],
                       ),
                     ),
