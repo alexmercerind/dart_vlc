@@ -1,4 +1,4 @@
-## 0.1.5
+## 0.1.5+1
 
 - Update equivalent Dart code & example
 - Added support for setting current audio track and getting audio track count
