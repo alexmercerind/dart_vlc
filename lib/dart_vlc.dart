@@ -49,16 +49,17 @@ final MethodChannel _channel = MethodChannel('dart_vlc');
 class Player extends FFI.Player {
   final ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
 
-  Player(
-      {required int id,
-      FFI.VideoDimensions? videoDimensions,
-      List<String>? commandlineArguments})
-      : super(
+  Player({
+    required int id,
+    FFI.VideoDimensions? videoDimensions,
+    List<String>? commandlineArguments,
+  }) : super(
             id: id,
             videoDimensions: videoDimensions,
             commandlineArguments: commandlineArguments) {
     () async {
-      textureId.value = await _channel.invokeMethod('PlayerRegisterTexture', {'playerId': id});
+      textureId.value = await _channel
+          .invokeMethod('PlayerRegisterTexture', {'playerId': id});
     }();
   }
 
@@ -78,18 +79,20 @@ class Player extends FFI.Player {
 ///   runApp(MyApp());
 /// }
 /// ```
-///
 abstract class DartVLC {
   static void initialize() {
     FFI.videoFrameCallback = (int playerId, Uint8List videoFrame) {
       if (videoStreamControllers[playerId] != null &&
           FFI.players[playerId] != null) {
         if (!videoStreamControllers[playerId]!.isClosed) {
-          videoStreamControllers[playerId]!.add(VideoFrame(
+          videoStreamControllers[playerId]!.add(
+            VideoFrame(
               playerId: playerId,
               videoWidth: FFI.players[playerId]!.videoDimensions.width,
               videoHeight: FFI.players[playerId]!.videoDimensions.height,
-              byteArray: videoFrame));
+              byteArray: videoFrame,
+            ),
+          );
         }
       }
     };
@@ -103,10 +106,11 @@ abstract class DartVLC {
       FFI.DartVLC.initialize(libraryPath);
     } else if (Platform.isMacOS) {
       final libraryPath = path.join(
-          path.dirname(path.dirname(Platform.resolvedExecutable)),
-          'Frameworks',
-          'dart_vlc.framework',
-          'dart_vlc');
+        path.dirname(path.dirname(Platform.resolvedExecutable)),
+        'Frameworks',
+        'dart_vlc.framework',
+        'dart_vlc',
+      );
       FFI.DartVLC.initialize(libraryPath);
     } else if (Platform.isIOS) {
       final libraryPath = path.join(

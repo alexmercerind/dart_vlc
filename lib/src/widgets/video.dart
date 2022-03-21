@@ -175,6 +175,7 @@ abstract class _VideoStateBase extends State<Video>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       width: widget.width ?? double.infinity,
       height: widget.height ?? double.infinity,
@@ -226,31 +227,30 @@ class _VideoStateTexture extends _VideoStateBase {
 
   Widget present() {
     return ValueListenableBuilder<int?>(
-        valueListenable: widget.player.textureId,
-        builder: (context, textureId, _) {
-          if (textureId == null ||
-              _videoWidth == null ||
-              _videoHeight == null) {
-            return const SizedBox.shrink();
-          }
+      valueListenable: widget.player.textureId,
+      builder: (context, textureId, _) {
+        if (textureId == null || _videoWidth == null || _videoHeight == null) {
+          return const SizedBox.shrink();
+        }
 
-          return SizedBox.expand(
-            child: ClipRect(
-              child: FittedBox(
-                alignment: widget.alignment,
-                fit: widget.fit,
-                child: SizedBox(
-                  width: _videoWidth,
-                  height: _videoHeight,
-                  child: Texture(
-                    textureId: textureId,
-                    filterQuality: widget.filterQuality,
-                  ),
+        return SizedBox.expand(
+          child: ClipRect(
+            child: FittedBox(
+              alignment: widget.alignment,
+              fit: widget.fit,
+              child: SizedBox(
+                width: _videoWidth,
+                height: _videoHeight,
+                child: Texture(
+                  textureId: textureId,
+                  filterQuality: widget.filterQuality,
                 ),
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   @override
