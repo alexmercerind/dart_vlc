@@ -2,6 +2,8 @@
 
 - Add `playlistLength` value to ensure the "skip next" and "skip previous" buttons do not render if there is only one `Media` in a `Playlist`. (@GroovinChip)
 - Update `dart_vlc.podspec` to ensure the correct Pods path on macOS. NOTE: This is based on Flutter's `stable` channel. (@GroovinChip)
+- Added support for setting current audio track and getting audio track count (@exts)
+- (linux) store texture info in instance data instead of class data (@hansihe)
 
 ## 0.1.8
 
