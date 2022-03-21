@@ -14,7 +14,7 @@ import 'package:dart_vlc_ffi/src/internal/typedefs/chromecast.dart';
 
 /// NOTE: Here for sending event callbacks.
 import 'package:dart_vlc_ffi/src/player.dart';
-import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
+import 'package:dart_vlc_ffi/src/media_source/media.dart';
 
 abstract class PlayerFFI {
   static final PlayerCreateDart create = dynamicLibrary

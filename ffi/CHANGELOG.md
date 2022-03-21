@@ -1,3 +1,8 @@
+## 0.1.5
+
+- Update equivalent Dart code & example
+- Added support for setting current audio track and getting audio track count
+
 ## 0.1.4
 
 - Fix OnOpen callback

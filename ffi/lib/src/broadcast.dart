@@ -1,6 +1,6 @@
 import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
-import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
+import 'package:dart_vlc_ffi/src/media_source/media.dart';
 
 /// Internally used class to avoid direct creation of the object of a [Broadcast] class.
 class _Broadcast extends Broadcast {}

@@ -1,7 +1,7 @@
 import 'package:dart_vlc_ffi/src/enums/playlistMode.dart';
 import 'package:dart_vlc_ffi/src/internal/utils.dart';
-import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
-import 'package:dart_vlc_ffi/src/mediaSource/mediaSource.dart';
+import 'package:dart_vlc_ffi/src/media_source/media.dart';
+import 'package:dart_vlc_ffi/src/media_source/media_source.dart';
 import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
 
 /// A playlist object to open inside a [Player.open].

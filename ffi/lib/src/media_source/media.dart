@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:path/path.dart' as path;
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
-import 'package:dart_vlc_ffi/src/mediaSource/mediaSource.dart';
+import 'package:dart_vlc_ffi/src/media_source/media_source.dart';
 import 'package:dart_vlc_ffi/src/enums/mediaSourceType.dart';
 import 'package:dart_vlc_ffi/src/enums/mediaType.dart';
 

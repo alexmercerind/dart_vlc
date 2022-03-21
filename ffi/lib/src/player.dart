@@ -26,7 +26,7 @@ Map<int, Player> players = {};
 /// Provide a unique [id] while instanciating.
 ///
 /// ```dart
-/// Player player = new Player(id: 0);
+/// Player player = Player(id: 0);
 /// ```
 ///
 /// Use various methods & event streams available to control & listen to events of the playback.
@@ -39,31 +39,31 @@ class Player {
   List<String> commandlineArguments = <String>[];
 
   /// State of the current & opened [MediaSource] in [Player] instance.
-  CurrentState current = new CurrentState();
+  CurrentState current = CurrentState();
 
   /// Stream to listen to current & opened [MediaSource] state of the [Player] instance.
   late Stream<CurrentState> currentStream;
 
   /// Position & duration state of the [Player] instance.
-  PositionState position = new PositionState();
+  PositionState position = PositionState();
 
   /// Stream to listen to position & duration state of the [Player] instance.
   late Stream<PositionState> positionStream;
 
   /// Playback state of the [Player] instance.
-  PlaybackState playback = new PlaybackState();
+  PlaybackState playback = PlaybackState();
 
   /// Stream to listen to playback state of the [Player] instance.
   late Stream<PlaybackState> playbackStream;
 
   /// Volume & Rate state of the [Player] instance.
-  GeneralState general = new GeneralState();
+  GeneralState general = GeneralState();
 
   /// Stream to listen to volume & rate state of the [Player] instance.
   late Stream<GeneralState> generalStream;
 
   /// Dimensions of the currently playing video.
-  VideoDimensions videoDimensions = new VideoDimensions(0, 0);
+  VideoDimensions videoDimensions = VideoDimensions(0, 0);
 
   /// Stream to listen to dimensions of currently playing video.
   late Stream<VideoDimensions> videoDimensionsStream;
@@ -85,7 +85,7 @@ class Player {
   /// Takes unique id as parameter.
   ///
   /// ```dart
-  /// Player player = new Player(id: 0);
+  /// Player player = Player(id: 0);
   /// ```
   ///
   Player(
@@ -133,7 +133,7 @@ class Player {
   /// ```dart
   /// player.open(
   ///   Media.file(
-  ///     new File('C:/music.ogg'),
+  ///     File('C:/music.ogg'),
   ///   ),
   ///   autoStart: false,
   /// );
@@ -143,13 +143,13 @@ class Player {
   ///
   /// ```dart
   /// player.open(
-  ///   new Playlist(
+  ///   Playlist(
   ///     medias: [
   ///       Media.file(
-  ///         new File('C:/music.mp3'),
+  ///         File('C:/music.mp3'),
   ///       ),
   ///       Media.file(
-  ///         new File('C:/audio.mp3'),
+  ///         File('C:/audio.mp3'),
   ///       ),
   ///       Media.network('https://alexmercerind.github.io/music.mp3'),
   ///     ],
