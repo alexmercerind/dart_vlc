@@ -1,13 +1,20 @@
-/*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
- * libVLC++.
- *
- * Hitesh Kumar Saini
- * https://github.com/alexmercerind
- * alexmercerind@gmail.com
- *
- * GNU Lesser General Public License v2.1
- */
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "api.h"
 
@@ -224,13 +231,13 @@ void PlayerTakeSnapshot(int32_t id, const char* file_path, int32_t width,
 }
 
 void PlayerSetAudioTrack(int32_t id, int32_t track) {
-    Player* player = g_players->Get(id);
-    player->SetAudioTrack(track);
+  Player* player = g_players->Get(id);
+  player->SetAudioTrack(track);
 }
 
 int32_t PlayerAudioTrackCount(int32_t id) {
-    Player* player = g_players->Get(id);
-    return player->AudioTrackCount();
+  Player* player = g_players->Get(id);
+  return player->AudioTrackCount();
 }
 
 void MediaClearMap(void*, void* peer) {
@@ -252,7 +259,7 @@ const char** MediaParse(Dart_Handle object, const char* type,
   Dart_NewFinalizableHandle_DL(
       object, reinterpret_cast<void*>(values), sizeof(values),
       static_cast<Dart_HandleFinalizer>(MediaClearVector));
-  for (const auto & [ key, value ] : *metas) {
+  for (const auto& [key, value] : *metas) {
     values->emplace_back(value.c_str());
   }
   return values->data();
@@ -324,7 +331,7 @@ DartDeviceList* DevicesAll(Dart_Handle object) {
 static DartEqualizer* EqualizerToDart(const Equalizer* equalizer, int32_t id,
                                       Dart_Handle dart_handle) {
   auto wrapper = new DartObjects::Equalizer();
-  for (const auto & [ band, amp ] : equalizer->band_amps()) {
+  for (const auto& [band, amp] : equalizer->band_amps()) {
     wrapper->bands.emplace_back(band);
     wrapper->amps.emplace_back(amp);
   }

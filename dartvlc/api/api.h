@@ -1,20 +1,27 @@
-/*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
- * libVLC++.
- *
- * Hitesh Kumar Saini
- * https://github.com/alexmercerind
- * alexmercerind@gmail.com
- *
- * GNU Lesser General Public License v2.1
- */
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifndef API_DART_VLC_H_
 #define API_DART_VLC_H_
 
 #include <cstdint>
 
-#include "api/eventmanager.h"
+#include "api/event_manager.h"
 #include "base.h"
 
 #ifdef __cplusplus
@@ -42,8 +49,8 @@ struct DartEqualizer {
 
 DLLEXPORT void PlayerCreate(int32_t id, int32_t video_width,
                             int32_t video_height,
-                            int32_t commandLineArgumentsCount,
-                            const char** commandLineArguments);
+                            int32_t command_line_argument_count,
+                            const char** command_line_arguments);
 DLLEXPORT void PlayerDispose(int32_t id);
 
 DLLEXPORT void PlayerOpen(int32_t id, bool auto_start, const char** source,
@@ -69,7 +76,7 @@ DLLEXPORT void PlayerSetVolume(int32_t id, float volume);
 
 DLLEXPORT void PlayerSetRate(int32_t id, float rate);
 
-DLLEXPORT void PlayerSetUserAgent(int32_t id, const char* userAgent);
+DLLEXPORT void PlayerSetUserAgent(int32_t id, const char* user_agent);
 
 DLLEXPORT void PlayerSetDevice(int32_t id, const char* device_id,
                                const char* device_name);
@@ -93,7 +100,7 @@ DLLEXPORT void PlayerTakeSnapshot(int32_t id, const char* file_path,
 
 DLLEXPORT void PlayerSetAudioTrack(int32_t id, int32_t track);
 
-DLLEXPORT int32_t PlayerAudioTrackCount(int32_t id);                                  
+DLLEXPORT int32_t PlayerAudioTrackCount(int32_t id);
 
 DLLEXPORT const char** MediaParse(Dart_Handle object, const char* type,
                                   const char* resource, int32_t timeout);

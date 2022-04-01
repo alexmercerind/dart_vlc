@@ -1,12 +1,20 @@
-/*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC & libVLC++.
- * 
- * Hitesh Kumar Saini
- * https://github.com/alexmercerind
- * alexmercerind@gmail.com
- * 
- * GNU Lesser General Public License v2.1
- */
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // ignore_for_file: implementation_imports
 import 'dart:io';
@@ -22,7 +30,7 @@ export 'package:dart_vlc_ffi/dart_vlc_ffi.dart' hide DartVLC, Player;
 export 'package:dart_vlc/src/widgets/video.dart';
 
 /// Platform channel for using [Texture] & flutter::TextureRegistrar on Windows.
-final MethodChannel _channel = MethodChannel('dart_vlc');
+const _channel = MethodChannel('dart_vlc');
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
@@ -98,11 +106,16 @@ abstract class DartVLC {
     };
     if (Platform.isWindows) {
       final libraryPath = path.join(
-          path.dirname(Platform.resolvedExecutable), 'dart_vlc_plugin.dll');
+        path.dirname(Platform.resolvedExecutable),
+        'dart_vlc_plugin.dll',
+      );
       FFI.DartVLC.initialize(libraryPath);
     } else if (Platform.isLinux) {
-      final libraryPath = path.join(path.dirname(Platform.resolvedExecutable),
-          'lib', 'libdart_vlc_plugin.so');
+      final libraryPath = path.join(
+        path.dirname(Platform.resolvedExecutable),
+        'lib',
+        'libdart_vlc_plugin.so',
+      );
       FFI.DartVLC.initialize(libraryPath);
     } else if (Platform.isMacOS) {
       final libraryPath = path.join(
