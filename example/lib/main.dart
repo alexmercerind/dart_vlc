@@ -74,12 +74,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
   Widget build(BuildContext context) {
     bool isTablet;
     bool isPhone;
-
     final double devicePixelRatio = ui.window.devicePixelRatio;
-    final ui.Size size = ui.window.physicalSize;
-    final double width = size.width;
-    final double height = size.height;
-
+    final double width = ui.window.physicalSize.width;
+    final double height = ui.window.physicalSize.height;
     if (devicePixelRatio < 2 && (width >= 1000 || height >= 1000)) {
       isTablet = true;
       isPhone = false;
@@ -114,7 +111,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                     height: isPhone ? 240 : 480,
                     volumeThumbColor: Colors.blue,
                     volumeActiveColor: Colors.blue,
-                    playlistLength: medias.length,
+                    showControls: !isPhone,
                   ),
                 ),
               ],

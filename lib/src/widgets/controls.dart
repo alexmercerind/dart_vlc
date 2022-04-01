@@ -1,3 +1,21 @@
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // ignore_for_file: implementation_imports
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -23,7 +41,6 @@ class Control extends StatefulWidget {
     required this.volumeInactiveColor,
     required this.volumeBackgroundColor,
     required this.volumeThumbColor,
-    required this.playlistLength,
   }) : super(key: key);
 
   final Widget child;
@@ -40,7 +57,6 @@ class Control extends StatefulWidget {
   final Color? volumeInactiveColor;
   final Color? volumeBackgroundColor;
   final Color? volumeThumbColor;
-  final int playlistLength;
 
   @override
   ControlState createState() => ControlState();
@@ -169,84 +185,90 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                         ),
                       ),
                     ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 10,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (widget.playlistLength > 1)
-                            IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: Icon(Icons.skip_previous),
-                              onPressed: () => player.back(),
-                            ),
-                          SizedBox(width: 50),
-                          IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: Icon(Icons.replay_10),
-                              onPressed: () {
-                                int positionInMilliseconds =
-                                    player.position.position?.inMilliseconds ??
+                    StreamBuilder<CurrentState>(
+                      stream: widget.player.currentStream,
+                      builder: (context, snapshot) {
+                        return Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 10,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if ((snapshot.data?.medias.length ?? 0) > 1)
+                                IconButton(
+                                  color: Colors.white,
+                                  iconSize: 30,
+                                  icon: Icon(Icons.skip_previous),
+                                  onPressed: () => player.back(),
+                                ),
+                              SizedBox(width: 50),
+                              IconButton(
+                                  color: Colors.white,
+                                  iconSize: 30,
+                                  icon: Icon(Icons.replay_10),
+                                  onPressed: () {
+                                    int positionInMilliseconds = player.position
+                                            .position?.inMilliseconds ??
                                         0;
-                                if (!(positionInMilliseconds - 10000)
-                                    .isNegative)
-                                  positionInMilliseconds -= 10000;
-                                player.seek(Duration(
-                                    milliseconds: positionInMilliseconds));
-                                setState(() {});
-                              }),
-                          SizedBox(width: 20),
-                          IconButton(
-                            color: Colors.white,
-                            iconSize: 30,
-                            icon: AnimatedIcon(
-                                icon: AnimatedIcons.play_pause,
-                                progress: playPauseController),
-                            onPressed: () {
-                              if (player.playback.isPlaying) {
-                                player.pause();
-                                playPauseController.reverse();
-                              } else {
-                                player.play();
-                                playPauseController.forward();
-                              }
-                            },
-                          ),
-                          SizedBox(width: 20),
-                          IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: Icon(Icons.forward_10),
-                              onPressed: () {
-                                int durationInMilliseconds =
-                                    player.position.duration?.inMilliseconds ??
+                                    if (!(positionInMilliseconds - 10000)
+                                        .isNegative)
+                                      positionInMilliseconds -= 10000;
+                                    player.seek(Duration(
+                                        milliseconds: positionInMilliseconds));
+                                    setState(() {});
+                                  }),
+                              SizedBox(width: 20),
+                              IconButton(
+                                color: Colors.white,
+                                iconSize: 30,
+                                icon: AnimatedIcon(
+                                    icon: AnimatedIcons.play_pause,
+                                    progress: playPauseController),
+                                onPressed: () {
+                                  if (player.playback.isPlaying) {
+                                    player.pause();
+                                    playPauseController.reverse();
+                                  } else {
+                                    player.play();
+                                    playPauseController.forward();
+                                  }
+                                },
+                              ),
+                              SizedBox(width: 20),
+                              IconButton(
+                                  color: Colors.white,
+                                  iconSize: 30,
+                                  icon: Icon(Icons.forward_10),
+                                  onPressed: () {
+                                    int durationInMilliseconds = player.position
+                                            .duration?.inMilliseconds ??
                                         0;
-                                int positionInMilliseconds =
-                                    player.position.position?.inMilliseconds ??
+                                    int positionInMilliseconds = player.position
+                                            .position?.inMilliseconds ??
                                         1;
-                                if ((positionInMilliseconds + 10000) <=
-                                    durationInMilliseconds) {
-                                  positionInMilliseconds += 10000;
-                                  player.seek(Duration(
-                                      milliseconds: positionInMilliseconds));
-                                  setState(() {});
-                                }
-                              }),
-                          SizedBox(width: 50),
-                          if (widget.playlistLength > 1)
-                            IconButton(
-                              color: Colors.white,
-                              iconSize: 30,
-                              icon: Icon(Icons.skip_next),
-                              onPressed: () => player.next(),
-                            ),
-                        ],
-                      ),
+                                    if ((positionInMilliseconds + 10000) <=
+                                        durationInMilliseconds) {
+                                      positionInMilliseconds += 10000;
+                                      player.seek(Duration(
+                                          milliseconds:
+                                              positionInMilliseconds));
+                                      setState(() {});
+                                    }
+                                  }),
+                              SizedBox(width: 50),
+                              if ((snapshot.data?.medias.length ?? 0) > 1)
+                                IconButton(
+                                  color: Colors.white,
+                                  iconSize: 30,
+                                  icon: Icon(Icons.skip_next),
+                                  onPressed: () => player.next(),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                     Positioned(
                       right: 15,

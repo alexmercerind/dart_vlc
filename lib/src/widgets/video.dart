@@ -1,3 +1,21 @@
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // ignore_for_file: implementation_imports
 import 'dart:async';
 import 'dart:typed_data';
@@ -82,7 +100,6 @@ class Video extends StatefulWidget {
     this.showTimeLeft = false,
     this.progressBarTextStyle = const TextStyle(),
     this.filterQuality = FilterQuality.low,
-    required this.playlistLength,
   })  : player = player ?? players[playerId]! as Player,
         super(key: key);
 
@@ -151,13 +168,6 @@ class Video extends StatefulWidget {
   /// instead of the total time, set this to true
   final bool showTimeLeft;
 
-  /// The length of the playlist of media being played.
-  ///
-  /// This is useful for determining whether or not to show the "skip next"
-  /// and "skip previous" control buttons - if there is only one media in
-  /// the playlist, the buttons will not be shown.
-  final int playlistLength;
-
   _VideoStateBase createState() => _VideoStateTexture();
 }
 
@@ -196,7 +206,6 @@ abstract class _VideoStateBase extends State<Video>
               volumeThumbColor: widget.volumeThumbColor,
               showTimeLeft: widget.showTimeLeft,
               progressBarTextStyle: widget.progressBarTextStyle,
-              playlistLength: widget.playlistLength,
               child: present(),
             )
           : present(),
