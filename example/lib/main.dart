@@ -678,9 +678,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 ),
                 const SizedBox(width: 12.0),
                 ElevatedButton(
-                  onPressed: () => this.player.back(),
+                  onPressed: () => this.player.previous(),
                   child: const Text(
-                    'back',
+                    'previous',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),
