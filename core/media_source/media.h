@@ -19,9 +19,10 @@
 #ifndef MEDIA_SOURCE_MEDIA_H_
 #define MEDIA_SOURCE_MEDIA_H_
 
+#include <map>
 #include <memory>
 
-#include "media_source/base.h"
+#include "media_source/media_source.h"
 
 class Media : public MediaSource {
  public:
@@ -36,31 +37,28 @@ class Media : public MediaSource {
   std::string& stop_time() { return stop_time_; };
   std::map<std::string, std::string>& metas() { return metas_; };
 
-  static std::shared_ptr<Media> Media::Create(std::string_view type,
-                                              const std::string& url,
-                                              bool parse = false,
-                                              int32_t timeout = 10000);
+  static std::shared_ptr<Media> Create(std::string_view type,
+                                       const std::string& url,
+                                       bool parse = false,
+                                       int32_t timeout = 10000);
 
-  static std::shared_ptr<Media> Media::File(std::string path,
-                                            bool parse = false,
-                                            int32_t timeout = 10000,
-                                            std::string start_time = "",
-                                            std::string stop_time = "");
+  static std::shared_ptr<Media> File(std::string path, bool parse = false,
+                                     int32_t timeout = 10000,
+                                     std::string start_time = "",
+                                     std::string stop_time = "");
 
-  static std::shared_ptr<Media> Media::Network(std::string url,
-                                               bool parse = false,
-                                               int32_t timeout = 10000,
-                                               std::string start_time = "",
-                                               std::string stop_time = "");
+  static std::shared_ptr<Media> Network(std::string url, bool parse = false,
+                                        int32_t timeout = 10000,
+                                        std::string start_time = "",
+                                        std::string stop_time = "");
 
-  static std::shared_ptr<Media> Media::DirectShow(std::string resource);
+  static std::shared_ptr<Media> DirectShow(std::string resource);
 
   void Parse(int32_t timeout);
 
   std::string Type();
 
  private:
-  std::string media_type_ = "";
   std::string media_type_ = "";
   std::string resource_ = "";
   std::string location_ = "";

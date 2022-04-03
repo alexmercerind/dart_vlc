@@ -23,7 +23,7 @@
 enum PlaylistMode { single, loop, repeat };
 
 Playlist::Playlist(std::vector<std::shared_ptr<Media>> medias,
-                   PlaylistMode playlist_mode = PlaylistMode::single)
+                   PlaylistMode playlist_mode)
     : medias_(medias), playlist_mode_(playlist_mode){};
 
 std::string Playlist::Type() { return "MediaSourceType.playlist"; }

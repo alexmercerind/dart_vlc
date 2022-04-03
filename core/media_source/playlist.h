@@ -23,8 +23,8 @@
 #include <string>
 #include <vector>
 
-#include "media_source/base.h"
 #include "media_source/media.h"
+#include "media_source/media_source.h"
 
 enum PlaylistMode { single, loop, repeat };
 

@@ -26,8 +26,8 @@
 #include <vlcpp/vlc.hpp>
 
 std::shared_ptr<Media> Media::Create(std::string_view type,
-                                     const std::string& url, bool parse = false,
-                                     int32_t timeout = 10000) {
+                                     const std::string& url, bool parse,
+                                     int32_t timeout) {
   if (type.compare(kMediaTypeFile) == 0) {
     return std::shared_ptr<Media>(Media::File(url, parse, timeout));
   } else if (type.compare(kMediaTypeNetwork) == 0) {
@@ -37,10 +37,9 @@ std::shared_ptr<Media> Media::Create(std::string_view type,
   }
 }
 
-std::shared_ptr<Media> Media::File(std::string path, bool parse = false,
-                                   int32_t timeout = 10000,
-                                   std::string start_time = "",
-                                   std::string stop_time = "") {
+std::shared_ptr<Media> Media::File(std::string path, bool parse,
+                                   int32_t timeout, std::string start_time,
+                                   std::string stop_time) {
   std::shared_ptr<Media> media = std::make_shared<Media>();
   media->resource_ = path;
   media->location_ = "file:///" + path;
@@ -53,10 +52,9 @@ std::shared_ptr<Media> Media::File(std::string path, bool parse = false,
   return media;
 }
 
-std::shared_ptr<Media> Media::Network(std::string url, bool parse = false,
-                                      int32_t timeout = 10000,
-                                      std::string start_time = "",
-                                      std::string stop_time = "") {
+std::shared_ptr<Media> Media::Network(std::string url, bool parse,
+                                      int32_t timeout, std::string start_time,
+                                      std::string stop_time) {
   std::shared_ptr<Media> media = std::make_shared<Media>();
   media->resource_ = url;
   media->location_ = url;
