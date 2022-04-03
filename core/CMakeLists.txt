@@ -19,11 +19,14 @@ set(DART_API_ARCHIVE "${CMAKE_CURRENT_SOURCE_DIR}/../bin/dart_api-${DART_API_VER
 set(LIBVLCPP_ARCHIVE "${CMAKE_CURRENT_SOURCE_DIR}/../bin/libvlcpp-${LIBVLCPP_VERSION}.zip")
 
 set(LIBVLC_SOURCE "${PACKAGE_DIR}/vlc-${LIBVLC_VERSION}")
-set(DART_API_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../bin/dart_api-master")
-set(LIBVLCPP_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../bin/libvlcpp-master")
+set(DART_API_SOURCE "${PACKAGE_DIR}/dart_api-master")
+set(LIBVLCPP_SOURCE "${PACKAGE_DIR}/libvlcpp-master")
 
 
 add_custom_target(LIBVLC_EXTRACT ALL)
+add_custom_target(DART_API_EXTRACT ALL)
+add_custom_target(LIBVLCPP_EXTRACT ALL)
+
 get_directory_property(_HAS_PARENT_DIRECTORY PARENT_DIRECTORY)
 if(NOT _HAS_PARENT_DIRECTORY)
   # Indicates that this is a top-level CMake project.
@@ -51,6 +54,9 @@ if (NOT EXISTS "${LIBVLC_SOURCE}")
     )
   endif()
 
+  set(LIBVLC_ARCHIVE_ROOT "vlc-${LIBVLC_VERSION}/")
+  list(TRANSFORM LIBVLC_FILES PREPEND ${LIBVLC_ARCHIVE_ROOT})
+
   file(MAKE_DIRECTORY ${PACKAGE_DIR})
   add_custom_command(
     TARGET LIBVLC_EXTRACT PRE_BUILD
@@ -73,8 +79,17 @@ if (NOT EXISTS "${LIBVLC_SOURCE}")
 endif()
 
 add_library(${LIBRARY_NAME} STATIC
-  main.cc
+  core.cc
   api/api.cc
+  player/player.cc
+  player/player_state.cc
+  media_source/media.cc
+  media_source/playlist.cc
+  equalizer/equalizer.cc
+  devices/devices.cc
+  broadcast/broadcast.cc
+  chromecast/chromecast.cc
+  record/record.cc
 )
 
 add_dependencies(${LIBRARY_NAME} LIBVLC_EXTRACT)
@@ -89,7 +104,7 @@ target_include_directories(${LIBRARY_NAME} PRIVATE
   # libVLC headers.
   "${LIBVLC_SOURCE}/sdk/include"
   # Dart API headers.
-  "${DARTAPI_SOURCE}"
+  "${DART_API_SOURCE}"
 )
 
 target_include_directories(${LIBRARY_NAME} INTERFACE

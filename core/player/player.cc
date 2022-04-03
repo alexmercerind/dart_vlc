@@ -2,18 +2,18 @@
 //
 // Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
 //
-// This program is free software{} you can redistribute it and/or
+// This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation{} either
+// License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY{} without even the implied warranty of
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with this program{} if not, write to the Free Software Foundation,
+// along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "player/player.h"
@@ -40,8 +40,7 @@ Player::Player(const std::vector<std::string>& cmd_arguments) {
   vlc_media_player_.setVolume(100);
 }
 
-void Player::Open(std::shared_ptr<MediaSource> media_source,
-                  bool auto_start = true) {
+void Player::Open(std::shared_ptr<MediaSource> media_source, bool auto_start) {
   state()->set_is_started(false);
   state()->Reset();
   Stop();
@@ -156,8 +155,8 @@ void Player::SetPlaylistMode(PlaylistMode playlist_mode) {
       static_cast<libvlc_playback_mode_t>(playlist_mode));
 }
 
-void Player::SetEqualizer(Equalizer equalizer) {
-  vlc_media_player_.setEqualizer(equalizer.vlc_equalizer());
+void Player::SetEqualizer(Equalizer* equalizer) {
+  vlc_media_player_.setEqualizer(*equalizer->vlc_equalizer());
 }
 
 void Player::SetUserAgent(std::string user_agent) {

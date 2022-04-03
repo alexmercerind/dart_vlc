@@ -13,8 +13,3 @@ libs
 # libVLC & libVLC++ Headers
 
 include
-
-# Compiled Binaries
-
-main.exe
-main.obj

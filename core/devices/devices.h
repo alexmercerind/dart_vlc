@@ -16,15 +16,16 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef MEDIASOURCE_MEDIASOURCE_H_
-#define MEDIASOURCE_MEDIASOURCE_H_
+#ifndef DEVICES_DEVICES_H_
+#define DEVICES_DEVICES_H_
 
-#include <string>
+#include "devices/device.h"
 
-class MediaSource {
+class Devices {
  public:
-  virtual std::string Type() = 0;
-  virtual ~MediaSource() = default;
+  static std::vector<Device> All();
+
+ private:
 };
 
 #endif

@@ -16,12 +16,35 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "media_source/playlist.h"
+#ifndef BROADCAST_BROADCAST_H_
+#define BROADCAST_BROADCAST_H_
 
+#include <sstream>
+#include <string>
+#include <vlcpp/vlc.hpp>
+
+#include "broadcast/broadcast_configuration.h"
 #include "media_source/media.h"
 
-Playlist::Playlist(std::vector<std::shared_ptr<Media>> medias,
-                   PlaylistMode playlist_mode)
-    : medias_(medias), playlist_mode_(playlist_mode){};
+// TODO: Finalize |Broadcast| API.
+// Current API is very bad & doesn't allow proper change in |Media| once the
+// |Broadcast| has been started.
 
-std::string Playlist::Type() { return "MediaSourceType.playlist"; }
+class Broadcast {
+ public:
+  BroadcastConfiguration* configuration() const { return configuration_.get(); }
+
+  Broadcast(std::shared_ptr<Media> media,
+            std::unique_ptr<BroadcastConfiguration> configuration);
+
+  void Start();
+
+  ~Broadcast();
+
+ private:
+  VLC::Instance vlc_instance_ = VLC::Instance(0, nullptr);
+  std::shared_ptr<Media> media_ = nullptr;
+  std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
+};
+
+#endif  // BROADCAST_BROADCAST_H_

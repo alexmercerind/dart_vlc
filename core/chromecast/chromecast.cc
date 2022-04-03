@@ -16,33 +16,26 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef MEDIASOURCE_PLAYLIST_H_
-#define MEDIASOURCE_PLAYLIST_H_
+#include "chromecast/chromecast.h"
 
-#include <map>
+#include <sstream>
 #include <string>
-#include <vector>
 
-#include "mediasource/media.h"
-#include "mediasource/mediasource.h"
+// TODO: Finalize |Chromecast| API.
+// Current API is very bad & doesn't allow proper change in |Media| once the
+// |Chromecast| has been started.
 
-enum PlaylistMode { single, loop, repeat };
+Chromecast::Chromecast(std::shared_ptr<Media> media, std::string ip_address)
+    : media_(media), ip_address_(ip_address) {}
 
-class Playlist : public MediaSource {
- public:
-  std::vector<std::shared_ptr<Media>>& medias() { return medias_; }
+void Chromecast::Start() {
+  std::stringstream sout;
+  sout << "#chromecast{ip=" << this->ip_address_
+       << ", demux-filter=demux_chromecast, conversion-quality=0}";
+  libvlc_vlm_add_broadcast(vlc_instance_.get(), media_->location().c_str(),
+                           media_->location().c_str(), sout.str().c_str(), 0,
+                           nullptr, true, false);
+  libvlc_vlm_play_media(vlc_instance_.get(), media_->location().c_str());
+}
 
-  PlaylistMode& playlist_mode() { return playlist_mode_; }
-
-  Playlist(std::vector<std::shared_ptr<Media>> medias,
-           PlaylistMode playlist_mode = PlaylistMode::single)
-      : medias_(medias), playlist_mode_(playlist_mode){};
-
-  std::string Type() { return "MediaSourceType.playlist"; }
-
- protected:
-  std::vector<std::shared_ptr<Media>> medias_;
-  PlaylistMode playlist_mode_;
-};
-
-#endif
+Chromecast::~Chromecast() { libvlc_vlm_release(vlc_instance_.get()); }

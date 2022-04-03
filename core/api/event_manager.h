@@ -16,13 +16,14 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef API_EVENTMANAGER_H_
-#define API_EVENTMANAGER_H_
+#ifndef API_EVENT_MANAGER_H_
+#define API_EVENT_MANAGER_H_
 
+#include "api/api.h"
 #include "api/dart_manager.h"
-#include "base.h"
+#include "core.h"
 #include "dart_api_dl.h"
-#include "player.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

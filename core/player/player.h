@@ -73,7 +73,7 @@ class Player {
 
   void SetPlaylistMode(PlaylistMode playlist_mode);
 
-  void SetEqualizer(Equalizer equalizer);
+  void SetEqualizer(Equalizer* equalizer);
 
   void SetUserAgent(std::string user_agent);
 

@@ -16,14 +16,41 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "media_source/playlist.h"
+#ifndef CORE_H_
+#define CORE_H_
 
+#include "broadcast/broadcast.h"
+#include "chromecast/chromecast.h"
+#include "devices/devices.h"
+#include "equalizer/equalizer.h"
 #include "media_source/media.h"
+#include "media_source/playlist.h"
+#include "player/player.h"
+#include "record/record.h"
+#include "utils/instance_handler.h"
 
-enum PlaylistMode { single, loop, repeat };
+#ifndef DLLEXPORT
+#ifdef _WIN32
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
+#endif
 
-Playlist::Playlist(std::vector<std::shared_ptr<Media>> medias,
-                   PlaylistMode playlist_mode = PlaylistMode::single)
-    : medias_(medias), playlist_mode_(playlist_mode){};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-std::string Playlist::Type() { return "MediaSourceType.playlist"; }
+// TODO: Get rid of global variables & linking hack.
+
+extern std::unique_ptr<InstanceHandler<Player>> g_players;
+extern std::unique_ptr<InstanceHandler<Equalizer>> g_equalizers;
+extern std::unique_ptr<InstanceHandler<Broadcast>> g_broadcasts;
+extern std::unique_ptr<InstanceHandler<Record>> g_records;
+extern std::unique_ptr<InstanceHandler<Chromecast>> g_chromecasts;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // CORE_H_

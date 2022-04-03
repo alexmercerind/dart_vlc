@@ -16,12 +16,54 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "media_source/playlist.h"
+#ifndef EQUALIZER_EQUALIZER_H_
+#define EQUALIZER_EQUALIZER_H_
 
-#include "media_source/media.h"
+#include <map>
+#include <vlcpp/vlc.hpp>
 
-Playlist::Playlist(std::vector<std::shared_ptr<Media>> medias,
-                   PlaylistMode playlist_mode)
-    : medias_(medias), playlist_mode_(playlist_mode){};
+enum EqualizerMode {
+  kFlat,
+  kClassical,
+  kClub,
+  kDance,
+  kFullBass,
+  kFullBassAndTreble,
+  kFullTreble,
+  kHeadphones,
+  kLargeHall,
+  kLive,
+  kParty,
+  kPop,
+  kReggae,
+  kRock,
+  kSka,
+  kSoft,
+  kSoftRock,
+  kTechno
+};
 
-std::string Playlist::Type() { return "MediaSourceType.playlist"; }
+class Equalizer {
+ public:
+  float pre_amp() const { return pre_amp_; }
+  const std::map<float, float>& band_amps() const { return band_amps_; }
+  VLC::Equalizer* vlc_equalizer() const { return vlc_equalizer_.get(); }
+
+  Equalizer();
+
+  Equalizer(EqualizerMode mode);
+
+  void SetBandAmp(float band, float amps);
+
+  void SetPreAmp(float amp);
+
+ private:
+  void Refresh();
+
+  float pre_amp_ = 0.0f;
+  std::map<float, float> band_amps_ = {};
+  std::unique_ptr<VLC::Equalizer> vlc_equalizer_;
+  std::map<float, int32_t> bands_ = {};
+};
+
+#endif

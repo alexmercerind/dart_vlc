@@ -4,14 +4,14 @@
  * BSD-style license that can be found in the LICENSE file.
  */
 
-#ifndef API_DARTMANAGER_H_
-#define API_DARTMANAGER_H_
+#ifndef API_DART_MANAGER_H_
+#define API_DART_MANAGER_H_
+
+#include <string.h>
 
 #include "dart_api_dl.h"
 #include "dart_version.h"
 #include "internal/dart_api_dl_impl.h"
-
-#include <string.h>
 
 #define DART_API_DL_DEFINITIONS(name, R, A) name##_Type name##_DL = NULL;
 DART_API_ALL_DL_SYMBOLS(DART_API_DL_DEFINITIONS)

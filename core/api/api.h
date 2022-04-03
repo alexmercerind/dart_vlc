@@ -16,13 +16,13 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef API_DART_VLC_H_
-#define API_DART_VLC_H_
+#ifndef API_API_H_
+#define API_API_H_
 
 #include <cstdint>
 
 #include "api/event_manager.h"
-#include "base.h"
+#include "core.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,9 +66,9 @@ DLLEXPORT void PlayerStop(int32_t id);
 
 DLLEXPORT void PlayerNext(int32_t id);
 
-DLLEXPORT void PlayerBack(int32_t id);
+DLLEXPORT void PlayerPrevious(int32_t id);
 
-DLLEXPORT void PlayerJump(int32_t id, int32_t index);
+DLLEXPORT void PlayerJumpToIndex(int32_t id, int32_t index);
 
 DLLEXPORT void PlayerSeek(int32_t id, int32_t position);
 
@@ -100,7 +100,7 @@ DLLEXPORT void PlayerTakeSnapshot(int32_t id, const char* file_path,
 
 DLLEXPORT void PlayerSetAudioTrack(int32_t id, int32_t track);
 
-DLLEXPORT int32_t PlayerAudioTrackCount(int32_t id);
+DLLEXPORT int32_t PlayerGetAudioTrackCount(int32_t id);
 
 DLLEXPORT const char** MediaParse(Dart_Handle object, const char* type,
                                   const char* resource, int32_t timeout);
@@ -140,7 +140,7 @@ DLLEXPORT void EqualizerSetBandAmp(int32_t id, float band, float amp);
 
 DLLEXPORT void EqualizerSetPreAmp(int32_t id, float amp);
 
-#endif
 #ifdef __cplusplus
 }
+#endif
 #endif

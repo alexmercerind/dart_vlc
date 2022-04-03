@@ -16,26 +16,28 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-// https://github.com/alexmercerind/dart_vlc/pull/137
-#define BUFFER_SIZE 67108864
+#include "broadcast/broadcast.h"
+#include "chromecast/chromecast.h"
+#include "devices/devices.h"
+#include "equalizer/equalizer.h"
+#include "media_source/media.h"
+#include "media_source/playlist.h"
+#include "player/player.h"
+#include "record/record.h"
+#include "utils/instance_handler.h"
 
-#include <optional>
-#include <vlcpp/vlc.hpp>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "internal/state.h"
+// TODO: Get rid of global variables & linking hack.
 
-class PlayerInternal {
- protected:
-  VLC::Instance vlc_instance_;
-  VLC::MediaPlayer vlc_media_player_;
-  VLC::MediaListPlayer vlc_media_list_player_;
-  VLC::MediaList vlc_media_list_;
-  std::unique_ptr<PlayerState> state_ = nullptr;
-  std::unique_ptr<uint8_t[]> video_frame_buffer_ =
-      std::make_unique<uint8_t[]>(BUFFER_SIZE);
-  int32_t video_width_ = -1;
-  int32_t video_height_ = -1;
-  std::optional<int32_t> preferred_video_width_ = std::nullopt;
-  std::optional<int32_t> preferred_video_height_ = std::nullopt;
-  bool is_playlist_modified_ = false;
-};
+auto g_players = std::make_unique<InstanceHandler<Player>>();
+auto g_equalizers = std::make_unique<InstanceHandler<Equalizer>>();
+auto g_broadcasts = std::make_unique<InstanceHandler<Broadcast>>();
+auto g_records = std::make_unique<InstanceHandler<Record>>();
+auto g_chromecasts = std::make_unique<InstanceHandler<Chromecast>>();
+
+#ifdef __cplusplus
+}
+#endif

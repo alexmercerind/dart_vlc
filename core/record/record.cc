@@ -16,15 +16,23 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef MEDIA_SOURCE_BASE_H_
-#define MEDIA_SOURCE_BASE_H_
+#include "record/record.h"
 
-#include <string>
+#include <sstream>
 
-class MediaSource {
- public:
-  virtual std::string Type() = 0;
-  virtual ~MediaSource() = default;
-};
+Record::Record(std::shared_ptr<Media> media, std::string saving_file)
+    : media_(media), saving_file_(saving_file) {
+  ;
+  vlc_instance_ = VLC::Instance(0, nullptr);
+}
 
-#endif
+void Record::Start() {
+  std::stringstream sout;
+  sout << "#std{access=file,mux=raw,dst=" << saving_file_ << "}";
+  libvlc_vlm_add_broadcast(vlc_instance_.get(), media_->location().c_str(),
+                           media_->location().c_str(), sout.str().c_str(), 0,
+                           nullptr, true, false);
+  libvlc_vlm_play_media(vlc_instance_.get(), media_->location().c_str());
+}
+
+Record::~Record() { libvlc_vlm_release(vlc_instance_.get()); }

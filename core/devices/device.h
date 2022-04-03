@@ -16,8 +16,8 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef DEVICE_H_
-#define DEVICE_H_
+#ifndef DEVICES_DEVICE_H_
+#define DEVICES_DEVICE_H_
 
 #include <map>
 #include <vector>
@@ -30,34 +30,9 @@ class Device {
 
   Device(std::string id, std::string name) : id_(id), name_(name) {}
 
-  std::map<std::string, std::string> get() {
-    std::map<std::string, std::string> device;
-    device["id"] = id_;
-    device["name"] = name_;
-    return device;
-  }
-
  private:
   std::string id_;
   std::string name_;
-};
-
-class Devices {
- public:
-  static std::vector<Device> All() {
-    std::vector<Device> devices{};
-    VLC::Instance vlc_instance = VLC::Instance(0, nullptr);
-    VLC::MediaPlayer vlc_media_player = VLC::MediaPlayer(vlc_instance);
-    std::vector<VLC::AudioOutputDeviceDescription> vlc_devices =
-        vlc_media_player.outputDeviceEnum();
-    for (VLC::AudioOutputDeviceDescription vlc_device : vlc_devices) {
-      devices.emplace_back(
-          Device(vlc_device.device(), vlc_device.description()));
-    }
-    return devices;
-  }
-
- private:
 };
 
 #endif

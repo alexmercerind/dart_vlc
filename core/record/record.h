@@ -16,32 +16,30 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#ifndef MEDIA_SOURCE_PLAYLIST_H_
-#define MEDIA_SOURCE_PLAYLIST_H_
+#ifndef RECORD_RECORD_H_
+#define RECORD_RECORD_H_
 
-#include <map>
 #include <string>
-#include <vector>
+#include <vlcpp/vlc.hpp>
 
-#include "media_source/base.h"
 #include "media_source/media.h"
 
-enum PlaylistMode { single, loop, repeat };
+// TODO: Finalize |Record| API.
+// Current API is very bad & doesn't allow proper change in |Media| once the
+// |Record| has been started.
 
-class Playlist : public MediaSource {
+class Record {
  public:
-  std::vector<std::shared_ptr<Media>>& medias() { return medias_; }
+  Record(std::shared_ptr<Media> media, std::string saving_file);
 
-  PlaylistMode& playlist_mode() { return playlist_mode_; }
+  void Start();
 
-  Playlist(std::vector<std::shared_ptr<Media>> medias,
-           PlaylistMode playlist_mode = PlaylistMode::single);
-
-  std::string Type();
+  ~Record();
 
  private:
-  std::vector<std::shared_ptr<Media>> medias_;
-  PlaylistMode playlist_mode_;
+  std::string saving_file_;
+  VLC::Instance vlc_instance_;
+  std::shared_ptr<Media> media_;
 };
 
-#endif
+#endif  // RECORD_RECORD_H_

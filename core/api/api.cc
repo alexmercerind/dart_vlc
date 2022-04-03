@@ -16,14 +16,9 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "api.h"
+#include "api/api.h"
 
-#include "broadcast.h"
-#include "chromecast.h"
-#include "device.h"
-#include "equalizer.h"
-#include "player.h"
-#include "record.h"
+#include "core.h"
 
 namespace DartObjects {
 
@@ -31,7 +26,7 @@ struct DeviceList {
   // The device list that gets exposed to Dart.
   DartDeviceList dart_object;
 
-  // Backing data
+  // Previousing data
   std::vector<DartDeviceList::Device> device_infos;
   std::vector<Device> devices;
 };
@@ -40,7 +35,7 @@ struct Equalizer {
   // The equalizer that gets exposed to Dart.
   DartEqualizer dart_object;
 
-  // Backing data
+  // Previousing data
   std::vector<float> bands;
   std::vector<float> amps;
 };
@@ -57,32 +52,44 @@ void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
                   int32_t commandLineArgumentsCount,
                   const char** commandLineArguments) {
   std::vector<std::string> args{};
-  for (int32_t index = 0; index < commandLineArgumentsCount; index++)
+  for (int32_t index = 0; index < commandLineArgumentsCount; index++) {
     args.emplace_back(commandLineArguments[index]);
-  Player* player = g_players->Get(id, args);
+  }
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   if (video_width > 0 && video_height > 0) {
     player->SetVideoWidth(video_width);
     player->SetVideoHeight(video_height);
   }
-  player->OnPlay([=]() -> void { OnPlayPauseStop(id, player->state()); });
-  player->OnPause([=]() -> void { OnPlayPauseStop(id, player->state()); });
-  player->OnStop([=]() -> void {
+  player->SetPlayCallback(
+      [=]() -> void { OnPlayPauseStop(id, player->state()); });
+  player->SetPauseCallback(
+      [=]() -> void { OnPlayPauseStop(id, player->state()); });
+  player->SetStopCallback([=]() -> void {
     OnPlayPauseStop(id, player->state());
     OnPosition(id, player->state());
   });
-  player->OnComplete([=]() -> void { OnComplete(id, player->state()); });
-  player->OnVolume([=](float) -> void { OnVolume(id, player->state()); });
-  player->OnRate([=](float) -> void { OnRate(id, player->state()); });
-  player->OnPosition([=](int32_t) -> void { OnPosition(id, player->state()); });
-  player->OnOpen([=](VLC::Media) -> void { OnOpen(id, player->state()); });
-  player->OnPlaylist([=]() -> void { OnOpen(id, player->state()); });
-  player->OnBuffering(
+  player->SetCompleteCallback(
+      [=]() -> void { OnComplete(id, player->state()); });
+  player->SetVolumeCallback(
+      [=](float) -> void { OnVolume(id, player->state()); });
+  player->SetRateCallback([=](float) -> void { OnRate(id, player->state()); });
+  player->SetPositionCallback(
+      [=](int32_t) -> void { OnPosition(id, player->state()); });
+  player->SetOpenCallback(
+      [=](VLC::Media) -> void { OnOpen(id, player->state()); });
+  player->SetPlaylistCallback([=]() -> void { OnOpen(id, player->state()); });
+  player->SetBufferingCallback(
       [=](float buffering) -> void { OnBuffering(id, buffering); });
-  player->OnVideoDimensions(
+  player->SetVideoDimensionsCallback(
       [=](int32_t video_width, int32_t video_height) -> void {
         OnVideoDimensions(id, video_width, video_height);
       });
-  player->onError(
+  player->SetErrorCallback(
       [=](std::string error) -> void { OnError(id, error.c_str()); });
 }
 
@@ -91,7 +98,12 @@ void PlayerDispose(int32_t id) { g_players->Dispose(id); }
 void PlayerOpen(int32_t id, bool auto_start, const char** source,
                 int32_t source_size) {
   std::vector<std::shared_ptr<Media>> medias{};
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   for (int32_t index = 0; index < 4 * source_size; index += 4) {
     std::shared_ptr<Media> media;
     const char* type = source[index];
@@ -99,86 +111,156 @@ void PlayerOpen(int32_t id, bool auto_start, const char** source,
     const char* start_time = source[index + 2];
     const char* stop_time = source[index + 3];
     if (strcmp(type, "MediaType.file") == 0)
-      media = Media::file(resource, false, 10000, start_time, stop_time);
+      media = Media::File(resource, false, 10000, start_time, stop_time);
     else if (strcmp(type, "MediaType.network") == 0)
-      media = Media::network(resource, false, 10000, start_time, stop_time);
+      media = Media::Network(resource, false, 10000, start_time, stop_time);
     else
-      media = Media::directShow(resource);
+      media = Media::DirectShow(resource);
     medias.emplace_back(media);
   }
   player->Open(std::make_shared<Playlist>(medias), auto_start);
 }
 
 void PlayerPlay(int32_t id) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->Play();
 }
 
 void PlayerPause(int32_t id) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->Pause();
 }
 
 void PlayerPlayOrPause(int32_t id) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->PlayOrPause();
 }
 
 void PlayerStop(int32_t id) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->Stop();
 }
 
 void PlayerNext(int32_t id) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->Next();
 }
 
-void PlayerBack(int32_t id) {
-  Player* player = g_players->Get(id);
-  player->Back();
+void PlayerPrevious(int32_t id) {
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
+  player->Previous();
 }
 
-void PlayerJump(int32_t id, int32_t index) {
-  Player* player = g_players->Get(id);
-  player->Jump(index);
+void PlayerJumpToIndex(int32_t id, int32_t index) {
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
+  player->JumpToIndex(index);
 }
 
 void PlayerSeek(int32_t id, int32_t position) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->Seek(position);
 }
 
 void PlayerSetVolume(int32_t id, float volume) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->SetVolume(volume);
 }
 
 void PlayerSetRate(int32_t id, float rate) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->SetRate(rate);
 }
 
 void PlayerSetUserAgent(int32_t id, const char* userAgent) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->SetUserAgent(userAgent);
 }
 
 void PlayerSetDevice(int32_t id, const char* device_id,
                      const char* device_name) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   Device device(device_id, device_name);
   player->SetDevice(device);
 }
 
 void PlayerSetEqualizer(int32_t id, int32_t equalizer_id) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   Equalizer* equalizer = g_equalizers->Get(equalizer_id);
-  player->SetEqualizer(*equalizer);
+  player->SetEqualizer(equalizer);
 }
 
 void PlayerSetPlaylistMode(int32_t id, const char* mode) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   PlaylistMode playlistMode;
   if (strcmp(mode, "PlaylistMode.repeat") == 0)
     playlistMode = PlaylistMode::repeat;
@@ -190,54 +272,89 @@ void PlayerSetPlaylistMode(int32_t id, const char* mode) {
 }
 
 void PlayerAdd(int32_t id, const char* type, const char* resource) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   std::shared_ptr<Media> media;
   if (strcmp(type, "MediaType.file") == 0)
-    media = Media::file(resource, false);
+    media = Media::File(resource, false);
   else if (strcmp(type, "MediaType.network") == 0)
-    media = Media::network(resource, false);
+    media = Media::Network(resource, false);
   else
-    media = Media::directShow(resource);
+    media = Media::DirectShow(resource);
   player->Add(media);
 }
 
 void PlayerRemove(int32_t id, int32_t index) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->Remove(index);
 }
 
 void PlayerInsert(int32_t id, int32_t index, const char* type,
                   const char* resource) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   std::shared_ptr<Media> media;
   if (strcmp(type, "MediaType.file") == 0)
-    media = Media::file(resource, false);
+    media = Media::File(resource, false);
   else if (strcmp(type, "MediaType.network") == 0)
-    media = Media::network(resource, false);
+    media = Media::Network(resource, false);
   else
-    media = Media::directShow(resource);
+    media = Media::DirectShow(resource);
   player->Insert(index, media);
 }
 
 void PlayerMove(int32_t id, int32_t initial_index, int32_t final_index) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->Move(initial_index, final_index);
 }
 
 void PlayerTakeSnapshot(int32_t id, const char* file_path, int32_t width,
                         int32_t height) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->TakeSnapshot(file_path, width, height);
 }
 
 void PlayerSetAudioTrack(int32_t id, int32_t track) {
-  Player* player = g_players->Get(id);
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
   player->SetAudioTrack(track);
 }
 
-int32_t PlayerAudioTrackCount(int32_t id) {
-  Player* player = g_players->Get(id);
-  return player->AudioTrackCount();
+int32_t PlayerGetAudioTrackCount(int32_t id) {
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
+  return player->GetAudioTrackCount();
 }
 
 void MediaClearMap(void*, void* peer) {
@@ -250,7 +367,7 @@ void MediaClearVector(void*, void* peer) {
 
 const char** MediaParse(Dart_Handle object, const char* type,
                         const char* resource, int32_t timeout) {
-  std::shared_ptr<Media> media = Media::create(type, resource, true, timeout);
+  std::shared_ptr<Media> media = Media::Create(type, resource, true, timeout);
   auto metas = new std::map<std::string, std::string>(media->metas());
   auto values = new std::vector<const char*>();
   Dart_NewFinalizableHandle_DL(
@@ -269,16 +386,22 @@ void BroadcastCreate(int32_t id, const char* type, const char* resource,
                      const char* access, const char* mux, const char* dst,
                      const char* vcodec, int32_t vb, const char* acodec,
                      int32_t ab) {
-  std::shared_ptr<Media> media = Media::create(type, resource);
-
+  std::shared_ptr<Media> media = Media::Create(type, resource);
   std::unique_ptr<BroadcastConfiguration> configuration =
       std::make_unique<BroadcastConfiguration>(access, mux, dst, vcodec, vb,
                                                acodec, ab);
-  g_broadcasts->Get(id, std::move(media), std::move(configuration));
+  if (!g_broadcasts->Get(id)) {
+    g_broadcasts->Create(id, std::make_unique<Broadcast>(
+                                 std::move(media), std::move(configuration)));
+  }
 }
 
 void BroadcastStart(int32_t id) {
-  Broadcast* broadcast = g_broadcasts->Get(id, nullptr, nullptr);
+  auto broadcast = g_broadcasts->Get(id);
+  if (!broadcast) {
+    g_broadcasts->Create(id, std::make_unique<Broadcast>(nullptr, nullptr));
+    broadcast = g_broadcasts->Get(id);
+  }
   broadcast->Start();
 }
 
@@ -286,25 +409,41 @@ void BroadcastDispose(int32_t id) { g_broadcasts->Dispose(id); }
 
 void ChromecastCreate(int32_t id, const char* type, const char* resource,
                       const char* ip_address) {
-  std::shared_ptr<Media> media = Media::create(type, resource);
-  chromecasts->Get(id, std::move(media), ip_address);
+  std::shared_ptr<Media> media = Media::Create(type, resource);
+  auto chromecast = g_chromecasts->Get(id);
+  if (!chromecast) {
+    g_chromecasts->Create(
+        id, std::make_unique<Chromecast>(std::move(media), ip_address));
+  }
 }
 
 void ChromecastStart(int32_t id) {
-  Chromecast* chromecast = chromecasts->Get(id, nullptr, "");
+  auto chromecast = g_chromecasts->Get(id);
+  if (!chromecast) {
+    g_chromecasts->Create(id, std::make_unique<Chromecast>(nullptr, ""));
+    chromecast = g_chromecasts->Get(id);
+  }
   chromecast->Start();
 }
 
-void ChromecastDispose(int32_t id) { chromecasts->Dispose(id); }
+void ChromecastDispose(int32_t id) { g_chromecasts->Dispose(id); }
 
 void RecordCreate(int32_t id, const char* saving_file, const char* type,
                   const char* resource) {
-  std::shared_ptr<Media> media = Media::create(type, resource);
-  g_records->Get(id, media, saving_file);
+  std::shared_ptr<Media> media = Media::Create(type, resource);
+  auto record = g_records->Get(id);
+  if (!record) {
+    g_records->Create(id, std::make_unique<Record>(media, saving_file));
+    record = g_records->Get(id);
+  }
 }
 
 void RecordStart(int32_t id) {
-  Record* record = g_records->Get(id, nullptr, "");
+  auto record = g_records->Get(id);
+  if (!record) {
+    g_records->Create(id, std::make_unique<Record>(nullptr, ""));
+    record = g_records->Get(id);
+  }
   record->Start();
 }
 
@@ -350,15 +489,16 @@ static DartEqualizer* EqualizerToDart(const Equalizer* equalizer, int32_t id,
 }
 
 struct DartEqualizer* EqualizerCreateEmpty(Dart_Handle object) {
-  int32_t id = g_equalizers->CreateEmpty();
-  Equalizer* equalizer = g_equalizers->Get(id);
-  return EqualizerToDart(equalizer, id, object);
+  auto id = g_equalizers->Count();
+  g_equalizers->Create(id, std::make_unique<Equalizer>());
+  return EqualizerToDart(g_equalizers->Get(id), id, object);
 }
 
 struct DartEqualizer* EqualizerCreateMode(Dart_Handle object, int32_t mode) {
-  int32_t id = g_equalizers->CreateMode(static_cast<EqualizerMode>(mode));
-  Equalizer* equalizer = g_equalizers->Get(id);
-  return EqualizerToDart(equalizer, id, object);
+  auto id = g_equalizers->Count();
+  g_equalizers->Create(
+      id, std::make_unique<Equalizer>(static_cast<EqualizerMode>(mode)));
+  return EqualizerToDart(g_equalizers->Get(id), id, object);
 }
 
 void EqualizerSetBandAmp(int32_t id, float band, float amp) {

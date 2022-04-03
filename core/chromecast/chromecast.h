@@ -16,30 +16,27 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "internal/internal.h"
+#ifndef CHROMECAST_CHROMECAST_H_
+#define CHROMECAST_CHROMECAST_H_
 
-class PlayerGetters : public PlayerInternal {
+#include <sstream>
+#include <string>
+#include <vlcpp/vlc.hpp>
+
+#include "media_source/media.h"
+
+class Chromecast {
  public:
-  int32_t video_width() const { return video_width_; }
+  Chromecast(std::shared_ptr<Media> media, std::string ip_address);
 
-  int32_t video_height() const { return video_height_; }
+  void Start();
 
-  PlayerState* state() const { return state_.get(); }
+  ~Chromecast();
 
-  int32_t duration() {
-    return static_cast<int32_t>(vlc_media_player_.length());
-  }
-
-  int32_t position() {
-    return static_cast<int32_t>(vlc_media_player_.length() *
-                                vlc_media_player_.position());
-  }
-
-  float volume() { return vlc_media_player_.volume() / 100.0f; }
-
-  float rate() { return vlc_media_player_.rate(); }
-
-  bool is_playing() { return vlc_media_player_.isPlaying(); }
-
-  bool is_paused() { return !vlc_media_player_.isPlaying(); }
+ private:
+  std::string ip_address_ = nullptr;
+  VLC::Instance vlc_instance_ = VLC::Instance(0, nullptr);
+  std::shared_ptr<Media> media_ = nullptr;
 };
+
+#endif

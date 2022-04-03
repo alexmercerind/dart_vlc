@@ -16,12 +16,16 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "media_source/playlist.h"
+#include "devices/devices.h"
 
-#include "media_source/media.h"
-
-Playlist::Playlist(std::vector<std::shared_ptr<Media>> medias,
-                   PlaylistMode playlist_mode)
-    : medias_(medias), playlist_mode_(playlist_mode){};
-
-std::string Playlist::Type() { return "MediaSourceType.playlist"; }
+std::vector<Device> Devices::All() {
+  std::vector<Device> devices{};
+  VLC::Instance vlc_instance = VLC::Instance(0, nullptr);
+  VLC::MediaPlayer vlc_media_player = VLC::MediaPlayer(vlc_instance);
+  std::vector<VLC::AudioOutputDeviceDescription> vlc_devices =
+      vlc_media_player.outputDeviceEnum();
+  for (VLC::AudioOutputDeviceDescription vlc_device : vlc_devices) {
+    devices.emplace_back(Device(vlc_device.device(), vlc_device.description()));
+  }
+  return devices;
+}
