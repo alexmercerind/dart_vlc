@@ -425,6 +425,40 @@ For the example project to work you need to configure a real device in the xcode
 
 -->
 
+## Acknowledgements
+
+- BIG thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributions to this project & to the Flutter engine itself like adding texture support & adding macOS support here. I have learnt a lot about modern C++ & good-practices when writing code from you, thanks a lot for your guidances, reviews, work & donation. I'm really really thankful to you.
+- BIG thanks to [@DomingoMG](https://github.com/DomingoMG) for adding `Record` and `Chromecast` classes. Also, thanks a lot for donation to the project & giving me motivation to start building this. I would've never attempted this if you didn't motivate me. And now that it started, `dart_vlc` has grown a lot.
+- Thanks to [@tomassasovsky](https://github.com/tomassasovsky) for adding visual controls to `Video` widget.
+
+- Thanks to following members of libVLC community (irrespective of the order) for giving general ideas about libVLC APIs:
+  - [@jeremyVignelles](https://github.com/jeremyVignelles)
+  - [@chouquette](https://github.com/chouquette)
+  - [@mfkl](https://github.com/mfkl)
+  - [@caprica](https://github.com/caprica)
+- Finally, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
+
+## Contributions
+
+The code in the project is nicely arranged and follows the clean architecture.
+
+Contributions to the project are open, it will be appreciated if you discuss the bug-fix/feature-addition in the issues first.
+
+## License
+
+Copyright (C) 2021, Hitesh Kumar Saini <saini123hitesh@gmail.com>.
+
+This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
+
+## Vision
+
+There aren't any media (audio or video) playback libraries for Flutter or Dart on Windows/Linux yet. So, this project is all about that.
+As one might be already aware, VLC is one of the best media playback tools out there.
+
+So, now you can use it to play audio or video files from Flutter or Dart apps.
+
+As the project has grown, awesome people from community have added support for iOS & macOS aswell.
+
 ## Example
 
 You can see an example project [here](https://github.com/alexmercerind/dart_vlc/blob/master/example/lib/main.dart).
@@ -470,39 +504,3 @@ Under progress or planned features (irrespective of order)...
 - Bringing project on Android and iOS.
 - Removing [libVLC++](https://github.com/videolan/libvlcpp) dependency.
 - Subtitle control.
-
-## Acknowledgements
-
-First of all, thanks to the [VideoLAN](https://www.videolan.org) team for creating [libVLC](https://github.com/videolan/vlc) & [libVLC++](https://github.com/videolan/libvlcpp). Really great guys really great at their work.
-
-- BIG thanks to [@jnschulze](https://github.com/jnschulze) for his awesome contributions to this project & to Flutter engine itself like adding texture support & adding macOS support here. I have learnt a lot writing code with you, thanks a lot for your guidances & donation.
-- Thanks to [@DomingoMG](https://github.com/DomingoMG) for adding `Record` and `Chromecast` classes. Also, thanks a lot for donation to the project.
-- Thanks to [@tomassasovsky](https://github.com/tomassasovsky) for adding visual controls to `Video` widget.
-
-Thanks to following members of libVLC community (irrespective of the order) for giving general ideas about libVLC APIs:
-
-- [@jeremyVignelles](https://github.com/jeremyVignelles)
-- [@chouquette](https://github.com/chouquette)
-- [@mfkl](https://github.com/mfkl)
-- [@caprica](https://github.com/caprica)
-
-## Contributions
-
-The code in the project is nicely arranged and follows the clean architecture.
-
-Contributions to the project are open, it will be appreciated if you discuss the bug-fix/feature-addition in the issues first.
-
-## License
-
-Copyright (C) 2021, Hitesh Kumar Saini <saini123hitesh@gmail.com>.
-
-This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
-
-## Vision
-
-There aren't any media (audio or video) playback libraries for Flutter or Dart on Windows/Linux yet. So, this project is all about that.
-As one might be already aware, VLC is one of the best media playback tools out there.
-
-So, now you can use it to play audio or video files from Flutter or Dart apps.
-
-As the project has grown, awesome people from community have added support for iOS & macOS aswell.
