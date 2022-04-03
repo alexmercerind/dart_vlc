@@ -39,7 +39,7 @@ A new flutter plugin project.
     'DEFINES_MODULE' => 'YES',
     # Hack. We should restructure the common layer in a way that
     # the platform-specific plugins won't need the VLC headers anymore.
-    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/../core $(PODS_TARGET_SRCROOT)/../core/external/libvlcpp ${PODS_ROOT}/core_core/dart_vlc_core_packages/vlc-3.0.9.2/sdk/include',
+    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/../core ${PODS_ROOT}/core_core/dart_vlc_core_packages/vlc-3.0.9.2/sdk/include ${PODS_ROOT}/core_core/dart_vlc_core_packages/libvlcpp-master ${PODS_ROOT}/core_core/dart_vlc_core_packages/dart_api-master',
     'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/deps/lib',
     'OTHER_CFLAGS' => [
       '-Wno-documentation',
