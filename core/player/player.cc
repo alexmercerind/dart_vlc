@@ -282,8 +282,8 @@ void Player::SetVideoDimensionsCallback(
           video_dimension_callback_(video_width_, video_height_);
           if (preferred_video_width_.has_value() &&
               preferred_video_height_.has_value()) {
-            video_width = preferred_video_width_.value();
-            video_height = preferred_video_height_.value();
+            video_width = preferred_video_width_.value_or(0);
+            video_height = preferred_video_height_.value_or(0);
             pitch = video_width_ * 4;
 #ifndef __APPLE__
             vlc_media_player_.setVideoFormat("RGBA", video_width, video_height,
