@@ -23,7 +23,7 @@ set(PROJECT_NAME "dart_vlc")
 set(PLUGIN_NAME "dart_vlc_plugin")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
-add_subdirectory(../dartvlc "${CMAKE_BINARY_DIR}/${PROJECT_NAME}_core")
+add_subdirectory(../core "${CMAKE_BINARY_DIR}/${PROJECT_NAME}_core")
 
 add_library(${PLUGIN_NAME} SHARED
   dart_vlc_plugin.cc
