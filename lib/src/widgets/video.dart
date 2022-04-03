@@ -226,10 +226,13 @@ class _VideoStateTexture extends _VideoStateBase {
     super.initState();
     _videoDimensionsSubscription =
         widget.player.videoDimensionsStream.listen((dimensions) {
-      setState(() {
-        _videoWidth = dimensions.width.toDouble();
-        _videoHeight = dimensions.height.toDouble();
-      });
+      if (_videoWidth != dimensions.width.toDouble() &&
+          _videoHeight != dimensions.height.toDouble()) {
+        setState(() {
+          _videoWidth = dimensions.width.toDouble();
+          _videoHeight = dimensions.height.toDouble();
+        });
+      }
     });
     if (mounted) setState(() {});
   }

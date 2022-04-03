@@ -14,7 +14,7 @@ class VideoDimensions {
   const VideoDimensions(this.width, this.height);
 
   @override
-  String toString() => '($width, $height)';
+  String toString() => 'VideoDimensions($width, $height)';
 }
 
 /// Keeps various [Player] instances to manage event callbacks.
@@ -221,14 +221,14 @@ class Player {
   }
 
   /// Jumps to the previous [Media] in the [Playlist] opened.
-  void back() {
-    PlayerFFI.back(this.id);
+  void previous() {
+    PlayerFFI.previous(this.id);
   }
 
   /// Jumps to [Media] at specific index in the [Playlist] opened.
   /// Pass index as parameter.
-  void jump(int index) {
-    PlayerFFI.jump(
+  void jumpToIndex(int index) {
+    PlayerFFI.jumpToIndex(
       this.id,
       index,
     );
@@ -346,8 +346,8 @@ class Player {
   }
 
   /// Gets audio track count from current [MediaSource]
-  int audioTrackCount() {
-    int count = PlayerFFI.audioTrackCount(this.id);
+  int get audioTrackCount {
+    int count = PlayerFFI.getAudioTrackCount(this.id);
     // for some reason this value returns 0 when no tracks exists
     // and 2 or more if there's 1 or more audio tracks for this [MediaSource].
     return count > 1 ? count - 1 : count;
