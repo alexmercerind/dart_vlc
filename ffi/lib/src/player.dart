@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'package:ffi/ffi.dart';
@@ -113,13 +114,26 @@ class Player {
         StreamController<VideoDimensions>.broadcast();
     this.videoDimensionsStream = this.videoDimensionsController.stream;
     players[this.id] = this;
+    // Parse [commandlineArguments] & convert to `char*[]`.
+    final List<Pointer<Utf8>> pointers =
+        this.commandlineArguments.map<Pointer<Utf8>>((e) {
+      return e.toNativeUtf8();
+    }).toList();
+    final Pointer<Pointer<Utf8>> arr =
+        calloc.allocate(this.commandlineArguments.join().length);
+    for (int i = 0; i < this.commandlineArguments.length; i++) {
+      arr[i] = pointers[i];
+    }
     PlayerFFI.create(
       this.id,
       this.videoDimensions.width,
       this.videoDimensions.height,
       this.commandlineArguments.length,
-      this.commandlineArguments.toNativeUtf8Array(),
+      arr,
     );
+    // Freed the memory allocated for `char*[]`.
+    calloc.free(arr);
+    pointers.forEach(calloc.free);
   }
 
   /// Opens a new media source into the player.
@@ -159,16 +173,29 @@ class Player {
   ///
   void open(MediaSource source, {bool autoStart: true}) {
     if (source is Media) {
+      final args = <String>[
+        source.mediaType.toString(),
+        source.resource,
+        source.startTime.argument('start-time'),
+        source.stopTime.argument('stop-time'),
+      ];
+      // Parse [commandlineArguments] & convert to `char*[]`.
+      final List<Pointer<Utf8>> pointers = args.map<Pointer<Utf8>>((e) {
+        return e.toNativeUtf8();
+      }).toList();
+      final Pointer<Pointer<Utf8>> arr = calloc.allocate(args.join().length);
+      for (int i = 0; i < args.length; i++) {
+        arr[i] = pointers[i];
+      }
       PlayerFFI.open(
-          this.id,
-          autoStart ? 1 : 0,
-          <String>[
-            source.mediaType.toString(),
-            source.resource,
-            source.startTime.argument('start-time'),
-            source.stopTime.argument('stop-time'),
-          ].toNativeUtf8Array(),
-          1);
+        this.id,
+        autoStart ? 1 : 0,
+        arr,
+        1,
+      );
+      // Freed the memory allocated for `char*[]`.
+      calloc.free(arr);
+      pointers.forEach(calloc.free);
     }
     if (source is Playlist) {
       List<String> medias = <String>[];
@@ -182,12 +209,23 @@ class Player {
           ],
         );
       });
+      // Parse [commandlineArguments] & convert to `char*[]`.
+      final List<Pointer<Utf8>> pointers = medias.map<Pointer<Utf8>>((e) {
+        return e.toNativeUtf8();
+      }).toList();
+      final Pointer<Pointer<Utf8>> arr = calloc.allocate(medias.join().length);
+      for (int i = 0; i < medias.length; i++) {
+        arr[i] = pointers[i];
+      }
       PlayerFFI.open(
         this.id,
         autoStart ? 1 : 0,
-        medias.toNativeUtf8Array(),
+        arr,
         source.medias.length,
       );
+      // Freed the memory allocated for `char*[]`.
+      calloc.free(arr);
+      pointers.forEach(calloc.free);
     }
   }
 
@@ -260,27 +298,35 @@ class Player {
 
   /// Sets user agent for dart_vlc player.
   void setUserAgent(String userAgent) {
+    final userAgentCStr = userAgent.toNativeUtf8();
     PlayerFFI.setUserAgent(
       this.id,
-      userAgent.toNativeUtf8(),
+      userAgentCStr,
     );
+    calloc.free(userAgentCStr);
   }
 
   /// Changes [Playlist] playback mode.
   void setPlaylistMode(PlaylistMode playlistMode) {
+    final playlistModeCStr = playlistMode.toString().toNativeUtf8();
     PlayerFFI.setPlaylistMode(
       this.id,
-      playlistMode.toString().toNativeUtf8(),
+      playlistModeCStr,
     );
+    calloc.free(playlistModeCStr);
   }
 
   /// Appends [Media] to the [Playlist] of the [Player] instance.
   void add(Media source) {
+    final sourceMediaTypeCStr = source.mediaType.toString().toNativeUtf8();
+    final sourceResourceCStr = source.resource.toString().toNativeUtf8();
     PlayerFFI.add(
       this.id,
-      source.mediaType.toString().toNativeUtf8(),
-      source.resource.toString().toNativeUtf8(),
+      sourceMediaTypeCStr,
+      sourceResourceCStr,
     );
+    calloc.free(sourceMediaTypeCStr);
+    calloc.free(sourceResourceCStr);
   }
 
   /// Removes [Media] from the [Playlist] at a specific index.
@@ -293,12 +339,16 @@ class Player {
 
   /// Inserts [Media] to the [Playlist] of the [Player] instance at specific index.
   void insert(int index, Media source) {
+    final sourceMediaTypeCStr = source.mediaType.toString().toNativeUtf8();
+    final sourceResourceCStr = source.resource.toString().toNativeUtf8();
     PlayerFFI.insert(
       this.id,
       index,
-      source.mediaType.toString().toNativeUtf8(),
-      source.resource.toString().toNativeUtf8(),
+      sourceMediaTypeCStr,
+      sourceResourceCStr,
     );
+    calloc.free(sourceMediaTypeCStr);
+    calloc.free(sourceResourceCStr);
   }
 
   /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
@@ -318,10 +368,12 @@ class Player {
   /// Device will be switched once a new [Media] is played.
   ///
   void setDevice(Device device) {
+    final deviceIdCStr = device.id.toNativeUtf8();
+    final deviceNameCStr = device.name.toNativeUtf8();
     PlayerFFI.setDevice(
       this.id,
-      device.id.toNativeUtf8(),
-      device.name.toNativeUtf8(),
+      deviceIdCStr,
+      deviceNameCStr,
     );
   }
 
@@ -332,12 +384,14 @@ class Player {
 
   /// Saves snapshot of a video to a desired [File] location.
   void takeSnapshot(File file, int width, int height) {
+    final filePathCStr = file.path.toNativeUtf8();
     PlayerFFI.takeSnapshot(
       this.id,
-      file.path.toNativeUtf8(),
+      filePathCStr,
       width,
       height,
     );
+    calloc.free(filePathCStr);
   }
 
   /// Sets Current Audio Track for the current [MediaSource]

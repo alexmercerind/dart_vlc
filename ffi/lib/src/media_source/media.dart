@@ -167,11 +167,16 @@ class Media implements MediaSource {
 
   /// Parses the [Media] to retrieve [Media.metas].
   void parse(Duration timeout) {
+    final mediaTypeCStr = this.mediaType.toString().toNativeUtf8();
+    final resourceCStr = this.resource.toNativeUtf8();
     Pointer<Pointer<Utf8>> metas = MediaFFI.parse(
-        this,
-        this.mediaType.toString().toNativeUtf8(),
-        this.resource.toNativeUtf8(),
-        timeout.inMilliseconds);
+      this,
+      mediaTypeCStr,
+      resourceCStr,
+      timeout.inMilliseconds,
+    );
+    calloc.free(mediaTypeCStr);
+    calloc.free(resourceCStr);
     // Keep this sorted alphabetically by key.
     this.metas['actors'] = metas.elementAt(0).value.toDartString();
     this.metas['album'] = metas.elementAt(1).value.toDartString();

@@ -296,17 +296,3 @@ final ReceivePort receiver = new ReceivePort()
         }
     }
   });
-
-extension NativeTypes on List<String> {
-  Pointer<Pointer<Utf8>> toNativeUtf8Array() {
-    final List<Pointer<Utf8>> listPointer = this
-        .map((String string) => string.toNativeUtf8())
-        .toList()
-        .cast<Pointer<Utf8>>();
-    final Pointer<Pointer<Utf8>> pointerPointer =
-        calloc.allocate(this.join('').length);
-    for (int index = 0; index < this.length; index++)
-      pointerPointer[index] = listPointer[index];
-    return pointerPointer;
-  }
-}
