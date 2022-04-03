@@ -72,7 +72,7 @@ DartVlcPlugin::~DartVlcPlugin() {
   // Clean up unreleased players when the flutter engine is destroyed to avoid
   // crashes.
   for (const auto& [player_id, outlet] : outlets_) {
-    auto player = g_players->Get(id);
+    auto player = g_players->Get(player_id);
     player->SetVideoFrameCallback(nullptr);
     g_players->Dispose(player_id);
   }
@@ -90,11 +90,11 @@ void DartVlcPlugin::HandleMethodCall(
     auto [it, added] = outlets_.try_emplace(player_id, nullptr);
     if (added) {
       it->second = std::make_unique<VideoOutlet>(texture_registrar_);
-      auto player = g_players->Get(id);
+      auto player = g_players->Get(player_id);
       player->SetVideoFrameCallback(
           [outlet_ptr = it->second.get()](uint8_t* frame, int32_t width,
                                           int32_t height) -> void {
-            outlet_ptr->SetVideoFrameCallback(frame, width, height);
+            outlet_ptr->MarkVideoFrameAvailable(frame, width, height);
           });
     }
 
@@ -111,7 +111,7 @@ void DartVlcPlugin::HandleMethodCall(
 
     // The callback must be unregistered
     // before destroying the outlet.
-    auto player = g_players->Get(id);
+    auto player = g_players->Get(player_id);
     player->SetVideoFrameCallback(nullptr);
 
     outlets_.erase(player_id);
