@@ -201,7 +201,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                   color: Colors.white,
                                   iconSize: 30,
                                   icon: Icon(Icons.skip_previous),
-                                  onPressed: () => player.back(),
+                                  onPressed: () => player.previous(),
                                 ),
                               SizedBox(width: 50),
                               IconButton(

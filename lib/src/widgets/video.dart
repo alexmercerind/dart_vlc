@@ -224,6 +224,8 @@ class _VideoStateTexture extends _VideoStateBase {
   @override
   void initState() {
     super.initState();
+    _videoWidth = widget.player.videoDimensions.width.toDouble();
+    _videoHeight = widget.player.videoDimensions.height.toDouble();
     _videoDimensionsSubscription =
         widget.player.videoDimensionsStream.listen((dimensions) {
       if (_videoWidth != dimensions.width.toDouble() &&
