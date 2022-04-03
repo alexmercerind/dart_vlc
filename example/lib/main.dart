@@ -15,7 +15,10 @@ class DartVLCExample extends StatefulWidget {
 }
 
 class DartVLCExampleState extends State<DartVLCExample> {
-  Player player = Player(id: 0);
+  Player player = Player(
+    id: 0,
+    videoDimensions: VideoDimensions(640, 360),
+  );
   MediaType mediaType = MediaType.file;
   CurrentState current = CurrentState();
   PositionState position = PositionState();
@@ -108,7 +111,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
                   child: Video(
                     player: player,
                     width: isPhone ? 320 : 640,
-                    height: isPhone ? 240 : 480,
+                    height: isPhone ? 180 : 360,
                     volumeThumbColor: Colors.blue,
                     volumeActiveColor: Colors.blue,
                     showControls: !isPhone,

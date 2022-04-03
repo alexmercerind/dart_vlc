@@ -282,11 +282,16 @@ void Player::SetVideoDimensionsCallback(
           video_dimension_callback_(video_width_, video_height_);
           if (preferred_video_width_.has_value() &&
               preferred_video_height_.has_value()) {
-            video_width = preferred_video_width_.value_or(0);
-            video_height = preferred_video_height_.value_or(0);
+            video_width = preferred_video_width_.value();
+            video_height = preferred_video_height_.value();
             pitch = video_width_ * 4;
+#ifndef __APPLE__
             vlc_media_player_.setVideoFormat("RGBA", video_width, video_height,
                                              pitch);
+#else
+            vlc_media_player_.setVideoFormat("RV32", video_width, video_height,
+                                             pitch);
+#endif
           } else {
             video_height = video_height_;
             video_width = video_width_;
@@ -305,10 +310,10 @@ void Player::SetVideoDimensionsCallback(
 #else
         strncpy(chroma, "RV32", 4);
 #endif
-        *w = video_width;
-        *h = video_height;
-        *p = pitch;
-        *l = video_height;
+        *w = preferred_video_width_.value_or(video_width_);
+        *h = preferred_video_height_.value_or(video_height_);
+        *p = preferred_video_width_.value_or(video_width_) * 4;
+        *l = preferred_video_height_.value_or(video_height_);
         return 1;
       },
       nullptr);
