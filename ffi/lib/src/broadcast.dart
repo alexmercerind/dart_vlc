@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
 import 'package:dart_vlc_ffi/src/media_source/media.dart';
@@ -96,17 +97,35 @@ abstract class Broadcast {
     broadcast.id = id;
     broadcast.media = media;
     broadcast.configuration = configuration;
+    final args = [
+      id,
+      media.mediaType.toString().toNativeUtf8(),
+      media.resource.toNativeUtf8(),
+      configuration.access.toNativeUtf8(),
+      configuration.mux.toNativeUtf8(),
+      configuration.dst.toNativeUtf8(),
+      configuration.vcodec.toNativeUtf8(),
+      configuration.vb,
+      configuration.acodec.toNativeUtf8(),
+      configuration.ab
+    ];
     BroadcastFFI.create(
-        id,
-        media.mediaType.toString().toNativeUtf8(),
-        media.resource.toNativeUtf8(),
-        configuration.access.toNativeUtf8(),
-        configuration.mux.toNativeUtf8(),
-        configuration.dst.toNativeUtf8(),
-        configuration.vcodec.toNativeUtf8(),
-        configuration.vb,
-        configuration.acodec.toNativeUtf8(),
-        configuration.ab);
+      args[0] as int,
+      args[1] as Pointer<Utf8>,
+      args[2] as Pointer<Utf8>,
+      args[3] as Pointer<Utf8>,
+      args[4] as Pointer<Utf8>,
+      args[5] as Pointer<Utf8>,
+      args[6] as Pointer<Utf8>,
+      args[7] as int,
+      args[8] as Pointer<Utf8>,
+      args[9] as int,
+    );
+    args.forEach((element) {
+      if (element is Pointer<Utf8>) {
+        calloc.free(element);
+      }
+    });
     return broadcast;
   }
 

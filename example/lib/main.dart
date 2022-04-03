@@ -15,7 +15,10 @@ class DartVLCExample extends StatefulWidget {
 }
 
 class DartVLCExampleState extends State<DartVLCExample> {
-  Player player = Player(id: 0);
+  Player player = Player(
+    id: 0,
+    videoDimensions: VideoDimensions(640, 360),
+  );
   MediaType mediaType = MediaType.file;
   CurrentState current = CurrentState();
   PositionState position = PositionState();
@@ -74,12 +77,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
   Widget build(BuildContext context) {
     bool isTablet;
     bool isPhone;
-
     final double devicePixelRatio = ui.window.devicePixelRatio;
-    final ui.Size size = ui.window.physicalSize;
-    final double width = size.width;
-    final double height = size.height;
-
+    final double width = ui.window.physicalSize.width;
+    final double height = ui.window.physicalSize.height;
     if (devicePixelRatio < 2 && (width >= 1000 || height >= 1000)) {
       isTablet = true;
       isPhone = false;
@@ -111,10 +111,10 @@ class DartVLCExampleState extends State<DartVLCExample> {
                   child: Video(
                     player: player,
                     width: isPhone ? 320 : 640,
-                    height: isPhone ? 240 : 480,
+                    height: isPhone ? 180 : 360,
                     volumeThumbColor: Colors.blue,
                     volumeActiveColor: Colors.blue,
-                    playlistLength: medias.length,
+                    showControls: !isPhone,
                   ),
                 ),
               ],
@@ -681,9 +681,9 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 ),
                 const SizedBox(width: 12.0),
                 ElevatedButton(
-                  onPressed: () => this.player.back(),
+                  onPressed: () => this.player.previous(),
                   child: const Text(
-                    'back',
+                    'previous',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),

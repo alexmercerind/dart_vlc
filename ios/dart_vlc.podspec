@@ -5,13 +5,13 @@
 Pod::Spec.new do |s|
     s.name             = 'dart_vlc'
     s.version          = '0.0.1'
-    s.summary          = 'A new flutter plugin project.'
+    s.summary          = 'Flutter media playback, broadcast, recording & chromecast library. Based on libvlc.'
     s.description      = <<-DESC
-  A new flutter plugin project.
+  Flutter media playback, broadcast, recording & chromecast library. Based on libvlc.
                          DESC
-    s.homepage         = 'http://example.com'
+    s.homepage         = 'http://github.com/alexmercerind/dart_vlc.git'
     s.license          = { :file => '../LICENSE' }
-    s.author           = { 'Your Company' => 'email@example.com' }
+    s.author           = { 'alexmercerind' => 'saini123hitesh@gmail.com' }
     s.script_phases     = [{
         :name => 'Fetch submodules... only needed if using git in pubspec.yaml',
         :show_env_vars_in_log => true,
@@ -20,13 +20,13 @@ Pod::Spec.new do |s|
     }, {
         :name => 'Build Simulator lib',
         :show_env_vars_in_log => true,
-        :script => 'cmake -Bdartvlc_core '\
-        '${PODS_TARGET_SRCROOT}/../dartvlc '\
+        :script => 'cmake -Bcore '\
+        '${PODS_TARGET_SRCROOT}/../core '\
         '-DCMAKE_INSTALL_PREFIX:PATH=${PODS_TARGET_SRCROOT}/deps '\
         '-GXcode '\
         '-DCMAKE_SYSTEM_NAME=iOS && '\
         'pwd && '\
-        'xcodebuild -project dartvlc_core/dart_vlc_core.xcodeproj '\
+        'xcodebuild -project core/dart_vlc_core.xcodeproj '\
         '-sdk iphonesimulator '\
         '-scheme dart_vlc_core '\
         'CONFIGURATION_BUILD_DIR=${PODS_TARGET_SRCROOT}/deps/simulator',
@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
     }, {
         :name => 'Build Device lib',
         :show_env_vars_in_log => true,
-        :script => 'xcodebuild -project dartvlc_core/dart_vlc_core.xcodeproj '\
+        :script => 'xcodebuild -project core/dart_vlc_core.xcodeproj '\
         '-sdk iphoneos '\
         '-scheme dart_vlc_core '\
         'CONFIGURATION_BUILD_DIR=${PODS_TARGET_SRCROOT}/deps/device',

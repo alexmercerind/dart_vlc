@@ -20,7 +20,7 @@ A new flutter plugin project.
   }, {
     :name => 'Build common lib',
     :show_env_vars_in_log => true,
-    :script => 'cmake -Bdartvlc_core ${PODS_TARGET_SRCROOT}/../dartvlc -DCMAKE_INSTALL_PREFIX:PATH=${PODS_TARGET_SRCROOT}/deps && pwd && make -C dartvlc_core install',
+    :script => 'cmake -Bcore_core ${PODS_TARGET_SRCROOT}/../core -DCMAKE_INSTALL_PREFIX:PATH=${PODS_TARGET_SRCROOT}/deps && pwd && make -C core_core install',
     :execution_position => :before_compile
   }, {
     :name => 'Change VLCKit ID',
@@ -39,7 +39,7 @@ A new flutter plugin project.
     'DEFINES_MODULE' => 'YES',
     # Hack. We should restructure the common layer in a way that
     # the platform-specific plugins won't need the VLC headers anymore.
-    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/../dartvlc $(PODS_TARGET_SRCROOT)/../dartvlc/external/libvlcpp ${PODS_ROOT}/dartvlc_core/dart_vlc_core_packages/vlc-3.0.9.2/sdk/include',
+    'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/../core ${PODS_ROOT}/core_core/dart_vlc_core_packages/vlc-3.0.9.2/sdk/include ${PODS_ROOT}/core_core/dart_vlc_core_packages/libvlcpp-master ${PODS_ROOT}/core_core/dart_vlc_core_packages/dart_api-master',
     'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/deps/lib',
     'OTHER_CFLAGS' => [
       '-Wno-documentation',

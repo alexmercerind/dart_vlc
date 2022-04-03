@@ -1,19 +1,26 @@
-/*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
- * libVLC++.
- *
- * Hitesh Kumar Saini
- * https://github.com/alexmercerind
- * saini123hitesh@gmail.com; alexmercerind@gmail.com
- *
- * GNU Lesser General Public License v2.1
- */
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "include/dart_vlc/dart_vlc_plugin.h"
 
 #include <unordered_map>
 
-#include "player.h"
+#include "core.h"
 #include "video_outlet.h"
 
 namespace {
@@ -62,10 +69,11 @@ DartVlcPlugin::DartVlcPlugin(
     : channel_(std::move(channel)), texture_registrar_(texture_registrar) {}
 
 DartVlcPlugin::~DartVlcPlugin() {
-  // Clean up unreleased players when the flutter engine is destroyed to avoid crashes.
+  // Clean up unreleased players when the flutter engine is destroyed to avoid
+  // crashes.
   for (const auto& [player_id, outlet] : outlets_) {
-    Player* player = g_players->Get(player_id);
-    player->OnVideo(nullptr);
+    auto player = g_players->Get(player_id);
+    player->SetVideoFrameCallback(nullptr);
     g_players->Dispose(player_id);
   }
 }
@@ -82,13 +90,12 @@ void DartVlcPlugin::HandleMethodCall(
     auto [it, added] = outlets_.try_emplace(player_id, nullptr);
     if (added) {
       it->second = std::make_unique<VideoOutlet>(texture_registrar_);
-
-      Player* player = g_players->Get(player_id);
-      player->OnVideo([outlet_ptr = it->second.get()](uint8_t* frame,
-                                                      int32_t width,
-                                                      int32_t height) -> void {
-        outlet_ptr->OnVideo(frame, width, height);
-      });
+      auto player = g_players->Get(player_id);
+      player->SetVideoFrameCallback(
+          [outlet_ptr = it->second.get()](uint8_t* frame, int32_t width,
+                                          int32_t height) -> void {
+            outlet_ptr->MarkVideoFrameAvailable(frame, width, height);
+          });
     }
 
     return result->Success(flutter::EncodableValue(it->second->texture_id()));
@@ -104,8 +111,8 @@ void DartVlcPlugin::HandleMethodCall(
 
     // The callback must be unregistered
     // before destroying the outlet.
-    Player* player = g_players->Get(player_id);
-    player->OnVideo(nullptr);
+    auto player = g_players->Get(player_id);
+    player->SetVideoFrameCallback(nullptr);
 
     outlets_.erase(player_id);
 

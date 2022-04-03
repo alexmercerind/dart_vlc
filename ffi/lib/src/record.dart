@@ -23,11 +23,18 @@ class Record {
     record.id = id;
     record.media = media;
     record.savingFile = savingFile;
+    final savingFileCStr = savingFile.path.toNativeUtf8();
+    final mediaTypeCStr = media.mediaType.toString().toNativeUtf8();
+    final mediaResourceCStr = media.resource.toNativeUtf8();
     RecordFFI.create(
-        record.id,
-        savingFile.path.toNativeUtf8(),
-        media.mediaType.toString().toNativeUtf8(),
-        media.resource.toNativeUtf8());
+      record.id,
+      savingFileCStr,
+      mediaTypeCStr,
+      mediaResourceCStr,
+    );
+    calloc.free(savingFileCStr);
+    calloc.free(mediaTypeCStr);
+    calloc.free(mediaResourceCStr);
     return record;
   }
 

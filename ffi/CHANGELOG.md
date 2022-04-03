@@ -1,3 +1,8 @@
+## 0.1.6
+
+- Rewrite FFI bindings.
+- Update `NativePort` event handling to follow new structure.
+
 ## 0.1.5+1
 
 - Update equivalent Dart code & example
@@ -25,7 +30,7 @@
 
 ## 0.0.9
 
-- Fixed `Devices.all` & `Media.parse` causing crash on Windows. 
+- Fixed `Devices.all` & `Media.parse` causing crash on Windows.
 
 ## 0.0.8
 

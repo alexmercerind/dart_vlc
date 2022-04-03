@@ -1,18 +1,22 @@
-/*
- * dart_vlc: A media playback library for Dart & Flutter. Based on libVLC &
- * libVLC++.
- *
- * Hitesh Kumar Saini
- * https://github.com/alexmercerind
- * saini123hitesh@gmail.com; alexmercerind@gmail.com
- *
- * GNU Lesser General Public License v2.1
- */
-
-#include "player.h"
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "include/dart_vlc/dart_vlc_plugin.h"
-#include "include/dart_vlc/dart_vlc_video_outlet.h"
 
 #include <flutter_linux/flutter_linux.h>
 #include <gtk/gtk.h>
@@ -20,6 +24,8 @@
 #include <cstring>
 #include <unordered_map>
 
+#include "core.h"
+#include "include/dart_vlc/dart_vlc_video_outlet.h"
 
 #define DART_VLC_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), dart_vlc_plugin_get_type(), DartVlcPlugin))
@@ -49,27 +55,27 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self,
           video_outlet_copy_pixels;
       fl_texture_registrar_register_texture(self->texture_registrar,
                                             FL_TEXTURE(it->second));
+      auto video_outlet_private =
+          (VideoOutletPrivate*)video_outlet_get_instance_private(it->second);
+      video_outlet_private->texture_id =
+          reinterpret_cast<int64_t>(FL_TEXTURE(it->second));
+      auto player = g_players->Get(player_id);
+      player->SetVideoFrameCallback(
+          [texture_registrar = self->texture_registrar,
+           video_outlet_ptr = it->second,
+           video_outlet_private = video_outlet_private](
+              uint8_t* frame, int32_t width, int32_t height) -> void {
+            video_outlet_private->buffer = frame;
+            video_outlet_private->video_width = width;
+            video_outlet_private->video_height = height;
+            fl_texture_registrar_mark_texture_frame_available(
+                texture_registrar, FL_TEXTURE(video_outlet_ptr));
+          });
 
-      auto video_outlet_private = (VideoOutletPrivate*) video_outlet_get_instance_private(it->second);
-      video_outlet_private->texture_id = reinterpret_cast<int64_t>(FL_TEXTURE(it->second));
-
-      Player* player = g_players->Get(player_id);
-      player->OnVideo([texture_registrar = self->texture_registrar,
-                       video_outlet_ptr = it->second,
-                       video_outlet_private = video_outlet_private](uint8_t* frame, int32_t width,
-                                                                    int32_t height) -> void {
-        video_outlet_private->buffer = frame;
-        video_outlet_private->video_width = width;
-        video_outlet_private->video_height = height;
-        fl_texture_registrar_mark_texture_frame_available(
-            texture_registrar, FL_TEXTURE(video_outlet_ptr));
-      });
-
-      response =
-        FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_int(
-            video_outlet_private->texture_id)));
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(
+          fl_value_new_int(video_outlet_private->texture_id)));
     }
-    
+
   } else if (strcmp(method_name, "PlayerUnregisterTexture") == 0) {
     auto arguments = fl_method_call_get_args(method_call);
     int32_t player_id =
@@ -79,8 +85,8 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self,
           "-2", "Texture was not found.", fl_value_new_null()));
     } else {
       g_video_outlets.erase(player_id);
-      Player* player = g_players->Get(player_id);
-      player->OnVideo(nullptr);
+      auto player = g_players->Get(player_id);
+      player->SetVideoFrameCallback(nullptr);
       response = FL_METHOD_RESPONSE(
           fl_method_success_response_new(fl_value_new_null()));
     }
