@@ -2,7 +2,6 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
-import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
