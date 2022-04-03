@@ -20,7 +20,7 @@
 
 #include <unordered_map>
 
-#include "player.h"
+#include "core.h"
 #include "video_outlet.h"
 
 namespace {
@@ -72,8 +72,8 @@ DartVlcPlugin::~DartVlcPlugin() {
   // Clean up unreleased players when the flutter engine is destroyed to avoid
   // crashes.
   for (const auto& [player_id, outlet] : outlets_) {
-    Player* player = g_players->Get(player_id);
-    player->OnVideo(nullptr);
+    auto player = g_players->Get(id);
+    player->SetVideoFrameCallback(nullptr);
     g_players->Dispose(player_id);
   }
 }
@@ -90,13 +90,12 @@ void DartVlcPlugin::HandleMethodCall(
     auto [it, added] = outlets_.try_emplace(player_id, nullptr);
     if (added) {
       it->second = std::make_unique<VideoOutlet>(texture_registrar_);
-
-      Player* player = g_players->Get(player_id);
-      player->OnVideo([outlet_ptr = it->second.get()](uint8_t* frame,
-                                                      int32_t width,
-                                                      int32_t height) -> void {
-        outlet_ptr->OnVideo(frame, width, height);
-      });
+      auto player = g_players->Get(id);
+      player->SetVideoFrameCallback(
+          [outlet_ptr = it->second.get()](uint8_t* frame, int32_t width,
+                                          int32_t height) -> void {
+            outlet_ptr->SetVideoFrameCallback(frame, width, height);
+          });
     }
 
     return result->Success(flutter::EncodableValue(it->second->texture_id()));
@@ -112,8 +111,8 @@ void DartVlcPlugin::HandleMethodCall(
 
     // The callback must be unregistered
     // before destroying the outlet.
-    Player* player = g_players->Get(player_id);
-    player->OnVideo(nullptr);
+    auto player = g_players->Get(id);
+    player->SetVideoFrameCallback(nullptr);
 
     outlets_.erase(player_id);
 

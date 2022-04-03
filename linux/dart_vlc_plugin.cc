@@ -24,8 +24,8 @@
 #include <cstring>
 #include <unordered_map>
 
+#include "core.h"
 #include "include/dart_vlc/dart_vlc_video_outlet.h"
-#include "player.h"
 
 #define DART_VLC_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), dart_vlc_plugin_get_type(), DartVlcPlugin))
@@ -55,14 +55,12 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self,
           video_outlet_copy_pixels;
       fl_texture_registrar_register_texture(self->texture_registrar,
                                             FL_TEXTURE(it->second));
-
       auto video_outlet_private =
           (VideoOutletPrivate*)video_outlet_get_instance_private(it->second);
       video_outlet_private->texture_id =
           reinterpret_cast<int64_t>(FL_TEXTURE(it->second));
-
-      Player* player = g_players->Get(player_id);
-      player->OnVideo(
+      auto player = g_players->Get(player_id);
+      player->SetVideoFrameCallback(
           [texture_registrar = self->texture_registrar,
            video_outlet_ptr = it->second,
            video_outlet_private = video_outlet_private](
@@ -87,8 +85,8 @@ static void dart_vlc_plugin_handle_method_call(DartVlcPlugin* self,
           "-2", "Texture was not found.", fl_value_new_null()));
     } else {
       g_video_outlets.erase(player_id);
-      Player* player = g_players->Get(player_id);
-      player->OnVideo(nullptr);
+      auto player = g_players->Get(player_id);
+      player->SetVideoFrameCallback(nullptr);
       response = FL_METHOD_RESPONSE(
           fl_method_success_response_new(fl_value_new_null()));
     }
