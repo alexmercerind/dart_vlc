@@ -1,6 +1,6 @@
 #import "VideoOutlet.h"
 
-#include "player.h"
+#include "core.h"
 
 @implementation VideoOutlet {
   Player* _player;
@@ -35,7 +35,7 @@
 
     _textureId = [textureRegistry registerTexture:self];
 
-    player->OnVideo([self](uint8_t* frame, int32_t width, int32_t height) {
+    player->SetVideoFrameCallback([self](uint8_t* frame, int32_t width, int32_t height) {
       [self onFrame:frame width:width height:height];
     });
   }
@@ -50,7 +50,7 @@
 }
 
 - (void)dispose {
-  _player->OnVideo(nullptr);
+  _player->SetVideoFrameCallback(nullptr);
   [_textures unregisterTexture:_textureId];
 }
 
