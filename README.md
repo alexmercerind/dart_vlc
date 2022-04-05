@@ -1,5 +1,5 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<h4 align="center">Flutter media playback, broadcast, recording & chromecast library for Windows, Linux & macOS.</h4>
+<h4 align="center">Flutter audio/video playback, broadcast & recording library for Windows, Linux & macOS with playlist control. Native C/C++ & libvlc</h4>
 
 [![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind)
 [![](https://img.shields.io/twitter/follow/alexmercerind)](https://twitter.com/alexmercerind) [![Join the chat at https://discord.gg/3h3K3JF](https://img.shields.io/discord/716939396464508958?label=discord)](https://discord.gg/3h3K3JF)
@@ -10,12 +10,29 @@
 
 ## Installation
 
-**Flutter**
+_pub.dev_
 
 ```yaml
 dependencies:
   ...
   dart_vlc: ^0.1.9
+```
+
+_GitHub_
+
+```yaml
+dependencies:
+  dart_vlc:
+    git:
+      url: https://github.com/alexmercerind/dart_vlc.git
+      ref: master
+
+dependency_overrides:
+  dart_vlc_ffi:
+    git:
+      url: https://github.com/alexmercerind/dart_vlc.git
+      ref: master
+      path: ffi
 ```
 
 Feel free to open a [new issue](https://github.com/alexmercerind/dart_vlc/issues) or [discussion](https://github.com/alexmercerind/dart_vlc/discussions), if you found a bug or need assistance.
@@ -45,13 +62,13 @@ void main() {
 #### Create a new player instance.
 
 ```dart
-Player player = Player(id: 69420);
+final player = Player(id: 69420);
 ```
 
 For passing VLC CLI arguments, use `commandlineArguments` argument.
 
 ```dart
-Player player = Player(
+final player = Player(
   id: 69420,
   commandlineArguments: ['--no-video']
 );
@@ -60,20 +77,20 @@ Player player = Player(
 #### Create a media for playback.
 
 ```dart
-Media media0 = Media.file(
+final media0 = Media.file(
   File('C:/music.mp3')
 );
 
-Media media1 = Media.asset(
+final media1 = Media.asset(
   'assets/audio/example.mp3'
 );
 
-Media media2 = Media.network(
+final media2 = Media.network(
   'https://www.example.com/music.aac'
 );
 
 // Clip the media.
-Media media2 = Media.network(
+final media2 = Media.network(
   'https://www.example.com/music.aac',
   startTime: Duration(seconds: 20), // Start media from 20 seconds from the beginning.
   stopTime: Duration(seconds: 60), // End media at 60 seconds from the beginning.
@@ -83,7 +100,7 @@ Media media2 = Media.network(
 #### Create a list of medias using playlist.
 
 ```dart
-Playlist playlist = new Playlist(
+final playlist = Playlist(
   medias: [
     Media.file(File('C:/music.mp3')),
     Media.file(File('C:/audio.mp3')),
@@ -106,9 +123,9 @@ player.open(
 player.open(
   Playlist(
     medias: [
-      Media.file(new File('C:/music0.mp3')),
-      Media.file(new File('C:/music1.mp3')),
-      Media.file(new File('C:/music2.mp3')),
+      Media.file(File('C:/music0.mp3')),
+      Media.file(File('C:/music1.mp3')),
+      Media.file(File('C:/music2.mp3')),
     ],
   ),
   autoStart: false,
@@ -129,14 +146,14 @@ player.playOrPause();
 player.stop();
 ```
 
-#### Traverse through the playlist.
+#### Controls the playlist.
 
 ```dart
 player.next();
 
-player.back();
+player.previous();
 
-player.jump(10);
+player.jumpToIndex(10);
 ```
 
 #### Manipulate an already playing playlist.
@@ -174,7 +191,7 @@ player.setDevice(
 );
 ```
 
-#### Save the video snapshot
+#### Save the video screenshot
 
 ```dart
 player.takeSnapshot(file, 1920, 1080);
@@ -207,7 +224,7 @@ To override this & define custom video frame size, pass `videoDimensions` argume
 ```dart
 Player player = Player(
   id: 69420,
-  videoDimensions: const VideoDimensions(640, 360)
+  videoDimensions: const VideoDimensions(640, 360),
 );
 ```
 
@@ -324,7 +341,7 @@ equalizer.bandAmps;
 Broadcasting to localhost.
 
 ```dart
-Broadcast broadcast = Broadcast.create(
+final broadcast = Broadcast.create(
   id: 0,
   media: Media.file(File('C:/video.mp4')),
   configuration: BroadcastConfiguration(
@@ -349,7 +366,7 @@ broadcast.dispose();
 #### Record a media.
 
 ```dart
-Record record = Record.create(
+final record = Record.create(
   id: 205,
   media: Media.network('https://www.example.com/streaming-media.MP3'),
   pathFile: '/home/alexmercerind/recording.MP3',
