@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 
-void main() {
-  DartVLC.initialize();
+void main() async {
+  await DartVLC.initialize();
   runApp(DartVLCExample());
 }
 
@@ -18,6 +18,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
   Player player = Player(
     id: 0,
     videoDimensions: VideoDimensions(640, 360),
+    registerTexture: false,
   );
   MediaType mediaType = MediaType.file;
   CurrentState current = CurrentState();
@@ -108,14 +109,23 @@ class DartVLCExampleState extends State<DartVLCExample> {
                 Card(
                   clipBehavior: Clip.antiAlias,
                   elevation: 2.0,
-                  child: Video(
-                    player: player,
-                    width: isPhone ? 320 : 640,
-                    height: isPhone ? 180 : 360,
-                    volumeThumbColor: Colors.blue,
-                    volumeActiveColor: Colors.blue,
-                    showControls: !isPhone,
-                  ),
+                  child: Platform.isWindows
+                      ? NativeVideo(
+                          player: player,
+                          width: isPhone ? 320 : 640,
+                          height: isPhone ? 180 : 360,
+                          volumeThumbColor: Colors.blue,
+                          volumeActiveColor: Colors.blue,
+                          showControls: !isPhone,
+                        )
+                      : Video(
+                          player: player,
+                          width: isPhone ? 320 : 640,
+                          height: isPhone ? 180 : 360,
+                          volumeThumbColor: Colors.blue,
+                          volumeActiveColor: Colors.blue,
+                          showControls: !isPhone,
+                        ),
                 ),
               ],
             ),

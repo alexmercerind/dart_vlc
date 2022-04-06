@@ -16,6 +16,16 @@ dependencies:
   path: ">=1.8.0 <2.0.0"
   path_provider: ">=2.0.2 <3.0.0"
   audio_video_progress_bar: ">=0.9.0 <1.0.0"
+  # Windows specific [NativeVideo] setup.
+  win32: ^2.5.1
+  ffi: ^1.1.2
+  flutter_native_view:
+    git: https://github.com/alexmercerind/flutter_native_view.git
+
+# REMOVE THIS BEFORE PUBLISHING ON pub.dev.
+dependency_overrides:
+  dart_vlc_ffi:
+    path: ./ffi
 
 flutter:
   # No platform channel implementation after migration to FFI.
