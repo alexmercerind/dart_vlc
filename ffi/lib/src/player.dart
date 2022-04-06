@@ -63,6 +63,9 @@ class Player {
   /// Stream to listen to volume & rate state of the [Player] instance.
   late Stream<GeneralState> generalStream;
 
+  /// Explicit video dimensions according to which the pixel buffer will be retrieved & rendered inside the [Video] widget.
+  VideoDimensions? preferredVideoDimensions;
+
   /// Dimensions of the currently playing video.
   VideoDimensions videoDimensions = VideoDimensions(0, 0);
 
@@ -108,7 +111,7 @@ class Player {
     this.errorController = StreamController<String>.broadcast();
     this.errorStream = this.errorController.stream;
     if (videoDimensions != null) {
-      this.videoDimensions = videoDimensions;
+      this.preferredVideoDimensions = videoDimensions;
     }
     this.videoDimensionsController =
         StreamController<VideoDimensions>.broadcast();
@@ -126,8 +129,8 @@ class Player {
     }
     PlayerFFI.create(
       this.id,
-      this.videoDimensions.width,
-      this.videoDimensions.height,
+      this.preferredVideoDimensions?.width ?? 0,
+      this.preferredVideoDimensions?.height ?? 0,
       this.commandlineArguments.length,
       arr,
     );
@@ -405,6 +408,10 @@ class Player {
     // for some reason this value returns 0 when no tracks exists
     // and 2 or more if there's 1 or more audio tracks for this [MediaSource].
     return count > 1 ? count - 1 : count;
+  }
+
+  void setHWND(int hwnd) {
+    PlayerFFI.setHWND(this.id, hwnd);
   }
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.

@@ -62,3 +62,5 @@ typedef PlayerSetAudioTrackCXX = Void Function(Int32 id, Int32 index);
 typedef PlayerSetAudioTrackDart = void Function(int id, int index);
 typedef PlayerGetAudioTrackCountCXX = Int32 Function(Int32 id);
 typedef PlayerGetAudioTrackCountDart = int Function(int id);
+typedef PlayerSetHWNDCXX = Int32 Function(Int32 id, Int64 hwnd);
+typedef PlayerSetHWNDDart = int Function(int id, int hwnd);
