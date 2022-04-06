@@ -20,7 +20,9 @@ dependencies:
   win32: ^2.5.1
   ffi: ^1.1.2
   flutter_native_view:
-    git: https://github.com/alexmercerind/flutter_native_view.git
+    git:
+      url: https://github.com/alexmercerind/flutter_native_view.git
+      ref: d2d77e4b26ed9a8666a41120d6827dadc4218086
 
 # REMOVE THIS BEFORE PUBLISHING ON pub.dev.
 dependency_overrides:
