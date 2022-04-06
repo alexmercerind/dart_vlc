@@ -261,14 +261,14 @@ inline void OnVideoDimensions(int32_t id, int32_t video_width,
   g_dart_post_C_object(g_callback_port, &return_object);
 }
 
-inline void OnVideo(int32_t id, int size, uint8_t* frame) {
+inline void OnVideoFrame(int32_t id, int size, uint8_t* frame) {
   Dart_CObject id_object;
   id_object.type = Dart_CObject_kInt32;
   id_object.value.as_int32 = id;
 
   Dart_CObject type_object;
   type_object.type = Dart_CObject_kString;
-  type_object.value.as_string = const_cast<char*>("videoEvent");
+  type_object.value.as_string = const_cast<char*>("videoFrameEvent");
 
   Dart_CObject frame_object;
   frame_object.type = Dart_CObject_kTypedData;

@@ -95,6 +95,8 @@ class Player {
 
   int32_t GetAudioTrackCount();
 
+  void SetHWND(int64_t hwnd);
+
   // These methods register callbacks from the client code which get invoked
   // when the corresponding event occurs.
 
