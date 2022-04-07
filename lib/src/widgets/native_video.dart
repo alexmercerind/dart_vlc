@@ -24,16 +24,26 @@ import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/widgets/controls.dart';
 import 'package:flutter_native_view/flutter_native_view.dart';
 
-/// {@template video}
-/// Widget for showing [NativeVideo] inside the [Widget] tree.
-/// Creation of [Player] instance is necessary as a controller, for this [Widget] to show [NativeVideo] output.
+/// {@template nativevideo}
+/// **HIGHLY EXPERIMENTAL**
+///
+/// A widget for showing video inside the [Widget] tree.
+/// This [Widget] is more performant compared to [Video] & uses [flutter_native_view](https://github.com/alexmercerind/flutter_native_view.git)
+/// to embed the video output directly without any texture interop or pixel-buffer copy calls.
+///
+/// But, it is highly dependent on platform & other limitations apply. In general, this widget is more performant & should be used if possible.
 ///
 /// An example configuration between a [Player] and a [NativeVideo] can be as follows.
 /// The [Player.id] and [NativeVideo.playerId] must be same for two to work together.
 ///
+/// Register the plugin with `useFlutterNativeView`.
+/// ```dart
+/// DartVLC.initilize(useFlutterNativeView: true);
+/// ```
+/// Pass `registerTexture` as `false` when creating [Player] & use [NativeVideo] widget.
 /// ```dart
 /// class _MyAppState extends State<MyApp> {
-///   Player player = Player(id: 0);
+///   Player player = Player(id: 0, registerTexture: false);
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
@@ -50,12 +60,15 @@ import 'package:flutter_native_view/flutter_native_view.dart';
 /// }
 /// ```
 ///
+/// **Supported Platforms**
+/// - [x] Windows
+///
 /// This [Widget] internally uses [StreamController].
 /// Prefer calling [Player.stop] & [NativeVideo.dispose] to freed the resources.
 /// A global [Key] may be used for this purpose.
 /// {@endtemplate}
 class NativeVideo extends StatefulWidget {
-  /// {@macro video}
+  /// {@macro nativevideo}
   NativeVideo({
     Key? key,
     required Player player,
@@ -146,11 +159,10 @@ class NativeVideo extends StatefulWidget {
   /// instead of the total time, set this to true
   final bool showTimeLeft;
 
-  _NativeVideoStateBase createState() => _NativeVideoStateBase();
+  _NativeVideoState createState() => _NativeVideoState();
 }
 
-class _NativeVideoStateBase extends State<NativeVideo>
-    with AutomaticKeepAliveClientMixin {
+class _NativeVideoState extends State<NativeVideo> {
   NativeViewController? controller;
   GlobalKey<ControlState> controlKey = GlobalKey<ControlState>();
 
@@ -168,13 +180,15 @@ class _NativeVideoStateBase extends State<NativeVideo>
         );
       });
     });
-    if (widget.showControls) controls[playerId] = controlKey;
+    if (widget.showControls) {
+      controls[playerId] = controlKey;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Container(
+      alignment: Alignment.center,
       width: widget.width ?? double.infinity,
       height: widget.height ?? double.infinity,
       color: Colors.black,
@@ -208,11 +222,13 @@ class _NativeVideoStateBase extends State<NativeVideo>
         color: Colors.black,
       );
     } else {
-      return LayoutBuilder(
-        builder: (context, c) => NativeView(
+      return Container(
+        width: widget.width ?? double.infinity,
+        height: widget.height ?? double.infinity,
+        child: NativeView(
           controller: controller!,
-          width: widget.width ?? c.maxWidth,
-          height: widget.height ?? c.maxHeight,
+          width: widget.width ?? double.infinity,
+          height: widget.height ?? double.infinity,
         ),
       );
     }
@@ -223,7 +239,4 @@ class _NativeVideoStateBase extends State<NativeVideo>
     controller?.dispose();
     super.dispose();
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

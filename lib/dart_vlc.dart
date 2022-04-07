@@ -98,9 +98,14 @@ class Player extends FFI.Player {
 /// }
 /// ```
 abstract class DartVLC {
-  static Future<void> initialize() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await FlutterNativeView.ensureInitialized();
+  static Future<void> initialize({
+    bool useFlutterNativeView = false,
+  }) async {
+    if (useFlutterNativeView && Platform.isWindows) {
+      /// Windows specific [NativeVideo].
+      WidgetsFlutterBinding.ensureInitialized();
+      await FlutterNativeView.ensureInitialized();
+    }
     FFI.videoFrameCallback = (int playerId, Uint8List videoFrame) {
       if (videoStreamControllers[playerId] != null &&
           FFI.players[playerId] != null) {
