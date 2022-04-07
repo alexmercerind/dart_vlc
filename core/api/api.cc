@@ -357,6 +357,16 @@ int32_t PlayerGetAudioTrackCount(int32_t id) {
   return player->GetAudioTrackCount();
 }
 
+void PlayerSetHWND(int32_t id, int64_t hwnd) {
+  auto player = g_players->Get(id);
+  if (!player) {
+    g_players->Create(
+        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    player = g_players->Get(id);
+  }
+  player->SetHWND(hwnd);
+}
+
 void MediaClearMap(void*, void* peer) {
   delete reinterpret_cast<std::map<std::string, std::string>*>(peer);
 }

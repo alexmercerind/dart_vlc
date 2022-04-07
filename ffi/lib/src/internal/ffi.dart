@@ -112,6 +112,10 @@ abstract class PlayerFFI {
       .lookup<NativeFunction<PlayerGetAudioTrackCountCXX>>(
           'PlayerGetAudioTrackCount')
       .asFunction();
+
+  static final PlayerSetHWNDDart setHWND = dynamicLibrary
+      .lookup<NativeFunction<PlayerSetHWNDCXX>>('PlayerSetHWND')
+      .asFunction();
 }
 
 abstract class MediaFFI {
@@ -273,7 +277,7 @@ final ReceivePort receiver = new ReceivePort()
                 .add(players[id]!.videoDimensions);
           break;
         }
-      case 'videoEvent':
+      case 'videoFrameEvent':
         {
           videoFrameCallback(id, event[2]);
           break;

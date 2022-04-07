@@ -102,6 +102,8 @@ DLLEXPORT void PlayerSetAudioTrack(int32_t id, int32_t track);
 
 DLLEXPORT int32_t PlayerGetAudioTrackCount(int32_t id);
 
+DLLEXPORT void PlayerSetHWND(int32_t id, int64_t hwnd);
+
 DLLEXPORT const char** MediaParse(Dart_Handle object, const char* type,
                                   const char* resource, int32_t timeout);
 

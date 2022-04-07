@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 
-void main() {
-  DartVLC.initialize();
+void main() async {
+  await DartVLC.initialize(useFlutterNativeView: true);
   runApp(DartVLCExample());
 }
 
@@ -18,6 +18,7 @@ class DartVLCExampleState extends State<DartVLCExample> {
   Player player = Player(
     id: 0,
     videoDimensions: VideoDimensions(640, 360),
+    registerTexture: !Platform.isWindows,
   );
   MediaType mediaType = MediaType.file;
   CurrentState current = CurrentState();
@@ -57,20 +58,15 @@ class DartVLCExampleState extends State<DartVLCExample> {
         },
       );
       this.player.errorStream.listen((event) {
-        print('⚠️⚠️⚠️ libVLC error received.');
+        print('libvlc error.');
       });
+      this.devices = Devices.all;
+      Equalizer equalizer = Equalizer.createMode(EqualizerMode.live);
+      equalizer.setPreAmp(10.0);
+      equalizer.setBandAmp(31.25, 10.0);
+      this.player.setEqualizer(equalizer);
+      this.setState(() {});
     }
-  }
-
-  @override
-  Future<void> didChangeDependencies() async {
-    super.didChangeDependencies();
-    this.devices = Devices.all;
-    Equalizer equalizer = Equalizer.createMode(EqualizerMode.live);
-    equalizer.setPreAmp(10.0);
-    equalizer.setBandAmp(31.25, 10.0);
-    this.player.setEqualizer(equalizer);
-    this.setState(() {});
   }
 
   @override
@@ -105,18 +101,23 @@ class DartVLCExampleState extends State<DartVLCExample> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  elevation: 2.0,
-                  child: Video(
-                    player: player,
-                    width: isPhone ? 320 : 640,
-                    height: isPhone ? 180 : 360,
-                    volumeThumbColor: Colors.blue,
-                    volumeActiveColor: Colors.blue,
-                    showControls: !isPhone,
-                  ),
-                ),
+                Platform.isWindows
+                    ? NativeVideo(
+                        player: player,
+                        width: isPhone ? 320 : 640,
+                        height: isPhone ? 180 : 360,
+                        volumeThumbColor: Colors.blue,
+                        volumeActiveColor: Colors.blue,
+                        showControls: !isPhone,
+                      )
+                    : Video(
+                        player: player,
+                        width: isPhone ? 320 : 640,
+                        height: isPhone ? 180 : 360,
+                        volumeThumbColor: Colors.blue,
+                        volumeActiveColor: Colors.blue,
+                        showControls: !isPhone,
+                      ),
               ],
             ),
             Row(

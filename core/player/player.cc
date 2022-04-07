@@ -251,6 +251,10 @@ int32_t Player::GetAudioTrackCount() {
   return vlc_media_player_.audioTrackCount();
 }
 
+void Player::SetHWND(int64_t hwnd) {
+  vlc_media_player_.setHwnd(reinterpret_cast<void*>(hwnd));
+}
+
 void Player::SetOpenCallback(std::function<void(VLC::Media)> callback) {
   open_callback_ = callback;
   vlc_media_player_.eventManager().onMediaChanged(
