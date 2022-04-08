@@ -1,8 +1,7 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<h4 align="center">Flutter audio/video playback, broadcast & recording library for Windows, Linux & macOS with playlist control. Native C/C++ & libvlc</h4>
+<p align="center">Flutter audio/video playback, broadcast & recording library for Windows, Linux & macOS with playlist control</p>
 
-[![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind)
-[![](https://img.shields.io/twitter/follow/alexmercerind)](https://twitter.com/alexmercerind) [![Join the chat at https://discord.gg/3h3K3JF](https://img.shields.io/discord/716939396464508958?label=discord)](https://discord.gg/3h3K3JF)
+[![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![](https://img.shields.io/twitter/follow/alexmercerind)](https://twitter.com/alexmercerind) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind) [![Join the chat at https://discord.gg/3h3K3JF](https://img.shields.io/discord/716939396464508958?label=discord)](https://discord.gg/3h3K3JF)
 
 ![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_1.PNG?raw=true)
 
@@ -201,7 +200,7 @@ player.takeSnapshot(file, 1920, 1080);
 
 Show `Video` in the `Widget` tree.
 
-**NOTE:** This will cause additional CPU-load because of conversion of video frames to RGBA/BGRA pixel-buffers & `Texture`. For better performance, use [NativeVideo](#nativevideo) instead.
+**NOTE:** This will cause additional CPU-load due to conversion of video frames to RGBA/BGRA pixel-buffers & `Texture` interop. For better performance, use [NativeVideo](#nativevideo) instead.
 
 ```dart
 class _MyAppState extends State<MyApp> {
@@ -239,15 +238,18 @@ to embed the video output directly without any texture interop or pixel-buffer c
 
 But, it is highly dependent on platform & other limitations apply. In general, this widget is more performant & should be used if possible.
 
-An example configuration between a `Player` and a `NativeVideo` can be as follows.
+1. Edit your `windows/runner/main.cpp` as required [here](https://github.com/alexmercerind/flutter_native_view#setup).
 
-Register the plugin with `useFlutterNativeView`.
+2. Register the plugin with `useFlutterNativeView`.
 
 ```dart
-DartVLC.initilize(useFlutterNativeView: true);
+void main() {
+  DartVLC.initilize(useFlutterNativeView: true);
+  runApp(MyApp());
+}
 ```
 
-Pass `registerTexture` as `false` when creating `Player` & use `NativeVideo` widget.
+3. Pass `registerTexture` as `false` when creating `Player` & use `NativeVideo` widget.
 
 ```dart
 class _MyAppState extends State<MyApp> {
@@ -524,7 +526,7 @@ You can see an example project [here](https://github.com/alexmercerind/dart_vlc/
 
 `dart_vlc` running on Ubuntu Linux.
 
-## Progress
+## Features
 
 Done
 
@@ -538,23 +540,22 @@ Done
 - `setVolume`.
 - `setRate`.
 - `seek`.
-- Events.
-- Automatic fetching of headers, libs & shared libraries.
-- Changing VLC version from CMake.
 - Event streams.
-- `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback.
+- `add`/`insert`/`remove`/`move` `Media` inside `Playlist` during playback with no interruption.
 - Device enumeration & changing.
-- Retrieving `Meta` of a `Media`.
-- Embedding `Video` inside the Flutter window.
+- Retrieving metadata/tags of a `Media`.
+- Embedding `Video` inside the Flutter window (using texture or natively).
 - Supporting live streaming links.
 - `Broadcast` class for broadcasting `Media`.
 - `Record` class for recording `Media`.
 - `Chromecast` class.
-- `Equalizer` support.
-- Adding headers for `Media.network` (Not possible, added user agent).
-- Switching to FFI for more cross platform freedom.
+- `Equalizer` configuration & presets.
+- Changing user agent.
 - Changing `Video`'s frame size according to video.
-- Saving snapshot.
+- Saving screenshot of the video.
+- Changing/retrieving audio track.
+- Media clipping.
+- Support for Windows, Linux or macOS.
 
 Under progress or planned features (irrespective of order)...
 
