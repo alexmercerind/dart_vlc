@@ -201,6 +201,8 @@ player.takeSnapshot(file, 1920, 1080);
 
 Show `Video` in the `Widget` tree.
 
+**NOTE:** This will cause additional CPU-load because of conversion of video frames to RGBA/BGRA pixel-buffers & `Texture`. For better performance, use [NativeVideo](#nativevideo) instead.
+
 ```dart
 class _MyAppState extends State<MyApp> {
   @override
@@ -226,6 +228,44 @@ Player player = Player(
   id: 69420,
   videoDimensions: const VideoDimensions(640, 360),
 );
+```
+
+#### NativeVideo
+
+A more performant `Widget` for showing video inside the `Widget` tree.
+
+This `Widget` is **more performant** compared to `Video` & uses [flutter_native_view](https://github.com/alexmercerind/flutter_native_view.git)
+to embed the video output directly without any texture interop or pixel-buffer copy calls.
+
+But, it is highly dependent on platform & other limitations apply. In general, this widget is more performant & should be used if possible.
+
+An example configuration between a `Player` and a `NativeVideo` can be as follows.
+
+Register the plugin with `useFlutterNativeView`.
+
+```dart
+DartVLC.initilize(useFlutterNativeView: true);
+```
+
+Pass `registerTexture` as `false` when creating `Player` & use `NativeVideo` widget.
+
+```dart
+class _MyAppState extends State<MyApp> {
+  Player player = Player(id: 0, registerTexture: false);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: NativeVideo(
+          player: player,
+          height: 420.0,
+          width: 320.0
+        ),
+      ),
+    );
+  }
+}
 ```
 
 #### Change user agent
