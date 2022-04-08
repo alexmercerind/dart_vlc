@@ -22,7 +22,7 @@ dependencies:
   flutter_native_view:
     git:
       url: https://github.com/alexmercerind/flutter_native_view.git
-      ref: d2d77e4b26ed9a8666a41120d6827dadc4218086
+      ref: 832dcf3dc0974edafd7dac592f703b260aeff502
 
 # REMOVE THIS BEFORE PUBLISHING ON pub.dev.
 dependency_overrides:
