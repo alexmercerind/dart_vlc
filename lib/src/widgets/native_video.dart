@@ -25,7 +25,6 @@ import 'package:dart_vlc/src/widgets/controls.dart';
 import 'package:flutter_native_view/flutter_native_view.dart';
 
 /// {@template nativevideo}
-/// **HIGHLY EXPERIMENTAL**
 ///
 /// A widget for showing video inside the [Widget] tree.
 /// This [Widget] is more performant compared to [Video] & uses [flutter_native_view](https://github.com/alexmercerind/flutter_native_view.git)
@@ -34,7 +33,6 @@ import 'package:flutter_native_view/flutter_native_view.dart';
 /// But, it is highly dependent on platform & other limitations apply. In general, this widget is more performant & should be used if possible.
 ///
 /// An example configuration between a [Player] and a [NativeVideo] can be as follows.
-/// The [Player.id] and [NativeVideo.playerId] must be same for two to work together.
 ///
 /// Register the plugin with `useFlutterNativeView`.
 /// ```dart
