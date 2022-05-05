@@ -21,7 +21,8 @@
 #include <unordered_map>
 
 #include "core.h"
-#include "video_outlet.h"
+#include "include/dart_vlc/video_outlet.h"
+#include "include/dart_vlc/win32_window.h"
 
 namespace {
 
@@ -69,8 +70,6 @@ DartVlcPlugin::DartVlcPlugin(
     : channel_(std::move(channel)), texture_registrar_(texture_registrar) {}
 
 DartVlcPlugin::~DartVlcPlugin() {
-  // Clean up unreleased players when the flutter engine is destroyed to avoid
-  // crashes.
   for (const auto& [player_id, outlet] : outlets_) {
     auto player = g_players->Get(player_id);
     player->SetVideoFrameCallback(nullptr);
@@ -86,7 +85,6 @@ void DartVlcPlugin::HandleMethodCall(
         std::get<flutter::EncodableMap>(*method_call.arguments());
     int32_t player_id =
         std::get<int>(arguments[flutter::EncodableValue("playerId")]);
-
     auto [it, added] = outlets_.try_emplace(player_id, nullptr);
     if (added) {
       it->second = std::make_unique<VideoOutlet>(texture_registrar_);
@@ -99,24 +97,27 @@ void DartVlcPlugin::HandleMethodCall(
     }
 
     return result->Success(flutter::EncodableValue(it->second->texture_id()));
-
   } else if (method_call.method_name() == "PlayerUnregisterTexture") {
     flutter::EncodableMap arguments =
         std::get<flutter::EncodableMap>(*method_call.arguments());
-    int player_id =
+    auto player_id =
         std::get<int>(arguments[flutter::EncodableValue("playerId")]);
     if (outlets_.find(player_id) == outlets_.end()) {
       return result->Error("-2", "Texture was not found.");
     }
-
-    // The callback must be unregistered
-    // before destroying the outlet.
     auto player = g_players->Get(player_id);
     player->SetVideoFrameCallback(nullptr);
-
     outlets_.erase(player_id);
-
     result->Success(flutter::EncodableValue(nullptr));
+  } else if (method_call.method_name() == "PlayerCreateHWND") {
+    flutter::EncodableMap arguments =
+        std::get<flutter::EncodableMap>(*method_call.arguments());
+    auto player_id =
+        std::get<int>(arguments[flutter::EncodableValue("playerId")]);
+    auto player = g_players->Get(player_id);
+    auto window = CreateWin32Window();
+    player->SetHWND(reinterpret_cast<int64_t>(window));
+    result->Success(flutter::EncodableValue(reinterpret_cast<int64_t>(window)));
   } else {
     result->NotImplemented();
   }

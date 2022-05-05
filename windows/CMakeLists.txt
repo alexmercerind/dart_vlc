@@ -30,6 +30,7 @@ add_subdirectory(../core "${CMAKE_BINARY_DIR}/${PROJECT_NAME}_core")
 add_library("${PLUGIN_NAME}" SHARED
   "dart_vlc_plugin.cc"
   "video_outlet.cc"
+  "win32_window.cc"
 )
 
 apply_standard_settings("${PLUGIN_NAME}")

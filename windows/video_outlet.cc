@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "video_outlet.h"
+#include "include/dart_vlc/video_outlet.h"
 
 VideoOutlet::VideoOutlet(flutter::TextureRegistrar* texture_registrar)
     : texture_registrar_(texture_registrar) {
