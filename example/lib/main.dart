@@ -65,7 +65,6 @@ class DartVLCExampleState extends State<DartVLCExample> {
       equalizer.setPreAmp(10.0);
       equalizer.setBandAmp(31.25, 10.0);
       this.player.setEqualizer(equalizer);
-      this.setState(() {});
     }
   }
 
