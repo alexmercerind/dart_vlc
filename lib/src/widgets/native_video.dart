@@ -17,7 +17,7 @@
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import 'dart:async';
 
-import 'package:dart_vlc/src/hwnd.dart';
+import 'package:dart_vlc/channel.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dart_vlc/dart_vlc.dart';
@@ -169,15 +169,22 @@ class _NativeVideoState extends State<NativeVideo> {
   @override
   void initState() {
     super.initState();
-    createHWND().then((handle) {
-      widget.player.setHWND(handle);
-      setState(() {
-        controller = NativeViewController(
-          handle: handle,
-          hitTestBehavior: HitTestBehavior.opaque,
-        );
-      });
-    });
+    channel.invokeMethod(
+      kPlayerCreateHWND,
+      {
+        'playerId': playerId,
+      },
+    ).then(
+      (handle) {
+        widget.player.setHWND(handle);
+        setState(() {
+          controller = NativeViewController(
+            handle: handle,
+            hitTestBehavior: HitTestBehavior.opaque,
+          );
+        });
+      },
+    );
     if (widget.showControls) {
       controls[playerId] = controlKey;
     }

@@ -20,20 +20,16 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_native_view/flutter_native_view.dart';
 import 'package:path/path.dart' as path;
-import 'package:flutter/services.dart';
 
+import 'package:dart_vlc/channel.dart';
 import 'package:dart_vlc/src/widgets/video.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart' as FFI;
 import 'package:dart_vlc_ffi/dart_vlc_ffi.dart' as FFI;
 export 'package:dart_vlc_ffi/dart_vlc_ffi.dart' hide DartVLC, Player;
 export 'package:dart_vlc/src/widgets/video.dart';
 export 'package:dart_vlc/src/widgets/native_video.dart';
-
-/// Platform channel for using [Texture] & flutter::TextureRegistrar on Windows.
-const _channel = MethodChannel('dart_vlc');
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
@@ -73,8 +69,8 @@ class Player extends FFI.Player {
             commandlineArguments: commandlineArguments) {
     () async {
       if (registerTexture) {
-        textureId.value = await _channel
-            .invokeMethod('PlayerRegisterTexture', {'playerId': id});
+        textureId.value = await channel
+            .invokeMethod(kPlayerRegisterTexture, {'playerId': id});
       }
     }();
   }
@@ -82,7 +78,7 @@ class Player extends FFI.Player {
   @override
   void dispose() async {
     if (registerTexture) {
-      await _channel.invokeMethod('PlayerUnregisterTexture', {'playerId': id});
+      await channel.invokeMethod(kPlayerUnregisterTexture, {'playerId': id});
     }
     textureId.value = null;
     super.dispose();
