@@ -1,5 +1,11 @@
 ## 0.2.0
 
+- Addressed multiple Dart-sided memory leaks during FFI interop (@alexmercerind).
+- Introduce `NativeVideo` for Windows to render video playback performantly (uses [flutter_native_view](https://github.com/alexmercerind/flutter_native_view)) (@alexmercerind).
+- Refactor native source code, move implementations to separate translation units & remove inline class methods (@alexmercerind).
+- Fix `Video` rendering when explicit `VideoDimensions` are passed (@alexmercerind).
+- Expose Player::SetHWND (@alexmercerind).
+
 ## 0.1.9
 
 - Fix RTSP & HLS streams launching separate window instead of using `Video` widget (@alexmercerind).
