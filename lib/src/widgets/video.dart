@@ -23,6 +23,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/widgets/controls.dart';
+import 'package:window_manager/window_manager.dart';
 
 /// Internally used map to keep [GlobalKey]s for [Video]'s [ControlState]s.
 Map<int, GlobalKey<ControlState>> controls = {};
@@ -100,6 +101,8 @@ class Video extends StatefulWidget {
     this.showTimeLeft = false,
     this.progressBarTextStyle = const TextStyle(),
     this.filterQuality = FilterQuality.low,
+    this.showFullscreenButton = false,
+    this.fillColor: Colors.black,
   })  : player = player ?? players[playerId]! as Player,
         super(key: key);
 
@@ -168,6 +171,12 @@ class Video extends StatefulWidget {
   /// instead of the total time, set this to true
   final bool showTimeLeft;
 
+  /// Whether to show the fullscreen button.
+  final bool showFullscreenButton;
+
+  /// Fill color.
+  final Color fillColor;
+
   _VideoStateBase createState() => _VideoStateTexture();
 }
 
@@ -183,17 +192,67 @@ abstract class _VideoStateBase extends State<Video>
     if (widget.showControls) controls[playerId] = controlKey;
   }
 
+  void enterFullscreen() async {
+    await windowManager.ensureInitialized();
+    await windowManager.setFullScreen(true);
+    Navigator.of(context, rootNavigator: true).push(
+      PageRouteBuilder(
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+        pageBuilder: (_, __, ___) => Scaffold(
+          body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: widget.fillColor,
+            child: widget.showControls
+                ? Control(
+                    player: widget.player,
+                    enterFullscreen: enterFullscreen,
+                    exitFullscreen: exitFullscreen,
+                    isFullscreen: true,
+                    progressBarThumbRadius: widget.progressBarThumbRadius,
+                    progressBarThumbGlowRadius:
+                        widget.progressBarThumbGlowRadius,
+                    progressBarActiveColor: widget.progressBarActiveColor,
+                    progressBarInactiveColor: widget.progressBarInactiveColor,
+                    progressBarThumbColor: widget.progressBarThumbColor,
+                    progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+                    volumeActiveColor: widget.volumeActiveColor,
+                    volumeInactiveColor: widget.volumeInactiveColor,
+                    volumeBackgroundColor: widget.volumeBackgroundColor,
+                    volumeThumbColor: widget.volumeThumbColor,
+                    showTimeLeft: widget.showTimeLeft,
+                    progressBarTextStyle: widget.progressBarTextStyle,
+                    child: present(),
+                  )
+                : present(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void exitFullscreen() async {
+    await windowManager.ensureInitialized();
+    await windowManager.setFullScreen(false);
+    Navigator.of(context, rootNavigator: false).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Container(
       width: widget.width ?? double.infinity,
       height: widget.height ?? double.infinity,
-      color: Colors.transparent,
+      color: widget.fillColor,
       child: widget.showControls
           ? Control(
               key: controlKey,
               player: widget.player,
+              enterFullscreen: enterFullscreen,
+              exitFullscreen: exitFullscreen,
+              isFullscreen: false,
+              showFullscreenButton: widget.showFullscreenButton,
               progressBarThumbRadius: widget.progressBarThumbRadius,
               progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
               progressBarActiveColor: widget.progressBarActiveColor,
