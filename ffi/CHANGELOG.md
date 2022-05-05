@@ -1,3 +1,7 @@
+## 0.1.7
+
+- Update equivalent Dart bindings.
+
 ## 0.1.6
 
 - Rewrite FFI bindings.
