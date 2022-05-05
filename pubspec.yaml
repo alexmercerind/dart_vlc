@@ -12,14 +12,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dart_vlc_ffi: any
+  dart_vlc_ffi: ^0.1.7
   path: ">=1.8.0 <2.0.0"
   path_provider: ">=2.0.2 <3.0.0"
   audio_video_progress_bar: ">=0.9.0 <1.0.0"
-  flutter_native_view:
-    git:
-      url: https://github.com/alexmercerind/flutter_native_view.git
-      ref: 832dcf3dc0974edafd7dac592f703b260aeff502
+  flutter_native_view: ^0.0.1
+  window_manager: ^0.2.2
 
 # REMOVE THIS BEFORE PUBLISHING ON pub.dev.
 dependency_overrides:
