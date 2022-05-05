@@ -3,9 +3,9 @@
 
 [![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![](https://img.shields.io/twitter/follow/alexmercerind)](https://twitter.com/alexmercerind) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind) [![Join the chat at https://discord.gg/3h3K3JF](https://img.shields.io/discord/716939396464508958?label=discord)](https://discord.gg/3h3K3JF)
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_1.PNG?raw=true)
+![](https://alexmercerind.github.io/img/dart_vlc/0.webp)
 
-![](https://github.com/alexmercerind/dart_vlc/blob/assets/dart_vlc_windows_11_2.PNG?raw=true)
+![](https://alexmercerind.github.io/img/dart_vlc/1.webp)
 
 ## Installation
 
@@ -240,7 +240,7 @@ But, it is highly dependent on platform & other limitations apply. In general, t
 
 1. Edit your `windows/runner/main.cpp` as required [here](https://github.com/alexmercerind/flutter_native_view#setup).
 
-2. Register the plugin with `useFlutterNativeView`.
+2. Register the plugin with `useFlutterNativeView` as `true`.
 
 ```dart
 void main() {
