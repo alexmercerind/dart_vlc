@@ -255,7 +255,7 @@ final ReceivePort receiver = new ReceivePort()
                   medias.add(Media.network(Uri.parse(event[5][index])));
                   break;
                 }
-              case 'MediaType.directShow':
+              case 'MediaType.direct_show':
                 {
                   medias.add(Media.directShow(rawUrl: event[5][index]));
                   break;
