@@ -1,5 +1,5 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<p align="center">Flutter audio/video playback, broadcast & recording library for Windows, Linux & macOS with playlist control</p>
+<p align="center">Flutter audio/video playback, broadcast & recording library for Windows, Linux & macOS with playlist control, metadata extractor, equalizers & more.</p>
 
 [![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![](https://img.shields.io/twitter/follow/alexmercerind)](https://twitter.com/alexmercerind) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind) [![Join the chat at https://discord.gg/3h3K3JF](https://img.shields.io/discord/716939396464508958?label=discord)](https://discord.gg/3h3K3JF)
 
