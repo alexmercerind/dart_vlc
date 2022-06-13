@@ -52,8 +52,8 @@ Checkout [Setup](#setup) section to configure plugin on your platform.
 #### Initialize the library
 
 ```dart
-void main() {
-  DartVLC.initialize();
+Future<void> main() async {
+  await DartVLC.initialize();
   runApp(MyApp());
 }
 ```
