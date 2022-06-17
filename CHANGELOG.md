@@ -1,3 +1,6 @@
+## 0.2.2
+* Fix broken macOS builds
+
 ## 0.2.1
 
 - Addressed few issues related to `NativeVideo` on Windows (@alexmercerind).
