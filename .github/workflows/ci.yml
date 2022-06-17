@@ -50,5 +50,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "stable"
+      - run: install rosetta first
+      - run: /usr/sbin/softwareupdate --install-rosetta --agree-to-license
       - run: flutter pub get
       - run: flutter build macos --verbose
