@@ -32,6 +32,7 @@ A new flutter plugin project.
   s.source_files     = 'Classes/**/*.{h,m,mm}'
   s.dependency 'FlutterMacOS'
   s.dependency 'VLCKit', '~>3.3'
+  s.static_framework = true
   s.platform = :osx
   s.osx.deployment_target = '10.11'
   s.library = 'c++'
