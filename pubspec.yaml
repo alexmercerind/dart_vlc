@@ -1,6 +1,6 @@
 name: dart_vlc
 description: Flutter media playback, broadcast, recording & chromecast library. Based on libvlc.
-version: 0.2.1
+version: 0.3.0
 homepage: https://github.com/alexmercerind/dart_vlc
 repository: https://github.com/alexmercerind/dart_vlc
 documentation: https://github.com/alexmercerind/dart_vlc/blob/master/README.md
@@ -31,6 +31,4 @@ flutter:
       windows:
         pluginClass: DartVlcPlugin
       linux:
-        pluginClass: DartVlcPlugin
-      macos:
         pluginClass: DartVlcPlugin
