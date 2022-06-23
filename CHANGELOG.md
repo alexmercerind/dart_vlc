@@ -1,3 +1,8 @@
+## 0.3.0
+* BREAKING CHANGES
+  * Removed iOS support
+  * Removed macOS support
+
 ## 0.2.1
 
 - Addressed few issues related to `NativeVideo` on Windows (@alexmercerind).
