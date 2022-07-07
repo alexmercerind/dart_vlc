@@ -210,6 +210,7 @@ abstract class _VideoStateBase extends State<Video>
                     enterFullscreen: enterFullscreen,
                     exitFullscreen: exitFullscreen,
                     isFullscreen: true,
+                    showFullscreenButton: widget.showFullscreenButton,
                     progressBarThumbRadius: widget.progressBarThumbRadius,
                     progressBarThumbGlowRadius:
                         widget.progressBarThumbGlowRadius,
