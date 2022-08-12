@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help dart_vlc improve (fill all details correctly otherwise issue will not be answered)
 title: ''
 labels: bug
-assignees: alexmercerind
+assignees: ''
 
 ---
 
