@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
-import 'package:dart_vlc_ffi/src/enums/equalizerMode.dart';
+import 'package:dart_vlc_ffi/src/enums/equalizer_mode.dart';
 
 /// Internally used class to avoid direct creation of the object of a [Equalizer] class.
 class _Equalizer extends Equalizer {}

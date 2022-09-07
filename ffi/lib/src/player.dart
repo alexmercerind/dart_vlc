@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'package:ffi/ffi.dart';
@@ -14,7 +15,7 @@ class VideoDimensions {
   const VideoDimensions(this.width, this.height);
 
   @override
-  String toString() => '($width, $height)';
+  String toString() => 'VideoDimensions($width, $height)';
 }
 
 /// Keeps various [Player] instances to manage event callbacks.
@@ -26,7 +27,7 @@ Map<int, Player> players = {};
 /// Provide a unique [id] while instanciating.
 ///
 /// ```dart
-/// Player player = new Player(id: 0);
+/// Player player = Player(id: 0);
 /// ```
 ///
 /// Use various methods & event streams available to control & listen to events of the playback.
@@ -39,31 +40,34 @@ class Player {
   List<String> commandlineArguments = <String>[];
 
   /// State of the current & opened [MediaSource] in [Player] instance.
-  CurrentState current = new CurrentState();
+  CurrentState current = CurrentState();
 
   /// Stream to listen to current & opened [MediaSource] state of the [Player] instance.
   late Stream<CurrentState> currentStream;
 
   /// Position & duration state of the [Player] instance.
-  PositionState position = new PositionState();
+  PositionState position = PositionState();
 
   /// Stream to listen to position & duration state of the [Player] instance.
   late Stream<PositionState> positionStream;
 
   /// Playback state of the [Player] instance.
-  PlaybackState playback = new PlaybackState();
+  PlaybackState playback = PlaybackState();
 
   /// Stream to listen to playback state of the [Player] instance.
   late Stream<PlaybackState> playbackStream;
 
   /// Volume & Rate state of the [Player] instance.
-  GeneralState general = new GeneralState();
+  GeneralState general = GeneralState();
 
   /// Stream to listen to volume & rate state of the [Player] instance.
   late Stream<GeneralState> generalStream;
 
+  /// Explicit video dimensions according to which the pixel buffer will be retrieved & rendered inside the [Video] widget.
+  VideoDimensions? preferredVideoDimensions;
+
   /// Dimensions of the currently playing video.
-  VideoDimensions videoDimensions = new VideoDimensions(0, 0);
+  VideoDimensions videoDimensions = VideoDimensions(0, 0);
 
   /// Stream to listen to dimensions of currently playing video.
   late Stream<VideoDimensions> videoDimensionsStream;
@@ -85,7 +89,7 @@ class Player {
   /// Takes unique id as parameter.
   ///
   /// ```dart
-  /// Player player = new Player(id: 0);
+  /// Player player = Player(id: 0);
   /// ```
   ///
   Player(
@@ -107,19 +111,32 @@ class Player {
     this.errorController = StreamController<String>.broadcast();
     this.errorStream = this.errorController.stream;
     if (videoDimensions != null) {
-      this.videoDimensions = videoDimensions;
+      this.preferredVideoDimensions = videoDimensions;
     }
     this.videoDimensionsController =
         StreamController<VideoDimensions>.broadcast();
     this.videoDimensionsStream = this.videoDimensionsController.stream;
     players[this.id] = this;
+    // Parse [commandlineArguments] & convert to `char*[]`.
+    final List<Pointer<Utf8>> pointers =
+        this.commandlineArguments.map<Pointer<Utf8>>((e) {
+      return e.toNativeUtf8();
+    }).toList();
+    final Pointer<Pointer<Utf8>> arr =
+        calloc.allocate(this.commandlineArguments.join().length);
+    for (int i = 0; i < this.commandlineArguments.length; i++) {
+      arr[i] = pointers[i];
+    }
     PlayerFFI.create(
       this.id,
-      this.videoDimensions.width,
-      this.videoDimensions.height,
+      this.preferredVideoDimensions?.width ?? 0,
+      this.preferredVideoDimensions?.height ?? 0,
       this.commandlineArguments.length,
-      this.commandlineArguments.toNativeUtf8Array(),
+      arr,
     );
+    // Freed the memory allocated for `char*[]`.
+    calloc.free(arr);
+    pointers.forEach(calloc.free);
   }
 
   /// Opens a new media source into the player.
@@ -133,7 +150,7 @@ class Player {
   /// ```dart
   /// player.open(
   ///   Media.file(
-  ///     new File('C:/music.ogg'),
+  ///     File('C:/music.ogg'),
   ///   ),
   ///   autoStart: false,
   /// );
@@ -143,13 +160,13 @@ class Player {
   ///
   /// ```dart
   /// player.open(
-  ///   new Playlist(
+  ///   Playlist(
   ///     medias: [
   ///       Media.file(
-  ///         new File('C:/music.mp3'),
+  ///         File('C:/music.mp3'),
   ///       ),
   ///       Media.file(
-  ///         new File('C:/audio.mp3'),
+  ///         File('C:/audio.mp3'),
   ///       ),
   ///       Media.network('https://alexmercerind.github.io/music.mp3'),
   ///     ],
@@ -159,16 +176,29 @@ class Player {
   ///
   void open(MediaSource source, {bool autoStart: true}) {
     if (source is Media) {
+      final args = <String>[
+        source.mediaType.toString(),
+        source.resource,
+        source.startTime.argument('start-time'),
+        source.stopTime.argument('stop-time'),
+      ];
+      // Parse [commandlineArguments] & convert to `char*[]`.
+      final List<Pointer<Utf8>> pointers = args.map<Pointer<Utf8>>((e) {
+        return e.toNativeUtf8();
+      }).toList();
+      final Pointer<Pointer<Utf8>> arr = calloc.allocate(args.join().length);
+      for (int i = 0; i < args.length; i++) {
+        arr[i] = pointers[i];
+      }
       PlayerFFI.open(
-          this.id,
-          autoStart ? 1 : 0,
-          <String>[
-            source.mediaType.toString(),
-            source.resource,
-            source.startTime.argument('start-time'),
-            source.stopTime.argument('stop-time'),
-          ].toNativeUtf8Array(),
-          1);
+        this.id,
+        autoStart ? 1 : 0,
+        arr,
+        1,
+      );
+      // Freed the memory allocated for `char*[]`.
+      calloc.free(arr);
+      pointers.forEach(calloc.free);
     }
     if (source is Playlist) {
       List<String> medias = <String>[];
@@ -182,12 +212,23 @@ class Player {
           ],
         );
       });
+      // Parse [commandlineArguments] & convert to `char*[]`.
+      final List<Pointer<Utf8>> pointers = medias.map<Pointer<Utf8>>((e) {
+        return e.toNativeUtf8();
+      }).toList();
+      final Pointer<Pointer<Utf8>> arr = calloc.allocate(medias.join().length);
+      for (int i = 0; i < medias.length; i++) {
+        arr[i] = pointers[i];
+      }
       PlayerFFI.open(
         this.id,
         autoStart ? 1 : 0,
-        medias.toNativeUtf8Array(),
+        arr,
         source.medias.length,
       );
+      // Freed the memory allocated for `char*[]`.
+      calloc.free(arr);
+      pointers.forEach(calloc.free);
     }
   }
 
@@ -221,14 +262,14 @@ class Player {
   }
 
   /// Jumps to the previous [Media] in the [Playlist] opened.
-  void back() {
-    PlayerFFI.back(this.id);
+  void previous() {
+    PlayerFFI.previous(this.id);
   }
 
   /// Jumps to [Media] at specific index in the [Playlist] opened.
   /// Pass index as parameter.
-  void jump(int index) {
-    PlayerFFI.jump(
+  void jumpToIndex(int index) {
+    PlayerFFI.jumpToIndex(
       this.id,
       index,
     );
@@ -260,27 +301,35 @@ class Player {
 
   /// Sets user agent for dart_vlc player.
   void setUserAgent(String userAgent) {
+    final userAgentCStr = userAgent.toNativeUtf8();
     PlayerFFI.setUserAgent(
       this.id,
-      userAgent.toNativeUtf8(),
+      userAgentCStr,
     );
+    calloc.free(userAgentCStr);
   }
 
   /// Changes [Playlist] playback mode.
   void setPlaylistMode(PlaylistMode playlistMode) {
+    final playlistModeCStr = playlistMode.toString().toNativeUtf8();
     PlayerFFI.setPlaylistMode(
       this.id,
-      playlistMode.toString().toNativeUtf8(),
+      playlistModeCStr,
     );
+    calloc.free(playlistModeCStr);
   }
 
   /// Appends [Media] to the [Playlist] of the [Player] instance.
   void add(Media source) {
+    final sourceMediaTypeCStr = source.mediaType.toString().toNativeUtf8();
+    final sourceResourceCStr = source.resource.toString().toNativeUtf8();
     PlayerFFI.add(
       this.id,
-      source.mediaType.toString().toNativeUtf8(),
-      source.resource.toString().toNativeUtf8(),
+      sourceMediaTypeCStr,
+      sourceResourceCStr,
     );
+    calloc.free(sourceMediaTypeCStr);
+    calloc.free(sourceResourceCStr);
   }
 
   /// Removes [Media] from the [Playlist] at a specific index.
@@ -293,12 +342,16 @@ class Player {
 
   /// Inserts [Media] to the [Playlist] of the [Player] instance at specific index.
   void insert(int index, Media source) {
+    final sourceMediaTypeCStr = source.mediaType.toString().toNativeUtf8();
+    final sourceResourceCStr = source.resource.toString().toNativeUtf8();
     PlayerFFI.insert(
       this.id,
       index,
-      source.mediaType.toString().toNativeUtf8(),
-      source.resource.toString().toNativeUtf8(),
+      sourceMediaTypeCStr,
+      sourceResourceCStr,
     );
+    calloc.free(sourceMediaTypeCStr);
+    calloc.free(sourceResourceCStr);
   }
 
   /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
@@ -318,10 +371,12 @@ class Player {
   /// Device will be switched once a new [Media] is played.
   ///
   void setDevice(Device device) {
+    final deviceIdCStr = device.id.toNativeUtf8();
+    final deviceNameCStr = device.name.toNativeUtf8();
     PlayerFFI.setDevice(
       this.id,
-      device.id.toNativeUtf8(),
-      device.name.toNativeUtf8(),
+      deviceIdCStr,
+      deviceNameCStr,
     );
   }
 
@@ -332,12 +387,14 @@ class Player {
 
   /// Saves snapshot of a video to a desired [File] location.
   void takeSnapshot(File file, int width, int height) {
+    final filePathCStr = file.path.toNativeUtf8();
     PlayerFFI.takeSnapshot(
       this.id,
-      file.path.toNativeUtf8(),
+      filePathCStr,
       width,
       height,
     );
+    calloc.free(filePathCStr);
   }
 
   /// Sets Current Audio Track for the current [MediaSource]
@@ -346,11 +403,15 @@ class Player {
   }
 
   /// Gets audio track count from current [MediaSource]
-  int audioTrackCount() {
-    int count = PlayerFFI.audioTrackCount(this.id);
+  int get audioTrackCount {
+    int count = PlayerFFI.getAudioTrackCount(this.id);
     // for some reason this value returns 0 when no tracks exists
     // and 2 or more if there's 1 or more audio tracks for this [MediaSource].
     return count > 1 ? count - 1 : count;
+  }
+
+  void setHWND(int hwnd) {
+    PlayerFFI.setHWND(this.id, hwnd);
   }
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.

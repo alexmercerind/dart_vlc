@@ -11,10 +11,9 @@ import 'package:dart_vlc_ffi/src/internal/typedefs/equalizer.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/record.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/broadcast.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/chromecast.dart';
-
-/// NOTE: Here for sending event callbacks.
+// Here for sending event callbacks.
 import 'package:dart_vlc_ffi/src/player.dart';
-import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
+import 'package:dart_vlc_ffi/src/media_source/media.dart';
 
 abstract class PlayerFFI {
   static final PlayerCreateDart create = dynamicLibrary
@@ -49,16 +48,16 @@ abstract class PlayerFFI {
       .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerNext')
       .asFunction();
 
-  static final PlayerTriggerDart back = dynamicLibrary
-      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerBack')
+  static final PlayerTriggerDart previous = dynamicLibrary
+      .lookup<NativeFunction<PlayerTriggerCXX>>('PlayerPrevious')
       .asFunction();
 
-  static final PlayerJumpDart jump = dynamicLibrary
-      .lookup<NativeFunction<PlayerJumpCXX>>('PlayerJump')
+  static final PlayerJumpToIndexDart jumpToIndex = dynamicLibrary
+      .lookup<NativeFunction<PlayerJumpToIndexCXX>>('PlayerJumpToIndex')
       .asFunction();
 
   static final PlayerSeekDart seek = dynamicLibrary
-      .lookup<NativeFunction<PlayerJumpCXX>>('PlayerSeek')
+      .lookup<NativeFunction<PlayerSeekCXX>>('PlayerSeek')
       .asFunction();
 
   static final PlayerSetVolumeDart setVolume = dynamicLibrary
@@ -106,12 +105,17 @@ abstract class PlayerFFI {
       .asFunction();
 
   static final PlayerSetAudioTrackDart setAudioTrack = dynamicLibrary
-    .lookup<NativeFunction<PlayerSetAudioTrackCXX>>('PlayerSetAudioTrack')
-    .asFunction();
+      .lookup<NativeFunction<PlayerSetAudioTrackCXX>>('PlayerSetAudioTrack')
+      .asFunction();
 
-  static final PlayerAudioTrackCountDart audioTrackCount = dynamicLibrary
-    .lookup<NativeFunction<PlayerAudioTrackCountCXX>>('PlayerAudioTrackCount')
-    .asFunction();
+  static final PlayerGetAudioTrackCountDart getAudioTrackCount = dynamicLibrary
+      .lookup<NativeFunction<PlayerGetAudioTrackCountCXX>>(
+          'PlayerGetAudioTrackCount')
+      .asFunction();
+
+  static final PlayerSetHWNDDart setHWND = dynamicLibrary
+      .lookup<NativeFunction<PlayerSetHWNDCXX>>('PlayerSetHWND')
+      .asFunction();
 }
 
 abstract class MediaFFI {
@@ -251,7 +255,7 @@ final ReceivePort receiver = new ReceivePort()
                   medias.add(Media.network(Uri.parse(event[5][index])));
                   break;
                 }
-              case 'MediaType.directShow':
+              case 'MediaType.direct_show':
                 {
                   medias.add(Media.directShow(rawUrl: event[5][index]));
                   break;
@@ -273,7 +277,7 @@ final ReceivePort receiver = new ReceivePort()
                 .add(players[id]!.videoDimensions);
           break;
         }
-      case 'videoEvent':
+      case 'videoFrameEvent':
         {
           videoFrameCallback(id, event[2]);
           break;
@@ -296,17 +300,3 @@ final ReceivePort receiver = new ReceivePort()
         }
     }
   });
-
-extension NativeTypes on List<String> {
-  Pointer<Pointer<Utf8>> toNativeUtf8Array() {
-    final List<Pointer<Utf8>> listPointer = this
-        .map((String string) => string.toNativeUtf8())
-        .toList()
-        .cast<Pointer<Utf8>>();
-    final Pointer<Pointer<Utf8>> pointerPointer =
-        calloc.allocate(this.join('').length);
-    for (int index = 0; index < this.length; index++)
-      pointerPointer[index] = listPointer[index];
-    return pointerPointer;
-  }
-}

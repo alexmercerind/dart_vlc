@@ -1,3 +1,30 @@
+## 0.3.0
+* BREAKING CHANGES
+  * Removed iOS support
+  * Removed macOS support
+
+## 0.2.1
+
+- Addressed few issues related to `NativeVideo` on Windows (@alexmercerind).
+- Fixed switch case directShow control (@Paradoxu).
+- Fixed Bump `flutter_native_view` and `window_manager` to latest versions (@ashutosh2014, @alexmercerind).
+
+## 0.2.0
+
+- Addressed multiple Dart-sided memory leaks during FFI interop (@alexmercerind).
+- Introduce `NativeVideo` for Windows to render video playback performantly (uses [flutter_native_view](https://github.com/alexmercerind/flutter_native_view)) (@alexmercerind).
+- Refactor native source code, move implementations to separate translation units & remove inline class methods (@alexmercerind).
+- Fix `Video` rendering when explicit `VideoDimensions` are passed (@alexmercerind).
+- Expose Player::SetHWND (@alexmercerind).
+
+## 0.1.9
+
+- Fix RTSP & HLS streams launching separate window instead of using `Video` widget (@alexmercerind).
+- Add `playlistLength` value to ensure the "skip next" and "skip previous" buttons do not render if there is only one `Media` in a `Playlist`. (@GroovinChip)
+- Update `dart_vlc.podspec` to ensure the correct Pods path on macOS. NOTE: This is based on Flutter's `stable` channel. (@GroovinChip)
+- Added support for setting current audio track and getting audio track count (@exts)
+- (linux) store texture info in instance data instead of class data (@hansihe)
+
 ## 0.1.8
 
 - Add `startTime` and `stopTime` parameters to `Media` for clipping (@alexmercerind).
@@ -23,7 +50,7 @@
 
 - Added initial macOS support (@jnschulze).
 - Improved NativePort callbacks & removed unnecessary serialization (@alexmercerind).
-- Now using a common dartvlc wrapper CMake library for all platforms (@jnschulze).
+- Now using a common core wrapper CMake library for all platforms (@jnschulze).
 - Other bug-fixes related to `Video` (@jnschulze).
 - Setup garbage cleaning finalizers for memory allocated on heap (for C++/Dart FFI communication) (@alexmercerind @jnschulze).
 - Removed deprecated libVLC API calls (@alexmercerind).
@@ -32,7 +59,7 @@
 
 - Now `Player` no longer requires `videoWidth` & `videoHeight` to be passed for video playback (@alexmercerind).
 - `Video` widget now uses the dimensions of the currently playing video (@alexmercerind).
-- For overriding the automatic video dimensions retrieval, `videoDimensions` argument must be passed while instantiating `Player` class (@alexmercerind).  
+- For overriding the automatic video dimensions retrieval, `videoDimensions` argument must be passed while instantiating `Player` class (@alexmercerind).
 - `Video` widget no longer asks for `playerId` argument, but `player` instead (@jnszhulze).
 - Added `videoDimensionStream` and `videoDimension` attributes to `Player` class to listen to currently playing video dimensions (@alexmercerind).
 - Migrated C++ code to use smart pointers instead of raw pointers (@alexmercerind).
@@ -45,7 +72,7 @@
 
 ## 0.1.2
 
-- Now using `flutter::TextureRegistrar` for performant `Video` on Windows (#54)  (@alexmercerind).
+- Now using `flutter::TextureRegistrar` for performant `Video` on Windows (#54) (@alexmercerind).
 - Fixed `autoStart` in `Player.open` (@alexmercerind).
 - Fixed other crashes for Windows (@alexmercerind).
 - Improved stability (@alexmercerind).
@@ -85,7 +112,7 @@
 - Support for Dart CLI. See package `dart_vlc_ffi` (@alexmercerind).
 - Added `commandlineArguments` to `Player` constructor to pass VLC commandline arguments (@alexmercerind).
 - BREAKING CHANGES
-  - Now plugin requires initialization in the `main` method, call `DartVLC.initialize()` to instantiate the plugin (@alexmercerind). 
+  - Now plugin requires initialization in the `main` method, call `DartVLC.initialize()` to instantiate the plugin (@alexmercerind).
   - Now all the methods are synchronous & no longer require `await`. Please update your code (@alexmercerind).
 
 ## 0.0.7
@@ -147,10 +174,9 @@
     - Contains:
       - `volume`
       - `rate`
-- Ability to retrieve metadata of a `Media` (either from `Media.network` or `Media.file`) (@alexmercerind). 
+- Ability to retrieve metadata of a `Media` (either from `Media.network` or `Media.file`) (@alexmercerind).
   - Now you can access metadata of a `Media` by passing `parse: true` for parsing the metadata (@alexmercerind).
   - Retrieved metadata is stored inside `Media.metas` as `Map<String, String>` (@alexmercerind).
-
 
 ## 0.0.2
 

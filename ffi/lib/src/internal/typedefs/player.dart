@@ -21,8 +21,8 @@ typedef PlayerOpenDart = void Function(
     int id, int autoStart, Pointer<Pointer<Utf8>> source, int sourceSize);
 typedef PlayerTriggerCXX = Void Function(Int32 id);
 typedef PlayerTriggerDart = void Function(int id);
-typedef PlayerJumpCXX = Void Function(Int32 id, Int32 index);
-typedef PlayerJumpDart = void Function(int id, int index);
+typedef PlayerJumpToIndexCXX = Void Function(Int32 id, Int32 index);
+typedef PlayerJumpToIndexDart = void Function(int id, int index);
 typedef PlayerSeekCXX = Void Function(Int32 id, Int32 position);
 typedef PlayerSeekDart = void Function(int id, int position);
 typedef PlayerSetVolumeCXX = Void Function(Int32 id, Float volume);
@@ -60,5 +60,7 @@ typedef PlayerTakeSnapshotDart = void Function(
     int id, Pointer<Utf8> filePath, int width, int height);
 typedef PlayerSetAudioTrackCXX = Void Function(Int32 id, Int32 index);
 typedef PlayerSetAudioTrackDart = void Function(int id, int index);
-typedef PlayerAudioTrackCountCXX = Int32 Function(Int32 id);
-typedef PlayerAudioTrackCountDart = int Function(int id);
+typedef PlayerGetAudioTrackCountCXX = Int32 Function(Int32 id);
+typedef PlayerGetAudioTrackCountDart = int Function(int id);
+typedef PlayerSetHWNDCXX = Int32 Function(Int32 id, Int64 hwnd);
+typedef PlayerSetHWNDDart = int Function(int id, int hwnd);

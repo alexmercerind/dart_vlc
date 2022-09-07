@@ -5,3 +5,5 @@
 # Shared Libraries
 
 *.so
+
+pubspec.lock

@@ -1,11 +1,29 @@
+// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
+//
+// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // ignore_for_file: implementation_imports
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dart_vlc/src/widgets/controls.dart';
+import 'package:window_manager/window_manager.dart';
 
 /// Internally used map to keep [GlobalKey]s for [Video]'s [ControlState]s.
 Map<int, GlobalKey<ControlState>> controls = {};
@@ -15,19 +33,20 @@ Map<int, StreamController<VideoFrame>> videoStreamControllers = {};
 
 /// Represents a [Video] frame, used for retriving frame through platform channel.
 class VideoFrame {
-  final int playerId;
-  final int videoWidth;
-  final int videoHeight;
-  final Uint8List byteArray;
-
   VideoFrame({
     required this.playerId,
     required this.videoWidth,
     required this.videoHeight,
     required this.byteArray,
   });
+
+  final int playerId;
+  final int videoWidth;
+  final int videoHeight;
+  final Uint8List byteArray;
 }
 
+/// {@template video}
 /// Widget for showing [Video] inside the [Widget] tree.
 /// Creation of [Player] instance is necessary as a controller, for this [Widget] to show [Video] output.
 ///
@@ -56,8 +75,37 @@ class VideoFrame {
 /// This [Widget] internally uses [StreamController].
 /// Prefer calling [Player.stop] & [Video.dispose] to freed the resources.
 /// A global [Key] may be used for this purpose.
-///
+/// {@endtemplate}
 class Video extends StatefulWidget {
+  /// {@macro video}
+  Video({
+    Key? key,
+    @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
+    Player? player,
+    this.width,
+    this.height,
+    this.fit: BoxFit.contain,
+    this.alignment: Alignment.center,
+    this.scale: 1.0,
+    this.showControls: true,
+    this.progressBarActiveColor,
+    this.progressBarInactiveColor = Colors.white24,
+    this.progressBarThumbColor,
+    this.progressBarThumbGlowColor = const Color.fromRGBO(0, 161, 214, .2),
+    this.volumeActiveColor,
+    this.volumeInactiveColor = Colors.grey,
+    this.volumeBackgroundColor = const Color(0xff424242),
+    this.volumeThumbColor,
+    this.progressBarThumbRadius = 10.0,
+    this.progressBarThumbGlowRadius = 15.0,
+    this.showTimeLeft = false,
+    this.progressBarTextStyle = const TextStyle(),
+    this.filterQuality = FilterQuality.low,
+    this.showFullscreenButton = false,
+    this.fillColor: Colors.black,
+  })  : player = player ?? players[playerId]! as Player,
+        super(key: key);
+
   /// The [Player] whose [Video] output should be shown.
   final Player player;
 
@@ -83,71 +131,51 @@ class Video extends StatefulWidget {
   /// Filter quality.
   final FilterQuality filterQuality;
 
-  // Built-In video controls.
+  /// Built-In video controls.
   final bool showControls;
 
-  // Radius of the progressbar's thumb
+  /// Radius of the progressbar's thumb
   final double? progressBarThumbRadius;
 
-  // Radius of the progressbar's glow of the thumb
+  /// Radius of the progressbar's glow of the thumb
   final double? progressBarThumbGlowRadius;
 
-  // Active color of the progress bar
+  /// Active color of the progress bar
   final Color? progressBarActiveColor;
 
-  // Inactive color of the progress bar
+  /// Inactive color of the progress bar
   final Color? progressBarInactiveColor;
 
-  // Thumb color of the progress bar
+  /// Thumb color of the progress bar
   final Color? progressBarThumbColor;
 
-  // Thumb's glow color of the progress bar
+  /// Thumb's glow color of the progress bar
   final Color? progressBarThumbGlowColor;
 
-  // TextStyle for the Progress Bar
+  /// TextStyle for the Progress Bar
   final TextStyle progressBarTextStyle;
 
-  // Active color of the volume slider
+  /// Active color of the volume slider
   final Color? volumeActiveColor;
 
-  // Inactive color of the volume slider
+  /// Inactive color of the volume slider
   final Color? volumeInactiveColor;
 
-  // Background color of the volume slider
+  /// Background color of the volume slider
   final Color volumeBackgroundColor;
 
-  // Thumb color of the volume slider
+  /// Thumb color of the volume slider
   final Color? volumeThumbColor;
 
-  // if you want the progress bar to display the time left while playing
-  // instead of the total time, set this to true
+  /// If you want the progress bar to display the time left while playing
+  /// instead of the total time, set this to true
   final bool showTimeLeft;
 
-  Video({
-    @Deprecated('playerId is deprecated. Use player instead.') int? playerId,
-    Player? player,
-    this.width,
-    this.height,
-    this.fit: BoxFit.contain,
-    this.alignment: Alignment.center,
-    this.scale: 1.0,
-    this.showControls: true,
-    this.progressBarActiveColor,
-    this.progressBarInactiveColor = Colors.white24,
-    this.progressBarThumbColor,
-    this.progressBarThumbGlowColor = const Color.fromRGBO(0, 161, 214, .2),
-    this.volumeActiveColor,
-    this.volumeInactiveColor = Colors.grey,
-    this.volumeBackgroundColor = const Color(0xff424242),
-    this.volumeThumbColor,
-    this.progressBarThumbRadius = 10.0,
-    this.progressBarThumbGlowRadius = 15.0,
-    this.showTimeLeft = false,
-    this.progressBarTextStyle = const TextStyle(),
-    this.filterQuality = FilterQuality.low,
-    Key? key,
-  })  : player = player ?? players[playerId]! as Player,
-        super(key: key);
+  /// Whether to show the fullscreen button.
+  final bool showFullscreenButton;
+
+  /// Fill color.
+  final Color fillColor;
 
   _VideoStateBase createState() => _VideoStateTexture();
 }
@@ -160,20 +188,72 @@ abstract class _VideoStateBase extends State<Video>
 
   @override
   void initState() {
-    if (widget.showControls) controls[playerId] = controlKey;
     super.initState();
+    if (widget.showControls) controls[playerId] = controlKey;
+  }
+
+  void enterFullscreen() async {
+    await windowManager.ensureInitialized();
+    await windowManager.setFullScreen(true);
+    Navigator.of(context, rootNavigator: true).push(
+      PageRouteBuilder(
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+        pageBuilder: (_, __, ___) => Scaffold(
+          body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: widget.fillColor,
+            child: widget.showControls
+                ? Control(
+                    player: widget.player,
+                    enterFullscreen: enterFullscreen,
+                    exitFullscreen: exitFullscreen,
+                    isFullscreen: true,
+                    showFullscreenButton: widget.showFullscreenButton,
+                    progressBarThumbRadius: widget.progressBarThumbRadius,
+                    progressBarThumbGlowRadius:
+                        widget.progressBarThumbGlowRadius,
+                    progressBarActiveColor: widget.progressBarActiveColor,
+                    progressBarInactiveColor: widget.progressBarInactiveColor,
+                    progressBarThumbColor: widget.progressBarThumbColor,
+                    progressBarThumbGlowColor: widget.progressBarThumbGlowColor,
+                    volumeActiveColor: widget.volumeActiveColor,
+                    volumeInactiveColor: widget.volumeInactiveColor,
+                    volumeBackgroundColor: widget.volumeBackgroundColor,
+                    volumeThumbColor: widget.volumeThumbColor,
+                    showTimeLeft: widget.showTimeLeft,
+                    progressBarTextStyle: widget.progressBarTextStyle,
+                    child: present(),
+                  )
+                : present(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void exitFullscreen() async {
+    await windowManager.ensureInitialized();
+    await windowManager.setFullScreen(false);
+    Navigator.of(context, rootNavigator: false).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       width: widget.width ?? double.infinity,
       height: widget.height ?? double.infinity,
-      color: Colors.black,
+      color: widget.fillColor,
       child: widget.showControls
           ? Control(
               key: controlKey,
               player: widget.player,
+              enterFullscreen: enterFullscreen,
+              exitFullscreen: exitFullscreen,
+              isFullscreen: false,
+              showFullscreenButton: widget.showFullscreenButton,
               progressBarThumbRadius: widget.progressBarThumbRadius,
               progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
               progressBarActiveColor: widget.progressBarActiveColor,
@@ -203,40 +283,48 @@ class _VideoStateTexture extends _VideoStateBase {
 
   @override
   void initState() {
+    super.initState();
+    _videoWidth = widget.player.videoDimensions.width.toDouble();
+    _videoHeight = widget.player.videoDimensions.height.toDouble();
     _videoDimensionsSubscription =
         widget.player.videoDimensionsStream.listen((dimensions) {
-      setState(() {
-        _videoWidth = dimensions.width.toDouble();
-        _videoHeight = dimensions.height.toDouble();
-      });
+      if (_videoWidth != dimensions.width.toDouble() &&
+          _videoHeight != dimensions.height.toDouble()) {
+        setState(() {
+          _videoWidth = dimensions.width.toDouble();
+          _videoHeight = dimensions.height.toDouble();
+        });
+      }
     });
-    super.initState();
     if (mounted) setState(() {});
   }
 
   Widget present() {
     return ValueListenableBuilder<int?>(
-        valueListenable: widget.player.textureId,
-        builder: (context, textureId, _) {
-          if (textureId == null ||
-              _videoWidth == null ||
-              _videoHeight == null) {
-            return Container();
-          }
+      valueListenable: widget.player.textureId,
+      builder: (context, textureId, _) {
+        if (textureId == null || _videoWidth == null || _videoHeight == null) {
+          return const SizedBox.shrink();
+        }
 
-          return SizedBox.expand(
-              child: ClipRect(
-                  child: FittedBox(
-                      alignment: widget.alignment,
-                      fit: widget.fit,
-                      child: SizedBox(
-                          width: _videoWidth,
-                          height: _videoHeight,
-                          child: Texture(
-                            textureId: textureId,
-                            filterQuality: widget.filterQuality,
-                          )))));
-        });
+        return SizedBox.expand(
+          child: ClipRect(
+            child: FittedBox(
+              alignment: widget.alignment,
+              fit: widget.fit,
+              child: SizedBox(
+                width: _videoWidth,
+                height: _videoHeight,
+                child: Texture(
+                  textureId: textureId,
+                  filterQuality: widget.filterQuality,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -275,13 +363,8 @@ class _VideoStateFallback extends _VideoStateBase {
   }
 
   @override
-  Future<void> dispose() async {
-    videoStreamControllers[playerId]?.close();
-    super.dispose();
-  }
-
-  @override
   void initState() {
+    super.initState();
     videoStreamControllers[playerId] = StreamController<VideoFrame>.broadcast();
     videoStreamControllers[playerId]
         ?.stream
@@ -290,14 +373,21 @@ class _VideoStateFallback extends _VideoStateBase {
       if (mounted && !(videoStreamControllers[playerId]?.isClosed ?? true))
         setState(() {});
     });
-    super.initState();
     if (mounted) setState(() {});
+  }
+
+  @override
+  Future<void> dispose() async {
+    videoStreamControllers[playerId]?.close();
+    super.dispose();
   }
 
   Widget present() {
     return videoFrameRawImage != null
-        ? SizedBox.expand(child: ClipRect(child: videoFrameRawImage))
-        : Container();
+        ? SizedBox.expand(
+            child: ClipRect(child: videoFrameRawImage),
+          )
+        : const SizedBox.shrink();
   }
 
   @override

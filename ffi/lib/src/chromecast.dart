@@ -1,6 +1,6 @@
 import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/ffi.dart';
-import 'package:dart_vlc_ffi/src/mediaSource/media.dart';
+import 'package:dart_vlc_ffi/src/media_source/media.dart';
 
 /// Internally used class to avoid direct creation of the object of a [Chromecast] class.
 class _Chromecast extends Chromecast {}
@@ -24,8 +24,18 @@ class Chromecast {
     chromecast.id = id;
     chromecast.media = media;
     chromecast.ipAddress = ipAddress;
-    ChromecastFFI.create(id, media.mediaType.toString().toNativeUtf8(),
-        media.resource.toNativeUtf8(), ipAddress.toNativeUtf8());
+    final mediaTypeCStr = media.mediaType.toString().toNativeUtf8();
+    final mediaResourceCStr = media.resource.toNativeUtf8();
+    final ipAddressCStr = ipAddress.toNativeUtf8();
+    ChromecastFFI.create(
+      id,
+      mediaTypeCStr,
+      mediaResourceCStr,
+      ipAddressCStr,
+    );
+    calloc.free(mediaTypeCStr);
+    calloc.free(mediaResourceCStr);
+    calloc.free(ipAddressCStr);
     return chromecast;
   }
 
