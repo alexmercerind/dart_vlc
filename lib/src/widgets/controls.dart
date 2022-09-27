@@ -111,7 +111,10 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
       onTap: () {
         if (player.playback.isPlaying) {
           if (_displayTapped) {
-            setState(() => _hideControls = true);
+            setState(() {
+              _hideControls = true;
+              _displayTapped = false;
+            });
           } else {
             _cancelAndRestartTimer();
           }
@@ -360,6 +363,7 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
       if (mounted) {
         setState(() {
           _hideControls = true;
+          _displayTapped = false;
         });
       }
     });
