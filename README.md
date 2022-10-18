@@ -1,7 +1,32 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<p align="center">Flutter audio/video playback, broadcast & recording library for Windows & Linux with playlist control, metadata extractor, equalizers & more.</p>
+<p align="center">Flutter audio/video playback, broadcast & recording library for Windows & Linux.</p>
 
+<!-- 
 [![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![](https://img.shields.io/twitter/follow/alexmercerind)](https://twitter.com/alexmercerind) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind) [![Join the chat at https://discord.gg/3h3K3JF](https://img.shields.io/discord/716939396464508958?label=discord)](https://discord.gg/3h3K3JF)
+
+--->
+
+## 🎉 News
+
+I have recently started to work on a better, stable & more performant media playback library with **hardware accelerated video rendering** library for Flutter Windows & Linux. Other than just hardware-accelerated video embedding, it has things like pitch shifting support, tag/metadata reader, dynamic playlist support, native OS controls on Windows/Linux & volume boost feature out-of-the-box along side basic features. Currently, audio-only support is 100% ready & used in production inside [Harmonoid: A Material Design-led music player to play & manage music library](https://harmonoid.com), video support needs to be written (although POC video is attached below). 
+
+It has very little expense on GPU & CPU during video playback (compared to `package:dart_vlc`). See the video for more details:
+
+Since, I have no personal requirements for video support, **I need sponsor / funding to continue my work.** 💌 Trust me, it's a very tedious process with very-little clear direction. Your support can ensure timely maintenance & stability of library that you can depend upon. 
+
+#### You may sponsor my work on my [GitHub Sponsors](https://github.com/sponsors/alexmercerind) profile & get updates/early-access.
+
+
+Video support for Windows will be implemented with Direct3D-OpenGL interop with the help of ANGLE, since libmpv has a performant OpenGL API.
+More details about initial setup my be found on my following repositories:
+- [OpenGL-Direct3D interop with ANGLE](https://github.com/alexmercerind/flutter-windows-ANGLE-OpenGL-Direct3D-Interop).
+- [package:media_engine with complete audio playback API (leftover support for video rendering)](https://github.com/harmonoid/media_engine).
+
+If enough support is received, I may even add support to the official `package:video_player`, give you personal support & help.
+
+https://user-images.githubusercontent.com/28951144/196414122-9e860a3b-df85-4352-96a3-1a5dbfaca4c4.mp4
+
+## dart_vlc
 
 ![](https://alexmercerind.github.io/img/dart_vlc/0.webp)
 
