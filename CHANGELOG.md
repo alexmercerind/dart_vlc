@@ -1,3 +1,7 @@
+## 0.3.1
+- Update dart_vlc_ffi to ^0.1.8
+- Update window_manager to ^0.2.7
+
 ## 0.3.0
 * BREAKING CHANGES
   * Removed iOS support

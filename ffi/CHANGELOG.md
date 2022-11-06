@@ -1,3 +1,8 @@
+## 0.1.8
+ 
+- Update ffi & path dependencies.
+
+
 ## 0.1.7
 
 - Update equivalent Dart bindings.
