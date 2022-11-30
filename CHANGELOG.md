@@ -1,7 +1,14 @@
+## 0.4.0
+
+- Bumped `ffi` to `2.0.1`.
+- Fixed locking of `VLC::MediaList` during modification.
+- BREAKING CHANGE: Discontinued `NativeVideo` implementation for Windows.
+
 ## 0.3.0
-* BREAKING CHANGES
-  * Removed iOS support
-  * Removed macOS support
+
+- BREAKING CHANGES
+  - Removed iOS support.
+  - Removed macOS support.
 
 ## 0.2.1
 

@@ -1,24 +1,28 @@
+## 0.2.0
+
+- Updated FFI bindings.
+
 ## 0.1.7
 
 - Update equivalent Dart bindings.
 
 ## 0.1.6
 
-- Rewrite FFI bindings.
-- Update `NativePort` event handling to follow new structure.
+- Rewritten FFI bindings.
+- Updated `NativePort` event handling to follow new structure.
 
-## 0.1.5+1
+## 0.1.5
 
-- Update equivalent Dart code & example
+- Updated equivalent Dart code & example
 - Added support for setting current audio track and getting audio track count
 
 ## 0.1.4
 
-- Fix OnOpen callback
+- Fixed `OnOpen` callback
 
 ## 0.1.3
 
-- Update `ReceivePort` listener to match new NativePort callbacks.
+- Updated `ReceivePort` listener to match new NativePort callbacks.
 
 ## 0.1.2
 
