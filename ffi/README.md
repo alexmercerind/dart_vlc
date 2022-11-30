@@ -1,5 +1,5 @@
 <h1 align="center"><a href="https:///github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
-<h4 align="center">Flutter & Dart 🎞 media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
+<h4 align="center">Flutter audio / video playback, broadcast & recording library for Windows & Linux.</h4>
 
 <br />
 

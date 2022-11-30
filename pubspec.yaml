@@ -1,5 +1,5 @@
 name: dart_vlc
-description: Flutter media playback, broadcast, recording & chromecast library. Based on libvlc.
+description: Flutter audio / video playback, broadcast & recording library for Windows & Linux. Based on libvlc.
 version: 0.4.0
 homepage: https://github.com/alexmercerind/dart_vlc
 repository: https://github.com/alexmercerind/dart_vlc
