@@ -1,19 +1,25 @@
 <h1 align="center"><a href="https:///github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
 <h4 align="center">Flutter & Dart 🎞 media playback, broadcast, recording & chromecast library for Windows & Linux.</h4>
 
-Dependency package for [`dart_vlc`](https:///github.com/alexmercerind/dart_vlc).
+<br />
 
-## Documentation
+<p align="center">
+  <strong>Sponsored with 💖 by</strong>
+  <br>
+  <a href="https://getstream.io/chat/sdk/flutter/?utm_source=alexmercerind_dart&utm_medium=Github_Repo_Content_Ad&utm_content=Developer&utm_campaign=alexmercerind_December2022_FlutterSDK_klmh22" target="_blank">
+    <img src="https://user-images.githubusercontent.com/28951144/204833199-41d8e5f5-5e53-4171-8dc0-902be4e1ed61.png" width="350" height="auto" alt="Stream Chat">
+  </a>
+  <br>
+    Rapidly ship in-app messaging with Stream's highly reliable chat infrastructure and feature-rich SDKs, including Flutter!
+  <br>
+  <h4 align="center">
+    <a href="https://getstream.io/chat/sdk/flutter/?utm_source=alexmercerind_dart&utm_medium=Github_Repo_Content_Ad&utm_content=Developer&utm_campaign=alexmercerind_December2022_FlutterSDK_klmh22" target="_blank">
+    Try the Flutter Chat tutorial
+    </a>
+  </h4>
+</p>
 
-[`dart_vlc`](https:///github.com/alexmercerind/dart_vlc)'s documentation is available on its [GitHub repository](https://github.com/alexmercerind/dart_vlc).
+<br />
 
-## Support
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind)
-[![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind)
-
-## License
-
-Copyright (C) 2021, Hitesh Kumar Saini <saini123hitesh@gmail.com>.
-
-This library & work under this repository is licensed under GNU Lesser General Public License v2.1.
+<img src='https://alexmercerind.github.io/img/dart_vlc/0.webp'></img>
+<img src='https://alexmercerind.github.io/img/dart_vlc/1.webp'></img>

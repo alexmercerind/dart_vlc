@@ -1,36 +1,28 @@
 <h1 align="center"><a href="https://github.com/alexmercerind/dart_vlc">dart_vlc</a></h1>
 <p align="center">Flutter audio/video playback, broadcast & recording library for Windows & Linux.</p>
 
-<!-- 
-[![pub package](https://img.shields.io/pub/v/dart_vlc.svg)](https://pub.dartlang.org/packages/dart_vlc) ![CI/CD](https://github.com/alexmercerind/dart_vlc/actions/workflows/ci.yml/badge.svg?branch=master) [![](https://img.shields.io/twitter/follow/alexmercerind)](https://twitter.com/alexmercerind) [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind) [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind) [![Join the chat at https://discord.gg/3h3K3JF](https://img.shields.io/discord/716939396464508958?label=discord)](https://discord.gg/3h3K3JF)
+<br />
 
---->
+<p align="center">
+  <strong>Sponsored with 💖 by</strong>
+  <br>
+  <a href="https://getstream.io/chat/sdk/flutter/?utm_source=alexmercerind_dart&utm_medium=Github_Repo_Content_Ad&utm_content=Developer&utm_campaign=alexmercerind_December2022_FlutterSDK_klmh22" target="_blank">
+    <img src="https://user-images.githubusercontent.com/28951144/204833199-41d8e5f5-5e53-4171-8dc0-902be4e1ed61.png" width="350" height="auto" alt="Stream Chat">
+  </a>
+  <br>
+    Rapidly ship in-app messaging with Stream's highly reliable chat infrastructure and feature-rich SDKs, including Flutter!
+  <br>
+  <h4 align="center">
+    <a href="https://getstream.io/chat/sdk/flutter/?utm_source=alexmercerind_dart&utm_medium=Github_Repo_Content_Ad&utm_content=Developer&utm_campaign=alexmercerind_December2022_FlutterSDK_klmh22" target="_blank">
+    Try the Flutter Chat tutorial
+    </a>
+  </h4>
+</p>
 
-## 🎉 News
+<br />
 
-I have recently started to work on a better, stable & more performant media playback library with **hardware accelerated video rendering** library for Flutter Windows & Linux. Other than just hardware-accelerated video embedding, it has things like pitch shifting support, tag/metadata reader, dynamic playlist support, native OS controls on Windows/Linux & volume boost feature out-of-the-box along side basic features. Currently, audio-only support is 100% ready & used in production inside [Harmonoid: A Material Design-led music player to play & manage music library](https://harmonoid.com), video support needs to be written (although POC video is attached below). 
-
-It has very little expense on GPU & CPU during video playback (compared to `package:dart_vlc`). See the video for more details:
-
-Since, I have no personal requirements for video support, **I need sponsor / funding to continue my work.** 💌 Trust me, it's a very tedious process with very-little clear direction. Your support can ensure timely maintenance & stability of library that you can depend upon. 
-
-#### You may sponsor my work on my [GitHub Sponsors](https://github.com/sponsors/alexmercerind) profile & get updates/early-access.
-
-
-Video support for Windows will be implemented with Direct3D-OpenGL interop with the help of ANGLE, since libmpv has a performant OpenGL API.
-More details about initial setup my be found on my following repositories:
-- [OpenGL-Direct3D interop with ANGLE](https://github.com/alexmercerind/flutter-windows-ANGLE-OpenGL-Direct3D-Interop).
-- [package:media_engine with complete audio playback API (leftover support for video rendering)](https://github.com/harmonoid/media_engine).
-
-If enough support is received, I may even add support to the official `package:video_player`, give you personal support & help.
-
-https://user-images.githubusercontent.com/28951144/196414122-9e860a3b-df85-4352-96a3-1a5dbfaca4c4.mp4
-
-## dart_vlc
-
-![](https://alexmercerind.github.io/img/dart_vlc/0.webp)
-
-![](https://alexmercerind.github.io/img/dart_vlc/1.webp)
+<img src='https://alexmercerind.github.io/img/dart_vlc/0.webp'></img>
+<img src='https://alexmercerind.github.io/img/dart_vlc/1.webp'></img>
 
 ## Installation
 
@@ -61,26 +53,15 @@ dependency_overrides:
 
 Feel free to open a [new issue](https://github.com/alexmercerind/dart_vlc/issues) or [discussion](https://github.com/alexmercerind/dart_vlc/discussions), if you found a bug or need assistance.
 
-## Support
-
-Consider supporting the project by buying me a coffee or starring the repository.
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/alexmercerind)
-[![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow)](https://buymeacoffee.com/alexmercerind)
-
-Thanks a lot for your support.
-
-macOS support has been removed due to lack of maintainers & not having macOS running hardware.
-
 ## Documentation
 
 Checkout [Setup](#setup) section to configure plugin on your platform.
 
-#### Initialize the library
+#### Initialize the library.
 
 ```dart
-Future<void> main() async {
-  await DartVLC.initialize();
+void main() {
+  DartVLC.initialize();
   runApp(MyApp());
 }
 ```
@@ -96,30 +77,22 @@ For passing VLC CLI arguments, use `commandlineArguments` argument.
 ```dart
 final player = Player(
   id: 69420,
-  commandlineArguments: ['--no-video']
+  commandlineArguments: ['--no-video'],
 );
 ```
 
 #### Create a media for playback.
 
 ```dart
-final media0 = Media.file(
-  File('C:/music.mp3')
-);
+final file = Media.file(File('C:/music.mp3'));
+final asset = Media.asset('assets/audio/example.mp3');
+final network = Media.network('https://www.example.com/music.aac');
 
-final media1 = Media.asset(
-  'assets/audio/example.mp3'
-);
-
-final media2 = Media.network(
-  'https://www.example.com/music.aac'
-);
-
-// Clip the media.
+// Clip [Media] playback duration.
 final media2 = Media.network(
   'https://www.example.com/music.aac',
-  startTime: Duration(seconds: 20), // Start media from 20 seconds from the beginning.
-  stopTime: Duration(seconds: 60), // End media at 60 seconds from the beginning.
+  startTime: Duration(seconds: 20),
+  stopTime: Duration(seconds: 60),
 );
 ```
 
@@ -212,9 +185,7 @@ player.setRate(1.25);
 ```dart
 List<Device> devices = Devices.all;
 
-player.setDevice(
-  devices[0],
-);
+player.setDevice(devices[0]);
 ```
 
 #### Save the video screenshot
@@ -226,8 +197,6 @@ player.takeSnapshot(file, 1920, 1080);
 #### Show the video inside widget tree.
 
 Show `Video` in the `Widget` tree.
-
-**NOTE:** This will cause additional CPU-load due to conversion of video frames to RGBA/BGRA pixel-buffers & `Texture` interop. For better performance, use [NativeVideo](#nativevideo) instead.
 
 ```dart
 class _MyAppState extends State<MyApp> {
@@ -256,48 +225,7 @@ Player player = Player(
 );
 ```
 
-#### NativeVideo
-
-A more performant `Widget` for showing video inside the `Widget` tree.
-
-This `Widget` is **more performant** compared to `Video` & uses [flutter_native_view](https://github.com/alexmercerind/flutter_native_view.git)
-to embed the video output directly without any texture interop or pixel-buffer copy calls.
-
-But, it is highly dependent on platform & other limitations apply. In general, this widget is more performant & should be used if possible.
-
-1. Edit your `windows/runner/main.cpp` as required [here](https://github.com/alexmercerind/flutter_native_view#setup).
-
-2. Register the plugin with `useFlutterNativeView` as `true`.
-
-```dart
-void main() {
-  DartVLC.initilize(useFlutterNativeView: true);
-  runApp(MyApp());
-}
-```
-
-3. Pass `registerTexture` as `false` when creating `Player` & use `NativeVideo` widget.
-
-```dart
-class _MyAppState extends State<MyApp> {
-  Player player = Player(id: 0, registerTexture: false);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: NativeVideo(
-          player: player,
-          height: 420.0,
-          width: 320.0
-        ),
-      ),
-    );
-  }
-}
-```
-
-#### Change user agent
+#### Change user agent.
 
 ```dart
 player.setUserAgent(userAgent);
@@ -514,6 +442,16 @@ end
 For the example project to work you need to configure a real device in the xcode project, or comment out the build script `Build Device lib` in in `ios/dart_vlc.podspec`.
 
 -->
+
+## Support
+
+Consider sponsoring this project. Maintenance of open-source software & libraries is severely under-paid or not paid at all.
+
+Writing C++ & native code is a very tedious process.
+
+- [PayPal](https://paypal.me/alexmercerind)
+- [Patreon](https://patreon.com/harmonoid)
+- [GitHub Sponsors](https://github.com/sponsors/alexmercerind)
 
 ## Acknowledgements
 
