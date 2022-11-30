@@ -89,5 +89,5 @@ String get dynamicLibraryPath {
       .split('/')
       .sublist(0, Platform.script.path.split('/').length - 1)
       .join('/');
-  return directory + '/' + 'dart_vlc.so';
+  return '$directory/dart_vlc.so';
 }

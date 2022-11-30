@@ -32,15 +32,15 @@ class Equalizer {
   /// Creates a default [Equalizer] instance with all values set to `0.0`.
   factory Equalizer.createEmpty() {
     Equalizer equalizer = Equalizer._();
-    final _equalizer = EqualizerFFI.createEmpty(
+    final equalizerPtr = EqualizerFFI.createEmpty(
       equalizer,
     );
-    equalizer.id = _equalizer.ref.id;
+    equalizer.id = equalizerPtr.ref.id;
     equalizer.preAmp = equalizer.preAmp;
     equalizer.mode = null;
     equalizer.bandAmps = {};
-    for (int i = 0; i < _equalizer.ref.size; i++) {
-      equalizer.bandAmps[_equalizer.ref.bands[i]] = _equalizer.ref.amps[i];
+    for (int i = 0; i < equalizerPtr.ref.size; i++) {
+      equalizer.bandAmps[equalizerPtr.ref.bands[i]] = equalizerPtr.ref.amps[i];
     }
     return equalizer;
   }
@@ -48,16 +48,16 @@ class Equalizer {
   /// Creates an [Equalizer] instance with any preset from [EqualizerMode].
   factory Equalizer.createMode(EqualizerMode mode) {
     Equalizer equalizer = Equalizer._();
-    final _equalizer = EqualizerFFI.createMode(
+    final equalizerPtr = EqualizerFFI.createMode(
       equalizer,
       mode.index,
     );
-    equalizer.id = _equalizer.ref.id;
+    equalizer.id = equalizerPtr.ref.id;
     equalizer.preAmp = equalizer.preAmp;
     equalizer.mode = mode;
     equalizer.bandAmps = {};
-    for (int i = 0; i < _equalizer.ref.size; i++) {
-      equalizer.bandAmps[_equalizer.ref.bands[i]] = _equalizer.ref.amps[i];
+    for (int i = 0; i < equalizerPtr.ref.size; i++) {
+      equalizer.bandAmps[equalizerPtr.ref.bands[i]] = equalizerPtr.ref.amps[i];
     }
     return equalizer;
   }

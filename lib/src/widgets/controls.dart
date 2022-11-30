@@ -363,10 +363,10 @@ class VolumeControl extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _VolumeControlState createState() => _VolumeControlState();
+  VolumeControlState createState() => VolumeControlState();
 }
 
-class _VolumeControlState extends State<VolumeControl> {
+class VolumeControlState extends State<VolumeControl> {
   double volume = 0.5;
   bool _showVolume = false;
   double unmutedVolume = 0.5;

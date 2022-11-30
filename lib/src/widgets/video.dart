@@ -173,10 +173,10 @@ class Video extends StatefulWidget {
   final Color fillColor;
 
   @override
-  _VideoStateBase createState() => _VideoStateTexture();
+  VideoStateBase createState() => VideoStateTexture();
 }
 
-abstract class _VideoStateBase extends State<Video>
+abstract class VideoStateBase extends State<Video>
     with AutomaticKeepAliveClientMixin {
   GlobalKey<ControlState> controlKey = GlobalKey<ControlState>();
 
@@ -221,7 +221,7 @@ abstract class _VideoStateBase extends State<Video>
 }
 
 /// Texture based Video playback.
-class _VideoStateTexture extends _VideoStateBase {
+class VideoStateTexture extends VideoStateBase {
   StreamSubscription? _videoDimensionsSubscription;
   double? _videoWidth;
   double? _videoHeight;
@@ -285,7 +285,7 @@ class _VideoStateTexture extends _VideoStateBase {
 
 /// NativePorts & decodeImageFromPixels based video playback.
 // ignore: unused_element
-class _VideoStateFallback extends _VideoStateBase {
+class VideoStateFallback extends VideoStateBase {
   Widget? videoFrameRawImage;
 
   Future<RawImage> getVideoFrameRawImage(VideoFrame videoFrame) async {
@@ -295,7 +295,7 @@ class _VideoStateFallback extends _VideoStateBase {
         videoFrame.videoWidth,
         videoFrame.videoHeight,
         ui.PixelFormat.rgba8888,
-        (ui.Image _image) => imageCompleter.complete(_image),
+        (ui.Image i) => imageCompleter.complete(i),
         rowBytes: 4 * videoFrame.videoWidth);
     ui.Image image = await imageCompleter.future;
 
