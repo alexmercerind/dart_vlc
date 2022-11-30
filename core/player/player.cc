@@ -41,10 +41,10 @@ Player::Player(const std::vector<std::string>& cmd_arguments) {
 }
 
 void Player::Open(std::shared_ptr<MediaSource> media_source, bool auto_start) {
-  state()->set_is_started(false);
-  state()->Reset();
+  state_->set_is_started(false);
+  state_->Reset();
   Stop();
-  state()->medias()->medias() = {};
+  state_->medias()->medias() = {};
   vlc_media_list_ = VLC::MediaList(vlc_instance_);
   if (media_source->Type() == "MediaSourceType.media") {
     std::shared_ptr<Media> media =
@@ -57,10 +57,12 @@ void Player::Open(std::shared_ptr<MediaSource> media_source, bool auto_start) {
     if (media->stop_time() != "") {
       vlc_media.addOption(media->stop_time());
     }
+    vlc_media_list_.lock();
     vlc_media_list_.addMedia(vlc_media);
+    vlc_media_list_.unlock();
     vlc_media_list_player_.setMediaList(vlc_media_list_);
-    state()->medias()->medias() = {media};
-    state()->set_is_playlist(false);
+    state_->medias()->medias() = {media};
+    state_->set_is_playlist(false);
   } else if (media_source->Type() == "MediaSourceType.playlist") {
     std::shared_ptr<Playlist> playlist =
         std::dynamic_pointer_cast<Playlist>(media_source);
@@ -74,20 +76,22 @@ void Player::Open(std::shared_ptr<MediaSource> media_source, bool auto_start) {
       if (media->stop_time() != "") {
         vlc_media.addOption(media->stop_time());
       }
+      vlc_media_list_.lock();
       vlc_media_list_.addMedia(vlc_media);
-      state()->medias()->medias().emplace_back(media);
+      vlc_media_list_.unlock();
+      state_->medias()->medias().emplace_back(media);
     }
     vlc_media_list_player_.setMediaList(vlc_media_list_);
-    state()->set_is_playlist(false);
+    state_->set_is_playlist(false);
   }
   OnOpenCallback(vlc_media_list_.itemAtIndex(0));
   if (auto_start) Play();
 }
 
 void Player::Play() {
-  if (!state()->is_started() && !state()->medias()->medias().empty()) {
+  if (!state_->is_started() && !state_->medias()->medias().empty()) {
     vlc_media_list_player_.playItemAtIndex(0);
-    state()->set_is_started(true);
+    state_->set_is_started(true);
   } else {
     vlc_media_list_player_.play();
   }
@@ -100,9 +104,9 @@ void Player::Pause() {
 }
 
 void Player::PlayOrPause() {
-  if (!state()->is_started() && !state()->medias()->medias().empty()) {
+  if (!state_->is_started() && !state_->medias()->medias().empty()) {
     vlc_media_list_player_.playItemAtIndex(0);
-    state()->set_is_started(true);
+    state_->set_is_started(true);
   } else {
     vlc_media_list_player_.pause();
   }
@@ -112,17 +116,17 @@ void Player::Stop() { vlc_media_list_player_.stop(); }
 
 void Player::Next() {
   OnPlaylistCallback();
-  if (state()->index() < vlc_media_list_.count()) {
-    state()->set_index(state()->index() + 1);
-    vlc_media_list_player_.playItemAtIndex(state()->index());
+  if (state_->index() < vlc_media_list_.count()) {
+    state_->set_index(state_->index() + 1);
+    vlc_media_list_player_.playItemAtIndex(state_->index());
   }
 }
 
 void Player::Previous() {
   OnPlaylistCallback();
-  if (state()->index() > 0) {
-    state()->set_index(state()->index() - 1);
-    vlc_media_list_player_.playItemAtIndex(state()->index());
+  if (state_->index() > 0) {
+    state_->set_index(state_->index() - 1);
+    vlc_media_list_player_.playItemAtIndex(state_->index());
   }
 }
 
@@ -136,13 +140,13 @@ void Player::Seek(int32_t position) { vlc_media_player_.setTime(position); }
 
 void Player::SetVolume(float volume) {
   vlc_media_player_.setVolume(static_cast<int32_t>(volume * 100));
-  state()->set_volume(volume);
+  state_->set_volume(volume);
   volume_callback_(volume);
 }
 
 void Player::SetRate(float rate) {
   vlc_media_player_.setRate(rate);
-  state()->set_rate(rate);
+  state_->set_rate(rate);
   rate_callback_(rate);
 }
 
@@ -167,67 +171,77 @@ void Player::Add(std::shared_ptr<Media> media) {
   is_playlist_modified_ = true;
   VLC::Media vlc_media =
       VLC::Media(vlc_instance_, media->location(), VLC::Media::FromLocation);
+  vlc_media_list_.lock();
   vlc_media_list_.addMedia(vlc_media);
-  state()->medias()->medias().emplace_back(media);
+  vlc_media_list_.unlock();
+  state_->medias()->medias().emplace_back(media);
   OnPlaylistCallback();
-  state()->set_is_playlist(true);
+  state_->set_is_playlist(true);
 }
 
 void Player::Remove(int32_t index) {
-  if (index < 0 || index >= state()->medias()->medias().size()) return;
+  if (index < 0 || index >= state_->medias()->medias().size()) return;
   is_playlist_modified_ = true;
-  state()->medias()->medias().erase(state()->medias()->medias().begin() +
-                                    index);
+  state_->medias()->medias().erase(state_->medias()->medias().begin() + index);
+  vlc_media_list_.lock();
   vlc_media_list_.removeIndex(index);
+  vlc_media_list_.unlock();
   OnPlaylistCallback();
-  if (!state()->is_completed() && state()->index() == index) {
-    if (state()->index() == vlc_media_list_.count()) {
+  if (!state_->is_completed() && state_->index() == index) {
+    if (state_->index() == vlc_media_list_.count()) {
       vlc_media_list_player_.stop();
-    } else
+    } else {
       JumpToIndex(index);
+    }
   }
-  if (state()->index() > index) state()->set_index(state()->index() - 1);
-  state()->set_is_playlist(true);
+  if (state_->index() > index) state_->set_index(state_->index() - 1);
+  state_->set_is_playlist(true);
 }
 
 void Player::Insert(int32_t index, std::shared_ptr<Media> media) {
-  if (index < 0 || index >= state()->medias()->medias().size()) return;
+  if (index < 0 || index >= state_->medias()->medias().size()) return;
   is_playlist_modified_ = true;
   VLC::Media vlc_media =
       VLC::Media(vlc_instance_, media->location(), VLC::Media::FromLocation);
+  vlc_media_list_.lock();
   vlc_media_list_.insertMedia(vlc_media, index);
-  state()->medias()->medias().insert(
-      state()->medias()->medias().begin() + index, media);
+  vlc_media_list_.unlock();
+  state_->medias()->medias().insert(state_->medias()->medias().begin() + index,
+                                    media);
   OnPlaylistCallback();
-  if (state()->index() <= index) state()->set_index(state()->index() + 1);
-  state()->set_is_playlist(true);
+  if (state_->index() <= index) state_->set_index(state_->index() + 1);
+  state_->set_is_playlist(true);
 }
 
 void Player::Move(int32_t from, int32_t to) {
-  if (from < 0 || from >= state()->medias()->medias().size() || to < 0 ||
-      to >= state()->medias()->medias().size())
+  if (from < 0 || from >= state_->medias()->medias().size() || to < 0 ||
+      to >= state_->medias()->medias().size())
     return;
   if (from == to) return;
   is_playlist_modified_ = true;
-  std::shared_ptr<Media> media = state()->medias()->medias()[from];
+  std::shared_ptr<Media> media = state_->medias()->medias()[from];
   VLC::Media _media =
       VLC::Media(vlc_instance_, vlc_media_list_.itemAtIndex(from).get()->mrl(),
                  VLC::Media::FromLocation);
-  state()->medias()->medias().erase(state()->medias()->medias().begin() + from);
+  state_->medias()->medias().erase(state_->medias()->medias().begin() + from);
+  vlc_media_list_.lock();
   vlc_media_list_.removeIndex(from);
-  state()->medias()->medias().insert(state()->medias()->medias().begin() + to,
-                                     std::move(media));
+  vlc_media_list_.unlock();
+  state_->medias()->medias().insert(state_->medias()->medias().begin() + to,
+                                    std::move(media));
+  vlc_media_list_.lock();
   vlc_media_list_.insertMedia(_media, to);
-  if (from == state()->index()) {
-    state()->set_index(to);
-  } else if (to == state()->index()) {
-    state()->set_index(state()->index() + 1);
-  } else if (!((from < state()->index() && to < state()->index()) ||
-               (from > state()->index() && to > state()->index()))) {
+  vlc_media_list_.unlock();
+  if (from == state_->index()) {
+    state_->set_index(to);
+  } else if (to == state_->index()) {
+    state_->set_index(state_->index() + 1);
+  } else if (!((from < state_->index() && to < state_->index()) ||
+               (from > state_->index() && to > state_->index()))) {
     if (from > to)
-      state()->set_index(state()->index() + 1);
+      state_->set_index(state_->index() + 1);
     else
-      state()->set_index(state()->index() - 1);
+      state_->set_index(state_->index() - 1);
   }
   OnPlaylistCallback();
 }
@@ -385,68 +399,68 @@ void Player::OnPlaylistCallback() {
   if (is_playlist_modified_) {
     vlc_media_list_player_.setMediaList(vlc_media_list_);
     if (!vlc_media_list_.count()) {
-      state()->Reset();
+      state_->Reset();
       vlc_media_list_player_.stop();
       return;
     }
-    if (state()->index() > vlc_media_list_.count())
-      state()->set_index(vlc_media_list_.count() - 1);
+    if (state_->index() > vlc_media_list_.count())
+      state_->set_index(vlc_media_list_.count() - 1);
     is_playlist_modified_ = false;
     playlist_callback_();
   };
 }
 
 void Player::OnOpenCallback(VLC::MediaPtr vlc_media_ptr) {
-  state()->set_is_playing(vlc_media_player_.isPlaying());
-  state()->set_is_valid(vlc_media_player_.isValid());
+  state_->set_is_playing(vlc_media_player_.isPlaying());
+  state_->set_is_valid(vlc_media_player_.isValid());
   if (duration() > 0) {
-    state()->set_is_completed(false);
-    state()->set_position(position());
-    state()->set_duration(duration());
+    state_->set_is_completed(false);
+    state_->set_position(position());
+    state_->set_duration(duration());
   } else {
-    state()->set_is_completed(false);
-    state()->set_position(0);
-    state()->set_duration(0);
+    state_->set_is_completed(false);
+    state_->set_position(0);
+    state_->set_duration(0);
   }
-  state()->set_index(vlc_media_list_.indexOfItem(*vlc_media_ptr.get()));
+  state_->set_index(vlc_media_list_.indexOfItem(*vlc_media_ptr.get()));
   open_callback_(*vlc_media_ptr.get());
 }
 
 void Player::OnPlayCallback() {
-  state()->set_is_playing(vlc_media_player_.isPlaying());
-  state()->set_is_valid(vlc_media_player_.isValid());
+  state_->set_is_playing(vlc_media_player_.isPlaying());
+  state_->set_is_valid(vlc_media_player_.isValid());
   if (duration() > 0) {
-    state()->set_is_completed(false);
-    state()->set_position(position());
-    state()->set_duration(duration());
+    state_->set_is_completed(false);
+    state_->set_position(position());
+    state_->set_duration(duration());
   }
   play_callback_();
 }
 
 void Player::OnPauseCallback() {
-  state()->set_is_playing(vlc_media_player_.isPlaying());
-  state()->set_is_valid(vlc_media_player_.isValid());
+  state_->set_is_playing(vlc_media_player_.isPlaying());
+  state_->set_is_valid(vlc_media_player_.isValid());
   if (duration() > 0) {
-    state()->set_position(position());
-    state()->set_duration(duration());
+    state_->set_position(position());
+    state_->set_duration(duration());
   }
   pause_callback_();
 }
 
 void Player::OnStopCallback() {
-  state()->set_is_playing(vlc_media_player_.isPlaying());
-  state()->set_is_valid(vlc_media_player_.isValid());
-  state()->set_position(0);
-  state()->set_duration(0);
+  state_->set_is_playing(vlc_media_player_.isPlaying());
+  state_->set_is_valid(vlc_media_player_.isValid());
+  state_->set_position(0);
+  state_->set_duration(0);
   stop_callback_();
 }
 
 void Player::OnPositionCallback(float relative_position) {
-  state()->set_is_playing(vlc_media_player_.isPlaying());
-  state()->set_is_valid(vlc_media_player_.isValid());
+  state_->set_is_playing(vlc_media_player_.isPlaying());
+  state_->set_is_valid(vlc_media_player_.isValid());
   if (duration() > 0) {
-    state()->set_position(position());
-    state()->set_duration(duration());
+    state_->set_position(position());
+    state_->set_duration(duration());
   }
   position_callback_(
       static_cast<int32_t>(relative_position * vlc_media_player_.length()));
@@ -454,23 +468,23 @@ void Player::OnPositionCallback(float relative_position) {
 
 void Player::OnSeekableCallback(bool is_seekable) {
   if (duration() > 0) {
-    state()->set_is_seekable(is_seekable);
+    state_->set_is_seekable(is_seekable);
     seekable_callback_(is_seekable);
   }
 }
 
 void Player::OnCompleteCallback() {
-  state()->set_is_playing(vlc_media_player_.isPlaying());
-  state()->set_is_valid(vlc_media_player_.isValid());
+  state_->set_is_playing(vlc_media_player_.isPlaying());
+  state_->set_is_valid(vlc_media_player_.isValid());
   if (duration() > 0) {
-    state()->set_is_completed(true);
-    state()->set_position(position());
-    state()->set_duration(duration());
+    state_->set_is_completed(true);
+    state_->set_position(position());
+    state_->set_duration(duration());
     OnPlaylistCallback();
     complete_callback_();
   } else {
-    state()->set_position(0);
-    state()->set_duration(0);
+    state_->set_position(0);
+    state_->set_duration(0);
   }
 }
 
