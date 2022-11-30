@@ -43,8 +43,8 @@ class Control extends StatefulWidget {
     required this.volumeThumbColor,
     this.enterFullscreen,
     this.exitFullscreen,
-    this.isFullscreen: false,
-    this.showFullscreenButton: false,
+    this.isFullscreen = false,
+    this.showFullscreenButton = false,
   }) : super(key: key);
 
   final Widget child;
@@ -221,8 +221,9 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                                             .position?.inMilliseconds ??
                                         0;
                                     if (!(positionInMilliseconds - 10000)
-                                        .isNegative)
+                                        .isNegative) {
                                       positionInMilliseconds -= 10000;
+                                    }
                                     player.seek(Duration(
                                         milliseconds: positionInMilliseconds));
                                     setState(() {});
@@ -458,12 +459,13 @@ class _VolumeControlState extends State<VolumeControl> {
   }
 
   IconData getIcon() {
-    if (player.general.volume > .5)
+    if (player.general.volume > .5) {
       return Icons.volume_up_sharp;
-    else if (player.general.volume > 0)
+    } else if (player.general.volume > 0) {
       return Icons.volume_down_sharp;
-    else
+    } else {
       return Icons.volume_off_sharp;
+    }
   }
 
   void muteUnmute() {

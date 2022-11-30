@@ -93,7 +93,7 @@ abstract class Broadcast {
       {required int id,
       required Media media,
       required BroadcastConfiguration configuration}) {
-    Broadcast broadcast = new _Broadcast();
+    Broadcast broadcast = _Broadcast();
     broadcast.id = id;
     broadcast.media = media;
     broadcast.configuration = configuration;
@@ -121,21 +121,21 @@ abstract class Broadcast {
       args[8] as Pointer<Utf8>,
       args[9] as int,
     );
-    args.forEach((element) {
+    for (var element in args) {
       if (element is Pointer<Utf8>) {
         calloc.free(element);
       }
-    });
+    }
     return broadcast;
   }
 
   /// Starts broadcasting the [Media].
   void start() {
-    BroadcastFFI.start(this.id);
+    BroadcastFFI.start(id);
   }
 
   /// Disposes this instance of [Broadcast].
   void dispose() {
-    BroadcastFFI.dispose(this.id);
+    BroadcastFFI.dispose(id);
   }
 }

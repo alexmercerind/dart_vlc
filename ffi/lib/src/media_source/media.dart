@@ -35,6 +35,7 @@ import 'package:dart_vlc_ffi/src/enums/media_type.dart';
 /// ```
 ///
 class Media implements MediaSource {
+  @override
   MediaSourceType get mediaSourceType => MediaSourceType.media;
   final MediaType mediaType;
   final String resource;
@@ -46,18 +47,17 @@ class Media implements MediaSource {
     required this.mediaType,
     required this.resource,
     required this.metas,
-    this.startTime: Duration.zero,
-    this.stopTime: Duration.zero,
+    this.startTime = Duration.zero,
+    this.stopTime = Duration.zero,
   });
 
   /// Makes [Media] object from a [File].
   factory Media.file(
     File file, {
-    bool parse: false,
-    Map<String, dynamic>? extras,
-    Duration timeout: const Duration(seconds: 10),
-    startTime: Duration.zero,
-    stopTime: Duration.zero,
+    bool parse = false,
+    Duration timeout = const Duration(seconds: 10),
+    startTime = Duration.zero,
+    stopTime = Duration.zero,
   }) {
     final media = Media._(
       mediaType: MediaType.file,
@@ -75,11 +75,10 @@ class Media implements MediaSource {
   /// Makes [Media] object from url.
   factory Media.network(
     dynamic url, {
-    bool parse: false,
-    Map<String, dynamic>? extras,
-    Duration timeout: const Duration(seconds: 10),
-    startTime: Duration.zero,
-    stopTime: Duration.zero,
+    bool parse = false,
+    Duration timeout = const Duration(seconds: 10),
+    startTime = Duration.zero,
+    stopTime = Duration.zero,
   }) {
     final resource = (url is Uri) ? url.toString() : url;
     final Media media = Media._(
@@ -96,12 +95,13 @@ class Media implements MediaSource {
   }
 
   /// Makes [Media] object from direct show.
-  factory Media.directShow(
-      {String? rawUrl,
-      Map<String, dynamic>? args,
-      String? vdev,
-      String? adev,
-      int? liveCaching}) {
+  factory Media.directShow({
+    String? rawUrl,
+    Map<String, dynamic>? args,
+    String? vdev,
+    String? adev,
+    int? liveCaching,
+  }) {
     final resourceUrl = rawUrl ??
         _buildDirectShowUrl(args ??
             {
@@ -123,7 +123,7 @@ class Media implements MediaSource {
   ///
   factory Media.asset(
     String asset, {
-    startTime: Duration.zero,
+    startTime = Duration.zero,
   }) {
     String? assetPath;
     if (Platform.isWindows || Platform.isLinux) {
@@ -167,8 +167,8 @@ class Media implements MediaSource {
 
   /// Parses the [Media] to retrieve [Media.metas].
   void parse(Duration timeout) {
-    final mediaTypeCStr = this.mediaType.toString().toNativeUtf8();
-    final resourceCStr = this.resource.toNativeUtf8();
+    final mediaTypeCStr = mediaType.toString().toNativeUtf8();
+    final resourceCStr = resource.toNativeUtf8();
     Pointer<Pointer<Utf8>> metas = MediaFFI.parse(
       this,
       mediaTypeCStr,
@@ -214,8 +214,10 @@ class Media implements MediaSource {
                 : ''));
   }
 
+  @override
   int get hashCode => mediaType.hashCode ^ resource.hashCode;
 
+  @override
   bool operator ==(Object other) =>
       other is Media &&
       other.mediaType == mediaType &&

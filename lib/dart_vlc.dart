@@ -20,16 +20,14 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_native_view/flutter_native_view.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:dart_vlc/channel.dart';
 import 'package:dart_vlc/src/widgets/video.dart';
-import 'package:dart_vlc_ffi/src/internal/ffi.dart' as FFI;
-import 'package:dart_vlc_ffi/dart_vlc_ffi.dart' as FFI;
+import 'package:dart_vlc_ffi/src/internal/ffi.dart' as ffi;
+import 'package:dart_vlc_ffi/dart_vlc_ffi.dart' as ffi;
 export 'package:dart_vlc_ffi/dart_vlc_ffi.dart' hide DartVLC, Player;
 export 'package:dart_vlc/src/widgets/video.dart';
-export 'package:dart_vlc/src/widgets/native_video.dart';
 
 /// A [Player] to open & play a [Media] or [Playlist] from file, network or asset.
 ///
@@ -37,7 +35,7 @@ export 'package:dart_vlc/src/widgets/native_video.dart';
 /// Provide a unique [id] while instanciating.
 ///
 /// ```dart
-/// Player player = new Player(id: 0);
+/// Player player = Player(id: 0);
 /// ```
 ///
 /// By default, [Video] widget will adapt to the size of the currently playing video itself.
@@ -45,7 +43,7 @@ export 'package:dart_vlc/src/widgets/native_video.dart';
 /// then you can pass [videoDimensions] argument to override the frame size as follows.
 ///
 /// ```dart
-/// Player player = new Player(
+/// Player player = Player(
 ///   id: 0,
 ///   videoDimensions: const VideoDimensions(480, 360)
 /// );
@@ -53,33 +51,36 @@ export 'package:dart_vlc/src/widgets/native_video.dart';
 ///
 /// Use various methods & event streams available to control & listen to events of the playback.
 ///
-class Player extends FFI.Player {
-  final bool registerTexture;
+class Player extends ffi.Player {
   final ValueNotifier<int?> textureId = ValueNotifier<int?>(null);
 
   Player({
     required int id,
-    this.registerTexture = true,
-    FFI.VideoDimensions? videoDimensions,
+    ffi.VideoDimensions? videoDimensions,
     List<String>? commandlineArguments,
-    bool: false,
   }) : super(
-            id: id,
-            videoDimensions: videoDimensions,
-            commandlineArguments: commandlineArguments) {
+          id: id,
+          videoDimensions: videoDimensions,
+          commandlineArguments: commandlineArguments,
+        ) {
     () async {
-      if (registerTexture) {
-        textureId.value = await channel
-            .invokeMethod(kPlayerRegisterTexture, {'playerId': id});
-      }
+      textureId.value = await channel.invokeMethod(
+        kPlayerRegisterTexture,
+        {
+          'playerId': id,
+        },
+      );
     }();
   }
 
   @override
   void dispose() async {
-    if (registerTexture) {
-      await channel.invokeMethod(kPlayerUnregisterTexture, {'playerId': id});
-    }
+    await channel.invokeMethod(
+      kPlayerUnregisterTexture,
+      {
+        'playerId': id,
+      },
+    );
     textureId.value = null;
     super.dispose();
   }
@@ -94,23 +95,16 @@ class Player extends FFI.Player {
 /// }
 /// ```
 abstract class DartVLC {
-  static Future<void> initialize({
-    bool useFlutterNativeView = false,
-  }) async {
-    if (useFlutterNativeView && Platform.isWindows) {
-      /// Windows specific [NativeVideo].
-      WidgetsFlutterBinding.ensureInitialized();
-      await FlutterNativeView.ensureInitialized();
-    }
-    FFI.videoFrameCallback = (int playerId, Uint8List videoFrame) {
+  static void initialize() {
+    ffi.videoFrameCallback = (int playerId, Uint8List videoFrame) {
       if (videoStreamControllers[playerId] != null &&
-          FFI.players[playerId] != null) {
+          ffi.players[playerId] != null) {
         if (!videoStreamControllers[playerId]!.isClosed) {
           videoStreamControllers[playerId]!.add(
             VideoFrame(
               playerId: playerId,
-              videoWidth: FFI.players[playerId]!.videoDimensions.width,
-              videoHeight: FFI.players[playerId]!.videoDimensions.height,
+              videoWidth: ffi.players[playerId]!.videoDimensions.width,
+              videoHeight: ffi.players[playerId]!.videoDimensions.height,
               byteArray: videoFrame,
             ),
           );
@@ -122,14 +116,14 @@ abstract class DartVLC {
         path.dirname(Platform.resolvedExecutable),
         'dart_vlc_plugin.dll',
       );
-      FFI.DartVLC.initialize(libraryPath);
+      ffi.DartVLC.initialize(libraryPath);
     } else if (Platform.isLinux) {
       final libraryPath = path.join(
         path.dirname(Platform.resolvedExecutable),
         'lib',
         'libdart_vlc_plugin.so',
       );
-      FFI.DartVLC.initialize(libraryPath);
+      ffi.DartVLC.initialize(libraryPath);
     } else if (Platform.isMacOS) {
       final libraryPath = path.join(
         path.dirname(path.dirname(Platform.resolvedExecutable)),
@@ -137,7 +131,7 @@ abstract class DartVLC {
         'dart_vlc.framework',
         'dart_vlc',
       );
-      FFI.DartVLC.initialize(libraryPath);
+      ffi.DartVLC.initialize(libraryPath);
     } else if (Platform.isIOS) {
       final libraryPath = path.join(
         path.dirname(Platform.resolvedExecutable),
@@ -145,7 +139,7 @@ abstract class DartVLC {
         'dart_vlc.framework',
         'dart_vlc',
       );
-      FFI.DartVLC.initialize(libraryPath);
+      ffi.DartVLC.initialize(libraryPath);
     }
   }
 }

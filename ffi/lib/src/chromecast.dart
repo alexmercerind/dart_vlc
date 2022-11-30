@@ -20,7 +20,7 @@ class Chromecast {
       {required int id,
       required Media media,
       required String ipAddress}) async {
-    Chromecast chromecast = new _Chromecast();
+    Chromecast chromecast = _Chromecast();
     chromecast.id = id;
     chromecast.media = media;
     chromecast.ipAddress = ipAddress;
@@ -41,11 +41,11 @@ class Chromecast {
 
   /// Start sending [Media] content to chromecast
   void start() {
-    ChromecastFFI.start(this.id);
+    ChromecastFFI.start(id);
   }
 
   /// Disposes this instance of [Chromecast].
   void dispose() {
-    ChromecastFFI.dispose(this.id);
+    ChromecastFFI.dispose(id);
   }
 }

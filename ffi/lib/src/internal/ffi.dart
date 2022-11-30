@@ -2,7 +2,6 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
-import 'package:ffi/ffi.dart';
 import 'package:dart_vlc_ffi/src/internal/dynamiclibrary.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/player.dart';
 import 'package:dart_vlc_ffi/src/internal/typedefs/media.dart';
@@ -192,7 +191,7 @@ abstract class EqualizerFFI {
 
 bool isInitialized = false;
 void Function(int id, Uint8List frame) videoFrameCallback = (_, __) {};
-final ReceivePort receiver = new ReceivePort()
+final ReceivePort receiver = ReceivePort()
   ..asBroadcastStream()
   ..listen((event) {
     int id = event[0];
@@ -203,37 +202,42 @@ final ReceivePort receiver = new ReceivePort()
           players[id]!.playback.isPlaying = event[2];
           players[id]!.playback.isSeekable = event[3];
           players[id]!.playback.isCompleted = false;
-          if (!players[id]!.playbackController.isClosed)
+          if (!players[id]!.playbackController.isClosed) {
             players[id]!.playbackController.add(players[id]!.playback);
+          }
           break;
         }
       case 'positionEvent':
         {
           players[id]!.position.position = Duration(milliseconds: event[3]);
           players[id]!.position.duration = Duration(milliseconds: event[4]);
-          if (!players[id]!.positionController.isClosed)
+          if (!players[id]!.positionController.isClosed) {
             players[id]!.positionController.add(players[id]!.position);
+          }
           break;
         }
       case 'completeEvent':
         {
           players[id]!.playback.isCompleted = event[2];
-          if (!players[id]!.playbackController.isClosed)
+          if (!players[id]!.playbackController.isClosed) {
             players[id]!.playbackController.add(players[id]!.playback);
+          }
           break;
         }
       case 'volumeEvent':
         {
           players[id]!.general.volume = event[2];
-          if (!players[id]!.generalController.isClosed)
+          if (!players[id]!.generalController.isClosed) {
             players[id]!.generalController.add(players[id]!.general);
+          }
           break;
         }
       case 'rateEvent':
         {
           players[id]!.general.rate = event[2];
-          if (!players[id]!.generalController.isClosed)
+          if (!players[id]!.generalController.isClosed) {
             players[id]!.generalController.add(players[id]!.general);
+          }
           break;
         }
       case 'openEvent':
@@ -264,17 +268,19 @@ final ReceivePort receiver = new ReceivePort()
           }
           players[id]!.current.medias = medias;
           players[id]!.current.media = medias[players[id]!.current.index!];
-          if (!players[id]!.currentController.isClosed)
+          if (!players[id]!.currentController.isClosed) {
             players[id]!.currentController.add(players[id]!.current);
+          }
           break;
         }
       case 'videoDimensionsEvent':
         {
           players[id]!.videoDimensions = VideoDimensions(event[2], event[3]);
-          if (!players[id]!.videoDimensionsController.isClosed)
+          if (!players[id]!.videoDimensionsController.isClosed) {
             players[id]!
                 .videoDimensionsController
                 .add(players[id]!.videoDimensions);
+          }
           break;
         }
       case 'videoFrameEvent':
@@ -285,17 +291,19 @@ final ReceivePort receiver = new ReceivePort()
       case 'bufferingEvent':
         {
           players[id]!.bufferingProgress = event[2];
-          if (!players[id]!.bufferingProgressController.isClosed)
+          if (!players[id]!.bufferingProgressController.isClosed) {
             players[id]!
                 .bufferingProgressController
                 .add(players[id]!.bufferingProgress);
+          }
           break;
         }
       default:
         {
           players[id]!.error = event[2];
-          if (!players[id]!.errorController.isClosed)
+          if (!players[id]!.errorController.isClosed) {
             players[id]!.errorController.add(players[id]!.error);
+          }
           break;
         }
     }

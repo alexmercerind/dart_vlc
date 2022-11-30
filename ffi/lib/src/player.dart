@@ -96,27 +96,28 @@ class Player {
       {required this.id,
       VideoDimensions? videoDimensions,
       List<String>? commandlineArguments}) {
-    if (commandlineArguments != null)
+    if (commandlineArguments != null) {
       this.commandlineArguments = commandlineArguments;
-    this.currentController = StreamController<CurrentState>.broadcast();
-    this.currentStream = this.currentController.stream;
-    this.positionController = StreamController<PositionState>.broadcast();
-    this.positionStream = this.positionController.stream;
-    this.playbackController = StreamController<PlaybackState>.broadcast();
-    this.playbackStream = this.playbackController.stream;
-    this.generalController = StreamController<GeneralState>.broadcast();
-    this.generalStream = this.generalController.stream;
-    this.bufferingProgressController = StreamController<double>.broadcast();
-    this.bufferingProgressStream = this.bufferingProgressController.stream;
-    this.errorController = StreamController<String>.broadcast();
-    this.errorStream = this.errorController.stream;
-    if (videoDimensions != null) {
-      this.preferredVideoDimensions = videoDimensions;
     }
-    this.videoDimensionsController =
+    currentController = StreamController<CurrentState>.broadcast();
+    currentStream = currentController.stream;
+    positionController = StreamController<PositionState>.broadcast();
+    positionStream = positionController.stream;
+    playbackController = StreamController<PlaybackState>.broadcast();
+    playbackStream = playbackController.stream;
+    generalController = StreamController<GeneralState>.broadcast();
+    generalStream = generalController.stream;
+    bufferingProgressController = StreamController<double>.broadcast();
+    bufferingProgressStream = bufferingProgressController.stream;
+    errorController = StreamController<String>.broadcast();
+    errorStream = errorController.stream;
+    if (videoDimensions != null) {
+      preferredVideoDimensions = videoDimensions;
+    }
+    videoDimensionsController =
         StreamController<VideoDimensions>.broadcast();
-    this.videoDimensionsStream = this.videoDimensionsController.stream;
-    players[this.id] = this;
+    videoDimensionsStream = videoDimensionsController.stream;
+    players[id] = this;
     // Parse [commandlineArguments] & convert to `char*[]`.
     final List<Pointer<Utf8>> pointers =
         this.commandlineArguments.map<Pointer<Utf8>>((e) {
@@ -128,9 +129,9 @@ class Player {
       arr[i] = pointers[i];
     }
     PlayerFFI.create(
-      this.id,
-      this.preferredVideoDimensions?.width ?? 0,
-      this.preferredVideoDimensions?.height ?? 0,
+      id,
+      preferredVideoDimensions?.width ?? 0,
+      preferredVideoDimensions?.height ?? 0,
       this.commandlineArguments.length,
       arr,
     );
@@ -174,7 +175,7 @@ class Player {
   /// );
   /// ```
   ///
-  void open(MediaSource source, {bool autoStart: true}) {
+  void open(MediaSource source, {bool autoStart = true}) {
     if (source is Media) {
       final args = <String>[
         source.mediaType.toString(),
@@ -191,7 +192,7 @@ class Player {
         arr[i] = pointers[i];
       }
       PlayerFFI.open(
-        this.id,
+        id,
         autoStart ? 1 : 0,
         arr,
         1,
@@ -202,7 +203,7 @@ class Player {
     }
     if (source is Playlist) {
       List<String> medias = <String>[];
-      source.medias.forEach((media) {
+      for (var media in source.medias) {
         medias.addAll(
           <String>[
             media.mediaType.toString(),
@@ -211,7 +212,7 @@ class Player {
             media.stopTime.argument('stop-time'),
           ],
         );
-      });
+      }
       // Parse [commandlineArguments] & convert to `char*[]`.
       final List<Pointer<Utf8>> pointers = medias.map<Pointer<Utf8>>((e) {
         return e.toNativeUtf8();
@@ -221,7 +222,7 @@ class Player {
         arr[i] = pointers[i];
       }
       PlayerFFI.open(
-        this.id,
+        id,
         autoStart ? 1 : 0,
         arr,
         source.medias.length,
@@ -234,17 +235,17 @@ class Player {
 
   /// Plays opened [MediaSource],
   void play() {
-    PlayerFFI.play(this.id);
+    PlayerFFI.play(id);
   }
 
   /// Pauses opened [MediaSource],
   void pause() {
-    PlayerFFI.pause(this.id);
+    PlayerFFI.pause(id);
   }
 
   /// Play or Pause opened [MediaSource],
   void playOrPause() {
-    PlayerFFI.playOrPause(this.id);
+    PlayerFFI.playOrPause(id);
   }
 
   /// Stops the [Player].
@@ -253,24 +254,24 @@ class Player {
   /// A new instance must be created, once this method is called.
   ///
   void stop() {
-    PlayerFFI.stop(this.id);
+    PlayerFFI.stop(id);
   }
 
   /// Jumps to the next [Media] in the [Playlist] opened.
   void next() {
-    PlayerFFI.next(this.id);
+    PlayerFFI.next(id);
   }
 
   /// Jumps to the previous [Media] in the [Playlist] opened.
   void previous() {
-    PlayerFFI.previous(this.id);
+    PlayerFFI.previous(id);
   }
 
   /// Jumps to [Media] at specific index in the [Playlist] opened.
   /// Pass index as parameter.
   void jumpToIndex(int index) {
     PlayerFFI.jumpToIndex(
-      this.id,
+      id,
       index,
     );
   }
@@ -278,7 +279,7 @@ class Player {
   /// Seeks the [Media] currently playing in the [Player] instance, to the provided [Duration].
   void seek(Duration duration) {
     PlayerFFI.seek(
-      this.id,
+      id,
       duration.inMilliseconds,
     );
   }
@@ -286,7 +287,7 @@ class Player {
   /// Sets volume of the [Player] instance.
   void setVolume(double volume) {
     PlayerFFI.setVolume(
-      this.id,
+      id,
       volume,
     );
   }
@@ -294,7 +295,7 @@ class Player {
   /// Sets playback rate of the [Media] currently playing in the [Player] instance.
   void setRate(double rate) {
     PlayerFFI.setRate(
-      this.id,
+      id,
       rate,
     );
   }
@@ -303,7 +304,7 @@ class Player {
   void setUserAgent(String userAgent) {
     final userAgentCStr = userAgent.toNativeUtf8();
     PlayerFFI.setUserAgent(
-      this.id,
+      id,
       userAgentCStr,
     );
     calloc.free(userAgentCStr);
@@ -313,7 +314,7 @@ class Player {
   void setPlaylistMode(PlaylistMode playlistMode) {
     final playlistModeCStr = playlistMode.toString().toNativeUtf8();
     PlayerFFI.setPlaylistMode(
-      this.id,
+      id,
       playlistModeCStr,
     );
     calloc.free(playlistModeCStr);
@@ -324,7 +325,7 @@ class Player {
     final sourceMediaTypeCStr = source.mediaType.toString().toNativeUtf8();
     final sourceResourceCStr = source.resource.toString().toNativeUtf8();
     PlayerFFI.add(
-      this.id,
+      id,
       sourceMediaTypeCStr,
       sourceResourceCStr,
     );
@@ -335,7 +336,7 @@ class Player {
   /// Removes [Media] from the [Playlist] at a specific index.
   void remove(int index) {
     PlayerFFI.remove(
-      this.id,
+      id,
       index,
     );
   }
@@ -345,7 +346,7 @@ class Player {
     final sourceMediaTypeCStr = source.mediaType.toString().toNativeUtf8();
     final sourceResourceCStr = source.resource.toString().toNativeUtf8();
     PlayerFFI.insert(
-      this.id,
+      id,
       index,
       sourceMediaTypeCStr,
       sourceResourceCStr,
@@ -357,7 +358,7 @@ class Player {
   /// Moves [Media] already present in the [Playlist] of the [Player] from [initialIndex] to [finalIndex].
   void move(int initialIndex, int finalIndex) {
     PlayerFFI.move(
-      this.id,
+      id,
       initialIndex,
       finalIndex,
     );
@@ -374,7 +375,7 @@ class Player {
     final deviceIdCStr = device.id.toNativeUtf8();
     final deviceNameCStr = device.name.toNativeUtf8();
     PlayerFFI.setDevice(
-      this.id,
+      id,
       deviceIdCStr,
       deviceNameCStr,
     );
@@ -382,14 +383,14 @@ class Player {
 
   /// Sets [Equalizer] for the [Player].
   void setEqualizer(Equalizer equalizer) {
-    PlayerFFI.setEqualizer(this.id, equalizer.id);
+    PlayerFFI.setEqualizer(id, equalizer.id);
   }
 
   /// Saves snapshot of a video to a desired [File] location.
   void takeSnapshot(File file, int width, int height) {
     final filePathCStr = file.path.toNativeUtf8();
     PlayerFFI.takeSnapshot(
-      this.id,
+      id,
       filePathCStr,
       width,
       height,
@@ -399,31 +400,31 @@ class Player {
 
   /// Sets Current Audio Track for the current [MediaSource]
   void setAudioTrack(int track) {
-    return PlayerFFI.setAudioTrack(this.id, track);
+    return PlayerFFI.setAudioTrack(id, track);
   }
 
   /// Gets audio track count from current [MediaSource]
   int get audioTrackCount {
-    int count = PlayerFFI.getAudioTrackCount(this.id);
+    int count = PlayerFFI.getAudioTrackCount(id);
     // for some reason this value returns 0 when no tracks exists
     // and 2 or more if there's 1 or more audio tracks for this [MediaSource].
     return count > 1 ? count - 1 : count;
   }
 
   void setHWND(int hwnd) {
-    PlayerFFI.setHWND(this.id, hwnd);
+    PlayerFFI.setHWND(id, hwnd);
   }
 
   /// Destroys the instance of [Player] & closes all [StreamController]s in it.
   void dispose() {
-    this.currentController.close();
-    this.positionController.close();
-    this.playbackController.close();
-    this.generalController.close();
-    this.videoDimensionsController.close();
-    this.bufferingProgressController.close();
-    this.errorController.close();
-    PlayerFFI.dispose(this.id);
+    currentController.close();
+    positionController.close();
+    playbackController.close();
+    generalController.close();
+    videoDimensionsController.close();
+    bufferingProgressController.close();
+    errorController.close();
+    PlayerFFI.dispose(id);
   }
 
   /// Internally used [StreamController]s,
