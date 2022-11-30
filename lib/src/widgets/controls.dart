@@ -41,10 +41,6 @@ class Control extends StatefulWidget {
     required this.volumeInactiveColor,
     required this.volumeBackgroundColor,
     required this.volumeThumbColor,
-    this.enterFullscreen,
-    this.exitFullscreen,
-    this.isFullscreen = false,
-    this.showFullscreenButton = false,
   }) : super(key: key);
 
   final Widget child;
@@ -61,10 +57,6 @@ class Control extends StatefulWidget {
   final Color? volumeInactiveColor;
   final Color? volumeBackgroundColor;
   final Color? volumeThumbColor;
-  final VoidCallback? enterFullscreen;
-  final VoidCallback? exitFullscreen;
-  final bool isFullscreen;
-  final bool showFullscreenButton;
 
   @override
   ControlState createState() => ControlState();
@@ -319,23 +311,6 @@ class ControlState extends State<Control> with SingleTickerProviderStateMixin {
                         ],
                       ),
                     ),
-                    if (widget.showFullscreenButton)
-                      Positioned(
-                        left: 15,
-                        bottom: 12.5,
-                        child: IconButton(
-                          onPressed: !widget.isFullscreen
-                              ? widget.enterFullscreen
-                              : widget.exitFullscreen,
-                          iconSize: 24,
-                          icon: Icon(
-                            !widget.isFullscreen
-                                ? Icons.fullscreen
-                                : Icons.fullscreen_exit,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),

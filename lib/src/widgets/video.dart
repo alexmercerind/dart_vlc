@@ -100,7 +100,6 @@ class Video extends StatefulWidget {
     this.showTimeLeft = false,
     this.progressBarTextStyle = const TextStyle(),
     this.filterQuality = FilterQuality.low,
-    this.showFullscreenButton = false,
     this.fillColor = Colors.black,
   })  : player = player ?? players[playerId]! as Player,
         super(key: key);
@@ -170,9 +169,6 @@ class Video extends StatefulWidget {
   /// instead of the total time, set this to true
   final bool showTimeLeft;
 
-  /// Whether to show the fullscreen button.
-  final bool showFullscreenButton;
-
   /// Fill color.
   final Color fillColor;
 
@@ -203,8 +199,6 @@ abstract class _VideoStateBase extends State<Video>
           ? Control(
               key: controlKey,
               player: widget.player,
-              isFullscreen: false,
-              showFullscreenButton: widget.showFullscreenButton,
               progressBarThumbRadius: widget.progressBarThumbRadius,
               progressBarThumbGlowRadius: widget.progressBarThumbGlowRadius,
               progressBarActiveColor: widget.progressBarActiveColor,
