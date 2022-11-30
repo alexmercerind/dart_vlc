@@ -169,8 +169,8 @@ class PrimaryScreenState extends State<PrimaryScreen> {
                                     width: 152.0,
                                     child: DropdownButton<MediaType>(
                                       value: mediaType,
-                                      onChanged: (mediaType) => this.setState(
-                                          () => mediaType = mediaType!),
+                                      onChanged: (value) => this
+                                          .setState(() => mediaType = value!),
                                       items: [
                                         DropdownMenuItem<MediaType>(
                                           value: MediaType.file,
@@ -548,8 +548,8 @@ class PrimaryScreenState extends State<PrimaryScreen> {
                                 width: 152.0,
                                 child: DropdownButton<MediaType>(
                                   value: mediaType,
-                                  onChanged: (mediaType) =>
-                                      setState(() => mediaType = mediaType!),
+                                  onChanged: (value) =>
+                                      setState(() => mediaType = value!),
                                   items: [
                                     DropdownMenuItem<MediaType>(
                                       value: MediaType.file,
