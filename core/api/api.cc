@@ -56,8 +56,7 @@ void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
   }
   auto player = g_players->Get(id);
   if (!player) {
-    g_players->Create(
-        id, std::move(std::make_unique<Player>(std::vector<std::string>{})));
+    g_players->Create(id, std::move(std::make_unique<Player>(args)));
     player = g_players->Get(id);
   }
   if (video_width > 0 && video_height > 0) {
@@ -75,12 +74,11 @@ void PlayerCreate(int32_t id, int32_t video_width, int32_t video_height,
   player->SetCompleteCallback(
       [=]() -> void { OnComplete(id, player->state()); });
   player->SetVolumeCallback(
-      [=](float) -> void { OnVolume(id, player->state()); });
+      [=](auto) -> void { OnVolume(id, player->state()); });
   player->SetRateCallback([=](float) -> void { OnRate(id, player->state()); });
   player->SetPositionCallback(
-      [=](int32_t) -> void { OnPosition(id, player->state()); });
-  player->SetOpenCallback(
-      [=](VLC::Media) -> void { OnOpen(id, player->state()); });
+      [=](auto) -> void { OnPosition(id, player->state()); });
+  player->SetOpenCallback([=](auto) -> void { OnOpen(id, player->state()); });
   player->SetPlaylistCallback([=]() -> void { OnOpen(id, player->state()); });
   player->SetBufferingCallback(
       [=](float buffering) -> void { OnBuffering(id, buffering); });
