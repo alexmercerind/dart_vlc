@@ -31,10 +31,7 @@ class PrimaryScreen extends StatefulWidget {
 }
 
 class PrimaryScreenState extends State<PrimaryScreen> {
-  Player player = Player(
-    id: 0,
-    videoDimensions: const VideoDimensions(640, 360),
-  );
+  Player player = Player(id: 0);
   MediaType mediaType = MediaType.file;
   CurrentState current = CurrentState();
   PositionState position = PositionState();
