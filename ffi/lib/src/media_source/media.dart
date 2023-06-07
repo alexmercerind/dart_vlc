@@ -56,8 +56,8 @@ class Media implements MediaSource {
     File file, {
     bool parse = false,
     Duration timeout = const Duration(seconds: 10),
-    startTime = Duration.zero,
-    stopTime = Duration.zero,
+    Duration startTime = Duration.zero,
+    Duration stopTime = Duration.zero,
   }) {
     final media = Media._(
       mediaType: MediaType.file,
@@ -77,8 +77,8 @@ class Media implements MediaSource {
     dynamic url, {
     bool parse = false,
     Duration timeout = const Duration(seconds: 10),
-    startTime = Duration.zero,
-    stopTime = Duration.zero,
+    Duration startTime = Duration.zero,
+    Duration stopTime = Duration.zero,
   }) {
     final resource = (url is Uri) ? url.toString() : url;
     final Media media = Media._(
