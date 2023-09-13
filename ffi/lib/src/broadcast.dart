@@ -83,7 +83,7 @@ abstract class Broadcast {
   late int id;
 
   /// Broadcasting [Media].
-  late Media media;
+  late Media? media;
 
   /// Configuration of this broadcast.
   late BroadcastConfiguration configuration;
