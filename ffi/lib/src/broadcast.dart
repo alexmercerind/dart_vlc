@@ -91,7 +91,7 @@ abstract class Broadcast {
   /// Creates a new [Broadcast] instance.
   static Broadcast create(
       {required int id,
-      required Media media,
+      required Media? media,
       required BroadcastConfiguration configuration}) {
     Broadcast broadcast = _Broadcast();
     broadcast.id = id;
