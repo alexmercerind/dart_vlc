@@ -210,7 +210,7 @@ class Media implements MediaSource {
         (prev, pair) =>
             prev +
             (pair.value != null
-                ? ' :${pair.key.toLowerCase()}=${pair.value}'
+                ? ':${pair.key.toLowerCase()}=${pair.value}'
                 : ''));
   }
 
