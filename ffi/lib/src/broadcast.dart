@@ -83,7 +83,7 @@ abstract class Broadcast {
   late int id;
 
   /// Broadcasting [Media].
-  late Media? media;
+  late Media media;
 
   /// Configuration of this broadcast.
   late BroadcastConfiguration configuration;
@@ -91,7 +91,7 @@ abstract class Broadcast {
   /// Creates a new [Broadcast] instance.
   static Broadcast create(
       {required int id,
-      required Media? media,
+      required Media media,
       required BroadcastConfiguration configuration}) {
     Broadcast broadcast = _Broadcast();
     broadcast.id = id;
