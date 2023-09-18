@@ -206,7 +206,7 @@ class Media implements MediaSource {
 
   static String _buildDirectShowUrl(Map<String, dynamic> args) {
     return args.entries.fold(
-        'dshow:// ',
+        'dshow:// :dshow-size=d1',
         (prev, pair) =>
             prev +
             (pair.value != null
