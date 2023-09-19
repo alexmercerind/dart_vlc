@@ -29,7 +29,8 @@ Broadcast::Broadcast(std::shared_ptr<Media> media,
 
 void Broadcast::Start() {
   std::stringstream sout;
-  sout << "#transcode{vcodec=" << configuration_->vcodec()
+  sout << "dshow-size=d1"
+       << "#transcode{vcodec=" << configuration_->vcodec()
        << ", vb=" << configuration_->vb()
        << ", acodec=" << configuration_->acodec()
        << ", ab=" << configuration_->ab()
