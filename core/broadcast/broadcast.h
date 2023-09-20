@@ -47,4 +47,5 @@ class Broadcast {
   std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
 };
 
+
 #endif  // BROADCAST_BROADCAST_H_
