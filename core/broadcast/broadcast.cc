@@ -29,17 +29,19 @@ Broadcast::Broadcast(std::shared_ptr<Media> media,
 
 void Broadcast::Start() {
   std::stringstream sout;
- sout << "#transcode{vcodec=" << configuration_->vcodec()
+  sout << "#transcode{vcodec=" << configuration_->vcodec()
        << ", vb=" << configuration_->vb()
        << ", acodec=" << configuration_->acodec()
        << ", ab=" << configuration_->ab()
-       << "}:std{access=" << configuration_->access()
-       << ", mux=" << configuration_->mux()
-       << ", dst=" << configuration_->dst(); // Agrega la resolución dshow-size=d1 aquí.
+       << "}"; // Otras opciones de transcodificación aquí.
+
+  std::string transcodeOptions = sout.str() + " dshow-size=d1"; // Agrega la resolución dshow-size=d1 aquí.
+
   // Modifica la línea siguiente para usar dshow:// en lugar de media_->location().c_str()
-  libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow:// :dshow-size=d1", "dshow:// :dshow-size=d1", sout.str().c_str(), 0, nullptr, true, false);
-  libvlc_vlm_play_media(vlc_instance_.get(), "dshow:// :dshow-size=d1");
+  libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow://", "dshow://", transcodeOptions.c_str(), 0, nullptr, true, false);
+  libvlc_vlm_play_media(vlc_instance_.get(), "dshow://");
 }
+
 
 
 Broadcast::~Broadcast() { libvlc_vlm_release(vlc_instance_.get()); }
