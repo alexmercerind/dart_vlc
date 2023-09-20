@@ -29,11 +29,13 @@ Broadcast::Broadcast(std::shared_ptr<Media> media,
 
 void Broadcast::Start() {
   std::stringstream sout;
-  sout << "#transcode{vcodec=" << configuration_->vcodec()
+ sout << "#transcode{vcodec=" << configuration_->vcodec()
        << ", vb=" << configuration_->vb()
        << ", acodec=" << configuration_->acodec()
        << ", ab=" << configuration_->ab()
-       << ", dshow-size=d1}"; // Agrega la resolución dshow-size=d1 aquí.
+       << "}:std{access=" << configuration_->access()
+       << ", mux=" << configuration_->mux()
+       << ", dst=" << configuration_->dst(); // Agrega la resolución dshow-size=d1 aquí.
   // Modifica la línea siguiente para usar dshow:// en lugar de media_->location().c_str()
   libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow://", "dshow://", sout.str().c_str(), 0, nullptr, true, false);
   libvlc_vlm_play_media(vlc_instance_.get(), "dshow://");
