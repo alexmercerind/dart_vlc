@@ -49,7 +49,7 @@ class Broadcast {
   const char* argumento2 = "--dshow-fps=30";
   const char* argumento3 = "--live-caching=100";
   const char* argumentos[] = {argumento1, argumento2, argumento3};
-  VLC::Instance vlc_instance_ = VLC::Instance(3, argumentos);
+  VLC::Instance vlc_instance_ = VLC::Instance(3, &argumentos);
   std::shared_ptr<Media> media_ = nullptr;
   std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
 };
