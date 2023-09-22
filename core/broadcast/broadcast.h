@@ -63,17 +63,16 @@ class Broadcast {
 };
 
 const char** c_array = nullptr;
-if (!cmd_arguments.empty()) {
-    c_array = new const char*[cmd_arguments.size()];
-    for (size_t i = 0; i < cmd_arguments.size(); i++) {
-        c_array[i] = cmd_arguments[i].c_str();
-    }
-}
+c_array = new const char*[cmd_arguments.size()];
+  for (size_t i = 0; i < cmd_arguments.size(); i++) {
+      c_array[i] = cmd_arguments[i].c_str();
+  }
+
 
 VLC::Instance vlc_instance(static_cast<int32_t>(cmd_arguments.size()), c_array);
 
-  std::shared_ptr<Media> media_ = nullptr;
-  std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
+ std::shared_ptr<Media> media_ = nullptr;
+ std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
 };
 
 
