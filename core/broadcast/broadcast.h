@@ -43,13 +43,19 @@ class Broadcast {
 
  private:
   //VLC::Instance vlc_instance_ = VLC::Instance(0, nullptr);
-  const char* mi_argumento = "--live-caching=0 --dshow-size=d1 --dshow-fps=30";
-  VLC::Instance vlc_instance_ = VLC::Instance(1, &mi_argumento);
-  //const char* argumento1 = "--dshow-size=d1";
+  //const char* mi_argumento = "--dshow-size=d1";
+  //VLC::Instance vlc_instance_ = VLC::Instance(1, &mi_argumento);
+  // const char* argumento1 = "--dshow-size=d1";
   //const char* argumento2 = "--dshow-fps=30";
   //const char* argumento3 = "--live-caching=100";
   //const char* argumentos[] = {argumento1, argumento2, argumento3};
   //VLC::Instance vlc_instance_ = VLC::Instance(3, &argumentos);
+  std::vector<const char*> argumentos;
+  argumentos.push_back("--dshow-size=d1");
+  argumentos.push_back("--dshow-fps=30");
+  argumentos.push_back("--live-caching=100");
+  // Llamar a la constructora de VLC::Instance con los argumentos del vector.
+  VLC::Instance vlc_instance_ = VLC::Instance(static_cast<int32_t>(argumentos.size()), argumentos.data());
   std::shared_ptr<Media> media_ = nullptr;
   std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
 };
