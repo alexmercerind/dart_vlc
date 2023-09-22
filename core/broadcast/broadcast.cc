@@ -39,7 +39,7 @@ void Broadcast::Start() {
 
 
   // Modifica la línea siguiente para usar dshow:// en lugar de media_->location().c_str()
-  libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow:// ", "dshow:// ","--dshow-size=d1", sout.str().c_str(), 0, nullptr, true, false);
+  libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow:// ", "dshow:// " + "--dshow-size=d1", sout.str().c_str(), 0, nullptr, true, false);
   libvlc_vlm_play_media(vlc_instance_.get(), "dshow:// ");
 }
 
