@@ -43,7 +43,7 @@ class Broadcast {
 
  private:
   //VLC::Instance vlc_instance_ = VLC::Instance(0, nullptr);
-  VLC::Instance vlc_instance_ = VLC::Instance(1,"--dshow-size=d1");
+  VLC::Instance vlc_instance_ = VLC::Instance(1, new char*("--dshow-size=d1"));
   std::shared_ptr<Media> media_ = nullptr;
   std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
 };
