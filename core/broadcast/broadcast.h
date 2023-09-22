@@ -45,34 +45,12 @@ class Broadcast {
   //VLC::Instance vlc_instance_ = VLC::Instance(0, nullptr);
   //const char* mi_argumento = "--dshow-size=d1";
   //VLC::Instance vlc_instance_ = VLC::Instance(1, &mi_argumento);
-  // const char* argumento1 = "--dshow-size=d1";
-  //const char* argumento2 = "--dshow-fps=30";
-  //const char* argumento3 = "--live-caching=100";
-  //const char* argumentos[] = {argumento1, argumento2, argumento3};
-  //VLC::Instance vlc_instance_ = VLC::Instance(3, &argumentos);
-  //std::vector<const char*> argumentos;
-  //argumentos.push_back("--dshow-size=d1");
-  //argumentos.push_back("--dshow-fps=30");
-  //argumentos.push_back("--live-caching=100");
-  // Llamar a la constructora de VLC::Instance con los argumentos del vector.
-  //VLC::Instance vlc_instance_ = VLC::Instance(static_cast<int32_t>(argumentos.size()), argumentos.data());
- std::vector<std::string> cmd_arguments = {
-    "--dshow-size=d1",
-    "--dshow-fps=30",
-    "--live-caching=100"
-};
-
-const char** c_array = nullptr;
-c_array = new const char*[cmd_arguments.size()];
-  for (size_t i = 0; i < cmd_arguments.size(); i++) {
-      c_array[i] = cmd_arguments[i].c_str();
-  }
-
-
-VLC::Instance vlc_instance(static_cast<int32_t>(cmd_arguments.size()), c_array);
-
- std::shared_ptr<Media> media_ = nullptr;
- std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
+  //std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
+  //std::shared_ptr<Media> media_ = nullptr;
+  const char* argumentos[] = {"--dshow-size=d1", "--dshow-fps=30"};
+  VLC::Instance vlc_instance_ = VLC::Instance(2, argumentos);
+  std::shared_ptr<Media> media_ = nullptr;
+  std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
 };
 
 
