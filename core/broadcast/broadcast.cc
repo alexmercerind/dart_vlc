@@ -33,7 +33,7 @@ void Broadcast::Start() {
        << ", vb=" << configuration_->vb()
        << ", acodec=" << configuration_->acodec()
        << ", ab=" << configuration_->ab()
-       << ", vfilter=mirror" // Agregamos vfilter=mirror aquí
+       << ", vfilter=invert" // Agregamos vfilter=mirror aquí
        << "}:std{access=" << configuration_->access()
        << ", mux=" << configuration_->mux()
        << ", dst=" << configuration_->dst();
