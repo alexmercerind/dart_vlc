@@ -36,11 +36,11 @@ void Broadcast::Start() {
        << "}:std{access=" << configuration_->access()
        << ", mux=" << configuration_->mux()
        << ", dst=" << configuration_->dst();
-  std::string transcodeOptions = sout.str() + " dshow-size=d1"; // Agrega la resolución dshow-size=d1 aquí.
+
 
   // Modifica la línea siguiente para usar dshow:// en lugar de media_->location().c_str()
-  libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow://", "dshow://", transcodeOptions.c_str(), 0, nullptr, true, false);
-  libvlc_vlm_play_media(vlc_instance_.get(), "dshow://");
+  libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow:// ", "dshow:// ","--dshow-size=d1", sout.str().c_str(), 0, nullptr, true, false);
+  libvlc_vlm_play_media(vlc_instance_.get(), "dshow:// ");
 }
 
 
