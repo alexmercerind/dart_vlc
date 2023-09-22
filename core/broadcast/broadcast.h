@@ -43,7 +43,7 @@ class Broadcast {
 
  private:
   //VLC::Instance vlc_instance_ = VLC::Instance(0, nullptr);
-  const char* mi_argumento = "--dshow-size=d1";
+  const char* mi_argumento = "--live-caching=0 --dshow-size=d1 --dshow-fps=30";
   VLC::Instance vlc_instance_ = VLC::Instance(1, &mi_argumento);
   //const char* argumento1 = "--dshow-size=d1";
   //const char* argumento2 = "--dshow-fps=30";
