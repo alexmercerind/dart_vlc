@@ -36,7 +36,8 @@ sout << "#duplicate{dst='transcode{vcodec=" << configuration_->vcodec()
      << "}:std{access=" << configuration_->access()
      << ", mux=" << configuration_->mux()
      << ", dst=" << configuration_->dst()
-     << "}',dst=display{vout=opengl, delay=0}}";
+     << "}',dst=display{vout=opengl, delay=0},dst=http{mux=ts,dst=:8080}}";
+
 
 
 
