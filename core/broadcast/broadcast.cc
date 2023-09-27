@@ -36,7 +36,7 @@ sout << "#duplicate{dst='transcode{vcodec=" << configuration_->vcodec()
      << "}:std{access=" << configuration_->access()
      << ", mux=" << configuration_->mux()
      << ", dst=" << configuration_->dst()
-     << "}',dst=display{vout=opengl, delay=0}}";
+     << "}',dst=udp{dst=239.255.1.1,port=1234,mux=ts}}";
 
 
 
