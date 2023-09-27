@@ -36,7 +36,7 @@ sout << "#transcode{vcodec=" << configuration_->vcodec()
      << "}:duplicate{dst=std{access=" << configuration_->access()
      << ", mux=" << configuration_->mux()
      << ", dst=" << configuration_->dst()
-     << "},dst=display{delay=0.5}}";
+     << "},dst=display{delay=0}}";
 
 
   // Modifica la línea siguiente para usar dshow:// en lugar de media_->location().c_str()
