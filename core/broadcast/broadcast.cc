@@ -36,8 +36,7 @@ sout << "#transcode{vcodec=" << configuration_->vcodec()
      << "}:duplicate{dst=std{access=" << configuration_->access()
      << ", mux=" << configuration_->mux()
      << ", dst=" << configuration_->dst()
-     << "},dst=display{delay=0}}";
-
+     << "},dst=display{vout=opengl, delay=0}}";
 
 
 
