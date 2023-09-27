@@ -47,8 +47,8 @@ class Broadcast {
   //VLC::Instance vlc_instance_ = VLC::Instance(1, &mi_argumento);
   //std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
   //std::shared_ptr<Media> media_ = nullptr;
-  const char* argumentos[4] = {"--dshow-size=d1", "--dshow-fps=30", "--live-caching=0", "--dshow-adev=none"};
-  VLC::Instance vlc_instance_ = VLC::Instance(2, argumentos);
+  const char* argumentos[5] = {"--dshow-size=d1", "--dshow-fps=30", "--live-caching=0", "--dshow-adev=none", "--sout-display"};
+  VLC::Instance vlc_instance_ = VLC::Instance(1, argumentos);
   std::shared_ptr<Media> media_ = nullptr;
   std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
 };
