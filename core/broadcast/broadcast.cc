@@ -29,13 +29,15 @@ Broadcast::Broadcast(std::shared_ptr<Media> media,
 
 void Broadcast::Start() {
   std::stringstream sout;
- sout << "#transcode{vcodec=" << configuration_->vcodec()
-       << ", vb=" << configuration_->vb()
-       << ", acodec=" << configuration_->acodec()
-       << ", ab=" << configuration_->ab()
-       << "}:std{access=" << configuration_->access()
-       << ", mux=" << configuration_->mux()
-       << ", dst=" << configuration_->dst();
+sout << "#duplicate{dst='transcode{vcodec=" << configuration_->vcodec()
+     << ", vb=" << configuration_->vb()
+     << ", acodec=" << configuration_->acodec()
+     << ", ab=" << configuration_->ab()
+     << "}:std{access=" << configuration_->access()
+     << ", mux=" << configuration_->mux()
+     << ", dst=" << configuration_->dst()
+     << "}',dst=display{vout=opengl, delay=0}}";
+
 
 
 
