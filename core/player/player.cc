@@ -21,6 +21,8 @@
 #include <functional>
 
 Player::Player(const std::vector<std::string>& cmd_arguments) {
+  const char* argumentos[5] = {"dshow://", "--dshow-fps=30", "--dshow-adev=none", "--dshow-size=d1", "--live-caching=0"};
+ 
   if (cmd_arguments.empty()) {
     vlc_instance_ = VLC::Instance(0, nullptr);
   } else {
@@ -29,8 +31,9 @@ Player::Player(const std::vector<std::string>& cmd_arguments) {
     for (auto i = 0; i < cmd_arguments.size(); i++) {
       c_array[i] = cmd_arguments[i].c_str();
     }
-    vlc_instance_ = VLC::Instance(static_cast<int32_t>(cmd_arguments.size()),
-                                  c_array.get());
+    vlc_instance_ = VLC::Instance(5, argumentos);
+    //vlc_instance_ = VLC::Instance(static_cast<int32_t>(cmd_arguments.size()),
+      //                            c_array.get());
   }
   vlc_media_player_ = VLC::MediaPlayer(vlc_instance_);
   vlc_media_list_player_ = VLC::MediaListPlayer(vlc_instance_);
