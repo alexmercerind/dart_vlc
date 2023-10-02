@@ -21,7 +21,7 @@
 #include <functional>
 
 Player::Player(const std::vector<std::string>& cmd_arguments) {
-  const char* argumentos[5] = {"dshow://", "--dshow-fps=30", "--dshow-adev=none", "--dshow-size=d1", "--live-caching=0", "--sout=#transcode{vcodec=h264, vb=1024, acodec=mpga, ab=128}:std{access=file, mux=ts, dst=C:\\Users\\fcodo\\chi.mp4}"};
+  const char* argumentos[6] = {"dshow://", "--dshow-fps=30", "--dshow-adev=none", "--dshow-size=d1", "--live-caching=0", "--sout=#transcode{vcodec=h264, vb=1024, acodec=mpga, ab=128}:std{access=file, mux=ts, dst=C:\\Users\\fcodo\\chi.mp4}"};
  
   if (cmd_arguments.empty()) {
     vlc_instance_ = VLC::Instance(0, nullptr);
@@ -31,7 +31,7 @@ Player::Player(const std::vector<std::string>& cmd_arguments) {
     for (auto i = 0; i < cmd_arguments.size(); i++) {
       c_array[i] = cmd_arguments[i].c_str();
     }
-    vlc_instance_ = VLC::Instance(5, argumentos);
+    vlc_instance_ = VLC::Instance(6, argumentos);
     //vlc_instance_ = VLC::Instance(static_cast<int32_t>(cmd_arguments.size()),
       //                            c_array.get());
   }
