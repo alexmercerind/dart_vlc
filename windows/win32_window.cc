@@ -40,7 +40,7 @@ HWND CreateWin32Window() {
     window_class.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
     window_class.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
     window_class.hbrBackground =
-        static_cast<HBRUSH>(::CreateSolidBrush(RGB(0, 0, 0)));
+        static_cast<HBRUSH>(::CreateSolidBrush(RGB(255, 192, 203)));
     ::RegisterClass(&window_class);
     std::random_device random_device;
     std::mt19937 range(random_device());
