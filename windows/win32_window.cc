@@ -1,20 +1,3 @@
-// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
-//
-// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, write to the Free Software Foundation,
-// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "include/dart_vlc/win32_window.h"
 
 #include <future>
@@ -24,9 +7,9 @@
 
 constexpr auto kWindowClassName = L"DART_VLC_WINDOW";
 
-HWND CreateWin32Window() {
+HWND CreateWin32Window(bool fullscreen) {
   std::promise<HWND> window_promise;
-  std::thread([&]() {
+  std::thread([fullscreen, &window_promise]() {
     auto startup_info = STARTUPINFO{};
     ::GetStartupInfo(&startup_info);
     auto instance = ::GetModuleHandle(nullptr);
@@ -42,21 +25,48 @@ HWND CreateWin32Window() {
     window_class.hbrBackground =
         static_cast<HBRUSH>(::CreateSolidBrush(RGB(0, 0, 0)));
     ::RegisterClass(&window_class);
-    std::random_device random_device;
-    std::mt19937 range(random_device());
-    std::uniform_int_distribution<int> uniform(0, INT32_MAX);
+
+    int screenWidth, screenHeight;
+    if (fullscreen) {
+      screenWidth = GetSystemMetrics(SM_CXSCREEN);
+      screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    } else {
+      screenWidth = 800;  // Ancho predeterminado
+      screenHeight = 600; // Alto predeterminado
+    }
+
     HWND window = CreateWindowEx(
-        0, kWindowClassName,
-        (L"dart_vlc.instance." + std::to_wstring(uniform(range))).c_str(),
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-        CW_USEDEFAULT, NULL, NULL, instance, nullptr);
+        0, kWindowClassName, L"DART_VLC_WINDOW", fullscreen ? WS_POPUP : WS_OVERLAPPEDWINDOW,
+        0, 0, screenWidth, screenHeight, NULL, NULL, instance, nullptr);
+
+    if (fullscreen) {
+      DEVMODE dmScreenSettings;
+      memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+      dmScreenSettings.dmSize = sizeof(dmScreenSettings);
+      dmScreenSettings.dmPelsWidth = screenWidth;
+      dmScreenSettings.dmPelsHeight = screenHeight;
+      dmScreenSettings.dmBitsPerPel = 32; // Puedes ajustar esto según tu preferencia
+      dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+      if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+        // No se pudo cambiar a pantalla completa, manejar el error
+      }
+    }
+
     window_promise.set_value(window);
+
     MSG msg;
     while (::GetMessage(&msg, window, 0, 0)) {
       ::TranslateMessage(&msg);
       ::DispatchMessage(&msg);
     }
+
+    // Restaurar la configuración de pantalla original al cerrar la ventana
+    if (fullscreen) {
+      ChangeDisplaySettings(nullptr, 0);
+    }
   }).detach();
+
   return window_promise.get_future().get();
 }
 
