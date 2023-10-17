@@ -26,7 +26,7 @@
 #include <Windows.h>
 #include <stdint.h>
 
-HWND CreateWin32Window(true);
+HWND CreateWin32Window(True);
 
 LRESULT CALLBACK Win32WindowProc(HWND window, UINT message, WPARAM wparam,
                                  LPARAM lparam);
