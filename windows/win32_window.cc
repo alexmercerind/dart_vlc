@@ -1,4 +1,3 @@
-
 // This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
 //
 // Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
