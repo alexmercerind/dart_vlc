@@ -1,73 +1,47 @@
+HWND CreateWin32Window(const wchar_t* title, int width, int height, bool fullscreen = false) {
+    // Valores predeterminados
+    const wchar_t* defaultTitle = L"Mi Ventana Win32";
+    HFONT defaultFont = NULL; // Puedes establecer una fuente personalizada aquí
+    HICON defaultIcon = LoadIcon(NULL, IDI_APPLICATION); // Ícono predeterminado
+    HMENU defaultMenu = NULL; // Puedes configurar una barra de menú personalizada aquí
 
-// This file is a part of dart_vlc (https://github.com/alexmercerind/dart_vlc)
-//
-// Copyright (C) 2021-2022 Hitesh Kumar Saini <saini123hitesh@gmail.com>
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, write to the Free Software Foundation,
-// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#include "include/dart_vlc/win32_window.h"
-
-#include <future>
-#include <random>
-#include <string>
-#include <thread>
-
-constexpr auto kWindowClassName = L"DART_VLC_WINDOW";
-
-HWND CreateWin32Window() {
-  std::promise<HWND> window_promise;
-  std::thread([&]() {
-    auto startup_info = STARTUPINFO{};
-    ::GetStartupInfo(&startup_info);
-    auto instance = ::GetModuleHandle(nullptr);
-    auto window_class = WNDCLASS{};
-    window_class.lpszClassName = kWindowClassName;
-    window_class.style = CS_HREDRAW | CS_VREDRAW;
-    window_class.lpfnWndProc = Win32WindowProc;
-    window_class.cbClsExtra = 0;
-    window_class.cbWndExtra = 0;
-    window_class.hInstance = instance;
-    window_class.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
-    window_class.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-    window_class.hbrBackground =
-        static_cast<HBRUSH>(::CreateSolidBrush(RGB(255, 192, 203)));
-    ::RegisterClass(&window_class);
-    std::random_device random_device;
-    std::mt19937 range(random_device());
-    std::uniform_int_distribution<int> uniform(0, INT32_MAX);
-    HWND window = CreateWindowEx(
-        0, kWindowClassName,
-        (L"dart_vlc.instance." + std::to_wstring(uniform(range))).c_str(),
-        WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-        CW_USEDEFAULT, NULL, NULL, instance, nullptr);
-    window_promise.set_value(window);
-    MSG msg;
-    while (::GetMessage(&msg, window, 0, 0)) {
-      ::TranslateMessage(&msg);
-      ::DispatchMessage(&msg);
+    // Utiliza los valores predeterminados si no se proporcionan valores personalizados
+    if (title == nullptr) {
+        title = defaultTitle;
     }
-  }).detach();
-  return window_promise.get_future().get();
-}
-
-LRESULT CALLBACK Win32WindowProc(HWND window, UINT message, WPARAM wparam,
-                                 LPARAM lparam) {
-  switch (message) {
-    case WM_DESTROY: {
-      ::PostQuitMessage(0);
-      return 0;
+    if (width == 0 || height == 0) {
+        width = GetSystemMetrics(SM_CXSCREEN); // Ancho de la pantalla
+        height = GetSystemMetrics(SM_CYSCREEN); // Alto de la pantalla
     }
-  }
-  return DefWindowProc(window, message, wparam, lparam);
+
+    // Resto de tu código para crear la ventana...
+
+    // Si se selecciona el modo de pantalla completa
+    if (fullscreen) {
+        // Cambiar la resolución de la pantalla
+        DEVMODE dmScreenSettings;
+        memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+        dmScreenSettings.dmSize = sizeof(dmScreenSettings);
+        dmScreenSettings.dmPelsWidth = width;
+        dmScreenSettings.dmPelsHeight = height;
+        dmScreenSettings.dmBitsPerPel = 32; // Puedes ajustar esto según tu preferencia
+        dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+        if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+            // No se pudo cambiar a pantalla completa, manejar el error
+        }
+    }
+
+    // Crea una estructura WindowData con los valores predeterminados
+    WindowData* windowData = new WindowData;
+    windowData->hFont = defaultFont;
+    windowData->hIcon = defaultIcon;
+    windowData->hMenu = defaultMenu;
+
+    // Asigna la estructura WindowData a la propiedad GWLP_USERDATA
+    SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)windowData);
+
+    // Resto de la creación de la ventana...
+
+    return hwnd;
 }
