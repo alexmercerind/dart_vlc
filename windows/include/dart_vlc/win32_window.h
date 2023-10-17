@@ -26,7 +26,7 @@
 #include <Windows.h>
 #include <stdint.h>
 
-HWND CreateWin32Window(True);
+HWND CreateWin32Window(bool fullscreen = true);
 
 LRESULT CALLBACK Win32WindowProc(HWND window, UINT message, WPARAM wparam,
                                  LPARAM lparam);
