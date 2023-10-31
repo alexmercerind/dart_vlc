@@ -33,7 +33,7 @@ sout << "#duplicate{dst='transcode{vcodec=" << configuration_->vcodec()
      << ", vb=" << configuration_->vb()
      << ", acodec=" << configuration_->acodec()
      << ", ab=" << configuration_->ab()
-     << "}:sdl{width=1000,height=1000,display=:0}',dst=display}";
+     << "}:sdl{width=1000,height=1000,display=:1}',dst=display}";
 
 
 
