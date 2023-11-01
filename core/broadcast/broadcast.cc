@@ -48,18 +48,8 @@ sout << "#duplicate{dst='transcode{vcodec=" << configuration_->vcodec()
 
 
 
-
-  libvlc_media_player_t *media_player = libvlc_media_player_new(vlc_instance_.get());
-
-  // Obtén la ventana de visualización de la pantalla completa (puedes personalizar esto según tus necesidades)
-  libvlc_media_player_set_fullscreen(media_player, 1);
-
-  // Agregar la transmisión al servidor de medios y asignarla al reproductor de medios
   libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow:// ", "dshow://", sout.str().c_str(), 0, nullptr, true, false);
-  libvlc_vlm_set_output(media_player, "dshow:// ");  // Asigna la transmisión al reproductor de medios
-
-  // Inicia la transmisión
-  libvlc_media_player_play(media_player);
+  libvlc_vlm_play_media(vlc_instance_.get(), "dshow:// ");
 }
 
 
