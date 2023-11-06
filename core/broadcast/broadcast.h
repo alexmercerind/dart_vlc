@@ -47,7 +47,7 @@ class Broadcast {
   //VLC::Instance vlc_instance_ = VLC::Instance(1, &mi_argumento);
   //std::unique_ptr<BroadcastConfiguration> configuration_ = nullptr;
   //std::shared_ptr<Media> media_ = nullptr;
- const char* argumentos[6] = {"--zoom=1.4", "--dshow-adev=none", "--dshow-size=d1", "--dshow-aspect-ratio=5:3", "--live-caching=0", "--video-on-top",};
+ const char* argumentos[6] = {"--zoom=1.8", "--dshow-adev=none", "--dshow-size=d1", "--dshow-aspect-ratio=5:3", "--live-caching=0", "--video-on-top",};
  // const char* argumentos[3] = {"--dshow-vdev=Blackmagic WDM Capture", "--dshow-adev=none", "--live-caching=0"};
   VLC::Instance vlc_instance_ = VLC::Instance(6, argumentos);
   std::shared_ptr<Media> media_ = nullptr;
