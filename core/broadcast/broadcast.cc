@@ -32,7 +32,7 @@ void Broadcast::Start() {
   sout << "#duplicate{dst=display, dst='transcode{vcodec=" << configuration_->vcodec()
        << ", vb=" << configuration_->vb()
        << ", acodec=" << configuration_->acodec()
-       << ", scale=hd1, ab=" << configuration_->ab()
+       << ", scale=1, ab=" << configuration_->ab()
        << "}:std{access=" << configuration_->access()
        << ", mux=" << configuration_->mux()
        << ", dst=" << configuration_->dst()
