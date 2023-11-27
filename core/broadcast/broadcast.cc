@@ -36,7 +36,7 @@ void Broadcast::Start() {
        << "}:std{access=" << configuration_->access()
        << ", mux=" << configuration_->mux()
        << ", dst=" << configuration_->dst()
-       << "}',dst=display}";
+       << "}',dst=vlc}";
 
 
 
