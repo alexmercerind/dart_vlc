@@ -29,17 +29,33 @@ Broadcast::Broadcast(std::shared_ptr<Media> media,
 
 void Broadcast::Start() {
   std::stringstream sout;
-  sout << "#transcode{vcodec=" << configuration_->vcodec()
+  sout << "#duplicate{dst='transcode{vcodec=" << configuration_->vcodec()
        << ", vb=" << configuration_->vb()
        << ", acodec=" << configuration_->acodec()
-       << ", ab=" << configuration_->ab()
+       << ", scale=1, ab=" << configuration_->ab()
        << "}:std{access=" << configuration_->access()
        << ", mux=" << configuration_->mux()
-       << ", dst=" << configuration_->dst();
-  libvlc_vlm_add_broadcast(vlc_instance_.get(), media_->location().c_str(),
-                           media_->location().c_str(), sout.str().c_str(), 0,
-                           nullptr, true, false);
-  libvlc_vlm_play_media(vlc_instance_.get(), media_->location().c_str());
+       << ", dst=" << configuration_->dst()
+       << "}',dst=display}";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  libvlc_vlm_add_broadcast(vlc_instance_.get(), "dshow:// ", "dshow://", sout.str().c_str(), 0, nullptr, true, false);
+  libvlc_vlm_play_media(vlc_instance_.get(), "dshow:// ");
 }
+
+
 
 Broadcast::~Broadcast() { libvlc_vlm_release(vlc_instance_.get()); }

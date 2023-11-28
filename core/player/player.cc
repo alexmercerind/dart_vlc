@@ -21,6 +21,7 @@
 #include <functional>
 
 Player::Player(const std::vector<std::string>& cmd_arguments) {
+
   if (cmd_arguments.empty()) {
     vlc_instance_ = VLC::Instance(0, nullptr);
   } else {
